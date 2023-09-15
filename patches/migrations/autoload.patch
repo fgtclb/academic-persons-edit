@@ -1,0 +1,11 @@
+--- Classes/Service/DoctrineService.php
++++ Classes/Service/DoctrineService.php
+@@ -131,7 +131,7 @@
+      */
+     private function getPackageMigrationNamespaceAndDirectory(PackageInterface $package): array
+     {
+-        $autoloadComposerDefinition = $package->getValueFromComposerManifest('autoload');
++        $autoloadComposerDefinition = $package->getValueFromComposerManifest('autoload-dev');
+
+         if (($autoloadComposerDefinition->{'psr-4'} ?? null) instanceof \stdClass) {
+             $psr4Namespaces = get_object_vars($autoloadComposerDefinition->{'psr-4'});

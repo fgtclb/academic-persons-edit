@@ -1,0 +1,14 @@
+parameters:
+  level: 8
+  paths:
+    - Classes
+    - Configuration
+    - Migrations
+  typo3:
+    contextApiGetAspectMapping:
+      frontend.profile: Fgtclb\AcademicPersonsEdit\Context\ProfileAspect
+    requestGetAttributeMapping:
+      frontend.profileUid: int
+
+includes:
+  - .Build/vendor/saschaegerer/phpstan-typo3/extension.neon

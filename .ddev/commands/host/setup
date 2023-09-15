@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Description: Setup the TYPO3 project
+## Usage: setup
+## Example: "ddev setup"
+## ProjectTypes: typo3
+## ExecRaw: true
+
+rm -rf var/cache || true
+ddev composer install
+echo "DROP DATABASE db; CREATE DATABASE db;" | ddev mysql
+ddev typo3 install:setup --skip-integrity-check
+ddev typo3 migrations:migrate --no-interaction
