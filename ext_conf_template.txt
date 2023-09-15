@@ -1,0 +1,8 @@
+# cat=Types; type=boolean; label=LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:extension_configuration.profile.autoCreateProfiles.label
+profile.autoCreateProfiles = 0
+
+# cat=Types; type=string; label=LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:extension_configuration.profile.createProfileForUserGroups.label
+profile.createProfileForUserGroups =
+
+# cat=Types; type=string; label=LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:extension_configuration.profile.allowedLanguages.label
+profile.allowedLanguages =

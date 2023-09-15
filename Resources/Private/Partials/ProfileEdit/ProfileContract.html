@@ -1,0 +1,82 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mt-5 mb-3">
+    <div class="col-12">
+        <h2>Employee contracts</h2>
+    </div>
+</div>
+
+<f:for each="{profile.contracts}" as="contract" iteration="contractIterator">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h3>Contract Information</h3>
+            <p>
+                Employee Type: {contract.employeeType.title}<br />
+                Organisational Level 1: {contract.organisationalLevel1.title}<br />
+                Organisational Level 2: {contract.organisationalLevel2.title}<br />
+                Organisational Level 3: {contract.organisationalLevel3.title}
+            </p>
+            <f:form.checkbox value="1"
+                             class="form-check-inpu"
+                             id="contract-{contract.uid}-publish"
+                             property="contracts.{contractIterator.index}.publish" />
+            <label for="contract-{contract.uid}-publish" class="form-check-label">Publish?</label>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="contract-{contract.uid}-physicalAddressesFromOrganisation" class="form-label">Choose address</label>
+            <f:form.select
+                    multiple="1"
+                    property="contracts.{contractIterator.index}.physicalAddressesFromOrganisation"
+                    optionLabelField="city"
+                    id="contract-{contract.uid}-physicalAddressesFromOrganisation"
+                    class="form-select"
+                    options="{availableAddresses.{contract.uid}}"
+            />
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <label for="contract-{contract.uid}-position" class="form-label">Position</label>
+            <f:form.textfield
+                    property="contracts.{contractIterator.index}.position"
+                    id="contract-{contract.uid}-position"
+                    class="form-select"
+                    maxlength="100"
+            />
+        </div>
+        <div class="col-6">
+            <label for="contract-{contract.uid}-room" class="form-label">Room</label>
+            <f:form.textfield
+                    property="contracts.{contractIterator.index}.room"
+                    id="contract-{contract.uid}-room"
+                    class="form-select"
+                    maxlength="100"
+            />
+        </div>
+    </div>
+
+    <f:if condition="!{constrat.physicalAddressesFromOrganisation}">
+        <f:render partial="ProfileEdit/Contract/Addresses" arguments="{_all}"/>
+    </f:if>
+    <f:render partial="ProfileEdit/Contract/EmailAddresses" arguments="{_all}"/>
+    <f:render partial="ProfileEdit/Contract/PhoneNumbers" arguments="{_all}"/>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="contract-{contract.uid}-office-hours" class="form-label">Office Hours</label>
+            <f:form.textarea
+                    property="contracts.{contractIterator.index}.officeHours"
+                    id="contract-{contract.uid}-office-hours"
+                    class="form-control"
+            />
+        </div>
+    </div>
+</f:for>
+
+</html>

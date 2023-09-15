@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" product-name="academic_persons_edit">
+        <header/>
+        <body>
+            <trans-unit id="plugin.profile_switcher.label">
+                <source>Profiles: Profile Switcher</source>
+            </trans-unit>
+            <trans-unit id="plugin.profile_editing.label">
+                <source>Profiles: Profile Editing</source>
+            </trans-unit>
+
+            <trans-unit id="extension_configuration.profile.autoCreateProfiles.label">
+                <source>Auto create profile: Automatically creates a new profile for FE users</source>
+            </trans-unit>
+            <trans-unit id="extension_configuration.profile.createProfileForUserGroups.label">
+                <source>Create for user groups: Create profiles only if current user is in one of this user group IDs.</source>
+            </trans-unit>
+            <trans-unit id="extension_configuration.profile.allowedLanguages.label">
+                <source>Allowed languages: List of language IDs which a profile can be translated to.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

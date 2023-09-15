@@ -1,0 +1,46 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <h2>Email addresses</h2>
+        <f:link.action action="addEmailAddress" arguments="{profile: profile, contract: contract}" class="btn btn-primary">Add new email address</f:link.action>
+    </div>
+</div>
+<f:for each="{contract.emailAddresses}" as="emailAddress" iteration="emailAddressIterator">
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="email-address-{emailAddressIterator.index}-type" class="form-label">Type</label>
+            <f:form.select
+                    property="contracts.{contractIterator.index}.emailAddresses.{emailAddressIterator.index}.type"
+                    id="email-address-{emailAddressIterator.index}-type"
+                    class="form-select"
+                    options="{emailAddressTypes}"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="email-address-{emailAddressIterator.index}-email" class="form-label">Email address</label>
+            <f:form.textfield
+                    type="email"
+                    property="contracts.{contractIterator.index}.emailAddresses.{emailAddressIterator.index}.email"
+                    id="email-address-{emailAddressIterator.index}-email"
+                    class="form-control"
+                    maxlength="255"
+                    required="1"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <f:link.action action="removeEmailAddress" arguments="{profile: profile, contract: contract, emailAddress: emailAddress}" class="btn btn-danger">Remove email address</f:link.action>
+        </div>
+    </div>
+    <f:if condition="!{emailAddressIterator.isLast}">
+        <hr class="mb-3" />
+    </f:if>
+</f:for>
+
+</html>

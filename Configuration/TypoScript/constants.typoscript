@@ -1,0 +1,7 @@
+plugin.tx_academicpersonsedit {
+  view {
+    templateRootPath = EXT:academic_persons_edit/Resources/Private/Templates/
+    partialRootPath = EXT:academic_persons_edit/Resources/Private/Partials/
+    layoutRootPath = EXT:academic_persons_edit/Resources/Private/Layouts/
+  }
+}

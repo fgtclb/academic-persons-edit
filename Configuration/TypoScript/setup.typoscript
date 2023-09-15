@@ -1,0 +1,27 @@
+plugin.tx_academicpersonsedit {
+  settings {
+    editForm {
+      profileImage {
+        targetFolder = 1:/profile-images
+        validation {
+          maxFileSize = 2M
+          allowedMimeTypes = image/jpeg,image/png,image/webp
+        }
+      }
+    }
+  }
+  view {
+    templateRootPaths {
+      0 = EXT:academic_persons_edit/Resources/Private/Templates/
+      1 = {$plugin.tx_academicpersonsedit.view.templateRootPath}
+    }
+    partialRootPaths {
+      0 = EXT:academic_persons_edit/Resources/Private/Partials/
+      1 = {$plugin.tx_academicpersonsedit.view.partialRootPath}
+    }
+    layoutRootPaths {
+      0 = EXT:academic_persons_edit/Resources/Private/Layouts/
+      1 = {$plugin.tx_academicpersonsedit.view.layoutRootPath}
+    }
+  }
+}

@@ -1,0 +1,45 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <h2>Phone numbers</h2>
+        <f:link.action action="addPhoneNumber" arguments="{profile: profile, contract: contract}" class="btn btn-primary">Add new phone number</f:link.action>
+    </div>
+</div>
+<f:for each="{contract.phoneNumbers}" as="phoneNumber" iteration="phoneNumbersterator">
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="phone-number-{phoneNumbersterator.index}-type" class="form-label">Type</label>
+            <f:form.select
+                    property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.type"
+                    id="phone-number-{phoneNumbersterator.index}-type"
+                    class="form-select"
+                    options="{phoneNumberTypes}"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="phone-number-{phoneNumbersterator.index}-phone-number" class="form-label">Phone number</label>
+            <f:form.textfield
+                    property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.phoneNumber"
+                    id="phone-number-{phoneNumbersterator.index}-phone-number"
+                    class="form-control"
+                    maxlength="255"
+                    required="1"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <f:link.action action="removePhoneNumber" arguments="{profile: profile, contract: contract, phoneNumber: phoneNumber}" class="btn btn-danger">Remove phone number</f:link.action>
+        </div>
+    </div>
+    <f:if condition="!{phoneNumbersterator.isLast}">
+        <hr class="mb-3" />
+    </f:if>
+</f:for>
+
+</html>

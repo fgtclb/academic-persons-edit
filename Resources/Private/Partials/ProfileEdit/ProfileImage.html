@@ -1,0 +1,38 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mb-1">
+    <div class="col-12">
+        <h2>Profile Image</h2>
+    </div>
+    <div class="col-md-4">
+        <f:if condition="{profile.image}">
+            <f:form.hidden property="image" value="{profile.image}" />
+            <f:image image="{profile.image}" maxHeight="300" class="img-thumbnail" />
+        </f:if>
+
+        <f:form.validationResults for="profile.image">
+            <f:if condition="{validationResults.flattenedErrors}">
+                <ul class="errors">
+                    <f:for each="{validationResults.flattenedErrors}" as="errors" key="propertyPath">
+                        <f:for each="{errors}" as="error">
+                            <li>{error}</li>
+                        </f:for>
+                    </f:for>
+                </ul>
+            </f:if>
+        </f:form.validationResults>
+
+        <label for="profile-image" class="visually-hidden">Update profile image</label>
+        <f:form.upload property="image" class="form-control" id="profile-image" />
+        <f:if condition="{maxFileUploadsInBytes}">
+            <small>
+                Max file upload size: <f:format.bytes value="{maxFileUploadsInBytes}" />
+            </small>
+        </f:if>
+
+    </div>
+</div>
+
+</html>

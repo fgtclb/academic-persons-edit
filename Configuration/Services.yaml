@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Fgtclb\AcademicPersonsEdit\:
+    resource: '../Classes/*'
+
+  Fgtclb\AcademicPersonsEdit\Property\TypeConverter\FileUploadConverter:
+    public: true
+
+  Fgtclb\AcademicPersonsEdit\EventListener\GenerateSlugForProfile:
+    tags:
+      - name: event.listener
+        identifier: generateSlugForProfile
+        event: Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent
+
+  Fgtclb\AcademicPersonsEdit\Command\CreateProfilesCommand:
+    tags:
+      - name: console.command
+        command: 'academic:createprofiles'
+        description: 'This command create profiles for all frontend users that do not have a profile yet but should have one.'
