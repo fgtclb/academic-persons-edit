@@ -34,7 +34,7 @@ class ProfileRepository extends Repository
                 $query->in('uid', $uids)
             )
             ->setOrderings([
-                'lastName' => QueryInterface::ORDER_ASCENDING
+                'lastName' => QueryInterface::ORDER_ASCENDING,
             ])
             ->execute();
     }

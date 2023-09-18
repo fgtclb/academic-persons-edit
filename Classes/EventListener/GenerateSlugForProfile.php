@@ -55,7 +55,7 @@ final class GenerateSlugForProfile
                 'slug' => $profileSlug,
             ],
             [
-                'uid' => $profileUid
+                'uid' => $profileUid,
             ]
         );
     }

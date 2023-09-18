@@ -39,11 +39,11 @@ class AddressRepository extends Repository
                 $query->equals('employeeType', $employeeType),
                 $query->equals('organisationalLevel1', $organizationalLevel1),
                 $query->equals('organisationalLevel2', $organizationalLevel2),
-                $query->equals('organisationalLevel3', $organizationalLevel3)
+                $query->equals('organisationalLevel3', $organizationalLevel3),
             ])
         );
         $query->setOrderings([
-            'zip' => QueryInterface::ORDER_ASCENDING
+            'zip' => QueryInterface::ORDER_ASCENDING,
         ]);
 
         return $query->execute();

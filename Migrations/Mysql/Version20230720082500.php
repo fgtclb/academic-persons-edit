@@ -46,7 +46,7 @@ final class Version20230720082500 extends AbstractDataHandlerMigration
                             'sDEF' => [
                                 'lDEF' => [
                                     'settings.pages' => [
-                                        'vDEF' => sprintf('pages_%d', $userStorageUid)
+                                        'vDEF' => sprintf('pages_%d', $userStorageUid),
                                     ],
                                 ],
                             ],
