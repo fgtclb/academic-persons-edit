@@ -22,6 +22,7 @@ use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\AddressRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\ProfileRepository;
 use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
+use Fgtclb\AcademicPersonsEdit\Exception\AccessDeniedException;
 use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
 use Fgtclb\AcademicPersonsEdit\Property\TypeConverter\ProfileImageUploadConverter;
 use Psr\Http\Message\ResponseInterface;
@@ -29,9 +30,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Http\ImmediateResponseException;
-use TYPO3\CMS\Core\Http\NullResponse;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -99,11 +99,14 @@ final class ProfileController extends ActionController
 
     /**
      * @Validate(param="profileUid", validator="NumberRangeValidator", options={"minimum": 1})
-     * @throws ImmediateResponseException
      */
     public function executeProfileSwitchAction(int $profileUid): ResponseInterface
     {
-        $this->checkProfileEditAccess($profileUid);
+        try {
+            $this->checkProfileEditAccess($profileUid);
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         /** @var AbstractUserAuthentication $frontendUser */
         $frontendUser = $this->getTypo3Request()->getAttribute('frontend.user');
@@ -114,7 +117,6 @@ final class ProfileController extends ActionController
 
     /**
      * @IgnoreValidation("profile")
-     * @throws ImmediateResponseException
      */
     public function showProfileEditingFormAction(Profile $profile = null): ResponseInterface
     {
@@ -133,7 +135,11 @@ final class ProfileController extends ActionController
             die();
         }
 
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $availableAddresses = [];
         foreach ($profile->getContracts() as $contract) {
@@ -185,12 +191,13 @@ final class ProfileController extends ActionController
             );
     }
 
-    /**
-     * @throws ImmediateResponseException
-     */
     public function saveProfileAction(Profile $profile): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $profile->setFirstNameAlpha(strtolower(substr($profile->getFirstName(), 0, 1)));
         $profile->setLastNameAlpha(strtolower(substr($profile->getLastName(), 0, 1)));
@@ -224,11 +231,14 @@ final class ProfileController extends ActionController
     /**
      * @IgnoreValidation("contract")
      * @IgnoreValidation("profile")
-     * @throws ImmediateResponseException
      */
     public function addPhysicalAddressAction(Profile $profile, Contract $contract): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $address = GeneralUtility::makeInstance(Address::class);
         $contract->getPhysicalAddresses()->attach($address);
@@ -242,11 +252,14 @@ final class ProfileController extends ActionController
      * @IgnoreValidation("contract")
      * @IgnoreValidation("address")
      * @IgnoreValidation("profile")
-     * @throws ImmediateResponseException
      */
     public function removePhysicalAddressAction(Profile $profile, Contract $contract, Address $address): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $contract->getPhysicalAddresses()->detach($address);
 
@@ -258,11 +271,14 @@ final class ProfileController extends ActionController
     /**
      * @IgnoreValidation("profile")
      * @IgnoreValidation("contract")
-     * @throws ImmediateResponseException
      */
     public function addEmailAddressAction(Profile $profile, Contract $contract): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $emailAddress = GeneralUtility::makeInstance(Email::class);
         $contract->getEmailAddresses()->attach($emailAddress);
@@ -276,11 +292,14 @@ final class ProfileController extends ActionController
      * @IgnoreValidation("profile")
      * @IgnoreValidation("contract")
      * @IgnoreValidation("emailAddress")
-     * @throws ImmediateResponseException
      */
     public function removeEmailAddressAction(Profile $profile, Contract $contract, Email $emailAddress): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $contract->getEmailAddresses()->detach($emailAddress);
 
@@ -292,11 +311,14 @@ final class ProfileController extends ActionController
     /**
      * @IgnoreValidation("profile")
      * @IgnoreValidation("contract")
-     * @throws ImmediateResponseException
      */
     public function addPhoneNumberAction(Profile $profile, Contract $contract): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $phoneNumber = GeneralUtility::makeInstance(PhoneNumber::class);
         $contract->getPhoneNumbers()->attach($phoneNumber);
@@ -310,11 +332,14 @@ final class ProfileController extends ActionController
      * @IgnoreValidation("profile")
      * @IgnoreValidation("contract")
      * @IgnoreValidation("phoneNumber")
-     * @throws ImmediateResponseException
      */
     public function removePhoneNumberAction(Profile $profile, Contract $contract, PhoneNumber $phoneNumber): ResponseInterface
     {
-        $this->checkProfileEditAccess((int)$profile->getUid());
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $contract->getPhoneNumbers()->detach($phoneNumber);
 
@@ -323,12 +348,13 @@ final class ProfileController extends ActionController
         return $this->redirectToProfileEditResponse();
     }
 
-    /**
-     * @throws ImmediateResponseException
-     */
     public function translateAction(int $profileUid, int $languageUid): ResponseInterface
     {
-        $this->checkProfileEditAccess($profileUid);
+        try {
+            $this->checkProfileEditAccess($profileUid);
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
 
         $this->profileTranslator->translateTo($profileUid, $languageUid);
 
@@ -354,15 +380,14 @@ final class ProfileController extends ActionController
     }
 
     /**
-     * @throws ImmediateResponseException
+     * @throws AccessDeniedException
      */
     private function checkProfileEditAccess(int $profileUid): void
     {
         $profileUids = $this->context->getPropertyFromAspect('frontend.profile', 'allProfileUids', []);
 
         if (!in_array($profileUid, $profileUids, true)) {
-            $response = new NullResponse();
-            throw new ImmediateResponseException($response, 403);
+            throw new AccessDeniedException('User not allowed to edit this profile.', 1695046903);
         }
     }
 }
