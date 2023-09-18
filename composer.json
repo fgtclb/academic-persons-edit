@@ -27,7 +27,7 @@
     "require": {
         "php": "^8.0",
         "typo3/cms-core": "^11.5",
-        "fgtclb/academic-persons": "^0.1"
+        "fgtclb/academic-persons": "^0.1 | dev-main"
     },
     "require-dev": {
         "typo3/minimal": "v11.5.0",
@@ -55,6 +55,7 @@
     },
     "config": {
         "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
         "allow-plugins": true
     },
     "scripts": {
@@ -65,6 +66,7 @@
     "extra": {
         "typo3/cms": {
             "web-dir": ".Build/public",
+            "app-dir": ".Build",
             "extension-key": "academic_persons_edit"
         },
         "patches": {
