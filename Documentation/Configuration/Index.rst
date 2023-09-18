@@ -10,4 +10,4 @@ Configuration
    :maxdepth: 5
    :titlesonly:
 
-   General
+   General/Index
