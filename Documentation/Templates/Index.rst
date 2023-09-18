@@ -12,4 +12,4 @@ This chapter is all about templating EXT:academic_persons_edit
     :maxdepth: 5
     :titlesonly:
 
-    Override
+    Override/Index
