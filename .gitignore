@@ -8,3 +8,6 @@
 /composer.lock
 
 /Documentation-GENERATED-temp
+
+/.cache/
+/Build/testing-docker/.env
