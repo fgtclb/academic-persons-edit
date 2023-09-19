@@ -6,4 +6,4 @@
 ## ProjectTypes: typo3
 ## ExecRaw: true
 
-.Build/vendor/bin/typo3 "$@"
+.Build/bin/typo3 "$@"
