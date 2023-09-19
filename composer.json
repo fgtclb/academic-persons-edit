@@ -65,7 +65,7 @@
     },
     "extra": {
         "typo3/cms": {
-            "web-dir": ".Build/public",
+            "web-dir": ".Build/Web",
             "app-dir": ".Build",
             "extension-key": "academic_persons_edit"
         },

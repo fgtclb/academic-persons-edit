@@ -1,6 +1,6 @@
 name: academic-persons-edit
 type: typo3
-docroot: .Build/public
+docroot: .Build/Web
 # Using 8.1 instead of 8.0 to use helhum/typo3-console 8.
 # Version 7 throws an error during install:setup script.
 php_version: "8.1"
