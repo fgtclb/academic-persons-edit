@@ -36,6 +36,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
     public const CONFIGURATION_TARGET_DIRECTORY_COMBINED_IDENTIFIER = 'targetFolderCombinedIdentifier';
     public const CONFIGURATION_MAX_UPLOAD_SIZE = 'maxUploadSize';
     public const CONFIGURATION_ALLOWED_MIME_TYPES = 'allowedMimeTypes';
+    public const CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION = 'targetFileNameWithoutExtension';
 
     protected $sourceTypes = ['array'];
 
@@ -68,6 +69,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         $targetFolderIdentifier = null;
         $maxFileSize = '0k';
         $allowedMimeTypes = '';
+        $targetFileNameWithoutExtension = null;
         if ($configuration !== null) {
             $targetFolderIdentifier = $configuration->getConfigurationValue(
                 self::class,
@@ -80,6 +82,10 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             $allowedMimeTypes = $configuration->getConfigurationValue(
                 self::class,
                 self::CONFIGURATION_ALLOWED_MIME_TYPES
+            );
+            $targetFileNameWithoutExtension = $configuration->getConfigurationValue(
+                self::class,
+                self::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION
             );
         }
 
@@ -95,13 +101,24 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             );
         }
 
+        if (empty($targetFileNameWithoutExtension) || !is_string($targetFileNameWithoutExtension)) {
+            return GeneralUtility::makeInstance(
+                Error::class,
+                'Target filename could not be generated.',
+                1695106476
+            );
+        }
+
         if (!isset($uploadedFileInformation['tmp_name']) || !isset($uploadedFileInformation['name'])) {
             return null;
         }
 
+        $fileExtension = pathinfo($uploadedFileInformation['name'], PATHINFO_EXTENSION);
+        $targetFileName = strtolower(sprintf('%s.%s', $targetFileNameWithoutExtension, $fileExtension));
+
         try {
             $this->validateUploadedFile($uploadedFileInformation, $maxFileSize, $allowedMimeTypes);
-            return $this->importUploadedResource($uploadedFileInformation, $targetFolderIdentifier);
+            return $this->importUploadedResource($uploadedFileInformation, $targetFolderIdentifier, $targetFileName);
         } catch (TypeConverterException $e) {
             return GeneralUtility::makeInstance(
                 Error::class,
@@ -115,14 +132,23 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
      * @param array{name: string, tmp_name: string, __identity?: string} $uploadedFileInformation
      * @throws TypeConverterException
      */
-    private function importUploadedResource(array $uploadedFileInformation, string $targetFolderIdentifier): ExtbaseFileReference
-    {
+    private function importUploadedResource(
+        array $uploadedFileInformation,
+        string $targetFolderIdentifier,
+        string $targetFileName
+    ): ExtbaseFileReference {
         if (!GeneralUtility::makeInstance(FileNameValidator::class)->isValid($uploadedFileInformation['name'])) {
             throw new TypeConverterException('Uploading files with PHP file extensions is not allowed!', 1690525745);
         }
 
         $targetFolder = $this->getOrCreateTargetFolder($targetFolderIdentifier);
-        $uploadedFile = $targetFolder->addUploadedFile($uploadedFileInformation, DuplicationBehavior::REPLACE);
+        /** @var File $uploadedFile */
+        $uploadedFile = $targetFolder->getStorage()->addUploadedFile(
+            $uploadedFileInformation,
+            $targetFolder,
+            $targetFileName,
+            DuplicationBehavior::REPLACE
+        );
 
         $resourcePointer = isset($uploadedFileInformation['__identity']) ? (int)$uploadedFileInformation['__identity'] : null;
         return $this->createFileReferenceFromFalFileObject($uploadedFile, $resourcePointer);
