@@ -176,6 +176,13 @@ final class ProfileController extends ActionController
         $allowedImeTypes = $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? '';
         $profileImageTypeConverter = GeneralUtility::makeInstance(ProfileImageUploadConverter::class);
 
+        $profileUid = 0;
+        $body = $this->request->getParsedBody();
+        if (is_array($body)) {
+            $profileUid = (int)($body['tx_academicpersonsedit_profileediting']['profile']['__identity'] ?? 0);
+        }
+        $targetFileName = $this->buildProfileImageNameWithoutExtension($profileUid);
+
         $this->arguments
             ->getArgument('profile')
             ->getPropertyMappingConfiguration()
@@ -187,6 +194,7 @@ final class ProfileController extends ActionController
                     ProfileImageUploadConverter::CONFIGURATION_TARGET_DIRECTORY_COMBINED_IDENTIFIER => $targetFolderIdentifier,
                     ProfileImageUploadConverter::CONFIGURATION_MAX_UPLOAD_SIZE => $maxFilesize,
                     ProfileImageUploadConverter::CONFIGURATION_ALLOWED_MIME_TYPES => $allowedImeTypes,
+                    ProfileImageUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $targetFileName,
                 ]
             );
     }
@@ -389,5 +397,21 @@ final class ProfileController extends ActionController
         if (!in_array($profileUid, $profileUids, true)) {
             throw new AccessDeniedException('User not allowed to edit this profile.', 1695046903);
         }
+    }
+
+    private function buildProfileImageNameWithoutExtension(int $profileUid): string
+    {
+        /** @var Profile|null $profile */
+        $profile = $this->profileRepository->findByUid($profileUid);
+        if ($profile === null) {
+            return '';
+        }
+
+        return sprintf(
+            '%s-%s-%d',
+            $profile->getFirstName(),
+            $profile->getLastName(),
+            $profileUid
+        );
     }
 }
