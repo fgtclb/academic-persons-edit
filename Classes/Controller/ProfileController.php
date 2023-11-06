@@ -20,6 +20,7 @@ use Fgtclb\AcademicPersons\Types\PhoneNumberTypes;
 use Fgtclb\AcademicPersons\Types\PhysicalAddressTypes;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\AddressRepository;
+use Fgtclb\AcademicPersonsEdit\Domain\Repository\LocationRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\ProfileRepository;
 use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
 use Fgtclb\AcademicPersonsEdit\Exception\AccessDeniedException;
@@ -56,18 +57,22 @@ final class ProfileController extends ActionController
 
     private ProfileTranslator $profileTranslator;
 
+    private LocationRepository $locationRepository;
+
     public function __construct(
         Context $context,
         ProfileRepository $profileRepository,
         PersistenceManagerInterface $persistenceManager,
         AddressRepository $addressRepository,
-        ProfileTranslator $profileTranslator
+        ProfileTranslator $profileTranslator,
+        LocationRepository $locationRepository
     ) {
         $this->context = $context;
         $this->profileRepository = $profileRepository;
         $this->persistenceManager = $persistenceManager;
         $this->addressRepository = $addressRepository;
         $this->profileTranslator = $profileTranslator;
+        $this->locationRepository = $locationRepository;
     }
 
     public function initializeAction(): void
@@ -164,6 +169,7 @@ final class ProfileController extends ActionController
             'maxFileUploadsInBytes' =>  GeneralUtility::getBytesFromSizeMeasurement(
                 $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? ''
             ),
+            'availableLocations' => $this->locationRepository->findAll(),
         ]);
 
         return $this->htmlResponse();
