@@ -19,4 +19,7 @@ return [
     \Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser::class => [
         'tableName' => 'fe_users',
     ],
+    \Fgtclb\AcademicPersonsEdit\Domain\Model\Location::class => [
+        'tableName' => 'tx_academicpersons_domain_model_location',
+    ],
 ];
