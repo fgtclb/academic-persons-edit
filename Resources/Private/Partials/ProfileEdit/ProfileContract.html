@@ -41,21 +41,31 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-12">
             <label for="contract-{contract.uid}-position" class="form-label">Position</label>
             <f:form.textfield
                     property="contracts.{contractIterator.index}.position"
                     id="contract-{contract.uid}-position"
-                    class="form-select"
+                    class="form-control"
                     maxlength="100"
             />
+        </div>
+        <div class="col-6">
+            <label for="contract-{contract.uid}-location" class="form-label">Location</label>
+            <f:form.select property="contracts.{contractIterator.index}.location"
+                           id="contract-{contract.uid}-location"
+                           class="form-select"
+                           prependOptionLabel="Please choose"
+                           options="{availableLocations}"
+                           optionLabelField="title"
+           />
         </div>
         <div class="col-6">
             <label for="contract-{contract.uid}-room" class="form-label">Room</label>
             <f:form.textfield
                     property="contracts.{contractIterator.index}.room"
                     id="contract-{contract.uid}-room"
-                    class="form-select"
+                    class="form-control"
                     maxlength="100"
             />
         </div>
