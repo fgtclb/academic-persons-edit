@@ -15,6 +15,7 @@ use Fgtclb\AcademicPersons\Domain\Model\Address;
 use Fgtclb\AcademicPersons\Domain\Model\Contract;
 use Fgtclb\AcademicPersons\Domain\Model\Email;
 use Fgtclb\AcademicPersons\Domain\Model\PhoneNumber;
+use Fgtclb\AcademicPersons\Domain\Model\ProfileInformation;
 use Fgtclb\AcademicPersons\Types\EmailAddressTypes;
 use Fgtclb\AcademicPersons\Types\PhoneNumberTypes;
 use Fgtclb\AcademicPersons\Types\PhysicalAddressTypes;
@@ -22,7 +23,9 @@ use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\AddressRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\LocationRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\ProfileRepository;
+use Fgtclb\AcademicPersonsEdit\Event\AddProfileInformationEvent;
 use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
+use Fgtclb\AcademicPersonsEdit\Event\RemoveProfileInformationEvent;
 use Fgtclb\AcademicPersonsEdit\Exception\AccessDeniedException;
 use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
 use Fgtclb\AcademicPersonsEdit\Property\TypeConverter\ProfileImageUploadConverter;
@@ -371,6 +374,90 @@ final class ProfileController extends ActionController
         }
 
         $this->profileTranslator->translateTo($profileUid, $languageUid);
+
+        return $this->redirectToProfileEditResponse();
+    }
+
+    /**
+     * @IgnoreValidation("profile")
+     */
+    public function addProfileInformationAction(Profile $profile, string $type): ResponseInterface
+    {
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
+
+        $profileInformation = GeneralUtility::makeInstance(ProfileInformation::class);
+        $profileInformation->setType($type);
+
+        switch ($type) {
+            case 'curriculum_vitae':
+                $profile->getVita()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'membership':
+                $profile->getMemberships()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'cooperation':
+                $profile->getCooperation()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'publication':
+                $profile->getPublications()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'lecture':
+                $profile->getLectures()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            default:
+                $addProfileInformationEvent = new AddProfileInformationEvent($profile, $profileInformation);
+                $this->eventDispatcher->dispatch($addProfileInformationEvent);
+        }
+
+        return $this->redirectToProfileEditResponse();
+    }
+
+    /**
+     * @IgnoreValidation("profile")
+     * @IgnoreValidation("profileInformation")
+     */
+    public function removeProfileInformationAction(Profile $profile, ProfileInformation $profileInformation): ResponseInterface
+    {
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
+
+        switch ($profileInformation->getType()) {
+            case 'curriculum_vitae':
+                $profile->getVita()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'membership':
+                $profile->getMemberships()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'cooperation':
+                $profile->getCooperation()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'publication':
+                $profile->getPublications()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'lecture':
+                $profile->getLectures()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            default:
+                $removeProfileInformationEvent = new RemoveProfileInformationEvent($profile, $profileInformation);
+                $this->eventDispatcher->dispatch($removeProfileInformationEvent);
+        }
 
         return $this->redirectToProfileEditResponse();
     }
