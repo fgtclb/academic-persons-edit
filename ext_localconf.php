@@ -37,6 +37,8 @@ ExtensionUtility::configurePlugin(
             'addPhoneNumber',
             'removePhoneNumber',
             'translate',
+            'addProfileInformation',
+            'removeProfileInformation',
         ]),
     ],
     [
@@ -50,6 +52,8 @@ ExtensionUtility::configurePlugin(
             'addPhoneNumber',
             'removePhoneNumber',
             'translate',
+            'addProfileInformation',
+            'removeProfileInformation',
         ]),
     ],
 );
