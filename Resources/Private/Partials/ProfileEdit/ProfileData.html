@@ -2,6 +2,12 @@
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
 
+<f:render partial="ProfileEdit/ProfileInformation/CurriculumVitae" arguments="{_all}" />
+<f:render partial="ProfileEdit/ProfileInformation/Membership" arguments="{_all}" />
+<f:render partial="ProfileEdit/ProfileInformation/Cooperation" arguments="{_all}" />
+<f:render partial="ProfileEdit/ProfileInformation/Publication" arguments="{_all}" />
+<f:render partial="ProfileEdit/ProfileInformation/Lecture" arguments="{_all}" />
+
 <div class="row mb-3">
     <div class="col-12">
         <label for="profile-website" class="form-label">Website</label>
@@ -37,17 +43,6 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <label for="profile-memberships" class="form-label">Memberships</label>
-        <f:form.textarea
-                property="memberships"
-                id="profile-memberships"
-                class="form-control"
-        />
-    </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
         <label for="profile-supervised-thesis" class="form-label">Supervised thesis</label>
         <f:form.textarea
                 property="supervisedThesis"
@@ -63,34 +58,6 @@
         <f:form.textarea
                 property="supervisedDoctoralThesis"
                 id="profile-supervised-doctoral-thesis"
-                class="form-control"
-        />
-    </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-vita" class="form-label">Vita</label>
-        <f:form.textarea
-                property="vita"
-                id="profile-vita"
-                class="form-control"
-        />
-    </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-publications" class="form-label">Publications</label>
-        <f:form.textarea
-                property="publications"
-                id="profile-publications"
-                class="form-control"
-        />
-        <label for="profile-publications-link" class="form-label">Link to external publications</label>
-        <f:form.textfield
-                property="publicationsLink"
-                id="profile-publications-link"
                 class="form-control"
         />
     </div>

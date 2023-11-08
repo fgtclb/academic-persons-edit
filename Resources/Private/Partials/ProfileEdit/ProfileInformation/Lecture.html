@@ -1,0 +1,63 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <h2>Lectures</h2>
+        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'lecture'}" class="btn btn-primary">Add new entry</f:link.action>
+    </div>
+</div>
+<f:for each="{profile.lectures}" as="entry" iteration="entryIterator">
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="lecture-{entryIterator.index}-year" class="form-label">Year</label>
+            <f:form.textfield
+                    type="number"
+                    property="lectures.{entryIterator.index}.year"
+                    id="lecture-{entryIterator.index}-year"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="lecture-{entryIterator.index}-title" class="form-label">Title</label>
+            <f:form.textfield
+                    property="lectures.{entryIterator.index}.title"
+                    id="lecture-{entryIterator.index}-title"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="lecture-{entryIterator.index}-bodytext" class="form-label">Text</label>
+            <f:form.textarea
+                    property="lectures.{entryIterator.index}.bodytext"
+                    id="lecture-{entryIterator.index}-bodytext"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="lecture-{entryIterator.index}-link" class="form-label">Link</label>
+            <f:form.textfield
+                    property="lectures.{entryIterator.index}.link"
+                    id="lecture-{entryIterator.index}-link"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <f:link.action action="removeProfileInformation" arguments="{profile: profile, profileInformation: entry}" class="btn btn-danger">Remove entry</f:link.action>
+        </div>
+    </div>
+    <f:if condition="!{entryIterator.isLast}">
+        <hr class="mb-3" />
+    </f:if>
+</f:for>
+
+</html>
