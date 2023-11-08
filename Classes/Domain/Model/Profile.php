@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\Domain\Model;
 
+use Fgtclb\AcademicPersons\Domain\Model\ProfileInformation;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\HtmlSanitizer\Builder\CommonBuilder;
@@ -64,9 +65,17 @@ class Profile extends \Fgtclb\AcademicPersons\Domain\Model\Profile
         parent::setCoreCompetences($this->getHtmlSanitizer()->sanitize($coreCompetences));
     }
 
-    public function setMemberships(string $memberships): void
+    /**
+     * @param ObjectStorage<ProfileInformation> $memberships
+     */
+    public function setMemberships(ObjectStorage $memberships): void
     {
-        parent::setMemberships($this->getHtmlSanitizer()->sanitize($memberships));
+        foreach ($memberships as $membership) {
+            $membership->setTitle($this->getHtmlSanitizer()->sanitize($membership->getTitle()));
+            $membership->setBodytext($this->getHtmlSanitizer()->sanitize($membership->getBodytext()));
+            $membership->setLink($this->getHtmlSanitizer()->sanitize($membership->getLink()));
+        }
+        parent::setMemberships($memberships);
     }
 
     public function setSupervisedThesis(string $supervisedThesis): void
@@ -79,19 +88,61 @@ class Profile extends \Fgtclb\AcademicPersons\Domain\Model\Profile
         parent::setSupervisedDoctoralThesis($this->getHtmlSanitizer()->sanitize($supervisedDoctoralThesis));
     }
 
-    public function setVita(string $vita): void
+    /**
+     * @param ObjectStorage<ProfileInformation> $vita
+     */
+    public function setVita(ObjectStorage $vita): void
     {
-        parent::setVita($this->getHtmlSanitizer()->sanitize($vita));
+        foreach ($vita as $singleVita) {
+            $singleVita->setTitle($this->getHtmlSanitizer()->sanitize($singleVita->getTitle()));
+            $singleVita->setBodytext($this->getHtmlSanitizer()->sanitize($singleVita->getBodytext()));
+            $singleVita->setLink($this->getHtmlSanitizer()->sanitize($singleVita->getLink()));
+        }
+        parent::setVita($vita);
     }
 
-    public function setPublications(string $publications): void
+    /**
+     * @param ObjectStorage<ProfileInformation> $publications
+     */
+    public function setPublications(ObjectStorage $publications): void
     {
-        parent::setPublications($this->getHtmlSanitizer()->sanitize($publications));
+        foreach ($publications as $publication) {
+            $publication->setTitle($this->getHtmlSanitizer()->sanitize($publication->getTitle()));
+            $publication->setBodytext($this->getHtmlSanitizer()->sanitize($publication->getBodytext()));
+            $publication->setLink($this->getHtmlSanitizer()->sanitize($publication->getLink()));
+        }
+        parent::setPublications($publications);
     }
 
     public function setMiscellaneous(string $miscellaneous): void
     {
         parent::setMiscellaneous($this->getHtmlSanitizer()->sanitize($miscellaneous));
+    }
+
+    /**
+     * @param ObjectStorage<ProfileInformation> $cooperation
+     */
+    public function setCooperation(ObjectStorage $cooperation): void
+    {
+        foreach ($cooperation as $singleCooperation) {
+            $singleCooperation->setTitle($this->getHtmlSanitizer()->sanitize($singleCooperation->getTitle()));
+            $singleCooperation->setBodytext($this->getHtmlSanitizer()->sanitize($singleCooperation->getBodytext()));
+            $singleCooperation->setLink($this->getHtmlSanitizer()->sanitize($singleCooperation->getLink()));
+        }
+        parent::setCooperation($cooperation);
+    }
+
+    /**
+     * @param ObjectStorage<ProfileInformation> $lectures
+     */
+    public function setLectures(ObjectStorage $lectures): void
+    {
+        foreach ($lectures as $lecture) {
+            $lecture->setTitle($this->getHtmlSanitizer()->sanitize($lecture->getTitle()));
+            $lecture->setBodytext($this->getHtmlSanitizer()->sanitize($lecture->getBodytext()));
+            $lecture->setLink($this->getHtmlSanitizer()->sanitize($lecture->getLink()));
+        }
+        parent::setLectures($lectures);
     }
 
     public function getLanguageUid(): int
