@@ -1,0 +1,69 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <h2>Publications</h2>
+        <label for="profile-publications-link" class="form-label">Link to external publications</label>
+        <f:form.textfield
+                property="publicationsLink"
+                id="profile-publications-link"
+                class="form-control mb-1"
+        />
+        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'publication'}" class="btn btn-primary">Add new entry</f:link.action>
+    </div>
+</div>
+<f:for each="{profile.publications}" as="entry" iteration="entryIterator">
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="publication-{entryIterator.index}-year" class="form-label">Year</label>
+            <f:form.textfield
+                    type="number"
+                    property="publications.{entryIterator.index}.year"
+                    id="publication-{entryIterator.index}-year"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="publication-{entryIterator.index}-title" class="form-label">Title</label>
+            <f:form.textfield
+                    property="publications.{entryIterator.index}.title"
+                    id="publication-{entryIterator.index}-title"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="publication-{entryIterator.index}-bodytext" class="form-label">Text</label>
+            <f:form.textarea
+                    property="publications.{entryIterator.index}.bodytext"
+                    id="publication-{entryIterator.index}-bodytext"
+                    class="form-control publication-bodytext"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="publication-{entryIterator.index}-link" class="form-label">Link</label>
+            <f:form.textfield
+                    property="publications.{entryIterator.index}.link"
+                    id="publication-{entryIterator.index}-link"
+                    class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <f:link.action action="removeProfileInformation" arguments="{profile: profile, profileInformation: entry}" class="btn btn-danger">Remove entry</f:link.action>
+        </div>
+    </div>
+    <f:if condition="!{entryIterator.isLast}">
+        <hr class="mb-3" />
+    </f:if>
+</f:for>
+
+</html>
