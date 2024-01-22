@@ -1,17 +1,31 @@
 <html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
 <div class="row mb-3">
     <div class="col-12">
         <h2>Publications</h2>
+        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'publication'}" class="btn btn-primary">Add new entry</f:link.action>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12">
+        <label for="profile-publications-link-title" class="form-label">Publication Link Title</label>
+        <f:form.textfield
+                property="publicationsLinkTitle"
+                id="profile-publications-link-title"
+                class="form-control mb-1"
+        />
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
         <label for="profile-publications-link" class="form-label">Link to external publications</label>
         <f:form.textfield
                 property="publicationsLink"
                 id="profile-publications-link"
                 class="form-control mb-1"
         />
-        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'publication'}" class="btn btn-primary">Add new entry</f:link.action>
     </div>
 </div>
 <f:for each="{profile.publications}" as="entry" iteration="entryIterator">
