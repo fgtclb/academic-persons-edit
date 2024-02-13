@@ -38,27 +38,12 @@ final class CreateProfilesCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->setHelp('This command create profiles for all frontend users that do not have a profile yet but should have one.')
-            ->addOption(
-                'storage-pid',
-                's',
-                InputOption::VALUE_REQUIRED,
-                'Storage PID for the fe_user records.',
-                0
-            );
+        $this->setHelp('This command create profiles for all frontend users that do not have a profile yet but should have one.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $storagePid = (int)$input->getOption('storage-pid');
-
-        if ($storagePid <= 0) {
-            $output->writeln('<error>StoragePid needs to be a positive integer.</error>');
-            return Command::FAILURE;
-        }
-
-        $frontendUsers = $this->frontendUserProvider->getUsersWithoutProfile($storagePid);
+        $frontendUsers = $this->frontendUserProvider->getUsersWithoutProfile();
 
         foreach ($frontendUsers as $frontendUser) {
             $frontendUserAuthentication = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
