@@ -47,24 +47,26 @@ abstract class AbstractProfileFactory implements ProfileFactoryInterface
 
         try {
             $configuration = $this->extensionConfiguration->get('academic_persons_edit');
-            $shouldCreateProfile = (bool)($configuration['profile']['autoCreateProfiles'] ?? false);
-            $userGroupListToCreateProfileFor = (string)($configuration['profile']['createProfileForUserGroups'] ?? '');
-        } catch (ExtensionConfigurationExtensionNotConfiguredException) {
-            $shouldCreateProfile = false;
-            $userGroupListToCreateProfileFor = '';
-        } catch (ExtensionConfigurationPathDoesNotExistException) {
+        } catch (ExtensionConfigurationExtensionNotConfiguredException | ExtensionConfigurationPathDoesNotExistException) {
             return false;
         }
 
+        // Check if the profile should be created for the user
+        $shouldCreateProfile = (bool)($configuration['profile']['autoCreateProfiles'] ?? false);
+        if ($shouldCreateProfile === false) {
+            return false;
+        }
+
+        // Check if the user is in a user group that should have a profile created
+        $userGroupListToCreateProfileFor = (string)($configuration['profile']['createProfileForUserGroups'] ?? '');
         if (empty($userGroupListToCreateProfileFor)) {
             return $shouldCreateProfile;
         }
-
         $userGroupId = $userAspect->getGroupIds();
         $userGroupIdsToCreateProfileFor = GeneralUtility::intExplode(',', $userGroupListToCreateProfileFor);
         $userIsInUserGroup = count(array_intersect($userGroupId, $userGroupIdsToCreateProfileFor)) > 0;
 
-        return $shouldCreateProfile && $userIsInUserGroup;
+        return $userIsInUserGroup;
     }
 
     public function createProfileForUser(FrontendUserAuthentication $frontendUserAuthentication): ?int
@@ -82,7 +84,6 @@ abstract class AbstractProfileFactory implements ProfileFactoryInterface
         }
 
         $profileForDefaultLanguage = $this->createProfileFromFrontendUser($userData);
-        $profileForDefaultLanguage->setPid((int)$userData['pid']);
         $profileForDefaultLanguage->getFrontendUsers()->attach($frontendUser);
         $this->persistenceManager->add($profileForDefaultLanguage);
 
