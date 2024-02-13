@@ -26,7 +26,7 @@ final class FrontendUserProvider
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getUsersWithoutProfile(int $storagePid): array
+    public function getUsersWithoutProfile(): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('fe_users');
         return $queryBuilder
@@ -44,8 +44,8 @@ final class FrontendUserProvider
             ->where(
                 $queryBuilder->expr()->isNull('tx_academicpersons_feuser_mm.uid_local'),
                 $queryBuilder->expr()->eq(
-                    'fe_users.pid',
-                    $queryBuilder->createNamedParameter($storagePid, Connection::PARAM_INT)
+                    'fe_users.tx_extbase_type',
+                    $queryBuilder->createNamedParameter('Tx_Academicpersonsedit_Domain_Model_FrontendUser', Connection::PARAM_STR)
                 )
             )
             ->groupBy('fe_users.uid')
