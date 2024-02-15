@@ -92,6 +92,7 @@ final class ProfileController extends ActionController
     {
         $profileUids = $this->context->getPropertyFromAspect('frontend.profile', 'allProfileUids', []);
 
+        // TODO: Don't return empty response if no profiles are assigned to user
         if (empty($profileUids)) {
             return $this->htmlResponse();
         }
@@ -135,6 +136,8 @@ final class ProfileController extends ActionController
         }
 
         $profileUids = $this->context->getPropertyFromAspect('frontend.profile', 'allProfileUids', []);
+
+        // TODO: To die() is no good way out here, talk to your trusted TYPO3 developer first
         if ($profile === null || !in_array($profile->getUid(), $profileUids)) {
             GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
                 $this->request,
