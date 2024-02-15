@@ -175,4 +175,9 @@ class Profile extends \Fgtclb\AcademicPersons\Domain\Model\Profile
     {
         return $this->_languageUid;
     }
+
+    public function getIsTranslation(): bool
+    {
+        return $this->_localizedUid !== $this->uid;
+    }
 }
