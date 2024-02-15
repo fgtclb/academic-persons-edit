@@ -145,6 +145,32 @@ class Profile extends \Fgtclb\AcademicPersons\Domain\Model\Profile
         parent::setLectures($lectures);
     }
 
+    /**
+     * @param ObjectStorage<ProfileInformation> $pressMedia
+     */
+    public function setPressMedia(ObjectStorage $pressMedia): void
+    {
+        foreach ($pressMedia as $press) {
+            $press->setTitle($this->getHtmlSanitizer()->sanitize($press->getTitle()));
+            $press->setBodytext($this->getHtmlSanitizer()->sanitize($press->getBodytext()));
+            $press->setLink($this->getHtmlSanitizer()->sanitize($press->getLink()));
+        }
+        parent::setPressMedia($pressMedia);
+    }
+
+    /**
+     * @param ObjectStorage<ProfileInformation> $scientificResearch
+     */
+    public function setScientificResearch(ObjectStorage $scientificResearch): void
+    {
+        foreach ($scientificResearch as $research) {
+            $research->setTitle($this->getHtmlSanitizer()->sanitize($research->getTitle()));
+            $research->setBodytext($this->getHtmlSanitizer()->sanitize($research->getBodytext()));
+            $research->setLink($this->getHtmlSanitizer()->sanitize($research->getLink()));
+        }
+        parent::setScientificResearch($scientificResearch);
+    }
+
     public function getLanguageUid(): int
     {
         return $this->_languageUid;
