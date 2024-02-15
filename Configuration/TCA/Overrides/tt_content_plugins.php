@@ -16,11 +16,19 @@ ExtensionUtility::registerPlugin(
     'ProfileSwitcher',
     'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_switcher.label'
 );
-$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileswitcher'] = 'recursive,select_key';
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileswitcher'] = implode(',', [
+    'pages',
+    'recursive',
+    'select_key',
+]);
 
 ExtensionUtility::registerPlugin(
     'AcademicPersonsEdit',
     'ProfileEditing',
     'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_editing.label'
 );
-$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileediting'] = 'recursive,select_key';
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileediting'] = implode(',', [
+    'pages',
+    'recursive',
+    'select_key',
+]);
