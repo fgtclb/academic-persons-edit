@@ -28,6 +28,7 @@ class ProfileRepository extends Repository
     public function findByUids(array $uids): QueryResultInterface
     {
         $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
 
         return $query
             ->matching(
