@@ -27,7 +27,7 @@
     "require": {
         "php": "^8.0",
         "typo3/cms-core": "^11.5",
-        "fgtclb/academic-persons": "^0.2 | dev-main"
+        "fgtclb/academic-persons": "dev-main"
     },
     "require-dev": {
         "typo3/minimal": "v11.5.0",
