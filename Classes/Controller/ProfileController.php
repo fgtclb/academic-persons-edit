@@ -393,6 +393,10 @@ final class ProfileController extends ActionController
         $profileInformation->setType($type);
 
         switch ($type) {
+            case 'scientific_research':
+                $profile->getScientificResearch()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
             case 'curriculum_vitae':
                 $profile->getVita()->attach($profileInformation);
                 $this->persistenceManager->update($profile);
@@ -411,6 +415,10 @@ final class ProfileController extends ActionController
                 break;
             case 'lecture':
                 $profile->getLectures()->attach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'press_media':
+                $profile->getPressMedia()->attach($profileInformation);
                 $this->persistenceManager->update($profile);
                 break;
             default:
@@ -434,6 +442,10 @@ final class ProfileController extends ActionController
         }
 
         switch ($profileInformation->getType()) {
+            case 'scientific_research':
+                $profile->getScientificResearch()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
             case 'curriculum_vitae':
                 $profile->getVita()->detach($profileInformation);
                 $this->persistenceManager->update($profile);
@@ -452,6 +464,10 @@ final class ProfileController extends ActionController
                 break;
             case 'lecture':
                 $profile->getLectures()->detach($profileInformation);
+                $this->persistenceManager->update($profile);
+                break;
+            case 'press_media':
+                $profile->getPressMedia()->detach($profileInformation);
                 $this->persistenceManager->update($profile);
                 break;
             default:
