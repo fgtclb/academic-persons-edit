@@ -249,6 +249,26 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * @IgnoreValidation("profile")
+     */
+    public function removeImageAction(Profile $profile): ResponseInterface
+    {
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
+
+        $image = $profile->getImage();
+        if ($image !== null) {
+            $imageFile = $image->getOriginalResource()->getOriginalFile();
+            $imageFile->getStorage()->deleteFile($imageFile);
+        }
+
+        return $this->redirectToProfileEditResponse();
+    }
+
+    /**
      * @IgnoreValidation("contract")
      * @IgnoreValidation("profile")
      */

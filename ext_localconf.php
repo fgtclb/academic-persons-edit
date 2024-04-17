@@ -30,6 +30,7 @@ ExtensionUtility::configurePlugin(
         ProfileController::class => implode(',', [
             'showProfileEditingForm',
             'saveProfile',
+            'removeImage',
             'addPhysicalAddress',
             'removePhysicalAddress',
             'addEmailAddress',
@@ -45,6 +46,7 @@ ExtensionUtility::configurePlugin(
         ProfileController::class => implode(',', [
             'showProfileEditingForm',
             'saveProfile',
+            'removeImage',
             'addPhysicalAddress',
             'removePhysicalAddress',
             'addEmailAddress',
