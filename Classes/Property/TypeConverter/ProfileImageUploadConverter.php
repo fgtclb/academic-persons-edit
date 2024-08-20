@@ -160,14 +160,28 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
      */
     private function validateUploadedFile(array $uploadedFileInformation, string $maxFileSize, string $allowedMimeTypes): void
     {
+        $typoScriptFrontendController = $this->getTypo3Request()->getAttribute('frontend.controller');
         $maxFileSizeInBytes = GeneralUtility::getBytesFromSizeMeasurement($maxFileSize);
         $allowedMimeTypesArray = GeneralUtility::trimExplode(',', $allowedMimeTypes);
 
         if ($uploadedFileInformation['size'] > $maxFileSizeInBytes) {
-            throw new TypeConverterException('Uploaded file exceeds allowed file size', 1690538138);
+            $message = $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
+            throw new TypeConverterException(
+                $typoScriptFrontendController->sL(
+                    'LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345'
+                ),
+                1690538138
+            );
         }
         if (!in_array($uploadedFileInformation['type'], $allowedMimeTypesArray, true)) {
-            throw new TypeConverterException('The uploaded file type is not allowed', 1695047315);
+            throw new TypeConverterException(
+                $typoScriptFrontendController->sL(
+                    'LLL:EXT:form/Resources/Private/Language/locallang.xlf:validation.error.1471708998',
+                    null,
+                    $uploadedFileInformation['type'],
+                ),
+                1695047315
+            );
         }
     }
 
@@ -275,28 +289,28 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         switch ($errorCode) {
             case \UPLOAD_ERR_INI_SIZE:
                 $this->logger?->error('The uploaded file exceeds the upload_max_filesize directive in php.ini.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
             case \UPLOAD_ERR_FORM_SIZE:
                 $this->logger?->error('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
             case \UPLOAD_ERR_PARTIAL:
                 $this->logger?->error('The uploaded file was only partially uploaded.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530346');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530346');
             case \UPLOAD_ERR_NO_FILE:
                 $this->logger?->error('No file was uploaded.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530347');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530347');
             case \UPLOAD_ERR_NO_TMP_DIR:
                 $this->logger?->error('Missing a temporary folder.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
             case \UPLOAD_ERR_CANT_WRITE:
                 $this->logger?->error('Failed to write file to disk.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
             case \UPLOAD_ERR_EXTENSION:
                 $this->logger?->error('File upload stopped by extension.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
             default:
                 $this->logger?->error('Unknown upload error.');
-                return $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
+                return $typoScriptFrontendController->sL('LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530348');
         }
     }
 
