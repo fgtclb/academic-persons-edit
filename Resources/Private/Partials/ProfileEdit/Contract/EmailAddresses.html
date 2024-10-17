@@ -4,14 +4,20 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <h2>Email addresses</h2>
-        <f:link.action action="addEmailAddress" arguments="{profile: profile, contract: contract}" class="btn btn-primary">Add new email address</f:link.action>
+        <h2>
+						<f:translate key="tx_academicpersonsedit.fe.title.emailAddresses" extensionName="academic_persons_edit"/>
+				</h2>
+        <f:link.action action="addEmailAddress" arguments="{profile: profile, contract: contract}" class="btn btn-primary">
+						<f:translate key="tx_academicpersonsedit.fe.profile.btn.addEmailAddress" extensionName="academic_persons_edit"/>
+				</f:link.action>
     </div>
 </div>
 <f:for each="{contract.emailAddresses}" as="emailAddress" iteration="emailAddressIterator">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="email-address-{emailAddressIterator.index}-type" class="form-label">Type</label>
+            <label for="email-address-{emailAddressIterator.index}-type" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.profile.type" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.select
                     property="contracts.{contractIterator.index}.emailAddresses.{emailAddressIterator.index}.type"
                     id="email-address-{emailAddressIterator.index}-type"
@@ -22,7 +28,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <label for="email-address-{emailAddressIterator.index}-email" class="form-label">Email address</label>
+            <label for="email-address-{emailAddressIterator.index}-email" class="form-label">
+							  <f:translate key="tx_academicpersonsedit.fe.profile.emailAddress" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     type="email"
                     property="contracts.{contractIterator.index}.emailAddresses.{emailAddressIterator.index}.email"
@@ -35,7 +43,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <f:link.action action="removeEmailAddress" arguments="{profile: profile, contract: contract, emailAddress: emailAddress}" class="btn btn-danger">Remove email address</f:link.action>
+            <f:link.action action="removeEmailAddress" arguments="{profile: profile, contract: contract, emailAddress: emailAddress}" class="btn btn-danger">
+								<f:translate key="tx_academicpersonsedit.fe.profile.btn.removeEmailAddress" extensionName="academic_persons_edit"/>
+						</f:link.action>
         </div>
     </div>
     <f:if condition="!{emailAddressIterator.isLast}">
