@@ -4,14 +4,20 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <h2>Phone numbers</h2>
-        <f:link.action action="addPhoneNumber" arguments="{profile: profile, contract: contract}" class="btn btn-primary">Add new phone number</f:link.action>
+        <h2>
+					  <f:translate key="tx_academicpersonsedit.fe.title.phoneNumbers" extensionName="academic_persons_edit"/>
+				</h2>
+        <f:link.action action="addPhoneNumber" arguments="{profile: profile, contract: contract}" class="btn btn-primary">
+						<f:translate key="tx_academicpersonsedit.fe.profile.btn.addPhoneNumber" extensionName="academic_persons_edit"/>
+				</f:link.action>
     </div>
 </div>
 <f:for each="{contract.phoneNumbers}" as="phoneNumber" iteration="phoneNumbersterator">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="phone-number-{phoneNumbersterator.index}-type" class="form-label">Type</label>
+            <label for="phone-number-{phoneNumbersterator.index}-type" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.profile.type" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.select
                     property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.type"
                     id="phone-number-{phoneNumbersterator.index}-type"
@@ -22,7 +28,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <label for="phone-number-{phoneNumbersterator.index}-phone-number" class="form-label">Phone number</label>
+            <label for="phone-number-{phoneNumbersterator.index}-phone-number" class="form-label">
+							  <f:translate key="tx_academicpersonsedit.fe.label.phoneNumber" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.phoneNumber"
                     id="phone-number-{phoneNumbersterator.index}-phone-number"
@@ -34,7 +42,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <f:link.action action="removePhoneNumber" arguments="{profile: profile, contract: contract, phoneNumber: phoneNumber}" class="btn btn-danger">Remove phone number</f:link.action>
+            <f:link.action action="removePhoneNumber" arguments="{profile: profile, contract: contract, phoneNumber: phoneNumber}" class="btn btn-danger">
+							  <f:translate key="tx_academicpersonsedit.fe.profile.btn.removePhoneNumber" extensionName="academic_persons_edit"/>
+						</f:link.action>
         </div>
     </div>
     <f:if condition="!{phoneNumbersterator.isLast}">

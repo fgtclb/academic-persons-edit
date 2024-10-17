@@ -4,14 +4,20 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <h2>Vita</h2>
-        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'curriculum_vitae'}" class="btn btn-primary">Add new entry</f:link.action>
+        <h2>
+					  <f:translate key="tx_academicpersonsedit.fe.title.vita" extensionName="academic_persons_edit"/>
+				</h2>
+        <f:link.action action="addProfileInformation" arguments="{profile: profile, type: 'curriculum_vitae'}" class="btn btn-primary">
+					  <f:translate key="tx_academicpersonsedit.fe.profile.btn.addEntry" extensionName="academic_persons_edit"/>
+				</f:link.action>
     </div>
 </div>
 <f:for each="{profile.vita}" as="entry" iteration="entryIterator">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="curriculum-vitae-{entryIterator.index}-year" class="form-label">Year</label>
+            <label for="curriculum-vitae-{entryIterator.index}-year" class="form-label">
+							  <f:translate key="tx_academicpersonsedit.fe.label.field.year" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     type="number"
                     property="vita.{entryIterator.index}.year"
@@ -22,7 +28,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <label for="curriculum-vitae-{entryIterator.index}-title" class="form-label">Title</label>
+            <label for="curriculum-vitae-{entryIterator.index}-title" class="form-label">
+							  <f:translate key="tx_academicpersonsedit.fe.label.field.title" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     property="vita.{entryIterator.index}.title"
                     id="curriculum-vitae-{entryIterator.index}-title"
@@ -32,7 +40,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <label for="curriculum-vitae-{entryIterator.index}-bodytext" class="form-label">Text</label>
+            <label for="curriculum-vitae-{entryIterator.index}-bodytext" class="form-label">
+							  <f:translate key="tx_academicpersonsedit.fe.label.field.text" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textarea
                     property="vita.{entryIterator.index}.bodytext"
                     id="curriculum-vitae-{entryIterator.index}-bodytext"
@@ -42,7 +52,9 @@
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <f:link.action action="removeProfileInformation" arguments="{profile: profile, profileInformation: entry}" class="btn btn-danger">Remove entry</f:link.action>
+            <f:link.action action="removeProfileInformation" arguments="{profile: profile, profileInformation: entry}" class="btn btn-danger">
+							  <f:translate key="tx_academicpersonsedit.fe.profile.btn.removeEntry" extensionName="academic_persons_edit"/>
+						</f:link.action>
         </div>
     </div>
     <f:if condition="!{entryIterator.isLast}">
