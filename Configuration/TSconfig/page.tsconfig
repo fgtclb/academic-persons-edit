@@ -1,0 +1,37 @@
+mod.wizards.newContentElement.wizardItems.academic {
+    header = LLL:EXT:academic_persons/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic
+    after = special
+    elements {
+        academicpersonsedit_profileediting {
+            iconIdentifier = persons_edit_icon
+            title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
+            description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
+            tt_content_defValues {
+                CType = list
+                list_type = academicpersonsedit_profileediting
+            }
+        }
+        academicpersonsedit_profileswitcher {
+            iconIdentifier = persons_edit_icon
+            title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileSwitcher.title
+            description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileSwitcher.description
+            tt_content_defValues {
+                CType = list
+                list_type = academicpersonsedit_profileswitcher
+            }
+        }
+    }
+    show := addToList(academicpersonsedit_profileediting,academicpersonsedit_profileswitcher)
+}
+
+TCEMAIN {
+  table {
+    tx_academicpersons_domain_model_profile {
+      disablePrependAtCopy = 1
+      tx_academicpersons_domain_model_address = 1
+      tx_academicpersons_domain_model_email = 1
+      tx_academicpersons_domain_model_phone_number = 1
+      tx_academicpersons_domain_model_contract = 1
+    }
+  }
+}
