@@ -1,172 +1,227 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" datatype="plaintext" product-name="academic_persons_edit">
+    <file source-language="en" target-language="de" datatype="plaintext" product-name="academic_persons_edit">
         <header/>
         <body>
             <trans-unit id="flash_message.profile_updated.title">
                 <source>Success</source>
+                <target>Erfolgreich</target>
             </trans-unit>
             <trans-unit id="flash_message.profile_updated.message">
                 <source>Your profile was updated.</source>
+                <target>Ihr Profil wurde aktualisiert</target>
             </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.save">
 				<source>Save profile data</source>
+				<target>Profildaten speichern</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.error.no_translation">
 				<source>Profile ist not translated for current language.</source>
+				<target>Das Profil ist für die aktuelle Sprache nicht übersetzt.</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.translate">
 				<source>Translate profile</source>
+				<target>Profil übersetzen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.switchChoose">
 				<source>Choose profile</source>
+				<target>Profil auswählen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.switch.btn.switch">
 				<source>Switch Profile</source>
+				<target>Profil wechseln</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.legend.image">
 				<source>Profile Image</source>
+				<target>Profilbild</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeImage">
 				<source>Remove image</source>
+				<target>Bild entfernen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.update_image">
 				<source>Update profile image</source>
+				<target>Profilbild aktualisieren</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.publicationsLinksTitle">
 				<source>Website link title</source>
+				<target>Website Link Titel</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.website">
 				<source>Website</source>
+				<target>Website</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.coreCompetences">
 				<source>Core competences</source>
+				<target>Grund Kompetenzen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.supervisedThesis">
 				<source>Supervised thesis</source>
+				<target>Betreute Diplomarbeiten</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.supervisedDoctoralThesis">
 				<source>Supervised doctoral thesis</source>
+				<target>Betreute Doktorarbeiten</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.miscellaneous">
 				<source>Miscellaneous information</source>
+				<target>Sonstige informationen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.publish">
 				<source>Publish?</source>
+				<target>Veröffentlichen?</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.employeeContracts">
 				<source>Employee contracts</source>
+				<target>Mitarbeiter Verträge</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.contractInformation">
 				<source>Contract information</source>
+				<target>Vertagsinformationen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.position">
 				<source>Position/Specialty/Function</source>
+				<target>Position/Fachgebiet/Funktion</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.location">
 				<source>Location</source>
+				<target>Standort</target>
 			</trans-unit>
 			<trans-unit id="tx_academicpersonsedit.fe.label.room">
 				<source>Room</source>
+				<target>Raum</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.officeHours">
 				<source>Office Hours</source>
+				<target>Sprechzeiten</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addPhysicalAddress">
 				<source>Add new physical address</source>
+				<target>Neue physische Adresse hinzufügen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.enterAdress">
 				<source>Enter address</source>
+				<target>Adresse eingeben</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.type">
 				<source>Type</source>
+				<target>Typ</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.street">
 				<source>Street</source>
+				<target>Straße</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.number">
 				<source>Street number</source>
+				<target>Hausnummer</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.additional">
 				<source>Additional information</source>
+				<target>Zusatzinformationen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.zip">
 				<source>ZIP</source>
+				<target>PLZ</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.city">
 				<source>City</source>
+				<target>Stadt</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.state">
 				<source>State</source>
+				<target>Bundesland</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.country">
 				<source>Country</source>
+				<target>Land</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.removePhysicalAddress">
 				<source>Remove physical address</source>
+				<target>Physische Adresse entfernen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.emailAddresses">
 				<source>Email addresses</source>
+				<target>E-Mail-Adressen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addEmailAddress">
 				<source>Add new email address</source>
+				<target>Neue E-Mail-Adresse hinzufügen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.emailAddress">
 				<source>Email address</source>
+				<target>E-Mail-Adresse</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeEmailAddress">
 				<source>Remove email address</source>
+				<target>E-Mail Adresse entfernen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addPhoneNumber">
 				<source>Add new phone number</source>
+				<target>Neue Telefonnummer hinzufügen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.phoneNumbers">
 				<source>Phone numbers</source>
+				<target>Telefonnummern</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.phoneNumber">
 				<source>Phone number</source>
+				<target>Telefonnummer</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removePhoneNumber">
 				<source>Remove phone number</source>
+				<target>Telefonnummer entfernen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.cooperations">
 				<source>Cooperations</source>
+				<target>Kooperationen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addEntry">
 				<source>Add new entry</source>
+				<target>Neuen Eintrag hinzufügen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.year">
 				<source>Year</source>
+				<target>Jahr</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.title">
 				<source>Title</source>
+				<target>Titel</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.text">
 				<source>Description</source>
+				<target>Beschreibung</target>
 			</trans-unit>
 			<trans-unit id="tx_academicpersonsedit.fe.label.field.link">
 				<source>Link</source>
+				<target>Link</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeEntry">
 				<source>Remove entry</source>
+				<target>Eintrag entfernen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersons.fe.title.vita">
 				<source>Vita</source>
+				<target>Vita</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.lectures">
 				<source>Lectures</source>
+				<target>Vorträge</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.memberships">
 				<source>Memberships and committee activities</source>
+				<target>Mitgliedschaften und Gremientätigkeiten</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.publication_external_link">
 				<source>Link to external publications</source>
+				<target>Link zu externen Veröffentlichungen</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.publication_external_link_title">
 				<source>Publication Link Title</source>
+				<target>Veröffentlichungs Link Titel</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.publications">
 				<source>Publications</source>
+				<target>Publikationen</target>
 			</trans-unit>
         </body>
     </file>

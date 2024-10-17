@@ -15,7 +15,7 @@ ExtensionManagementUtility::addTCAcolumns(
     'tx_academicpersons_domain_model_profile',
     [
         'frontend_users' => [
-            'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_tca.xlf:tx_academicpersons_domain_model_profile.columns.frontend_users.label',
+            'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:tx_academicpersons_domain_model_profile.columns.frontend_users.label',
             'exclude' => true,
             'l10n_display' => 'defaultAsReadonly',
             'l10n_mode' => 'exclude',
@@ -41,7 +41,7 @@ ExtensionManagementUtility::addTCAcolumns(
 ExtensionManagementUtility::addToAllTCAtypes(
     'tx_academicpersons_domain_model_profile',
     '
-        --div--;LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_tca.xlf:tx_academicpersons_domain_model_profile.tabs.frontend_users.label,
+        --div--;LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:tx_academicpersons_domain_model_profile.tabs.frontend_users.label,
             frontend_users,
         ',
     '',

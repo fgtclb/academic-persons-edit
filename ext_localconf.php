@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 use Fgtclb\AcademicPersonsEdit\Controller\ProfileController;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 ExtensionUtility::configurePlugin(
@@ -60,10 +61,4 @@ ExtensionUtility::configurePlugin(
     ],
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig('
-    TCEMAIN.table.tx_academicpersons_domain_model_profile.disablePrependAtCopy = 1
-    TCEMAIN.table.tx_academicpersons_domain_model_profile.tx_academicpersons_domain_model_address = 1
-    TCEMAIN.table.tx_academicpersons_domain_model_profile.tx_academicpersons_domain_model_email = 1
-    TCEMAIN.table.tx_academicpersons_domain_model_profile.tx_academicpersons_domain_model_phone_number = 1
-    TCEMAIN.table.tx_academicpersons_domain_model_profile.tx_academicpersons_domain_model_contract = 1
-');
+ExtensionManagementUtility::addPageTSConfig('@import \'EXT:academic_persons_edit/Configuration/TSconfig/page.tsconfig\'');
