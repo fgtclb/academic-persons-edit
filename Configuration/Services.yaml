@@ -16,6 +16,12 @@ services:
         identifier: generateSlugForProfile
         event: Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent
 
+  Fgtclb\AcademicPersonsEdit\EventListener\SyncChangesToTranslations:
+    tags:
+      - name: 'event.listener'
+        identifier: syncChangesToTranslations
+        event: 'Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent'
+
   Fgtclb\AcademicPersonsEdit\Command\CreateProfilesCommand:
     tags:
       - name: console.command
