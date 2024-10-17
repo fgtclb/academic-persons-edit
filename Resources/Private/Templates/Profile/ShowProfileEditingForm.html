@@ -44,7 +44,9 @@
 
                 <div class="row mb-5">
                     <div class="col">
-                        <f:form.button class="btn btn-primary mb-3">Save profile data</f:form.button>
+                        <f:form.button class="btn btn-primary mb-3">
+														<f:translate key="tx_academicpersonsedit.fe.profile.btn.save" extensionName="academic_persons_edit" />
+												</f:form.button>
                     </div>
                 </div>
 
@@ -52,11 +54,11 @@
         </f:then>
         <f:else>
             <p>
-                Profile ist not translated for current language.
+								<f:translate key="tx_academicpersonsedit.fe.error.no_translation" extensionName="academic_persons_edit" />
             </p>
             <f:if condition="{translationAllowed}">
                 <f:link.action action="translate" arguments="{profileUid: profile.uid, languageUid: currentLanguageUid}" class="btn btn-primary">
-                    Translate profile
+										<f:translate key="tx_academicpersonsedit.fe.profile.btn.translate" extensionName="academic_persons_edit" />
                 </f:link.action>
             </f:if>
         </f:else>

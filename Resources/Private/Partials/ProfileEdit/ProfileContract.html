@@ -3,46 +3,34 @@
 >
 
 <div class="row mt-5 mb-3">
-    <div class="col-12">
-        <h2>Employee contracts</h2>
-    </div>
+		<div class="col-12">
+				<h2>
+						<f:translate key="tx_academicpersonsedit.fe.label.employeeContracts" extensionName="academic_persons_edit"/>
+				</h2>
+		</div>
 </div>
 
 <f:for each="{profile.contracts}" as="contract" iteration="contractIterator">
-    <div class="row mb-3">
-        <div class="col-12">
-            <h3>Contract Information</h3>
-            <p>
-                Employee Type: {contract.employeeType.title}<br />
-                Organisational Level 1: {contract.organisationalLevel1.title}<br />
-                Organisational Level 2: {contract.organisationalLevel2.title}<br />
-                Organisational Level 3: {contract.organisationalLevel3.title}
-            </p>
-            <f:form.checkbox value="1"
-                             class="form-check-inpu"
-                             id="contract-{contract.uid}-publish"
-                             property="contracts.{contractIterator.index}.publish" />
-            <label for="contract-{contract.uid}-publish" class="form-check-label">Publish?</label>
+		<div class="row mb-3">
+				<div class="col-12">
+					<h3>
+							<f:translate key="tx_academicpersonsedit.fe.label.contractInformation" extensionName="academic_persons_edit"/>
+					</h3>
+					<f:form.checkbox value="1"
+														class="form-check-inpu"
+														id="contract-{contract.uid}-publish"
+														property="contracts.{contractIterator.index}.publish" />
+					<label for="contract-{contract.uid}-publish" class="form-check-label">
+							<f:translate key="tx_academicpersonsedit.fe.label.publish" extensionName="academic_persons_edit"/>
+					</label>
         </div>
     </div>
 
     <div class="row mb-3">
         <div class="col-12">
-            <label for="contract-{contract.uid}-physicalAddressesFromOrganisation" class="form-label">Choose address</label>
-            <f:form.select
-                    multiple="1"
-                    property="contracts.{contractIterator.index}.physicalAddressesFromOrganisation"
-                    optionLabelField="city"
-                    id="contract-{contract.uid}-physicalAddressesFromOrganisation"
-                    class="form-select"
-                    options="{availableAddresses.{contract.uid}}"
-            />
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="contract-{contract.uid}-position" class="form-label">Position</label>
+            <label for="contract-{contract.uid}-position" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.label.position" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     property="contracts.{contractIterator.index}.position"
                     id="contract-{contract.uid}-position"
@@ -51,7 +39,9 @@
             />
         </div>
         <div class="col-6">
-            <label for="contract-{contract.uid}-location" class="form-label">Location</label>
+            <label for="contract-{contract.uid}-location" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.label.location" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.select property="contracts.{contractIterator.index}.location"
                            id="contract-{contract.uid}-location"
                            class="form-select"
@@ -61,7 +51,9 @@
            />
         </div>
         <div class="col-6">
-            <label for="contract-{contract.uid}-room" class="form-label">Room</label>
+            <label for="contract-{contract.uid}-room" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.label.room" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textfield
                     property="contracts.{contractIterator.index}.room"
                     id="contract-{contract.uid}-room"
@@ -79,7 +71,9 @@
 
     <div class="row mb-3">
         <div class="col-12">
-            <label for="contract-{contract.uid}-office-hours" class="form-label">Office Hours</label>
+            <label for="contract-{contract.uid}-office-hours" class="form-label">
+								<f:translate key="tx_academicpersonsedit.fe.label.officeHours" extensionName="academic_persons_edit"/>
+						</label>
             <f:form.textarea
                     property="contracts.{contractIterator.index}.officeHours"
                     id="contract-{contract.uid}-office-hours"
