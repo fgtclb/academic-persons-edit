@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\Domain\Repository;
 
+use Fgtclb\AcademicPersons\Domain\Model\OrganisationalUnit;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Address;
 use TYPO3\CMS\Extbase\Domain\Model\Category;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -27,19 +28,15 @@ class AddressRepository extends Repository
      */
     public function getAddressFromOrganisation(
         ?Category $employeeType,
-        ?Category $organizationalLevel1,
-        ?Category $organizationalLevel2,
-        ?Category $organizationalLevel3,
+        ?OrganisationalUnit $organizationalUnit,
     ): QueryResultInterface {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
 
         $query->matching(
             $query->logicalAnd([
-                $query->equals('employeeType', $employeeType),
-                $query->equals('organisationalLevel1', $organizationalLevel1),
-                $query->equals('organisationalLevel2', $organizationalLevel2),
-                $query->equals('organisationalLevel3', $organizationalLevel3),
+                $query->equals('employee_type', $employeeType),
+                $query->equals('organisational_unit', $organizationalUnit),
             ])
         );
         $query->setOrderings([
