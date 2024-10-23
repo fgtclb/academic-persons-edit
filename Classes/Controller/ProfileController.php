@@ -156,9 +156,7 @@ final class ProfileController extends ActionController
         foreach ($profile->getContracts() as $contract) {
             $availableAddresses[$contract->getUid()] = $this->addressRepository->getAddressFromOrganisation(
                 $contract->getEmployeeType(),
-                $contract->getOrganisationalLevel1(),
-                $contract->getOrganisationalLevel2(),
-                $contract->getOrganisationalLevel3()
+                $contract->getOrganisationalUNit()
             )->toArray();
         }
 
