@@ -4,63 +4,28 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\EventListener;
 
+use Doctrine\DBAL\Result;
 use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
 use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class SyncChangesToTranslations
 {
-    private const PROFILE_INLINE_FIELDS = [
-        'contracts',
-        'cooperation',
-        'lectures',
-        'memberships',
-        'press_media',
-        'publications',
-        'scientific_research',
-        'vita',
-    ];
+    private int $defaultLanguage;
 
-    private const CONTRACT_INLINE_FIELDS = [
-        'email_addresses',
-        'phone_numbers',
-        'physical_addresses',
-    ];
-
-    private const EMAIL_ADDRESS_SYNC_FIELDS = [
-        'email',
-        'type',
-    ];
-
-    private const INFORMATION_SYNC_FIELDS = [
-        'year_start',
-        'year_end',
-    ];
-
-    private const PHONE_NUMBER_SYNC_FIELDS = [
-        'phone_number',
-        'type',
-    ];
-
-    private const PHYSICAL_ADDRESS_SYNC_FIELDS = [
-        'city',
-        'street',
-        'street_number',
-        'zip',
-    ];
-
-    private ProfileTranslator $profileTranslator;
+    /** @var int[] */
+    private array $allowedLanguages;
 
     public function __construct(
         ProfileTranslator $profileTranslator
     ) {
-        $this->profileTranslator = $profileTranslator;
+        $site = $GLOBALS['TYPO3_REQUEST']->getAttribute('site');
+        $this->defaultLanguage = $site->getDefaultLanguage()->getLanguageId();
+        $this->allowedLanguages = $profileTranslator->getAllowedLanguageIds();
     }
 
     public function __invoke(AfterProfileUpdateEvent $event): void
@@ -70,136 +35,213 @@ final class SyncChangesToTranslations
             return;
         }
 
-        $allowedLanguages = $this->profileTranslator->getAllowedLanguageIds();
+        $this->synchronizeTranslations(
+            'tx_academicpersons_domain_model_profile',
+            $profile->getUid()
+        );
+    }
 
-        foreach ($allowedLanguages as $languageUid) {
-            // Try to fetch translation for the languageUid
-            $profileTranslation = $this->getRecordLocalization(
-                'tx_academicpersons_domain_model_profile',
-                $profile->getUid(),
-                $languageUid
-            );
+    /**
+     * @param string $table
+     * @param int $uid
+     * @param array<string, mixed> $values
+     */
+    private function synchronizeTranslations(
+        string $table,
+        int $uid,
+        array $values = []
+    ): void {
+        $defaultRecord = $this->getDefaultRecord($table, $uid);
+        if (empty($defaultRecord)) {
+            return;
+        }
 
-            // If no translation exists, create one and continue as all inline fields will already be synchronized
-            if (empty($profileTranslation)) {
-                $this->profileTranslator->translateTo($profile->getUid(), $languageUid);
-                continue;
-            }
+        $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
+        foreach ($this->allowedLanguages as $languageUid) {
+            $translatedRecord = $this->getTranslatedRecord($table, $uid, $languageUid);
 
-            foreach (self::PROFILE_INLINE_FIELDS as $synchronizeField) {
-                $this->inlineLocalizeSynchronize(
-                    'tx_academicpersons_domain_model_profile',
-                    $profileTranslation['uid'],
+            // Create translation if it does not exist
+            if (empty($translatedRecord)) {
+                $translatedRecord = $this->createTranslation(
+                    $table,
+                    $defaultRecord,
                     $languageUid,
-                    $synchronizeField
+                    $values
                 );
+                // TODO: Add error handling
+                if (empty($translatedRecord)) {
+                    continue;
+                }
+            } else {
+                // Else synchronize values from the default record into its translation
+                $this->updateTranslation($table, $defaultRecord, $translatedRecord);
             }
 
-            // Synchronize field values for profile information from default language to translation
-            $this->synchronizeFieldValues(
-                'tx_academicpersons_domain_model_profile_information',
-                'profile',
-                $profile->getUid(),
-                self::INFORMATION_SYNC_FIELDS,
-                $languageUid
-            );
-            if ($profile->getContracts()->count() > 0) {
-                // Synchronize contract inline fields
-                foreach ($profile->getContracts() as $contract) {
-                    if ($contract->getUid() === null) {
-                        continue;
-                    }
+            // Synchronize inline child records
+            foreach ($tcaColumns as $columnName => $columnDefinition) {
+                // TODO: Check if this condition fits for all cases
+                if ($columnDefinition['config']['type'] === 'inline'
+                    && $columnName !== 'sys_file_reference'
+                ) {
+                    $inlineTable = $columnDefinition['config']['foreign_table'];
+                    $inlineField = $columnDefinition['config']['foreign_field'];
 
-                    $contractTranslation = $this->getRecordLocalization(
-                        'tx_academicpersons_domain_model_contract',
-                        $contract->getUid(),
-                        $languageUid
+                    $inlineChilds = $this->getInlineChilds(
+                        $inlineTable,
+                        $inlineField,
+                        $defaultRecord['uid']
                     );
 
-                    foreach (self::CONTRACT_INLINE_FIELDS as $synchronizeField) {
-                        $this->inlineLocalizeSynchronize(
-                            'tx_academicpersons_domain_model_contract',
-                            $contractTranslation['uid'],
-                            $languageUid,
-                            $synchronizeField
+                    while ($inlineChild = $inlineChilds?->fetchAssociative()) {
+                        $this->synchronizeTranslations(
+                            $inlineTable,
+                            $inlineChild['uid'],
+                            [(string)$inlineField => $translatedRecord['uid']]
                         );
                     }
-
-                    // Synchronize field values for email addresse from default language to translation
-                    $this->synchronizeFieldValues(
-                        'tx_academicpersons_domain_model_email',
-                        'contract',
-                        $contract->getUid(),
-                        self::EMAIL_ADDRESS_SYNC_FIELDS,
-                        $languageUid
-                    );
-
-                    // Synchronize field values for phone numbers from default language to translation
-                    $this->synchronizeFieldValues(
-                        'tx_academicpersons_domain_model_phone_number',
-                        'contract',
-                        $contract->getUid(),
-                        self::PHONE_NUMBER_SYNC_FIELDS,
-                        $languageUid
-                    );
-
-                    // Synchronize field values for physical addresses from default language to translation
-                    $this->synchronizeFieldValues(
-                        'tx_academicpersons_domain_model_address',
-                        'contract',
-                        $contract->getUid(),
-                        self::PHYSICAL_ADDRESS_SYNC_FIELDS,
-                        $languageUid
-                    );
                 }
             }
         }
     }
 
     /**
-     * Synchronize an inline field of a translated record.
-     *
-     * @param string $tableName Table name present in $GLOBALS['TCA']
-     * @param int $recordUid The uid of the record
-     * @param int $languageUid The language uid froms SiteConfig
-     * @param string $field The field to synchronize
-     * @return ?int The uid of the translated record
+     * @param string $table
+     * @param array<string, mixed> $defaultRecord
+     * @param int $languageUid
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
      */
-    private function inlineLocalizeSynchronize(
-        string $tableName,
-        int $recordUid,
+    private function createTranslation(
+        string $table,
+        array $defaultRecord,
         int $languageUid,
-        string $field
-    ): ?int {
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->neverHideAtCopy = true;
+        array $values = []
+    ): array {
+        $defaultRecoredUid = $defaultRecord['uid'];
+        $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
+        $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
-        $dataHandler->start([], [
-            $tableName => [
-                $recordUid => [
-                    'inlineLocalizeSynchronize' => [
-                        'field' => $field,
-                        'language' => $languageUid,
-                        'action' => 'localize',
-                    ],
-                ],
-            ],
-        ]);
-        $dataHandler->process_cmdmap();
+        // Exclude inline columns from the default record
+        $excludeColumns = array_merge(
+            ['uid', 'l10n_diffsource', 't3ver_oid', 't3ver_wsid', 't3ver_state', 't3ver_stage'],
+            array_keys($values)
+        );
+        foreach ($tcaColumns as $columnName => $columnDefinition) {
+            if ($columnDefinition['config']['type'] === 'inline') {
+                $excludeColumns[] = $columnName;
+            }
+        }
 
-        return $dataHandler->copyMappingArray_merged[$tableName][$recordUid];
+        // Merge default record values with the given values
+        foreach ($defaultRecord as $columnName => $value) {
+            if (!in_array($columnName, $excludeColumns)) {
+                $values[$columnName] = $value;
+            }
+        }
+
+        // Override language specific values
+        $values['sys_language_uid'] = $languageUid;
+        if (isset($tcaCtrl['transOrigPointerField'])) {
+            $values[$tcaCtrl['transOrigPointerField']] = $defaultRecoredUid;
+        }
+        if (isset($tcaCtrl['translationSource'])) {
+            $values[$tcaCtrl['translationSource']] = $defaultRecoredUid;
+        }
+        $values['crdate'] = $GLOBALS['EXEC_TIME'];
+        $values['tstamp'] = $GLOBALS['EXEC_TIME'];
+
+        $queryBuilder = $this->getQueryBuilder($table);
+        $queryBuilder->insert($table);
+        $queryBuilder->values($values);
+
+        $queryBuilder->executeStatement();
+
+        return $this->getTranslatedRecord($table, $defaultRecoredUid, $languageUid);
     }
 
     /**
-     * Fetches the localization for a given record.
-     *
-     * @param string $table Table name present in $GLOBALS['TCA']
-     * @param int $uid The uid of the record
-    * @param int $languageUid The language uid froms SiteConfig
-     * @return array<string, mixed> array with selected records, empty array if none exists
+     * @param string $table
+     * @param array<string, mixed> $defaultRecord
+     * @param array<string, mixed> $translatedRecord
      */
-    private function getRecordLocalization(string $table, int $uid, int $languageUid)
-    {
+    private function updateTranslation(
+        string $table,
+        array $defaultRecord,
+        array $translatedRecord
+    ): void {
+        $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
+        $updateColumns = [];
+        foreach ($tcaColumns as $columnName => $columnDefinition) {
+            if ($columnDefinition['config']['type'] !== 'inline' &&
+                $columnDefinition['l10n_mode'] === 'exclude'
+            ) {
+                $updateColumns[] = $columnName;
+            }
+        }
+
+        // Skip if there are no columns to update
+        if (empty($updateColumns)) {
+            return;
+        }
+
+        $queryBuilder = $this->getQueryBuilder($table);
+        $queryBuilder->update($table)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($translatedRecord['uid'], Connection::PARAM_INT)
+                )
+            );
+
+        foreach ($updateColumns as $columnName) {
+            $queryBuilder->set($columnName, $defaultRecord[$columnName]);
+        }
+
+        $queryBuilder->executeStatement();
+    }
+
+    /**
+     * @param string $table
+     * @param int $uid
+     * @return array<string, mixed>
+     */
+    private function getDefaultRecord(
+        string $table,
+        int $uid
+    ): array {
+        $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
+
+        $queryBuilder = $this->getQueryBuilder($table);
+        $queryBuilder->select('*')
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)
+                ),
+                $queryBuilder->expr()->eq(
+                    $tcaCtrl['languageField'],
+                    $queryBuilder->createNamedParameter($this->defaultLanguage, Connection::PARAM_INT)
+                )
+            )
+            ->setMaxResults(1);
+
+        $resultArray = $queryBuilder->executeQuery()->fetchAssociative();
+
+        return $resultArray ?: [];
+    }
+
+    /**
+     * @param string $table
+     * @param int $uid
+     * @param int $languageUid
+     * @return array<string, mixed>
+     */
+    private function getTranslatedRecord(
+        string $table,
+        int $uid,
+        int $languageUid
+    ): array {
         $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
         $queryBuilder = $this->getQueryBuilder($table);
@@ -223,61 +265,35 @@ final class SyncChangesToTranslations
     }
 
     /**
-      * Synchronize fields from default language to translations
-      *
-      * @param string $table Table name present in $GLOBALS['TCA']
-      * @param string $parentField The field name of the parent record
-      * @param int $parentUid The uid of the parent record
-      * @param array<string> $fields The fields to synchronize
-      * @param int $languageUid The language uid froms SiteConfig
-      */
-    private function synchronizeFieldValues(
+     * @param string $table
+     * @param int $uid
+     * @return Result|null
+     */
+    private function getInlineChilds(
         string $table,
-        string $parentField,
-        int $parentUid,
-        array $fields,
-        int $languageUid
-    ): void {
+        string $field,
+        int $uid,
+    ): Result|null {
         $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
-        $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByIdentifier('hnee');
-        $defaultLanguage = $site->getDefaultLanguage()->getLanguageId();
-
+        if (!isset($tcaCtrl['languageField'])) {
+            return null;
+        }
         $queryBuilder = $this->getQueryBuilder($table);
         $queryBuilder->select('*')
             ->from($table)
             ->where(
                 $queryBuilder->expr()->eq(
-                    $parentField,
-                    $queryBuilder->createNamedParameter((int)$parentUid, Connection::PARAM_INT)
+                    $field,
+                    $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)
                 ),
                 $queryBuilder->expr()->eq(
                     $tcaCtrl['languageField'],
-                    $queryBuilder->createNamedParameter((int)$defaultLanguage, Connection::PARAM_INT)
+                    $queryBuilder->createNamedParameter($this->defaultLanguage, Connection::PARAM_INT)
                 )
             );
-        $results = $queryBuilder->executeQuery();
 
-        while ($result = $results->fetchAssociative()) {
-            $queryBuilder = $this->getQueryBuilder($table);
-            $queryBuilder->update($table)
-                ->where(
-                    $queryBuilder->expr()->eq(
-                        $tcaCtrl['translationSource'] ?? $tcaCtrl['transOrigPointerField'],
-                        $queryBuilder->createNamedParameter($result['uid'], Connection::PARAM_INT)
-                    ),
-                    $queryBuilder->expr()->eq(
-                        $tcaCtrl['languageField'],
-                        $queryBuilder->createNamedParameter((int)$languageUid, Connection::PARAM_INT)
-                    )
-                );
-
-            foreach ($fields as $field) {
-                $queryBuilder->set($field, $result[$field]);
-            }
-
-            $queryBuilder->executeStatement();
-        }
+        return $queryBuilder->executeQuery();
     }
 
     /**
