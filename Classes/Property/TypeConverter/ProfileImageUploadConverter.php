@@ -62,7 +62,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         $source,
         string $targetType,
         array $convertedChildProperties = [],
-        PropertyMappingConfigurationInterface $configuration = null
+        ?PropertyMappingConfigurationInterface $configuration = null
     ): Error|ExtbaseFileReference|null {
         $uploadedFileInformation = $source;
 
