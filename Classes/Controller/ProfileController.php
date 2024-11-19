@@ -20,7 +20,6 @@ use Fgtclb\AcademicPersons\Types\EmailAddressTypes;
 use Fgtclb\AcademicPersons\Types\PhoneNumberTypes;
 use Fgtclb\AcademicPersons\Types\PhysicalAddressTypes;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
-use Fgtclb\AcademicPersonsEdit\Domain\Repository\AddressRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\LocationRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\ProfileRepository;
 use Fgtclb\AcademicPersonsEdit\Event\AddProfileInformationEvent;
@@ -56,8 +55,6 @@ final class ProfileController extends ActionController
 
     private PersistenceManagerInterface $persistenceManager;
 
-    private AddressRepository $addressRepository;
-
     private ProfileTranslator $profileTranslator;
 
     private LocationRepository $locationRepository;
@@ -66,14 +63,12 @@ final class ProfileController extends ActionController
         Context $context,
         ProfileRepository $profileRepository,
         PersistenceManagerInterface $persistenceManager,
-        AddressRepository $addressRepository,
         ProfileTranslator $profileTranslator,
         LocationRepository $locationRepository
     ) {
         $this->context = $context;
         $this->profileRepository = $profileRepository;
         $this->persistenceManager = $persistenceManager;
-        $this->addressRepository = $addressRepository;
         $this->profileTranslator = $profileTranslator;
         $this->locationRepository = $locationRepository;
     }
@@ -152,21 +147,12 @@ final class ProfileController extends ActionController
             return new Response(null, 403);
         }
 
-        $availableAddresses = [];
-        foreach ($profile->getContracts() as $contract) {
-            $availableAddresses[$contract->getUid()] = $this->addressRepository->getAddressFromOrganisation(
-                $contract->getEmployeeType(),
-                $contract->getOrganisationalUNit()
-            )->toArray();
-        }
-
         $currentLanguageUid = $this->context->getPropertyFromAspect('language', 'contentId');
 
         $this->view->assignMultiple([
             'profile' => $profile,
             'currentLanguageUid' => $currentLanguageUid,
             'translationAllowed' => $this->profileTranslator->isTranslationAllowed($currentLanguageUid),
-            'availableAddresses' => $availableAddresses,
             'addressTypes' => GeneralUtility::makeInstance(PhysicalAddressTypes::class)->getAll(),
             'emailAddressTypes' => GeneralUtility::makeInstance(EmailAddressTypes::class)->getAll(),
             'phoneNumberTypes' => GeneralUtility::makeInstance(PhoneNumberTypes::class)->getAll(),
