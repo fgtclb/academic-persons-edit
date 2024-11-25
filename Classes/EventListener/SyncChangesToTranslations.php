@@ -172,8 +172,11 @@ final class SyncChangesToTranslations
         $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
         $updateColumns = [];
         foreach ($tcaColumns as $columnName => $columnDefinition) {
-            if ($columnDefinition['config']['type'] !== 'inline' &&
-                $columnDefinition['l10n_mode'] === 'exclude'
+            if (isset($columnDefinition['config']['type'])
+                && is_string($columnDefinition['config']['type'])
+                && $columnDefinition['config']['type'] !== 'inline'
+                && isset($columnDefinition['l10n_mode'])
+                && $columnDefinition['l10n_mode'] === 'exclude'
             ) {
                 $updateColumns[] = $columnName;
             }
