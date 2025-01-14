@@ -13,18 +13,6 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 ExtensionUtility::registerPlugin(
     'AcademicPersonsEdit',
-    'ProfileSwitcher',
-    'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_switcher.label',
-    'EXT:academic_persons_edit/Resources/Public/Icons/persons_edit_icon.svg'
-);
-$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileswitcher'] = implode(',', [
-    'pages',
-    'recursive',
-    'select_key',
-]);
-
-ExtensionUtility::registerPlugin(
-    'AcademicPersonsEdit',
     'ProfileEditing',
     'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_editing.label',
     'EXT:academic_persons_edit/Resources/Public/Icons/persons_edit_icon.svg'
