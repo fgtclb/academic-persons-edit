@@ -1,0 +1,25 @@
+<f:form.validationResults for="{element.form}.{element.identifier}">
+    <div class="field{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')}">
+        <label class="field__label" for="{f:if(condition: element.label, then: element.label, else: element.identifier)}">
+            {f:translate(key:'form.{element.label}.label', arguments:'{element.labelArguments}')}
+            {f:if(condition: required, then: '<abbr title="Pflichtfeld">*</abbr>')}
+        </label>
+        <div class="field__control">
+            <div class="field__select{f:if(condition:'{validationResults.flattenedErrors}', then:' is-danger')}">
+                <f:form.select
+                    property="{element.identifier}"
+                    id="{f:if(condition: element.label, then: element.label, else: element.identifier)}"
+                    options="{element.options}"
+                    optionValueField="{element.optionValueField}"
+                    optionLabelField="{element.optionLabelField}"
+                    prependOptionValue="{element.prependOptionValue}"
+                    prependOptionLabel="{element.prependOptionLabel}"
+                    disabled="{disabled}"
+                />
+            </div>
+        </div>
+        <f:if condition="{help}">
+            <p class="field__help">{help->f:format.raw()}</p>
+        </f:if>
+    </div>
+</f:form.validationResults>

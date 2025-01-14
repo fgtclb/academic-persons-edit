@@ -1,0 +1,18 @@
+<f:render
+    partial="FormFields/FieldWrapper"
+    arguments="{
+        element: element,
+        help: help,
+        required: required
+    }"
+    contentAs="elementContent"
+>
+    <f:form.textfield
+        property="{element.identifier}"
+        placeholder="{f:translate(key:'form.{element.placeholder}.label', arguments:'{element.labelArguments}')}"
+        id="{f:if(condition: element.label, then: element.label, else: element.identifier)}"
+        class="form-control"
+        errorClass="is-invalid"
+        disabled="{disabled}"
+    />
+</f:render>

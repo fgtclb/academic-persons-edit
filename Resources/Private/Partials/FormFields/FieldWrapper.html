@@ -1,0 +1,13 @@
+<f:form.validationResults for="{element.form}.{element.identifier}">
+    <div class="">
+        <label class="form-label" for="{f:if(condition: element.label, then: element.label, else: element.identifier)}">
+            {f:translate(key:'form.{element.label}.label', arguments:'{element.labelArguments}')}
+            {f:if(condition: required, then: '<abbr title="Pflichtfeld">*</abbr>')}
+        </label>
+        {elementContent->f:format.raw()}
+        field{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')}
+        <f:if condition="{help}">
+            <div class="field__help">{help->f:format.raw()}</div>
+        </f:if>
+    </div>
+</f:form.validationResults>

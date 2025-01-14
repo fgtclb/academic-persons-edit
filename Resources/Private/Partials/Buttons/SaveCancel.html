@@ -1,0 +1,20 @@
+<div class="buttons u-margin-top-medium">
+    <f:form.button
+        name="submit"
+        value="save-and-edit"
+        class="button"
+    >
+        <f:render partial="App/Icons/Save" />
+        &nbsp;
+        Speichern
+    </f:form.button>
+    <f:link.action
+        action="{f:if(condition:'{action}', then:'{action}', else:'list')}"
+        arguments="{arguments}"
+        class="button button--cancel"
+    >
+        <f:render partial="App/Icons/Cancel" />
+        &nbsp;
+        Abbrechen
+    </f:link.action>
+</div>

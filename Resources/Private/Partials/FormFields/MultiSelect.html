@@ -1,0 +1,77 @@
+<f:render partial="App/FormFields/FieldWrapper" arguments="{element: element, help: help, required: required}" contentAs="elementContent">
+    <div class="multiselect__container">
+        <div class="multiselect__options">
+            <div class="field field--multiselect">
+                <label class="field__label">Auswahl</label>
+                <div class="select">
+                    <select
+                        id="{element.identifier}"
+                        class="multiselect"
+                        size="8"
+                        multiple="multiple">
+                        <f:for each="{element.options}" as="option">
+                            <option value="{option.{element.optionValueField}}">
+                                {option.{element.optionLabelField}}
+                            </option>
+                        </f:for>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="multiselect__buttons">
+            <button
+                id="{element.identifier}_undo"
+                class="button is-danger is-fullwidth">
+                Rückgängig
+            </button>
+            <button
+                id="{element.identifier}_rightSelected"
+                class="button">
+                <i class="fas fa-angle-right"></i>
+            </button>
+            <button
+                id="{element.identifier}_leftSelected"
+                class="button">
+                <i class="fas fa-angle-left"></i>
+            </button>
+            <button
+                id="{element.identifier}_redo"
+                class="button">
+                Wiederholen
+            </button>
+        </div>
+        <div class="multiselect__selected">
+            <div class="field field--multiselect">
+                <label class="field__label">Ausgewählt</label>
+                <div class="select">
+                    <f:form.select
+                        property="{element.identifier}"
+                        id="{element.identifier}_to"
+                        multiple="1"
+                        size="8"
+                        errorClass="is-invalid">
+                        <f:for each="{element.selected}" as="option">
+                            <f:form.select.option value="{option.{element.optionValueField}}">
+                                {option.{element.optionLabelField}}
+                            </f:form.select.option>
+                        </f:for>
+                    </f:form.select>
+                </div>
+            </div>
+            <div class="multiselect__sorting">
+                <div class="buttons">
+                    <button
+                        id="{element.identifier}_move_up"
+                        class="button">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    <button
+                        id="{element.identifier}_move_down"
+                        class="button">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:render>

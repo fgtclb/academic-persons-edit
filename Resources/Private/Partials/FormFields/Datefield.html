@@ -1,0 +1,12 @@
+<f:render partial="App/FormFields/FieldWrapper" arguments="{element: element, help: help, required: required}" contentAs="elementContent">
+    <f:form.textfield
+        property="{element.identifier}"
+        value="{element.value}"
+        placeholder="TT.MM.JJJJ"
+        id="{element.identifier}"
+        class="input"
+        errorClass="is-danger"
+        disabled="{disabled}"
+        data="{toggle:'datepicker'}"
+    />
+</f:render>
