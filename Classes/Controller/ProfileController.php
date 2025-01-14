@@ -20,7 +20,9 @@ use Fgtclb\AcademicPersons\Types\EmailAddressTypes;
 use Fgtclb\AcademicPersons\Types\PhoneNumberTypes;
 use Fgtclb\AcademicPersons\Types\PhysicalAddressTypes;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
+use Fgtclb\AcademicPersonsEdit\Domain\Repository\FunctionTypeRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\LocationRepository;
+use Fgtclb\AcademicPersonsEdit\Domain\Repository\OrganisationalUnitRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\ProfileRepository;
 use Fgtclb\AcademicPersonsEdit\Event\AddProfileInformationEvent;
 use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
@@ -51,26 +53,34 @@ final class ProfileController extends ActionController
 
     private Context $context;
 
-    private ProfileRepository $profileRepository;
-
     private PersistenceManagerInterface $persistenceManager;
 
+    private ProfileRepository $profileRepository;
+    
     private ProfileTranslator $profileTranslator;
 
+    private FunctionTypeRepository $functionTypeRepository;
+
     private LocationRepository $locationRepository;
+
+    private OrganisationalUnitRepository $organisationalUnitRepository;
 
     public function __construct(
         Context $context,
         ProfileRepository $profileRepository,
         PersistenceManagerInterface $persistenceManager,
         ProfileTranslator $profileTranslator,
-        LocationRepository $locationRepository
+        FunctionTypeRepository $functionTypeRepository,
+        LocationRepository $locationRepository,
+        OrganisationalUnitRepository $organisationalUnitRepository
     ) {
         $this->context = $context;
         $this->profileRepository = $profileRepository;
         $this->persistenceManager = $persistenceManager;
         $this->profileTranslator = $profileTranslator;
+        $this->functionTypeRepository = $functionTypeRepository;
         $this->locationRepository = $locationRepository;
+        $this->organisationalUnitRepository = $organisationalUnitRepository;
     }
 
     public function initializeAction(): void
@@ -83,62 +93,22 @@ final class ProfileController extends ActionController
         }
     }
 
-    public function showProfileSwitchAction(): ResponseInterface
+    public function listProfilesAction(): ResponseInterface
     {
         $profileUids = $this->context->getPropertyFromAspect('frontend.profile', 'allProfileUids', []);
-
-        // TODO: Don't return empty response if no profiles are assigned to user
-        if (empty($profileUids)) {
-            return $this->htmlResponse();
-        }
-
         $profiles = $this->profileRepository->findByUids($profileUids);
+
         $this->view->assignMultiple([
             'profiles' => $profiles,
-            'activeProfileUid' => $this->context->getPropertyFromAspect('frontend.profile', 'activeProfileUid', 0),
         ]);
 
         return $this->htmlResponse();
     }
 
-    /**
-     * @Validate(param="profileUid", validator="NumberRangeValidator", options={"minimum": 1})
-     */
-    public function executeProfileSwitchAction(int $profileUid): ResponseInterface
-    {
-        try {
-            $this->checkProfileEditAccess($profileUid);
-        } catch (AccessDeniedException) {
-            return new Response(null, 403);
-        }
-
-        /** @var AbstractUserAuthentication $frontendUser */
-        $frontendUser = $this->getTypo3Request()->getAttribute('frontend.user');
-        $frontendUser->setAndSaveSessionData('academic-active-profile-uid', $profileUid);
-
-        return $this->redirectToProfileEditResponse();
-    }
-
-    /**
-     * @IgnoreValidation("profile")
-     */
-    public function showProfileEditingFormAction(?Profile $profile = null): ResponseInterface
+    public function editProfileAction(?Profile $profile = null): ResponseInterface
     {
         if ($profile === null) {
-            $activeProfileUid = (int)$this->context->getPropertyFromAspect('frontend.profile', 'activeProfileUid', []);
-            /** @var \Fgtclb\AcademicPersons\Domain\Model\Profile|null $profile */
-            $profile = $this->profileRepository->findByUid($activeProfileUid);
-        }
-
-        $profileUids = $this->context->getPropertyFromAspect('frontend.profile', 'allProfileUids', []);
-
-        // TODO: To die() is no good way out here, talk to your trusted TYPO3 developer first
-        if ($profile === null || !in_array($profile->getUid(), $profileUids)) {
-            GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
-                $this->request,
-                'No profile assigned to user'
-            );
-            die();
+            return new Response(null, 404);
         }
 
         try {
@@ -146,63 +116,61 @@ final class ProfileController extends ActionController
         } catch (AccessDeniedException) {
             return new Response(null, 403);
         }
-
-        $currentLanguageUid = $this->context->getPropertyFromAspect('language', 'contentId');
 
         $this->view->assignMultiple([
             'profile' => $profile,
-            'currentLanguageUid' => $currentLanguageUid,
-            'translationAllowed' => $this->profileTranslator->isTranslationAllowed($currentLanguageUid),
-            'addressTypes' => GeneralUtility::makeInstance(PhysicalAddressTypes::class)->getAll(),
-            'emailAddressTypes' => GeneralUtility::makeInstance(EmailAddressTypes::class)->getAll(),
-            'phoneNumberTypes' => GeneralUtility::makeInstance(PhoneNumberTypes::class)->getAll(),
-            'maxFileUploadsInBytes' =>  GeneralUtility::getBytesFromSizeMeasurement(
-                $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? ''
-            ),
-            'availableLocations' => $this->locationRepository->findAll(),
         ]);
 
         return $this->htmlResponse();
     }
 
-    public function initializeSaveProfileAction(): void
+    public function showContractAction(?Contract $contract = null): ResponseInterface
     {
-        $targetFolderIdentifier = $this->settings['editForm']['profileImage']['targetFolder'] ?? null;
-        $maxFilesize = $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? '0kb';
-        $allowedImeTypes = $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? '';
-        $profileImageTypeConverter = GeneralUtility::makeInstance(ProfileImageUploadConverter::class);
-
-        $profileUid = 0;
-        $body = $this->request->getParsedBody();
-        if (is_array($body)) {
-            $profileUid = (int)($body['tx_academicpersonsedit_profileediting']['profile']['__identity'] ?? 0);
+        if ($contract === null) {
+            return new Response(null, 404);
         }
-        $targetFileName = $this->buildProfileImageNameWithoutExtension($profileUid);
 
-        $this->arguments
-            ->getArgument('profile')
-            ->getPropertyMappingConfiguration()
-            ->forProperty('image')
-            ->setTypeConverter($profileImageTypeConverter)
-            ->setTypeConverterOptions(
-                ProfileImageUploadConverter::class,
-                [
-                    ProfileImageUploadConverter::CONFIGURATION_TARGET_DIRECTORY_COMBINED_IDENTIFIER => $targetFolderIdentifier,
-                    ProfileImageUploadConverter::CONFIGURATION_MAX_UPLOAD_SIZE => $maxFilesize,
-                    ProfileImageUploadConverter::CONFIGURATION_ALLOWED_MIME_TYPES => $allowedImeTypes,
-                    ProfileImageUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $targetFileName,
-                ]
-            );
-    }
-
-    public function saveProfileAction(Profile $profile): ResponseInterface
-    {
+        $profile = $contract->getProfile();
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
             return new Response(null, 403);
         }
 
+        $this->view->assignMultiple([
+            'contract' => $contract,
+        ]);
+
+        return $this->htmlResponse();
+    }
+
+    public function editContractAction(?Contract $contract = null): ResponseInterface
+    {
+        if ($contract === null) {
+            return new Response(null, 404);
+        }
+
+        $profile = $contract->getProfile();
+        try {
+            $this->checkProfileEditAccess((int)$profile->getUid());
+        } catch (AccessDeniedException) {
+            return new Response(null, 403);
+        }
+
+        //$organisationalUnits = $this->organisationalUnitRepository->findAll();
+        \TYPO3\CMS\Core\Utility\DebugUtility::debug($organisationalUnits);
+
+        $this->view->assignMultiple([
+            'contract' => $contract,
+            'locations' => $this->locationRepository->findAll(),
+            //'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
+            'functionTypes' => $this->functionTypeRepository->findAll(),
+        ]);
+
+        return $this->htmlResponse();
+    }
+
+    /*
         $profile->setFirstNameAlpha(strtolower(substr($profile->getFirstName(), 0, 1)));
         $profile->setLastNameAlpha(strtolower(substr($profile->getLastName(), 0, 1)));
 
@@ -231,6 +199,7 @@ final class ProfileController extends ActionController
 
         return $this->redirectToProfileEditResponse();
     }
+        */
 
     /**
      * @IgnoreValidation("profile")
