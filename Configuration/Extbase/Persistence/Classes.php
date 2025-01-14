@@ -9,17 +9,30 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Address;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\FunctionType;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Location;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\OrganisationalUnit;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
+
 return [
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Profile::class => [
-        'tableName' => 'tx_academicpersons_domain_model_profile',
-    ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Address::class => [
+    Address::class => [
         'tableName' => 'tx_academicpersons_domain_model_address',
     ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser::class => [
+    FrontendUser::class => [
         'tableName' => 'fe_users',
     ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Location::class => [
+    FunctionType::class => [
+        'tableName' => 'tx_academicpersons_domain_model_function_type',
+    ],
+    Location::class => [
         'tableName' => 'tx_academicpersons_domain_model_location',
+    ],
+    OrganisationalUnit::class => [
+        'tableName' => 'tx_academicpersons_domain_model_organisational_unit',
+    ],
+    Profile::class => [
+        'tableName' => 'tx_academicpersons_domain_model_profile',
     ],
 ];
