@@ -16,9 +16,6 @@ use Fgtclb\AcademicPersons\Domain\Model\Contract;
 use Fgtclb\AcademicPersons\Domain\Model\Email;
 use Fgtclb\AcademicPersons\Domain\Model\PhoneNumber;
 use Fgtclb\AcademicPersons\Domain\Model\ProfileInformation;
-use Fgtclb\AcademicPersons\Types\EmailAddressTypes;
-use Fgtclb\AcademicPersons\Types\PhoneNumberTypes;
-use Fgtclb\AcademicPersons\Types\PhysicalAddressTypes;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\FunctionTypeRepository;
 use Fgtclb\AcademicPersonsEdit\Domain\Repository\LocationRepository;
@@ -29,10 +26,8 @@ use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
 use Fgtclb\AcademicPersonsEdit\Event\RemoveProfileInformationEvent;
 use Fgtclb\AcademicPersonsEdit\Exception\AccessDeniedException;
 use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
-use Fgtclb\AcademicPersonsEdit\Property\TypeConverter\ProfileImageUploadConverter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\RedirectResponse;
@@ -41,7 +36,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation\IgnoreValidation;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -56,7 +50,7 @@ final class ProfileController extends ActionController
     private PersistenceManagerInterface $persistenceManager;
 
     private ProfileRepository $profileRepository;
-    
+
     private ProfileTranslator $profileTranslator;
 
     private FunctionTypeRepository $functionTypeRepository;
@@ -157,7 +151,7 @@ final class ProfileController extends ActionController
             return new Response(null, 403);
         }
 
-        //$organisationalUnits = $this->organisationalUnitRepository->findAll();
+        $organisationalUnits = $this->organisationalUnitRepository->findAll();
         \TYPO3\CMS\Core\Utility\DebugUtility::debug($organisationalUnits);
 
         $this->view->assignMultiple([
