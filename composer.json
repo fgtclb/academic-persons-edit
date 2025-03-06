@@ -32,10 +32,8 @@
     "require-dev": {
         "andreaswolf/typo3-uuid": "^0.3.0",
         "bk2k/bootstrap-package": "^14.0",
-        "cweagans/composer-patches": "^1.7",
         "friendsofphp/php-cs-fixer": "^3.14",
         "helhum/typo3-console": "^7.1.6 || ^8.2",
-        "kaystrobach/migrations": "0.11.0",
         "saschaegerer/phpstan-typo3": "^1.8",
         "typo3/cms-composer-installers": "v4.0.0-RC1",
         "typo3/cms-felogin": "^11.5",
@@ -69,11 +67,6 @@
             "web-dir": ".Build/Web",
             "app-dir": ".Build",
             "extension-key": "academic_persons_edit"
-        },
-        "patches": {
-            "kaystrobach/migrations": {
-                "Load migrations from autoload-dev": "patches/migrations/autoload.patch"
-            }
         },
         "branch-alias": {
             "dev-main": "1.x.x-dev"
