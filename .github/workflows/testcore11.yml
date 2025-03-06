@@ -68,8 +68,8 @@ jobs:
       - name: "Prepare dependencies for TYPO3 v11"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s composerUpdate"
 
-#      - name: "Unit"
-#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s unit"
+      - name: "Unit"
+        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s unit"
 
 #      - name: "Functional SQLite"
 #        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d sqlite"
