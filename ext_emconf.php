@@ -13,7 +13,9 @@ $EM_CONF[$_EXTKEY] = [
     'constraints' => [
         'depends' => [
             'typo3' => '11.5.0-11.5.99',
-            'academic_persons' => '0.2.0 - 0.2.99',
+            // @todo Change this to '1.0.0-1.99.99' after academic_persons has been released.
+            //       TYPO3 does not support dev-constraints like `2.*.*` as composer.
+            'academic_persons' => '0.2.0 - 1.99.99',
         ],
         'conflicts' => [
         ],

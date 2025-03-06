@@ -25,22 +25,22 @@
         }
     },
     "require": {
-        "php": "^8.0",
-        "typo3/cms-core": "^11.5",
-        "fgtclb/academic-persons": "dev-main"
+        "php": "^8.0 || ^8.1 || ^8.2 || ^8.3",
+        "fgtclb/academic-persons": "^1.0 || 1.*.*@dev",
+        "typo3/cms-core": "^11.5"
     },
     "require-dev": {
-        "typo3/minimal": "v11.5.0",
-        "typo3/cms-composer-installers": "v4.0.0-RC1",
-        "kaystrobach/migrations": "0.11.0",
-        "helhum/typo3-console": "^7.1 || ^8.0",
-        "saschaegerer/phpstan-typo3": "^1.8",
-        "friendsofphp/php-cs-fixer": "^3.14",
-        "typo3/cms-felogin": "^11.5",
         "andreaswolf/typo3-uuid": "^0.3.0",
-        "typo3/testing-framework": "^7.0",
         "bk2k/bootstrap-package": "^14.0",
-        "cweagans/composer-patches": "^1.7"
+        "cweagans/composer-patches": "^1.7",
+        "friendsofphp/php-cs-fixer": "^3.14",
+        "helhum/typo3-console": "^7.1.6 || ^8.2",
+        "kaystrobach/migrations": "0.11.0",
+        "saschaegerer/phpstan-typo3": "^1.8",
+        "typo3/cms-composer-installers": "v4.0.0-RC1",
+        "typo3/cms-felogin": "^11.5",
+        "typo3/minimal": "v11.5.0",
+        "typo3/testing-framework": "^7.0"
     },
     "autoload": {
         "psr-4": {
@@ -56,7 +56,8 @@
     "config": {
         "vendor-dir": ".Build/vendor",
         "bin-dir": ".Build/bin",
-        "allow-plugins": true
+        "allow-plugins": true,
+        "sort-packages": true
     },
     "scripts": {
         "post-autoload-dump": [
@@ -73,6 +74,9 @@
             "kaystrobach/migrations": {
                 "Load migrations from autoload-dev": "patches/migrations/autoload.patch"
             }
+        },
+        "banch-alias": {
+            "dev-main": "1.x.x-dev"
         }
     }
 }
