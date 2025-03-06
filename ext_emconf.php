@@ -12,10 +12,14 @@ $EM_CONF[$_EXTKEY] = [
     'clearCacheOnLoad' => true,
     'constraints' => [
         'depends' => [
-            'typo3' => '11.5.0-11.5.99',
-            // @todo Change this to '1.0.0-1.99.99' after academic_persons has been released.
+            'typo3' => '12.4.0-13.4.99',
+            'backend' => '12.4.0-13.4.99',
+            'extbase' => '12.4.0-13.4.99',
+            'fluid' => '12.4.0-13.4.99',
+            'frontend' => '12.4.0-13.4.99',
+            // @todo Change this to '2.0.0-2.99.99' after academic_persons has been released.
             //       TYPO3 does not support dev-constraints like `2.*.*` as composer.
-            'academic_persons' => '0.2.0 - 1.99.99',
+            'academic_persons' => '0.2.0-2.99.99',
         ],
         'conflicts' => [
         ],
