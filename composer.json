@@ -75,7 +75,7 @@
                 "Load migrations from autoload-dev": "patches/migrations/autoload.patch"
             }
         },
-        "banch-alias": {
+        "branch-alias": {
             "dev-main": "1.x.x-dev"
         }
     }
