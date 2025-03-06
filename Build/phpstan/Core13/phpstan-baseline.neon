@@ -1,0 +1,46 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to undefined constant TYPO3\\\\CMS\\\\Core\\\\Messaging\\\\AbstractMessage\\:\\:OK\\.$#"
+			count: 1
+			path: ../../../Classes/Controller/ProfileController.php
+
+		-
+			message: "#^Method Fgtclb\\\\AcademicPersonsEdit\\\\Domain\\\\Model\\\\Profile\\:\\:getLanguageUid\\(\\) should return int but returns int\\<\\-1, max\\>\\|null\\.$#"
+			count: 1
+			path: ../../../Classes/Domain/Model/Profile.php
+
+		-
+			message: "#^Parameter \\#1 \\.\\.\\.\\$constraints of method TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\QueryInterface\\<Fgtclb\\\\AcademicPersonsEdit\\\\Domain\\\\Model\\\\Address\\>\\:\\:logicalAnd\\(\\) expects TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Generic\\\\Qom\\\\ConstraintInterface, array\\<int, TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Generic\\\\Qom\\\\ComparisonInterface\\> given\\.$#"
+			count: 1
+			path: ../../../Classes/Domain/Repository/AddressRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$identifier of method TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\PersistenceManagerInterface\\:\\:getObjectByIdentifier\\(\\) expects int\\|string, int\\|string\\|null given\\.$#"
+			count: 1
+			path: ../../../Classes/Profile/AbstractProfileFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$pid of method TYPO3\\\\CMS\\\\Extbase\\\\DomainObject\\\\AbstractDomainObject\\:\\:setPid\\(\\) expects int\\<0, max\\>, int given\\.$#"
+			count: 6
+			path: ../../../Classes/Profile/ProfileFactory.php
+
+		-
+			message: "#^Property Fgtclb\\\\AcademicPersonsEdit\\\\Property\\\\TypeConverter\\\\ProfileImageUploadConverter\\:\\:\\$priority has no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Property/TypeConverter/ProfileImageUploadConverter.php
+
+		-
+			message: "#^Property Fgtclb\\\\AcademicPersonsEdit\\\\Property\\\\TypeConverter\\\\ProfileImageUploadConverter\\:\\:\\$sourceTypes has no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Property/TypeConverter/ProfileImageUploadConverter.php
+
+		-
+			message: "#^Property Fgtclb\\\\AcademicPersonsEdit\\\\Property\\\\TypeConverter\\\\ProfileImageUploadConverter\\:\\:\\$targetType has no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Property/TypeConverter/ProfileImageUploadConverter.php
+
+		-
+			message: "#^Variable \\$_EXTKEY might not be defined\\.$#"
+			count: 1
+			path: ../../../ext_emconf.php

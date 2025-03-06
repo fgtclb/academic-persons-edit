@@ -15,18 +15,22 @@
         "source": "https://github.com/fgtclb/academic-persons-edit"
     },
     "require": {
-        "php": "^8.0 || ^8.1 || ^8.2 || ^8.3",
-        "fgtclb/academic-persons": "^1.0 || 1.*.*@dev",
-        "typo3/cms-core": "^11.5 || ^12.4"
+        "php": "^8.1 || ^8.2 || ^8.3",
+        "fgtclb/academic-persons": "^2.0 || 2.*.*@dev",
+        "typo3/cms-backend": "^12.4 || ^13.4",
+        "typo3/cms-core": "^12.4 || ^13.4",
+        "typo3/cms-extbase": "^12.4 || ^13.4",
+        "typo3/cms-fluid": "^12.4 || ^13.4",
+        "typo3/cms-frontend": "^12.4 || ^13.4"
     },
     "require-dev": {
-        "bk2k/bootstrap-package": "^14.0",
+        "bk2k/bootstrap-package": "^15.0",
         "friendsofphp/php-cs-fixer": "^3.14",
         "helhum/typo3-console": "^7.1.6 || ^8.2",
         "saschaegerer/phpstan-typo3": "^1.8",
-        "typo3/cms-composer-installers": "v4.0.0-RC2 || ^5",
-        "typo3/cms-felogin": "^11.5 || ^12.4",
-        "typo3/testing-framework": "^7.0"
+        "typo3/cms-felogin": "^12.4 || ^13.4",
+        "typo3/cms-install": "^12.4 || ^13.4",
+        "typo3/testing-framework": "^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -57,7 +61,8 @@
             "extension-key": "academic_persons_edit"
         },
         "branch-alias": {
-            "dev-main": "1.x.x-dev"
+            "dev-main": "1.x.x-dev",
+            "dev-compatibility": "2.x.x-dev"
         }
     }
 }
