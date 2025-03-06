@@ -160,26 +160,25 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
      */
     private function validateUploadedFile(array $uploadedFileInformation, string $maxFileSize, string $allowedMimeTypes): void
     {
-        $typoScriptFrontendController = $this->getTypo3Request()->getAttribute('frontend.controller');
+        $typoScriptFrontendController = $this->getTypo3Request()->getAttribute('frontend.controller') ?? $GLOBALS['TSFE'] ?? null;
         $maxFileSizeInBytes = GeneralUtility::getBytesFromSizeMeasurement($maxFileSize);
         $allowedMimeTypesArray = GeneralUtility::trimExplode(',', $allowedMimeTypes);
 
         if ($uploadedFileInformation['size'] > $maxFileSizeInBytes) {
-            $message = $typoScriptFrontendController->sL('EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345');
             throw new TypeConverterException(
-                $typoScriptFrontendController->sL(
+                $typoScriptFrontendController?->sL(
                     'LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345'
-                ),
+                ) ?? 'Upload error',
                 1690538138
             );
         }
         if (!in_array($uploadedFileInformation['type'], $allowedMimeTypesArray, true)) {
             throw new TypeConverterException(
-                $typoScriptFrontendController->sL(
+                $typoScriptFrontendController?->sL(
                     'LLL:EXT:form/Resources/Private/Language/locallang.xlf:validation.error.1471708998',
                     null,
                     $uploadedFileInformation['type'],
-                ),
+                ) ?? 'Validation error',
                 1695047315
             );
         }
