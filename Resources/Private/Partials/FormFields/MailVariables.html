@@ -1,0 +1,31 @@
+<div class="card">
+    <header class="card-header">
+        <p class="card-header-title">
+            Mail-Variablen
+        </p>
+    </header>
+    <div class="card-content">
+        <div class="note note--info">
+            <span class="note__icon"></span>
+            <p class="note__text">
+                Klicke auf eine Variable, um sie in die Zwischenablage zu kopieren.
+                Markiere die Stelle im Betreff oder der Vorlage, an der du die Variable einfügen möchtest.
+                Füge die Variable über die Tastenkombination STRG-V (Windows) oder CMD-V (Mac) ein.
+            </p>
+        </div>
+        <div class="table-scrollable u-margin-top-medium c2c">
+            <div class="c2c__bubble" id="c2cBubble">Kopiert!</div>
+            <table class="table">
+                <tbody>
+                    <f:for each="{mailVariables}" as="mailVariable">
+                        <tr data-simple="{mailVariable.simple}" class="c2c__item">
+                            <td><i class="fa-regular fa-clipboard"></i></td>
+                            <td>{mailVariable.simple}</td>
+                            <td>{mailVariable.desription}</td>
+                        </tr>
+                    </f:for>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

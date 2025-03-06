@@ -1,0 +1,11 @@
+<f:render partial="App/FormFields/FieldWrapper" arguments="{element: element, help: help, required: required}" contentAs="elementContent">
+    <f:form.textfield
+        property="{element.identifier}"
+        value="{element.value}"
+        placeholder="HH:MM"
+        id="{element.identifier}"
+        class="input"
+        errorClass="is-danger"
+        disabled="{disabled}"
+    />
+</f:render>

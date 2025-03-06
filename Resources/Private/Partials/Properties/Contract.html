@@ -1,0 +1,32 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+    <f:render
+        partial="FormFields/Textfield"
+        arguments="{
+            element: {
+                form: 'contract',
+                label: 'position.name',
+                identifier: 'position',
+                placeholder: 'position.name'
+            },
+            required: 'true'
+        }"
+    />
+
+    <f:render partial="FormFields/Select"
+        arguments="{
+            element: {
+                form: 'contract',
+                label: 'contract.functionType',
+                identifier: 'functionType',
+                options: '{functionTypes}',
+                optionValueField: 'uid',
+                optionLabelField: 'functionName',
+                prependOptionValue: '',
+                prependOptionLabel: 'Choose function type...'
+            }
+        }"
+    />
+</html>

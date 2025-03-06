@@ -1,0 +1,35 @@
+<div class="btns u-margin-top-medium">
+    <f:form.button
+        name="submit"
+        value="save-and-edit"
+        class="btn btn-primary"
+    >
+        {f:render(
+            partial: 'Icons/Save'
+        )}
+        &nbsp;
+        Save
+    </f:form.button>
+    <f:form.button
+        name="submit"
+        value="save-and-close"
+        class="btn btn-primary"
+    >
+        {f:render(
+            partial: 'Icons/Save'
+        )}
+        &nbsp;
+        Save and close
+    </f:form.button>
+    <f:link.action
+        action="{f:if(condition:'{action}', then:'{action}', else:'list')}"
+        arguments="{arguments}"
+        class="btn btn-danger"
+    >
+        {f:render(
+            partial: 'Icons/Cancel'
+        )}
+        &nbsp;
+        Cancel
+    </f:link.action>
+</div>

@@ -63,9 +63,6 @@
         </div>
     </div>
 
-    <f:if condition="!{constrat.physicalAddressesFromOrganisation}">
-        <f:render partial="ProfileEdit/Contract/Addresses" arguments="{_all}"/>
-    </f:if>
     <f:render partial="ProfileEdit/Contract/EmailAddresses" arguments="{_all}"/>
     <f:render partial="ProfileEdit/Contract/PhoneNumbers" arguments="{_all}"/>
 

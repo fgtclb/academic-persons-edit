@@ -1,0 +1,39 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+    <f:layout name="Default" />
+    <f:section name="Header">
+        <h1>
+            Edit for {contract.profile.firstName} {contract.profile.lastName}
+        </h1>
+    </f:section>
+    <f:section name="Content">
+        <section class="mt-5">
+            <h2>
+                Contract data
+            </h2>
+            <f:render
+                partial="FormFields/Errors"
+                arguments="{object:Contract}"
+            />
+            <f:form
+                action="updateContract"
+                object="{contract}"
+                name="contract"
+            >
+                <f:render partial="Buttons/SaveExitCancel" />
+                {f:render(
+                    partial: 'Properties/Contract',
+                    arguments: {
+                        contract: contract,
+                        functionTypes: functionTypes,
+                        locations: locations,
+                        organisationalUnits: organisationalUnits
+                    }
+                )}
+                <f:render partial="Buttons/SaveExitCancel" />
+            </f:form>
+        </section>
+    </f:section>
+</html>

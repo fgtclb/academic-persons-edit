@@ -1,0 +1,21 @@
+<f:form.validationResults for="{element.form}.{element.identifier}">
+    <div class="field field__checkbox{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')}">        
+        <f:form.checkbox
+            property="{element.identifier}"
+            id="{f:if(condition: element.label, then: element.label, else: element.identifier)}"
+            multiple="{element.multiple}"
+            errorClass="is-danger"
+            value="1"
+            disabled="{disabled}"
+        />
+        <label for="{f:if(condition: element.label, then: element.label, else: element.identifier)}">
+            {f:translate(
+                key: 'form.{element.label}.label',
+                arguments: element.labelArguments)->f:format.raw()}
+            {f:if(
+                condition: required,
+                then: '*'
+            )}
+        </label>
+    </div>
+</f:form.validationResults>

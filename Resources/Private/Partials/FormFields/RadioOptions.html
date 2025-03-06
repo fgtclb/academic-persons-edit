@@ -1,0 +1,20 @@
+<f:form.validationResults for="{element.form}.{element.identifier}">
+    <div class="field field__radio{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')}">
+        <fieldset class="radio-options">
+            <legend class="field__label">
+                {f:translate(key:'form.{element.form}.{element.identifier}.label')->f:format.raw()}
+            </legend>
+            <f:for each="{element.options}" as="option" key="key">
+                <div class="radio-option">
+                    <f:form.radio
+                        property="{element.identifier}"
+                        id="shirtSize-{key}"
+                        value="{option}" />
+                    <label for="shirtSize-{key}">
+                        {f:translate(key:'form.{element.form}.{element.identifier}.I.{key}')->f:format.raw()}
+                    </label>
+                </div>
+            </f:for>
+        </fieldset>
+    </div>
+</f:form.validationResults>

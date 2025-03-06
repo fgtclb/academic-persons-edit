@@ -1,0 +1,12 @@
+<f:render
+    partial="App/FormFields/FieldWrapper"
+    arguments="{element: element, help: help, required: required}"
+    contentAs="elementContent">
+    <f:form.textarea
+        property="{element.identifier}"
+        id="{f:if(condition: element.label, then: element.label, else: element.identifier)}"
+        class="textarea"
+        errorClass="is-danger"
+        disabled="{disabled}"
+    />
+</f:render>
