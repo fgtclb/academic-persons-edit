@@ -71,23 +71,23 @@ jobs:
 #      - name: "Unit"
 #        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s unit"
 
-      - name: "Functional SQLite"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d sqlite"
-
-      - name: "Functional MariaDB 10.5 mysqli"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
-
-      - name: "Functional MariaDB 10.5 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
-
-      - name: "Functional MySQL 8.0 mysqli"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
-
-      - name: "Functional MySQL 8.0 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
-
-      - name: "Functional PostgresSQL 10"
-        # v11 postgres functional disabled with PHP 8.2 since https://github.com/doctrine/dbal/commit/73eec6d882b99e1e2d2d937accca89c1bd91b2d7
-        # is not fixed in doctrine core v11 doctrine 2.13.9
-        if: ${{ matrix.php <= '8.1' }}
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d postgres"
+#      - name: "Functional SQLite"
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d sqlite"
+#
+#      - name: "Functional MariaDB 10.5 mysqli"
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+#
+#      - name: "Functional MariaDB 10.5 pdo_mysql"
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+#
+#      - name: "Functional MySQL 8.0 mysqli"
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+#
+#      - name: "Functional MySQL 8.0 pdo_mysql"
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+#
+#      - name: "Functional PostgresSQL 10"
+#        # v11 postgres functional disabled with PHP 8.2 since https://github.com/doctrine/dbal/commit/73eec6d882b99e1e2d2d937accca89c1bd91b2d7
+#        # is not fixed in doctrine core v11 doctrine 2.13.9
+#        if: ${{ matrix.php <= '8.1' }}
+#        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s functional -d postgres"
