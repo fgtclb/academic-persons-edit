@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Variable \\$_EXTKEY might not be defined\\.$#"
+			message: "#^Method Fgtclb\\\\AcademicPersonsEdit\\\\Domain\\\\Model\\\\Profile\\:\\:getLanguageUid\\(\\) should return int but returns int\\<\\-1, max\\>\\|null\\.$#"
 			count: 1
-			path: ../../../ext_emconf.php
+			path: ../../../Classes/Domain/Model/Profile.php
+
+		-
+			message: "#^Parameter \\#1 \\.\\.\\.\\$constraints of method TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\QueryInterface\\<Fgtclb\\\\AcademicPersonsEdit\\\\Domain\\\\Model\\\\Address\\>\\:\\:logicalAnd\\(\\) expects TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Generic\\\\Qom\\\\ConstraintInterface, array\\<int, TYPO3\\\\CMS\\\\Extbase\\\\Persistence\\\\Generic\\\\Qom\\\\ComparisonInterface\\> given\\.$#"
+			count: 1
+			path: ../../../Classes/Domain/Repository/AddressRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$pid of method TYPO3\\\\CMS\\\\Extbase\\\\DomainObject\\\\AbstractDomainObject\\:\\:setPid\\(\\) expects int\\<0, max\\>, int given\\.$#"
+			count: 6
+			path: ../../../Classes/Profile/ProfileFactory.php
