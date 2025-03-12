@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Call to method enableUuidForTable\\(\\) on an unknown class AndreasWolf\\\\Uuid\\\\Service\\\\TableConfigurationService\\.$#"
+			count: 1
+			path: ../../../Configuration/TCA/Overrides/uuids.php
+
+		-
+			message: "#^Class AndreasWolf\\\\Uuid\\\\Service\\\\TableConfigurationService not found\\.$#"
+			count: 1
+			path: ../../../Configuration/TCA/Overrides/uuids.php
+
+		-
 			message: "#^Variable \\$_EXTKEY might not be defined\\.$#"
 			count: 1
 			path: ../../../ext_emconf.php
