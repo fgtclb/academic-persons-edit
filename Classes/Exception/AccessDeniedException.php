@@ -13,6 +13,4 @@ namespace Fgtclb\AcademicPersonsEdit\Exception;
 
 use TYPO3\CMS\Core\Exception;
 
-class AccessDeniedException extends Exception
-{
-}
+class AccessDeniedException extends Exception {}

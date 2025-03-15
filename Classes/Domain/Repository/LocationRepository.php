@@ -17,6 +17,4 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * @extends Repository<Location>
  */
-class LocationRepository extends Repository
-{
-}
+class LocationRepository extends Repository {}

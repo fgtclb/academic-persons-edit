@@ -11,6 +11,4 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\Domain\Model;
 
-class Address extends \Fgtclb\AcademicPersons\Domain\Model\Address
-{
-}
+class Address extends \Fgtclb\AcademicPersons\Domain\Model\Address {}

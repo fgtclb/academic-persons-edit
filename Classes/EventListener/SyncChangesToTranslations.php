@@ -276,7 +276,7 @@ final class SyncChangesToTranslations
         string $table,
         string $field,
         int $uid,
-    ): Result|null {
+    ): ?Result {
         $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
         if (!isset($tcaCtrl['languageField'])) {

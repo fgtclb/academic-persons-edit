@@ -27,7 +27,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([], 1);
 
-        static::assertFalse($subject->get('hasProfile'));
+        $this->assertFalse($subject->get('hasProfile'));
     }
 
     /**
@@ -37,7 +37,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([1], 1);
 
-        static::assertTrue($subject->get('hasProfile'));
+        $this->assertTrue($subject->get('hasProfile'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([], 1);
 
-        static::assertSame([], $subject->get('allProfileUids'));
+        $this->assertSame([], $subject->get('allProfileUids'));
     }
 
     /**
@@ -57,7 +57,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([1, 2], 1);
 
-        static::assertSame([1, 2], $subject->get('allProfileUids'));
+        $this->assertSame([1, 2], $subject->get('allProfileUids'));
     }
 
     /**
@@ -67,7 +67,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([], 1);
 
-        static::assertSame(0, $subject->get('activeProfileUid'));
+        $this->assertSame(0, $subject->get('activeProfileUid'));
     }
 
     /**
@@ -77,7 +77,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([1], 1);
 
-        static::assertSame(1, $subject->get('activeProfileUid'));
+        $this->assertSame(1, $subject->get('activeProfileUid'));
     }
 
     /**
@@ -87,7 +87,7 @@ class ProfileAspectTest extends UnitTestCase
     {
         $subject = new ProfileAspect([1], 0);
 
-        static::assertSame(0, $subject->get('activeProfileUid'));
+        $this->assertSame(0, $subject->get('activeProfileUid'));
     }
 
     /**

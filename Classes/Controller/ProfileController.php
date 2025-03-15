@@ -127,7 +127,7 @@ final class ProfileController extends ActionController
     /**
      * @IgnoreValidation("profile")
      */
-    public function showProfileEditingFormAction(Profile $profile = null): ResponseInterface
+    public function showProfileEditingFormAction(?Profile $profile = null): ResponseInterface
     {
         if ($profile === null) {
             $activeProfileUid = (int)$this->context->getPropertyFromAspect('frontend.profile', 'activeProfileUid', []);
