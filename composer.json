@@ -19,11 +19,6 @@
     "fgtclb/academic-persons": "1.2.*@dev",
     "typo3/cms-core": "^11.5 || ^12.4"
   },
-  "require-dev": {
-    "typo3/cms-composer-installers": "v4.0.0-RC2 || ^5",
-    "typo3/cms-felogin": "^11.5 || ^12.4",
-    "typo3/testing-framework": "^7.0"
-  },
   "autoload": {
     "psr-4": {
       "Fgtclb\\AcademicPersonsEdit\\": "Classes/"
