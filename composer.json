@@ -16,7 +16,7 @@
     },
     "require": {
         "php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
-        "fgtclb/academic-persons": "1.2.*@dev",
+        "fgtclb/academic-persons": "2.0.*@dev",
         "typo3/cms-core": "^11.5 || ^12.4"
     },
     "autoload": {
