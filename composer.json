@@ -20,10 +20,6 @@
     "typo3/cms-core": "^11.5 || ^12.4"
   },
   "require-dev": {
-    "bk2k/bootstrap-package": "^14.0",
-    "friendsofphp/php-cs-fixer": "^3.14",
-    "helhum/typo3-console": "^7.1.6 || ^8.2",
-    "saschaegerer/phpstan-typo3": "^1.8",
     "typo3/cms-composer-installers": "v4.0.0-RC2 || ^5",
     "typo3/cms-felogin": "^11.5 || ^12.4",
     "typo3/testing-framework": "^7.0"
