@@ -1,70 +1,40 @@
-# Academic person database - frontend editing
+# TYPO3 Extension `Academic person database - frontend editing` (READ-ONLY)
+
+|                  | URL                                                                        |
+|------------------|----------------------------------------------------------------------------|
+| **Repository:**  | https://github.com/fgtclb/academic-persons-edit                            |
+| **Read online:** | https://docs.typo3.org/p/fgtclb/academic/academic-persons-edit/main/en-us/ |
+| **TER:**         | https://extensions.typo3.org/extension/academic_persons_edit/              |
+
+## Description
 
 This extension extends the `academic_persons` extension by the option to edit profiles in the frontend.
 Profiles get connected with a frontend user and the frontend user is allow to edit its assigned profiles.
 
-**This extension is currently in beta state - please notice that there might be changes to the structure**
+> [!NOTE]
+> This extension is currently in beta state - please notice that there might be changes to the structure
+
+## Compatibility
+
+| Branch | Version   | TYPO3      | PHP                |
+|--------|-----------|------------|--------------------|
+| main   | 1.2.x-dev | v11 + ~v12 | 8.1, 8.2, 8.3, 8.4 |
 
 ## Installation
 
-```shell
-composer require fgtclb/academic-persons-edit
+Install with your flavour:
+
+* [TER](https://extensions.typo3.org/extension/academic_persons_edit/)
+* Extension Manager
+* composer
+
+We prefer composer installation:
+```bash
+composer req fgtclb/academic-persons-edit
 ```
 
-## Create a release (maintainers only)
+## Credits
 
-Prerequisites:
+This extension was created by [FGTCLB GmbH](https://www.fgtclb.com/).
 
-* git binary
-* ssh key allowed to push new branches to the repository
-* GitHub command line tool `gh` installed and configured with user having permission to create pull requests.
-
-**Prepare release locally**
-
-> Set `RELEASE_BRANCH` to branch release should happen, for example: 'main'.
-> Set `RELEASE_VERSION` to release version working on, for example: '1.1.0'.
-
-```shell
-echo '>> Prepare release pull-request' ; \
-  RELEASE_BRANCH='main' ; \
-  RELEASE_VERSION='1.1.0' ; \
-  git checkout main && \
-  git fetch --all && \
-  git pull --rebase && \
-  git checkout ${RELEASE_BRANCH} && \
-  git pull --rebase && \
-  git checkout -b prepare-release-${RELEASE_VERSION} && \
-  composer require --dev "typo3/tailor" && \
-  ./.Build/bin/tailor set-version ${RELEASE_VERSION} && \
-  composer remove --dev "typo3/tailor" && \
-  git add . && \
-  git commit -m "[RELEASE] ${RELEASE_VERSION}" && \
-  git push --set-upstream origin prepare-release-${RELEASE_VERSION} && \
-  gh pr create --fill-verbose --base ${RELEASE_BRANCH} --title "[RELEASE] ${RELEASE_VERSION}" && \
-  git checkout main && \
-  git branch -D prepare-release-${RELEASE_VERSION}
-```
-
-Check pull-request and the pipeline run.
-
-**Merge approved pull-request and push version tag**
-
-> Set `RELEASE_PR_NUMBER` with the pull-request number of the preparation pull-request.
-> Set `RELEASE_BRANCH` to branch release should happen, for example: 'main' (same as in previous step).
-> Set `RELEASE_VERSION` to release version working on, for example: `1.1.0` (same as in previous step).
-
-```shell
-RELEASE_BRANCH='main' ; \
-RELEASE_VERSION='1.1.0' ; \
-RELEASE_PR_NUMBER='123' ; \
-  git checkout main && \
-  git fetch --all && \
-  git pull --rebase && \
-  gh pr checkout ${RELEASE_PR_NUMBER} && \
-  gh pr merge -rd ${RELEASE_PR_NUMBER} && \
-  git tag ${RELEASE_VERSION} && \
-  git push --tags
-```
-
-This triggers the `on push tags` workflow (`publish.yml`) which creates the upload package,
-creates the GitHub release and also uploads the release to the TYPO3 Extension Repository.
+[Find more TYPO3 extensions we have developed](https://github.com/fgtclb/).
