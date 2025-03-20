@@ -15,10 +15,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class SyncChangesToTranslations
 {
-    private int $defaultLanguage;
+    private readonly int $defaultLanguage;
 
     /** @var int[] */
-    private array $allowedLanguages;
+    private readonly array $allowedLanguages;
 
     public function __construct(
         ProfileTranslator $profileTranslator

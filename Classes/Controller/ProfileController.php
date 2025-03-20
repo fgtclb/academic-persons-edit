@@ -50,33 +50,7 @@ final class ProfileController extends ActionController
 {
     public const FLASH_MESSAGE_QUEUE_IDENTIFIER = 'academic_profile';
 
-    private Context $context;
-
-    private ProfileRepository $profileRepository;
-
-    private PersistenceManagerInterface $persistenceManager;
-
-    private AddressRepository $addressRepository;
-
-    private ProfileTranslator $profileTranslator;
-
-    private LocationRepository $locationRepository;
-
-    public function __construct(
-        Context $context,
-        ProfileRepository $profileRepository,
-        PersistenceManagerInterface $persistenceManager,
-        AddressRepository $addressRepository,
-        ProfileTranslator $profileTranslator,
-        LocationRepository $locationRepository
-    ) {
-        $this->context = $context;
-        $this->profileRepository = $profileRepository;
-        $this->persistenceManager = $persistenceManager;
-        $this->addressRepository = $addressRepository;
-        $this->profileTranslator = $profileTranslator;
-        $this->locationRepository = $locationRepository;
-    }
+    public function __construct(private readonly Context $context, private readonly ProfileRepository $profileRepository, private readonly PersistenceManagerInterface $persistenceManager, private readonly AddressRepository $addressRepository, private readonly ProfileTranslator $profileTranslator, private readonly LocationRepository $locationRepository) {}
 
     public function initializeAction(): void
     {

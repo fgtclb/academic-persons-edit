@@ -25,21 +25,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 abstract class AbstractProfileFactory implements ProfileFactoryInterface
 {
-    protected PersistenceManagerInterface $persistenceManager;
-
-    protected ExtensionConfiguration $extensionConfiguration;
-
-    protected EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(
-        PersistenceManagerInterface $persistenceManager,
-        ExtensionConfiguration $extensionConfiguration,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->persistenceManager = $persistenceManager;
-        $this->extensionConfiguration = $extensionConfiguration;
-        $this->eventDispatcher = $eventDispatcher;
-    }
+    public function __construct(protected PersistenceManagerInterface $persistenceManager, protected ExtensionConfiguration $extensionConfiguration, protected EventDispatcherInterface $eventDispatcher) {}
 
     public function shouldCreateProfileForUser(FrontendUserAuthentication $frontendUserAuthentication): bool
     {

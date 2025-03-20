@@ -44,12 +44,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
 
     protected $priority = 10;
 
-    protected ResourceFactory $resourceFactory;
-
-    public function __construct(ResourceFactory $resourceFactory)
-    {
-        $this->resourceFactory = $resourceFactory;
-    }
+    public function __construct(protected ResourceFactory $resourceFactory) {}
 
     /**
      * Actually convert from $source to $targetType, taking into account the fully

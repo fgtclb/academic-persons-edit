@@ -17,20 +17,9 @@ use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 final class ProfileAspect implements AspectInterface
 {
     /**
-     * @var list<int>
-     */
-    private array $profileUids;
-
-    private int $activeProfileUid;
-
-    /**
      * @param list<int> $profileUids
      */
-    public function __construct(array $profileUids, int $activeProfileUid)
-    {
-        $this->profileUids = $profileUids;
-        $this->activeProfileUid = $activeProfileUid;
-    }
+    public function __construct(private readonly array $profileUids, private readonly int $activeProfileUid) {}
 
     /**
      * @return bool|int|int[]
@@ -43,7 +32,7 @@ final class ProfileAspect implements AspectInterface
             'allProfileUids' => $this->profileUids,
             'activeProfileUid' => empty($this->profileUids) ? 0 : $this->activeProfileUid,
             default => throw new AspectPropertyNotFoundException(
-                'Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".',
+                'Property "' . $name . '" not found in Aspect "' . self::class . '".',
                 1689845908
             )
         };

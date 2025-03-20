@@ -18,12 +18,7 @@ final class ChooseProfileFactoryEvent
 {
     private ?ProfileFactoryInterface $profileFactory = null;
 
-    private FrontendUserAuthentication $frontendUserAuthentication;
-
-    public function __construct(FrontendUserAuthentication $frontendUserAuthentication)
-    {
-        $this->frontendUserAuthentication = $frontendUserAuthentication;
-    }
+    public function __construct(private readonly FrontendUserAuthentication $frontendUserAuthentication) {}
 
     public function getFrontendUserAuthentication(): FrontendUserAuthentication
     {

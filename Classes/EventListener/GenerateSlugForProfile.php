@@ -18,12 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class GenerateSlugForProfile
 {
-    private ConnectionPool $connectionPool;
-
-    public function __construct(ConnectionPool $connectionPool)
-    {
-        $this->connectionPool = $connectionPool;
-    }
+    public function __construct(private readonly ConnectionPool $connectionPool) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
     {

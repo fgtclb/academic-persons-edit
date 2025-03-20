@@ -31,21 +31,7 @@ final class ProfileLoader implements MiddlewareInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private Context $context;
-
-    private ProfileProvider $profileProvider;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(
-        Context $context,
-        ProfileProvider $profileProvider,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->context = $context;
-        $this->profileProvider = $profileProvider;
-        $this->eventDispatcher = $eventDispatcher;
-    }
+    public function __construct(private Context $context, private ProfileProvider $profileProvider, private EventDispatcherInterface $eventDispatcher) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

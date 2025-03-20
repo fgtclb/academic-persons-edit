@@ -23,12 +23,7 @@ final class ProfileProvider implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private ConnectionPool $connectionPool;
-
-    public function __construct(ConnectionPool $connectionPool)
-    {
-        $this->connectionPool = $connectionPool;
-    }
+    public function __construct(private ConnectionPool $connectionPool) {}
 
     public function userHasProfile(int $userUid): bool
     {

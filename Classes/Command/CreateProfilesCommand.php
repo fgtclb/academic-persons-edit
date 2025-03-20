@@ -24,14 +24,8 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class CreateProfilesCommand extends Command
 {
-    private FrontendUserProvider $frontendUserProvider;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(FrontendUserProvider $frontendUserProvider, EventDispatcherInterface $eventDispatcher)
+    public function __construct(private readonly FrontendUserProvider $frontendUserProvider, private readonly EventDispatcherInterface $eventDispatcher)
     {
-        $this->frontendUserProvider = $frontendUserProvider;
-        $this->eventDispatcher = $eventDispatcher;
         parent::__construct();
     }
 

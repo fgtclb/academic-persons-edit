@@ -15,12 +15,7 @@ use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 
 final class AfterProfileUpdateEvent
 {
-    private Profile $profile;
-
-    public function __construct(Profile $profile)
-    {
-        $this->profile = $profile;
-    }
+    public function __construct(private readonly Profile $profile) {}
 
     public function getProfile(): Profile
     {

@@ -19,12 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class ProfileTranslator
 {
-    protected ExtensionConfiguration $extensionConfiguration;
-
-    public function __construct(ExtensionConfiguration $extensionConfiguration)
-    {
-        $this->extensionConfiguration = $extensionConfiguration;
-    }
+    public function __construct(protected ExtensionConfiguration $extensionConfiguration) {}
 
     /**
      * @return int The uid of the transalted profile
