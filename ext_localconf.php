@@ -10,55 +10,56 @@ declare(strict_types=1);
  */
 
 use Fgtclb\AcademicPersonsEdit\Controller\ProfileController;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
-ExtensionUtility::configurePlugin(
-    'AcademicPersonsEdit',
-    'ProfileSwitcher',
-    [
-        ProfileController::class => 'showProfileSwitch,executeProfileSwitch',
-    ],
-    [
-        ProfileController::class => 'showProfileSwitch,executeProfileSwitch',
-    ],
-);
+(static function (): void {
 
-ExtensionUtility::configurePlugin(
-    'AcademicPersonsEdit',
-    'ProfileEditing',
-    [
-        ProfileController::class => implode(',', [
-            'showProfileEditingForm',
-            'saveProfile',
-            'removeImage',
-            'addPhysicalAddress',
-            'removePhysicalAddress',
-            'addEmailAddress',
-            'removeEmailAddress',
-            'addPhoneNumber',
-            'removePhoneNumber',
-            'translate',
-            'addProfileInformation',
-            'removeProfileInformation',
-        ]),
-    ],
-    [
-        ProfileController::class => implode(',', [
-            'showProfileEditingForm',
-            'saveProfile',
-            'removeImage',
-            'addPhysicalAddress',
-            'removePhysicalAddress',
-            'addEmailAddress',
-            'removeEmailAddress',
-            'addPhoneNumber',
-            'removePhoneNumber',
-            'translate',
-            'addProfileInformation',
-            'removeProfileInformation',
-        ]),
-    ],
-);
+    ExtensionUtility::configurePlugin(
+        'AcademicPersonsEdit',
+        'ProfileSwitcher',
+        [
+            ProfileController::class => 'showProfileSwitch,executeProfileSwitch',
+        ],
+        [
+            ProfileController::class => 'showProfileSwitch,executeProfileSwitch',
+        ],
+    );
 
-ExtensionManagementUtility::addPageTSConfig('@import \'EXT:academic_persons_edit/Configuration/TSconfig/page.tsconfig\'');
+    ExtensionUtility::configurePlugin(
+        'AcademicPersonsEdit',
+        'ProfileEditing',
+        [
+            ProfileController::class => implode(',', [
+                'showProfileEditingForm',
+                'saveProfile',
+                'removeImage',
+                'addPhysicalAddress',
+                'removePhysicalAddress',
+                'addEmailAddress',
+                'removeEmailAddress',
+                'addPhoneNumber',
+                'removePhoneNumber',
+                'translate',
+                'addProfileInformation',
+                'removeProfileInformation',
+            ]),
+        ],
+        [
+            ProfileController::class => implode(',', [
+                'showProfileEditingForm',
+                'saveProfile',
+                'removeImage',
+                'addPhysicalAddress',
+                'removePhysicalAddress',
+                'addEmailAddress',
+                'removeEmailAddress',
+                'addPhoneNumber',
+                'removePhoneNumber',
+                'translate',
+                'addProfileInformation',
+                'removeProfileInformation',
+            ]),
+        ],
+    );
+
+})();
