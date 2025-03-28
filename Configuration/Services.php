@@ -15,6 +15,6 @@ use Fgtclb\AcademicPersonsEdit\Profile\ProfileFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-return static function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
+return static function (ContainerConfigurator $container, ContainerBuilder $containerBuilder): void {
     $containerBuilder->registerForAutoconfiguration(ProfileFactoryInterface::class)->setPublic(true);
 };
