@@ -15,14 +15,10 @@ use Fgtclb\AcademicPersonsEdit\Context\ProfileAspect;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-/**
- * @covers \Fgtclb\AcademicPersonsEdit\Context\ProfileAspect
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Fgtclb\AcademicPersonsEdit\Context\ProfileAspect::class)]
 class ProfileAspectTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function emptyProfileUidsWillResultInNotHavingProfile(): void
     {
         $subject = new ProfileAspect([], 1);
@@ -30,9 +26,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertFalse($subject->get('hasProfile'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function givenProfileUidsWillResultInHavingProfile(): void
     {
         $subject = new ProfileAspect([1], 1);
@@ -40,9 +34,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertTrue($subject->get('hasProfile'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function emptyProfileUidsWillReturnEmptyArray(): void
     {
         $subject = new ProfileAspect([], 1);
@@ -50,9 +42,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertSame([], $subject->get('allProfileUids'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function givenProfileUidsWillReturnUids(): void
     {
         $subject = new ProfileAspect([1, 2], 1);
@@ -60,9 +50,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertSame([1, 2], $subject->get('allProfileUids'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function emptyProfileUidsAndGivenActiveProfileUidWillReturnZero(): void
     {
         $subject = new ProfileAspect([], 1);
@@ -70,9 +58,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertSame(0, $subject->get('activeProfileUid'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function givenProfileUidsAndGivenActiveProfileUidWillReturnActiveProfileUid(): void
     {
         $subject = new ProfileAspect([1], 1);
@@ -80,9 +66,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertSame(1, $subject->get('activeProfileUid'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function givenProfileUidsAndNoActiveProfileUidWillReturnZero(): void
     {
         $subject = new ProfileAspect([1], 0);
@@ -90,9 +74,7 @@ class ProfileAspectTest extends UnitTestCase
         $this->assertSame(0, $subject->get('activeProfileUid'));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function gettingInvalidValueWillResultInException(): void
     {
         $subject = new ProfileAspect([1], 1);
