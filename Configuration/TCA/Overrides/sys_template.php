@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /*
  * This file is part of the "academic_persons_edit" Extension for TYPO3 CMS.
  *
@@ -9,7 +11,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+ExtensionManagementUtility::addStaticFile(
     'academic_persons_edit',
     'Configuration/TypoScript/',
     'Academic Persons Edit Settings'

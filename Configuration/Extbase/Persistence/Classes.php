@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Address;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Location;
+
 /*
  * This file is part of the "academic_persons_edit" Extension for TYPO3 CMS.
  *
@@ -10,16 +15,16 @@ declare(strict_types=1);
  */
 
 return [
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Profile::class => [
+    Profile::class => [
         'tableName' => 'tx_academicpersons_domain_model_profile',
     ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Address::class => [
+    Address::class => [
         'tableName' => 'tx_academicpersons_domain_model_address',
     ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser::class => [
+    FrontendUser::class => [
         'tableName' => 'fe_users',
     ],
-    \Fgtclb\AcademicPersonsEdit\Domain\Model\Location::class => [
+    Location::class => [
         'tableName' => 'tx_academicpersons_domain_model_location',
     ],
 ];

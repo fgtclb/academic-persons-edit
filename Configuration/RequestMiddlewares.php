@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Fgtclb\AcademicPersonsEdit\Middleware\ProfileLoader;
+
 /*
  * This file is part of the "academic_persons_edit" Extension for TYPO3 CMS.
  *
@@ -12,7 +14,7 @@ declare(strict_types=1);
 return [
     'frontend' => [
         'fgtclb/academic-persons-edit/profile-loader' => [
-            'target' => \Fgtclb\AcademicPersonsEdit\Middleware\ProfileLoader::class,
+            'target' => ProfileLoader::class,
             'after' => [
                 'typo3/cms-frontend/authentication',
                 'typo3/cms-frontend/prepare-tsfe-rendering',
