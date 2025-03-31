@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\Tests\Unit\Context;
 
+use Fgtclb\AcademicPersonsEdit\Context\ProfileAspect;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use Fgtclb\AcademicPersonsEdit\Context\ProfileAspect;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

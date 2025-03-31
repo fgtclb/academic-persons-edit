@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Address;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\FrontendUser;
 use Fgtclb\AcademicPersonsEdit\Domain\Model\Location;
+use Fgtclb\AcademicPersonsEdit\Domain\Model\Profile;
 
 /*
  * This file is part of the "academic_persons_edit" Extension for TYPO3 CMS.
