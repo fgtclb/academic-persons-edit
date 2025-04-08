@@ -31,9 +31,11 @@ use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
 use Fgtclb\AcademicPersonsEdit\Property\TypeConverter\ProfileImageUploadConverter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -50,14 +52,25 @@ final class ProfileController extends ActionController
 {
     public const FLASH_MESSAGE_QUEUE_IDENTIFIER = 'academic_profile';
 
-    public function __construct(private readonly Context $context, private readonly ProfileRepository $profileRepository, private readonly PersistenceManagerInterface $persistenceManager, private readonly AddressRepository $addressRepository, private readonly ProfileTranslator $profileTranslator, private readonly LocationRepository $locationRepository) {}
+    public function __construct(
+        private readonly Context $context,
+        private readonly ProfileRepository $profileRepository,
+        private readonly PersistenceManagerInterface $persistenceManager,
+        private readonly AddressRepository $addressRepository,
+        private readonly ProfileTranslator $profileTranslator,
+        private readonly LocationRepository $locationRepository,
+        private readonly LoggerInterface $logger,
+    ) {}
 
     public function initializeAction(): void
     {
         if ($this->context->getPropertyFromAspect('frontend.user', 'isLoggedIn', false) === false) {
-            GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
-                $this->request,
-                'Authentication needed'
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'Authentication needed'
+                ),
+                1744109477
             );
         }
     }
@@ -113,24 +126,27 @@ final class ProfileController extends ActionController
 
         // TODO: To die() is no good way out here, talk to your trusted TYPO3 developer first
         if ($profile === null || !in_array($profile->getUid(), $profileUids)) {
-            GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
-                $this->request,
-                'No profile assigned to user'
+            $this->logger->error(
+                'showProfileEditingFormAction has been called without a valid profile.',
+                [
+                    'uid' => $profile?->getUid(),
+                    'allProfileUids' => $profileUids,
+                ]
             );
-            die();
-        }
-
-        try {
-            $this->checkProfileEditAccess((int)$profile->getUid());
-        } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744109477
+            );
         }
 
         $availableAddresses = [];
         foreach ($profile->getContracts() as $contract) {
             $availableAddresses[$contract->getUid()] = $this->addressRepository->getAddressFromOrganisation(
                 $contract->getEmployeeType(),
-                $contract->getOrganisationalUNit()
+                $contract->getOrganisationalUnit()
             )->toArray();
         }
 
@@ -188,7 +204,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187065
+            );
         }
 
         $profile->setFirstNameAlpha(strtolower(substr($profile->getFirstName(), 0, 1)));
@@ -228,7 +250,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187076
+            );
         }
 
         $image = $profile->getImage();
@@ -249,7 +277,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187090
+            );
         }
 
         $address = GeneralUtility::makeInstance(Address::class);
@@ -270,7 +304,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187102
+            );
         }
 
         $contract->getPhysicalAddresses()->detach($address);
@@ -289,7 +329,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187112
+            );
         }
 
         $emailAddress = GeneralUtility::makeInstance(Email::class);
@@ -310,7 +356,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744109477
+            );
         }
 
         $contract->getEmailAddresses()->detach($emailAddress);
@@ -329,7 +381,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187172
+            );
         }
 
         $phoneNumber = GeneralUtility::makeInstance(PhoneNumber::class);
@@ -350,7 +408,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187176
+            );
         }
 
         $contract->getPhoneNumbers()->detach($phoneNumber);
@@ -365,7 +429,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess($profileUid);
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187180
+            );
         }
 
         $this->profileTranslator->translateTo($profileUid, $languageUid);
@@ -381,7 +451,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187186
+            );
         }
 
         $profileInformation = GeneralUtility::makeInstance(ProfileInformation::class);
@@ -433,7 +509,13 @@ final class ProfileController extends ActionController
         try {
             $this->checkProfileEditAccess((int)$profile->getUid());
         } catch (AccessDeniedException) {
-            return new Response(null, 403);
+            throw new PropagateResponseException(
+                GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                    $this->request,
+                    'No profile assigned to user.'
+                ),
+                1744187195
+            );
         }
 
         switch ($profileInformation->getType()) {
