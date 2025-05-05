@@ -1,0 +1,31 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:variable
+        name="elementId"
+        value="{element.form}.{element.identifier}"
+    />
+    <f:variable name="type" value="text" />
+    <f:variable name="required" value="{element.required}" />
+    <f:for each="{element.validations.{element.identifier}}" as="validation">
+        <f:switch expression="{validation}">
+            <f:case value="required">
+                <f:variable name="required" value="1" />
+            </f:case>
+        </f:switch>
+    </f:for>
+    <f:render
+        partial="Forms/FieldWrapper"
+        arguments="{element: element, elementId: elementId, required: required}"
+        contentAs="elementContent"
+    >
+        <f:form.checkbox
+            property="{element.identifier}"
+            id="{elementId}"
+            value="1"
+            disabled="{element.disabled}"
+        />
+    </f:render>
+</html>

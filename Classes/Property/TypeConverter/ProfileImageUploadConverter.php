@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace Fgtclb\AcademicPersonsEdit\Property\TypeConverter;
+namespace FGTCLB\AcademicPersonsEdit\Property\TypeConverter;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;

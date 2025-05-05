@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fgtclb\AcademicPersonsEdit\Tests\Functional;
+namespace FGTCLB\AcademicPersonsEdit\Tests\Functional;
 
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;

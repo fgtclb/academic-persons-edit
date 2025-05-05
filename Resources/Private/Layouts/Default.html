@@ -1,9 +1,28 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
-<div class="container">
-    <f:render section="Content" />
-</div>
-
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <f:link.page>Profile list</f:link.page>
+            </li>
+            <f:if condition="{profile}">
+                <li class="breadcrumb-item">
+                    <f:link.action controller="Profile" action="show" arguments="{profile: profile}">
+                        {profile.firstName} {profile.lastName}
+                    </f:link.action>
+                </li>
+            </f:if> 
+            <f:if condition="{contract}">
+                <li class="breadcrumb-item">
+                    <f:link.action controller="Contract" action="show" arguments="{contract: contract}">
+                        {contract.functionType.functionName} / {contract.organisationalUnit.unitName}
+                    </f:link.action>
+                </li>
+            </f:if> 
+        </ol>
+    </nav>
+    <f:flashMessages />
+    <f:render section="Main" />
 </html>

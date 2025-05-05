@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fgtclb\AcademicPersonsEdit\Upgrades;
+namespace FGTCLB\AcademicPersonsEdit\Upgrades;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fgtclb\AcademicPersonsEdit\Tests\Functional;
+namespace FGTCLB\AcademicPersonsEdit\Tests\Functional;
 
 use SBUERK\TYPO3\Testing\TestCase\FunctionalTestCase;
 

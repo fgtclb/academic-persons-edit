@@ -4,26 +4,20 @@ services:
     autoconfigure: true
     public: false
 
-  Fgtclb\AcademicPersonsEdit\:
+  FGTCLB\AcademicPersonsEdit\:
     resource: '../Classes/*'
 
-  Fgtclb\AcademicPersonsEdit\Property\TypeConverter\FileUploadConverter:
+  FGTCLB\AcademicPersonsEdit\Property\TypeConverter\FileUploadConverter:
     public: true
 
-  Fgtclb\AcademicPersonsEdit\EventListener\GenerateSlugForProfile:
+  FGTCLB\AcademicPersonsEdit\EventListener\GenerateSlugForProfile:
     tags:
       - name: event.listener
         identifier: generateSlugForProfile
-        event: Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent
+        event: FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent
 
-  Fgtclb\AcademicPersonsEdit\EventListener\SyncChangesToTranslations:
+  FGTCLB\AcademicPersonsEdit\EventListener\SyncChangesToTranslations:
     tags:
       - name: 'event.listener'
         identifier: syncChangesToTranslations
-        event: 'Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent'
-
-  Fgtclb\AcademicPersonsEdit\Command\CreateProfilesCommand:
-    tags:
-      - name: console.command
-        command: 'academic:createprofiles'
-        description: 'This command create profiles for all frontend users that do not have a profile yet but should have one.'
+        event: 'FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent'

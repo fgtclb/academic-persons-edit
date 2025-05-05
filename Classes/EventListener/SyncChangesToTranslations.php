@@ -2,34 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Fgtclb\AcademicPersonsEdit\EventListener;
+namespace FGTCLB\AcademicPersonsEdit\EventListener;
 
 use Doctrine\DBAL\Result;
-use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
-use Fgtclb\AcademicPersonsEdit\Profile\ProfileTranslator;
+use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
+use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class SyncChangesToTranslations
 {
-    private readonly int $defaultLanguage;
+    private ?int $defaultLanguage = null;
 
     /** @var int[] */
-    private readonly array $allowedLanguages;
+    private ?array $allowedLanguages = null;
 
     public function __construct(
-        ProfileTranslator $profileTranslator
-    ) {
-        $site = $GLOBALS['TYPO3_REQUEST']->getAttribute('site');
-        $this->defaultLanguage = $site->getDefaultLanguage()->getLanguageId();
-        $this->allowedLanguages = $profileTranslator->getAllowedLanguageIds();
-    }
+        private readonly ConnectionPool $connectionPool,
+        private readonly ProfileTranslator $profileTranslator,
+    ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
     {
+        $this->init();
         $profile = $event->getProfile();
         if ($profile->getUid() === null || $profile->getIsTranslation() === true) {
             return;
@@ -57,7 +56,7 @@ final class SyncChangesToTranslations
         }
 
         $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
-        foreach ($this->allowedLanguages as $languageUid) {
+        foreach ($this->allowedLanguages() as $languageUid) {
             $translatedRecord = $this->getTranslatedRecord($table, $uid, $languageUid);
 
             // Create translation if it does not exist
@@ -224,7 +223,7 @@ final class SyncChangesToTranslations
                 ),
                 $queryBuilder->expr()->eq(
                     $tcaCtrl['languageField'],
-                    $queryBuilder->createNamedParameter($this->defaultLanguage, Connection::PARAM_INT)
+                    $queryBuilder->createNamedParameter($this->defaultLanguageId(), Connection::PARAM_INT)
                 )
             )
             ->setMaxResults(1);
@@ -292,7 +291,7 @@ final class SyncChangesToTranslations
                 ),
                 $queryBuilder->expr()->eq(
                     $tcaCtrl['languageField'],
-                    $queryBuilder->createNamedParameter($this->defaultLanguage, Connection::PARAM_INT)
+                    $queryBuilder->createNamedParameter($this->defaultLanguageId(), Connection::PARAM_INT)
                 )
             );
 
@@ -307,11 +306,34 @@ final class SyncChangesToTranslations
      */
     private function getQueryBuilder(string $table): QueryBuilder
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $queryBuilder;
+    }
+
+    private function init(): void
+    {
+        $this->defaultLanguage ??= $this->getSite()?->getDefaultLanguage()->getLanguageId() ?? 0;
+        $this->allowedLanguages ??= $this->profileTranslator->getAllowedLanguageIds();
+    }
+
+    private function defaultLanguageId(): int
+    {
+        return $this->defaultLanguage ?? 0;
+    }
+
+    /**
+     * @return int[]
+     */
+    private function allowedLanguages(): array
+    {
+        return $this->allowedLanguages ?? [];
+    }
+
+    private function getSite(): ?Site
+    {
+        return ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('site');
     }
 }

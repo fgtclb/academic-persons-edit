@@ -9,16 +9,18 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace Fgtclb\AcademicPersonsEdit\EventListener;
+namespace FGTCLB\AcademicPersonsEdit\EventListener;
 
-use Fgtclb\AcademicPersonsEdit\Event\AfterProfileUpdateEvent;
+use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class GenerateSlugForProfile
 {
-    public function __construct(private readonly ConnectionPool $connectionPool) {}
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
     {
@@ -28,7 +30,6 @@ final class GenerateSlugForProfile
         }
 
         $profileConnection = $this->connectionPool->getConnectionForTable('tx_academicpersons_domain_model_profile');
-
         $profileRecord = $profileConnection
             ->select(['*'], 'tx_academicpersons_domain_model_profile', ['uid' => $profileUid])
             ->fetchAssociative();
@@ -61,7 +62,7 @@ final class GenerateSlugForProfile
             SlugHelper::class,
             'tx_academicpersons_domain_model_profile',
             'slug',
-            $GLOBALS['TCA']['tx_academicpersons_domain_model_profile']['columns']['slug']['config']
+            $GLOBALS['TCA']['tx_academicpersons_domain_model_profile']['columns']['slug']['config'] ?? []
         );
     }
 }

@@ -1,0 +1,77 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Default" />
+    <f:section name="Main">
+        <h1>Edit profile of {profile.firstName} {profile.lastName}</h1>
+        <f:if condition="{profile.languageUid}=={currentLanguageUid}">
+            <f:then>
+                {f:render(
+                    section: 'Form',
+                    arguments: _all
+                )}
+            </f:then>
+            <f:else>
+                {f:render(
+                    section: 'Translation',
+                    arguments: _all
+                )}
+            </f:else>
+        </f:if>
+    </f:section>
+
+    <f:section name="Form">
+        <f:asset.script
+            identifier="ckeditor"
+            src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"
+            async="1"
+            defer="1"
+        />
+        <f:render
+            partial="Forms/Errors"
+            arguments="{object:ProfileFormData}"
+        />
+        <f:form
+            action="update"
+            name="profileFormData"
+            object="{profileFormData}"
+            arguments="{profile: profile}"
+        >
+            <f:render
+                partial="Buttons/SaveExitCancel"
+                arguments="{cancelUrl: cancelUrl}"
+            />
+            <f:render
+                partial="Properties/Profile"
+                arguments="{profile: profileFormData}"
+            />
+            <f:render
+                partial="Buttons/SaveExitCancel"
+                arguments="{cancelUrl: cancelUrl}"
+            />
+        </f:form>
+    </f:section>
+
+    <f:section name="Translation">
+        <p>
+            {f:translate(
+                key: 'tx_academicpersonsedit.fe.error.no_translation',
+                extensionName: 'academic_persons_edit_hnee'
+            )}
+        </p>
+        <f:if condition="{translationAllowed}">
+            <f:link.action
+                action="translate"
+                arguments="{profileUid: profile.uid, languageUid: currentLanguageUid}"
+                class="btn btn-primary"
+            >
+                {f:translate(
+                    key: 'tx_academicpersonsedit.fe.profile.btn.translate',
+                    extensionName: 'academic_persons_edit_hnee'
+                )}
+            </f:link.action>
+        </f:if>
+    </f:section>
+</html>

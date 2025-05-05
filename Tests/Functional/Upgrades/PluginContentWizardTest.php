@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fgtclb\AcademicPersonsEdit\Tests\Functional\Upgrades;
+namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Upgrades;
 
-use Fgtclb\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
-use Fgtclb\AcademicPersonsEdit\Upgrades\PluginContentWizard;
+use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
+use FGTCLB\AcademicPersonsEdit\Upgrades\PluginContentWizard;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 

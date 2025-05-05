@@ -1,0 +1,26 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:render
+        partial="Forms/Textfield"
+        arguments="{
+            element: {
+                form: 'emailAddress',
+                identifier: 'email',
+                validations: validations
+            }
+        }"
+    />
+    <f:render
+        partial="Forms/Textfield"
+        arguments="{
+            element: {
+                form: 'emailAddress',
+                identifier: 'type',
+                validations: validations
+            }
+        }"
+    />
+</html>

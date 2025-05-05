@@ -1,0 +1,97 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:link.action
+        controller="ProfileInformation"
+        action="new"
+        arguments="{profile: profile, type: type}"
+        class="btn btn-primary"
+    >
+        Add
+    </f:link.action>
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <f:if condition="{profileInformations}">
+            <tbody class="table-group-divider">
+                <f:for
+                    each="{profileInformations}"
+                    as="profileInformation"
+                    iteration="profileInformationIteration"
+                >
+                    <tr>
+                        <td>{profileInformation.year}</td>
+                        <td>{profileInformation.title}</td>
+                        <td>
+                            <f:link.action
+                                controller="ProfileInformation"
+                                action="edit"
+                                arguments="{profileInformation: profileInformation}"
+                                class="btn btn-primary"
+                            >
+                                Edit
+                            </f:link.action>
+                            <f:if condition="{profileInformationIteration.cycle} > 1">
+                                <f:then>
+                                    <f:link.action
+                                        controller="ProfileInformation"
+                                        action="sort"
+                                        arguments="{profileInformation: profileInformation, sortDirection: 'up'}"
+                                        class="btn btn-primary"
+                                    >
+                                        Sort up
+                                    </f:link.action>
+                                </f:then>
+                                <f:else>
+                                    <span class="btn btn-secondary disabled">Sort up</span>
+                                </f:else>
+                            </f:if>
+                            <f:if condition="{profileInformationIteration.cycle} < {profileInformations->f:count()}">
+                                <f:then>
+                                    <f:link.action
+                                        controller="ProfileInformation"
+                                        action="sort"
+                                        arguments="{profileInformation: profileInformation, sortDirection: 'down'}"
+                                        class="btn btn-primary"
+                                    >
+                                        Sort down
+                                    </f:link.action>
+                                </f:then>
+                                <f:else>
+                                    <span class="btn btn-secondary disabled">Sort down</span>
+                                </f:else>
+                            </f:if>
+                            <f:link.action
+                                controller="ProfileInformation"
+                                action="confirmDelete"
+                                arguments="{profileInformation: profileInformation}"
+                                class="btn btn-primary"
+                            >
+                                Delete
+                            </f:link.action>
+                        </td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </f:if>
+        <tfoot class="table-group-divider">
+            <tr>
+                <td class="text-center" colspan="99">
+                    {f:translate(
+                        key: 'form.profile.{type}.count',
+                        arguments: {
+                            0: '{profile.{type} -> f:count()}'
+                        },
+                        extensionName: 'academic_persons_edit'
+                    )}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</html>

@@ -1,0 +1,69 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+    <f:layout name="Default" />
+    <f:section name="Main">
+        <h1>Edit image</h1>
+        <f:if condition="{profile.image}">
+            <f:then>
+                <f:image
+                    image="{profile.image}"
+                    maxHeight="300"
+                    class="img-thumbnail"
+                />
+                <f:link.action
+                    action="removeImage"
+                    arguments="{profile: profile}"
+                    class="btn btn-danger"
+                >
+                    {f:translate(
+                        key: 'tx_academicpersonsedit.fe.profile.btn.removeImage',
+                        extensionName: 'academic_persons_edit'
+                    )}
+                </f:link.action>
+            </f:then>
+            <f:else>
+                <f:form
+                    action="addImage"
+                    name="profile"
+                    object="{profile}"
+                >
+                    <f:form.validationResults for="profile.image">
+                        <f:if condition="{validationResults.flattenedErrors}">
+                            <ul class="errors">
+                                <f:for
+                                    each="{validationResults.flattenedErrors}"
+                                    as="errors"
+                                    key="propertyPath"
+                                >
+                                    <f:for
+                                        each="{errors}"
+                                        as="error"
+                                    >
+                                        <li>{error}</li>
+                                    </f:for>
+                                </f:for>
+                            </ul>
+                        </f:if>
+                    </f:form.validationResults>
+                    <label>Upload image</label>
+                    <f:form.upload
+                        property="image"
+                        class="form-control"
+                        id="profile-image"
+                    />
+                    <f:if condition="{maxFileUploadsInBytes}">
+                        <small>
+                            Max file upload size: <f:format.bytes value="{maxFileUploadsInBytes}" />
+                        </small>
+                    </f:if>
+                    <f:render
+                        partial="Buttons/SaveExitCancel"
+                        arguments="{cancelUrl: cancelUrl}"
+                    />
+                </f:form>
+            </f:else>
+        </f:if>
+    </f:section>
+</html>

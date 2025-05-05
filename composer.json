@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Fgtclb\\AcademicPersonsEdit\\": "Classes/"
+            "FGTCLB\\AcademicPersonsEdit\\": "Classes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Fgtclb\\AcademicPersonsEdit\\Tests\\": "Tests/"
+            "FGTCLB\\AcademicPersonsEdit\\Tests\\": "Tests/"
         }
     },
     "config": {

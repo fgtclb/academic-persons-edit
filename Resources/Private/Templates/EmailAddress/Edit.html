@@ -1,0 +1,36 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Default" />
+    <f:section name="Main">
+        <h1>Edit email address</h1>
+        <f:render
+            partial="Forms/Errors"
+            arguments="{object:EmailAddressFormData}"
+        />
+        <f:form
+            action="update"
+            name="emailAddressFormData"
+            object="{emailAddressFormData}"
+            arguments="{emailAddress: emailAddress}"
+        >
+            <f:render
+                partial="Buttons/SaveExitCancel"
+                arguments="{cancelUrl: cancelUrl}"
+            />
+            <f:render
+                partial="Properties/EmailAddress"
+                arguments="{
+                    emailAddress: emailAddressFormData,
+                    validations: validations
+                }"
+            />
+            <f:render
+                partial="Buttons/SaveExitCancel"
+                arguments="{cancelUrl: cancelUrl}"
+            />
+        </f:form>
+    </f:section>
+</html>

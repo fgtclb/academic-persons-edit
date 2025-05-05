@@ -1,0 +1,16 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Default" />
+    <f:section name="Main">
+        <h1>List of Phone Numbers</h1>
+        <f:render
+            partial="Lists/PhoneNumbers"
+            arguments="{
+                contract: contract
+            }"
+        />
+    </f:section>
+</html>

@@ -1,0 +1,51 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <f:layout name="Default" />
+    <f:section name="Main">
+        <h1>Address</h1>
+        <f:link.action
+            action="edit"
+            arguments="{physicalAddress: physicalAddress}"
+            class="btn btn-primary mb-3"
+        >
+            Edit
+        </f:link.action>
+        <table class="table table-striped table-hover align-middle">
+            <tr>
+                <th>Street</th>
+                <td>{physicalAddress.street}</td>
+            </tr>
+            <tr>
+                <th>Street Number</th>
+                <td>{physicalAddress.streetNumber}</td>
+            </tr>
+            <tr>
+                <th>Additional</th>
+                <td>{physicalAddress.additional}</td>
+            </tr>
+            <tr>
+                <th>Zip</th>
+                <td>{physicalAddress.zip}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{physicalAddress.city}</td>
+            </tr>
+            <tr>
+                <th>State</th>
+                <td>{physicalAddress.state}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td>{physicalAddress.country}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{physicalAddress.type}</td>
+            </tr>
+        </table>
+    </f:section>
+</html>
