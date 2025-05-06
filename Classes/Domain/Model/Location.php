@@ -11,4 +11,19 @@ declare(strict_types=1);
 
 namespace Fgtclb\AcademicPersonsEdit\Domain\Model;
 
-class Location extends \Fgtclb\AcademicPersons\Domain\Model\Location {}
+class Location extends \Fgtclb\AcademicPersons\Domain\Model\Location
+{
+    public function __construct()
+    {
+        // parent constructor needs to call $this->initializeObject().
+        parent::__construct();
+    }
+
+    /**
+     * @link https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ExtensionArchitecture/Extbase/Reference/Domain/Model/Index.html#good-use-initializeobject-for-setup
+     */
+    public function initializeObject(): void
+    {
+        parent::initializeObject();
+    }
+}
