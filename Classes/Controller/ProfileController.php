@@ -38,8 +38,8 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation\IgnoreValidation;
 use TYPO3\CMS\Extbase\Annotation\Validate;
@@ -225,7 +225,7 @@ final class ProfileController extends ActionController
             FlashMessage::class,
             (string)$successMessageBody,
             (string)$successMessageTitle,
-            AbstractMessage::OK,
+            ContextualFeedbackSeverity::OK,
             true
         );
         $this->getFlashMessageQueue(self::FLASH_MESSAGE_QUEUE_IDENTIFIER)->addMessage($flashMessage);

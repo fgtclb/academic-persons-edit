@@ -34,10 +34,10 @@ class AddressRepository extends Repository
         $query->getQuerySettings()->setRespectStoragePage(false);
 
         $query->matching(
-            $query->logicalAnd([
+            $query->logicalAnd(
                 $query->equals('employee_type', $employeeType),
                 $query->equals('organisational_unit', $organizationalUnit),
-            ])
+            )
         );
         $query->setOrderings([
             'zip' => QueryInterface::ORDER_ASCENDING,

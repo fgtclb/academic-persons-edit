@@ -5,8 +5,11 @@
     <div class="row mb-1">
         <div class="col-12">
             <h2>
-								<f:translate key="tx_academicpersonsedit.fe.legend.image" extensionName="academic_persons_edit" />
-						</h2>
+                {f:translate(
+                    key: 'tx_academicpersonsedit.fe.legend.image',
+                    extensionName: 'academic_persons_edit'
+                )}
+            </h2>
         </div>
         <div class="col-md-4">
             <f:if condition="{profile.image}">
@@ -21,7 +24,10 @@
                         arguments="{profile: profile}"
                         class="btn btn-danger"
                     >
-												<f:translate key="tx_academicpersonsedit.fe.profile.btn.removeImage" extensionName="academic_persons_edit" />
+                        {f:translate(
+                            key: 'tx_academicpersonsedit.fe.profile.btn.removeImage',
+                            extensionName: 'academic_persons_edit'
+                        )}
                     </f:link.action>
                 </f:then>
                 <f:else>
@@ -37,6 +43,7 @@
                                         each="{errors}"
                                         as="error"
                                     >
+                                        <f:debug>{error}</f:debug>
                                         <li>{error}</li>
                                     </f:for>
                                 </f:for>
@@ -47,7 +54,10 @@
                         for="profile-image"
                         class="visually-hidden"
                     >
-												<f:translate key="tx_academicpersonsedit.fe.label.update_image" extensionName="academic_persons_edit" />
+                        {f:translate(
+                            key: 'tx_academicpersonsedit.fe.label.update_image',
+                            extensionName: 'academic_persons_edit'
+                        )}
                     </label>
                     <f:form.upload
                         property="image"

@@ -14,6 +14,7 @@ namespace Fgtclb\AcademicPersonsEdit\Property\TypeConverter;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use TYPO3\CMS\Core\Http\UploadedFile;
 use TYPO3\CMS\Core\Resource\DuplicationBehavior;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -50,7 +51,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
      * Actually convert from $source to $targetType, taking into account the fully
      * built $convertedChildProperties and $configuration.
      *
-     * @param array{name?: string, type: string, tmp_name?: string, error?: int, size: int, __identity?: string} $source
+     * @param UploadedFile $source
      * @param array<string, mixed> $convertedChildProperties
      */
     public function convertFrom(
@@ -84,14 +85,17 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             );
         }
 
-        if (!isset($uploadedFileInformation['error']) || $uploadedFileInformation['error'] === \UPLOAD_ERR_NO_FILE) {
+        // @todo Check how the `__identifier` key was generated in TYPO3 version below 12 before restoring this check
+        /*
+        if ($uploadedFileInformation->getError() === \UPLOAD_ERR_NO_FILE) {
             return $this->handleNoFileUploaded($uploadedFileInformation);
         }
+        */
 
-        if ($uploadedFileInformation['error'] !== \UPLOAD_ERR_OK) {
+        if ($uploadedFileInformation->getError() !== \UPLOAD_ERR_OK) {
             return GeneralUtility::makeInstance(
                 Error::class,
-                $this->getUploadErrorMessage($uploadedFileInformation['error']),
+                $this->getUploadErrorMessage($uploadedFileInformation->getError()),
                 1471715915
             );
         }
@@ -104,11 +108,11 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             );
         }
 
-        if (!isset($uploadedFileInformation['tmp_name']) || !isset($uploadedFileInformation['name'])) {
+        if ($uploadedFileInformation->getClientFilename() === null) {
             return null;
         }
 
-        $fileExtension = pathinfo($uploadedFileInformation['name'], PATHINFO_EXTENSION);
+        $fileExtension = pathinfo($uploadedFileInformation->getClientFilename(), PATHINFO_EXTENSION);
         $targetFileName = strtolower(sprintf('%s.%s', $targetFileNameWithoutExtension, $fileExtension));
 
         try {
@@ -124,15 +128,14 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
     }
 
     /**
-     * @param array{name: string, tmp_name: string, __identity?: string} $uploadedFileInformation
      * @throws TypeConverterException
      */
     private function importUploadedResource(
-        array $uploadedFileInformation,
+        UploadedFile $uploadedFileInformation,
         string $targetFolderIdentifier,
         string $targetFileName
     ): ExtbaseFileReference {
-        if (!GeneralUtility::makeInstance(FileNameValidator::class)->isValid($uploadedFileInformation['name'])) {
+        if (!GeneralUtility::makeInstance(FileNameValidator::class)->isValid((string)$uploadedFileInformation->getClientFilename())) {
             throw new TypeConverterException('Uploading files with PHP file extensions is not allowed!', 1690525745);
         }
 
@@ -145,21 +148,19 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             DuplicationBehavior::REPLACE
         );
 
-        $resourcePointer = isset($uploadedFileInformation['__identity']) ? (int)$uploadedFileInformation['__identity'] : null;
-        return $this->createFileReferenceFromFalFileObject($uploadedFile, $resourcePointer);
+        return $this->createFileReferenceFromFalFileObject($uploadedFile);
     }
 
     /**
-     * @param array{size: int, type: string} $uploadedFileInformation
      * @throws TypeConverterException
      */
-    private function validateUploadedFile(array $uploadedFileInformation, string $maxFileSize, string $allowedMimeTypes): void
+    private function validateUploadedFile(UploadedFile $uploadedFileInformation, string $maxFileSize, string $allowedMimeTypes): void
     {
         $typoScriptFrontendController = $this->getTypo3Request()->getAttribute('frontend.controller') ?? $GLOBALS['TSFE'] ?? null;
         $maxFileSizeInBytes = GeneralUtility::getBytesFromSizeMeasurement($maxFileSize);
         $allowedMimeTypesArray = GeneralUtility::trimExplode(',', $allowedMimeTypes);
 
-        if ($uploadedFileInformation['size'] > $maxFileSizeInBytes) {
+        if ($uploadedFileInformation->getSize() > $maxFileSizeInBytes) {
             throw new TypeConverterException(
                 $typoScriptFrontendController?->sL(
                     'LLL:EXT:form/Resources/Private/Language/locallang.xlf:upload.error.150530345'
@@ -167,12 +168,12 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
                 1690538138
             );
         }
-        if (!in_array($uploadedFileInformation['type'], $allowedMimeTypesArray, true)) {
+        if (!in_array($uploadedFileInformation->getClientMediaType(), $allowedMimeTypesArray, true)) {
             throw new TypeConverterException(
                 $typoScriptFrontendController?->sL(
                     'LLL:EXT:form/Resources/Private/Language/locallang.xlf:validation.error.1471708998',
                     null,
-                    $uploadedFileInformation['type'],
+                    $uploadedFileInformation->getClientMediaType(),
                 ) ?? 'Validation error',
                 1695047315
             );
@@ -220,12 +221,11 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         return $uploadFolder;
     }
 
-    /**
-     * @param array{__identity?: string} $uploadedFileInformation
-     */
-    private function handleNoFileUploaded(array $uploadedFileInformation): ?ExtbaseFileReference
+    // @todo Check how the `__identifier` key was generated in TYPO3 version below 12 before restoring the function
+    /*
+    private function handleNoFileUploaded(UploadedFile $uploadedFileInformation): ?ExtbaseFileReference
     {
-        if (!empty($uploadedFileInformation['__identity'])) {
+        if (!empty($uploadedFileInformation->getTemporaryFileName())) {
             try {
                 $fileReferenceUid = (int)$uploadedFileInformation['__identity'];
                 $fileReference = GeneralUtility::makeInstance(ExtbaseFileReference::class);
@@ -237,15 +237,14 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         }
         return null;
     }
+    */
 
-    private function createFileReferenceFromFalFileReferenceObject(
-        CoreFileReference $falFileReference,
-        ?int $resourcePointer = null
-    ): ExtbaseFileReference {
-        if ($resourcePointer !== null) {
+    private function createFileReferenceFromFalFileReferenceObject(CoreFileReference $falFileReference): ExtbaseFileReference
+    {
+        if ($falFileReference->getIdentifier() !== null) {
             try {
                 // Delete the current profile image with its file reference.
-                $this->resourceFactory->getFileReferenceObject($resourcePointer)->getOriginalFile()->delete();
+                $falFileReference->getOriginalFile()->delete();
             } catch (ResourceDoesNotExistException) {
             }
         }
@@ -255,10 +254,8 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
         return $fileReference;
     }
 
-    private function createFileReferenceFromFalFileObject(
-        File $file,
-        ?int $resourcePointer = null
-    ): ExtbaseFileReference {
+    private function createFileReferenceFromFalFileObject(File $file): ExtbaseFileReference
+    {
         $fileReference = $this->resourceFactory->createFileReferenceObject(
             [
                 'uid_local' => $file->getUid(),
@@ -268,7 +265,7 @@ final class ProfileImageUploadConverter extends AbstractTypeConverter implements
             ]
         );
 
-        return $this->createFileReferenceFromFalFileReferenceObject($fileReference, $resourcePointer);
+        return $this->createFileReferenceFromFalFileReferenceObject($fileReference);
     }
 
     /**

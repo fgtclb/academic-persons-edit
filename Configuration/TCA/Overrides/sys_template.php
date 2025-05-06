@@ -13,6 +13,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 ExtensionManagementUtility::addStaticFile(
     'academic_persons_edit',
-    'Configuration/TypoScript/',
+    'Configuration/TypoScript',
     'Academic Persons Edit Settings'
 );

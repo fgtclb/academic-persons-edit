@@ -1,102 +1,185 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
-<f:render partial="ProfileEdit/ProfileInformation/CurriculumVitae" arguments="{_all}" />
-<f:render partial="ProfileEdit/ProfileInformation/Membership" arguments="{_all}" />
-<f:render partial="ProfileEdit/ProfileInformation/Cooperation" arguments="{_all}" />
-<f:render partial="ProfileEdit/ProfileInformation/Publication" arguments="{_all}" />
-<f:render partial="ProfileEdit/ProfileInformation/Lecture" arguments="{_all}" />
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-website-title" class="form-label">
-						<f:translate key="tx_academicpersonsedit.fe.label.publicationsLinksTitle" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textfield
+    <h2>
+        {f:translate(
+            key: 'tx_academicpersonsedit.fe.title.profileData',
+            extensionName: 'academic_persons_edit'
+        )}
+    </h2>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-title" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.title",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
+                property="title"
+                id="profile-title"
+                class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-first-name" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.firstName",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
+                property="firstName"
+                id="profile-first-name"
+                class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-middle-name" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.middleName",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
+                property="middleName"
+                id="profile-middle-name"
+                class="form-control"
+            />
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-last-name" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.lastName",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
+                property="lastName"
+                id="profile-last-name"
+                class="form-control"
+            />
+        </div>
+    </div>
+    <h2>
+        <h2>
+            {f:translate(
+                key: 'tx_academicpersonsedit.fe.title.additionalProfileData',
+                extensionName: 'academic_persons_edit'
+            )}
+        </h2>
+    </h2>
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-website-title" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.publicationsLinksTitle",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
                 property="websiteTitle"
                 id="profile-website-title"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-website" class="form-label">
-						<f:translate key="tx_academicpersonsedit.fe.label.website" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textfield
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-website" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.website",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textfield
                 property="website"
                 id="profile-website"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-teaching-area" class="form-label">
-					  <f:translate key="tx_academicpersons.fe.text.teaching_area" extensionName="academic_persons"/>
-				</label>
-        <f:form.textarea
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-teaching-area" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersons.fe.label.teachingArea",
+                    extensionName: "academic_persons"
+                )}
+            </label>
+            <f:form.textarea
                 property="teachingArea"
                 id="profile-teaching-area"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
 
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-core-competences" class="form-label">
-					  <f:translate key="tx_academicpersonsedit.fe.label.coreCompetences" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textarea
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-core-competences" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.coreCompetences",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textarea
                 property="coreCompetences"
                 id="profile-core-competences"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-supervised-thesis" class="form-label">
-					  <f:translate key="tx_academicpersonsedit.fe.label.supervisedThesis" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textarea
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-supervised-thesis" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.supervisedThesis",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textarea
                 property="supervisedThesis"
                 id="profile-supervised-thesis"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-supervised-doctoral-thesis" class="form-label">
-					  <f:translate key="tx_academicpersonsedit.fe.label.supervisedDoctoralThesis" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textarea
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-supervised-doctoral-thesis" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.supervisedDoctoralThesis",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textarea
                 property="supervisedDoctoralThesis"
                 id="profile-supervised-doctoral-thesis"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col-12">
-        <label for="profile-miscellaneous" class="form-label">
-					  <f:translate key="tx_academicpersonsedit.fe.label.miscellaneous" extensionName="academic_persons_edit"/>
-				</label>
-        <f:form.textarea
+    <div class="row mb-3">
+        <div class="col-12">
+            <label for="profile-miscellaneous" class="form-label">
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.label.miscellaneous",
+                    extensionName: "academic_persons_edit"
+                )}
+            </label>
+            <f:form.textarea
                 property="miscellaneous"
                 id="profile-miscellaneous"
                 class="form-control"
-        />
+            />
+        </div>
     </div>
-</div>
-
 </html>

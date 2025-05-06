@@ -1,132 +1,159 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
-<f:if condition="!{contract.physicalAddresses}">
-<div class="row mb-3">
-    <div class="col-12">
-        <h4>
-					<f:translate key="tx_academicpersonsedit.fe.profile.btn.enterAdress" extensionName="academic_persons_edit"/>
-				</h4>
-        <f:link.action action="addPhysicalAddress" arguments="{profile: profile, contract: contract}" class="btn btn-primary">
-						<f:translate key="tx_academicpersonsedit.fe.profile.btn.addPhysicalAddress" extensionName="academic_persons_edit"/>
-				</f:link.action>
-    </div>
-</div>
-</f:if>
-<f:for each="{contract.physicalAddresses}" as="physicalAddress" iteration="physicalAddressIterator">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="address-{physicalAddressIterator.index}-type" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.type" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.select
-                    property="physicalAddresses.{physicalAddressIterator.index}.type"
+            <h3>
+                {f:translate(
+                    key:'tx_academicpersonsedit.fe.profile.btn.enterAdress',
+                    extensionName:'academic_persons_edit'
+                )}                
+            </h3>
+            <f:link.action
+                action="addPhysicalAddress"
+                arguments="{profile: profile, contract: contract}" 
+                class="btn btn-primary"
+            >
+                {f:translate(
+                    key:'tx_academicpersonsedit.fe.profile.btn.addPhysicalAddress',
+                    extensionName:'academic_persons_edit'
+                )}
+            </f:link.action>
+        </div>
+    </div>
+    <f:for each="{contract.physicalAddresses}" as="physicalAddress" iteration="physicalAddressIterator">
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="address-{physicalAddressIterator.index}-type" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.type",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.select
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.type"
                     id="address-{physicalAddressIterator.index}-type"
                     class="form-select"
                     options="{addressTypes}"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-9">
-            <label for="address-{physicalAddressIterator.index}-street" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.street" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.street"
+        <div class="row mb-3">
+            <div class="col-md-9">
+                <label for="address-{physicalAddressIterator.index}-street" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.street",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.street"
                     id="address-{physicalAddressIterator.index}-street"
                     class="form-control"
-                    maxlength="120"
-                    required="1"
-            />
-        </div>
-        <div class="col-md-3">
-            <label for="address-{physicalAddressIterator.index}-street-number" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.number" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.streetNumber"
+                />
+            </div>
+            <div class="col-md-3">
+                <label for="address-{physicalAddressIterator.index}-street-number" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.number",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.streetNumber"
                     id="address-{physicalAddressIterator.index}-street-number"
                     class="form-control"
-                    maxlength="6"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="address-{physicalAddressIterator.index}-additional" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.additional" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.additional"
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="address-{physicalAddressIterator.index}-additional" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.additional",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.additional"
                     id="address-{physicalAddressIterator.index}-additional"
                     class="form-control"
-                    maxlength="120"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="address-{physicalAddressIterator.index}-zip" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.zip" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.zip"
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="address-{physicalAddressIterator.index}-zip" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.zip",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.zip"
                     id="address-{physicalAddressIterator.index}-zip"
                     class="form-control"
-                    maxlength="10"
-                    required="1"
-            />
-        </div>
-        <div class="col-md-8">
-            <label for="address-{physicalAddressIterator.index}-city" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.city" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.city"
+                />
+            </div>
+            <div class="col-md-8">
+                <label for="address-{physicalAddressIterator.index}-city" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.city",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.city"
                     id="address-{physicalAddressIterator.index}-city"
                     class="form-control"
-                    maxlength="100"
-                    required="1"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="address-{physicalAddressIterator.index}-state" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.state" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.state"
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="address-{physicalAddressIterator.index}-state" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.state",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.state"
                     id="address-{physicalAddressIterator.index}-state"
                     class="form-control"
-                    maxlength="60"
-            />
-        </div>
-        <div class="col-md-8">
-            <label for="address-{physicalAddressIterator.index}-country" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.physicalAddress.country" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
-                    property="physicalAddresses.{physicalAddressIterator.index}.country"
+                />
+            </div>
+            <div class="col-md-8">
+                <label for="address-{physicalAddressIterator.index}-country" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.physicalAddress.country",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
+                    property="contracts.{contractIterator.index}.physicalAddresses.{physicalAddressIterator.index}.country"
                     id="address-{physicalAddressIterator.index}-country"
                     class="form-control"
-                    maxlength="100"
-                    required="1"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <f:link.action action="removePhysicalAddress" arguments="{profile: profile, contract: contract, address: physicalAddress}" class="btn btn-danger">
-								<f:translate key="tx_academicpersonsedit.fe.profile.btn.removePhysicalAddress" extensionName="academic_persons_edit"/>
-						</f:link.action>
+        <div class="row mb-3">
+            <div class="col-12">
+                <f:link.action
+                    action="removePhysicalAddress"
+                    arguments="{profile: profile, contract: contract, address: physicalAddress}"
+                    class="btn btn-danger"
+                >
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.btn.removePhysicalAddress",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </f:link.action>
+            </div>
         </div>
-    </div>
-    <f:if condition="!{physicalAddressIterator.isLast}">
-        <hr class="mb-3" />
-    </f:if>
-</f:for>
-
+        <f:if condition="!{physicalAddressIterator.isLast}">
+            <hr />
+        </f:if>
+    </f:for>
 </html>

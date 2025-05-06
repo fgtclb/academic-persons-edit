@@ -73,7 +73,7 @@
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.employeeContracts">
 				<source>Employee contracts</source>
-				<target>Mitarbeiter Verträge</target>
+				<target>Mitarbeiterverträge</target>
 			</trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.contractInformation">
 				<source>Contract information</source>

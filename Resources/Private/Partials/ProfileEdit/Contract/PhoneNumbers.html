@@ -1,55 +1,79 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
-<div class="row mb-3">
-    <div class="col-12">
-        <h2>
-					  <f:translate key="tx_academicpersonsedit.fe.title.phoneNumbers" extensionName="academic_persons_edit"/>
-				</h2>
-        <f:link.action action="addPhoneNumber" arguments="{profile: profile, contract: contract}" class="btn btn-primary">
-						<f:translate key="tx_academicpersonsedit.fe.profile.btn.addPhoneNumber" extensionName="academic_persons_edit"/>
-				</f:link.action>
-    </div>
-</div>
-<f:for each="{contract.phoneNumbers}" as="phoneNumber" iteration="phoneNumbersterator">
     <div class="row mb-3">
         <div class="col-12">
-            <label for="phone-number-{phoneNumbersterator.index}-type" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.profile.type" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.select
+            <h3>
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.title.phoneNumbers",
+                    extensionName: "academic_persons_edit"
+                )}
+            </h3>
+            <f:link.action
+                action="addPhoneNumber"
+                arguments="{profile: profile, contract: contract}"
+                class="btn btn-primary"
+            >
+                {f:translate(
+                    key: "tx_academicpersonsedit.fe.profile.btn.addPhoneNumber",
+                    extensionName: "academic_persons_edit"
+                )}
+            </f:link.action>
+        </div>
+    </div>
+    <f:for
+        each="{contract.phoneNumbers}"
+        as="phoneNumber"
+        iteration="phoneNumbersterator"
+    >
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="phone-number-{phoneNumbersterator.index}-type" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.type",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.select
                     property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.type"
                     id="phone-number-{phoneNumbersterator.index}-type"
                     class="form-select"
                     options="{phoneNumberTypes}"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="phone-number-{phoneNumbersterator.index}-phone-number" class="form-label">
-							  <f:translate key="tx_academicpersonsedit.fe.label.phoneNumber" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="phone-number-{phoneNumbersterator.index}-phone-number" class="form-label">
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.phoneNumber",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </label>
+                <f:form.textfield
                     property="contracts.{contractIterator.index}.phoneNumbers.{phoneNumbersterator.index}.phoneNumber"
                     id="phone-number-{phoneNumbersterator.index}-phone-number"
                     class="form-control"
-                    maxlength="255"
-                    required="1"
-            />
+                />
+            </div>
         </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <f:link.action action="removePhoneNumber" arguments="{profile: profile, contract: contract, phoneNumber: phoneNumber}" class="btn btn-danger">
-							  <f:translate key="tx_academicpersonsedit.fe.profile.btn.removePhoneNumber" extensionName="academic_persons_edit"/>
-						</f:link.action>
+        <div class="row mb-3">
+            <div class="col-12">
+                <f:link.action
+                    action="removePhoneNumber"
+                    arguments="{profile: profile, contract: contract, phoneNumber: phoneNumber}"
+                    class="btn btn-danger"
+                >
+                    {f:translate(
+                        key: "tx_academicpersonsedit.fe.profile.btn.removePhoneNumber",
+                        extensionName: "academic_persons_edit"
+                    )}
+                </f:link.action>
+            </div>
         </div>
-    </div>
-    <f:if condition="!{phoneNumbersterator.isLast}">
-        <hr class="mb-3" />
-    </f:if>
-</f:for>
-
+        <f:if condition="!{phoneNumbersterator.isLast}">
+            <hr />
+        </f:if>
+    </f:for>
 </html>

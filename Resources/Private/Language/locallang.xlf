@@ -10,164 +10,184 @@
                 <source>Your profile was updated.</source>
             </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.save">
-				<source>Save profile data</source>
-			</trans-unit>
+                <source>Save profile data</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.error.no_translation">
-				<source>Profile ist not translated for current language.</source>
-			</trans-unit>
+                <source>Profile ist not translated for current language.</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.translate">
-				<source>Translate profile</source>
-			</trans-unit>
+                <source>Translate profile</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.switchChoose">
-				<source>Choose profile</source>
-			</trans-unit>
+                <source>Choose profile</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.switch.btn.switch">
-				<source>Switch Profile</source>
-			</trans-unit>
+                <source>Switch Profile</source>
+            </trans-unit>
+
+            <trans-unit id="tx_academicpersonsedit.fe.title.profileData">
+                <source>Profile data</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.title.additionalProfileData">
+                <source>Additional profile data</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.title">
+                <source>Title</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.firstName">
+                <source>First name</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.middleName">
+                <source>Middle name</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.lastName">
+                <source>Last name</source>
+            </trans-unit>
+
             <trans-unit id="tx_academicpersonsedit.fe.legend.image">
-				<source>Profile Image</source>
-			</trans-unit>
+                <source>Profile Image</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeImage">
-				<source>Remove image</source>
-			</trans-unit>
+                <source>Remove image</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.update_image">
-				<source>Update profile image</source>
-			</trans-unit>
+                <source>Update profile image</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.publicationsLinksTitle">
-				<source>Website link title</source>
-			</trans-unit>
+                <source>Website link title</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.website">
-				<source>Website</source>
-			</trans-unit>
+                <source>Website</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.coreCompetences">
-				<source>Core competences</source>
-			</trans-unit>
+                <source>Core competences</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.supervisedThesis">
-				<source>Supervised thesis</source>
-			</trans-unit>
+                <source>Supervised thesis</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.supervisedDoctoralThesis">
-				<source>Supervised doctoral thesis</source>
-			</trans-unit>
+                <source>Supervised doctoral thesis</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.miscellaneous">
-				<source>Miscellaneous information</source>
-			</trans-unit>
+                <source>Miscellaneous information</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.publish">
-				<source>Publish?</source>
-			</trans-unit>
+                <source>Publish?</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.employeeContracts">
-				<source>Employee contracts</source>
-			</trans-unit>
+                <source>Employee contracts</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.contractInformation">
-				<source>Contract information</source>
-			</trans-unit>
+                <source>Contract information</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.position">
-				<source>Position/Specialty/Function</source>
-			</trans-unit>
+                <source>Position/Specialty/Function</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.location">
-				<source>Location</source>
-			</trans-unit>
-			<trans-unit id="tx_academicpersonsedit.fe.label.room">
-				<source>Room</source>
-			</trans-unit>
+                <source>Location</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.room">
+                <source>Room</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.officeHours">
-				<source>Office Hours</source>
-			</trans-unit>
+                <source>Office Hours</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addPhysicalAddress">
-				<source>Add new physical address</source>
-			</trans-unit>
+                <source>Add new physical address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.enterAdress">
-				<source>Enter address</source>
-			</trans-unit>
+                <source>Enter address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.type">
-				<source>Type</source>
-			</trans-unit>
+                <source>Type</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.street">
-				<source>Street</source>
-			</trans-unit>
+                <source>Street</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.number">
-				<source>Street number</source>
-			</trans-unit>
+                <source>Street number</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.additional">
-				<source>Additional information</source>
-			</trans-unit>
+                <source>Additional information</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.zip">
-				<source>ZIP</source>
-			</trans-unit>
+                <source>ZIP</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.city">
-				<source>City</source>
-			</trans-unit>
+                <source>City</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.state">
-				<source>State</source>
-			</trans-unit>
+                <source>State</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.physicalAddress.country">
-				<source>Country</source>
-			</trans-unit>
+                <source>Country</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.removePhysicalAddress">
-				<source>Remove physical address</source>
-			</trans-unit>
+                <source>Remove physical address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.emailAddresses">
-				<source>Email addresses</source>
-			</trans-unit>
+                <source>Email addresses</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addEmailAddress">
-				<source>Add new email address</source>
-			</trans-unit>
+                <source>Add new email address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.emailAddress">
-				<source>Email address</source>
-			</trans-unit>
+                <source>Email address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeEmailAddress">
-				<source>Remove email address</source>
-			</trans-unit>
+                <source>Remove email address</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addPhoneNumber">
-				<source>Add new phone number</source>
-			</trans-unit>
+                <source>Add new phone number</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.phoneNumbers">
-				<source>Phone numbers</source>
-			</trans-unit>
+                <source>Phone numbers</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.phoneNumber">
-				<source>Phone number</source>
-			</trans-unit>
+                <source>Phone number</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removePhoneNumber">
-				<source>Remove phone number</source>
-			</trans-unit>
+                <source>Remove phone number</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.cooperations">
-				<source>Cooperations</source>
-			</trans-unit>
+                <source>Cooperations</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.addEntry">
-				<source>Add new entry</source>
-			</trans-unit>
+                <source>Add new entry</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.year">
-				<source>Year</source>
-			</trans-unit>
+                <source>Year</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.title">
-				<source>Title</source>
-			</trans-unit>
+                <source>Title</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.text">
-				<source>Description</source>
-			</trans-unit>
-			<trans-unit id="tx_academicpersonsedit.fe.label.field.link">
-				<source>Link</source>
-			</trans-unit>
+                <source>Description</source>
+            </trans-unit>
+            <trans-unit id="tx_academicpersonsedit.fe.label.field.link">
+                <source>Link</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.profile.btn.removeEntry">
-				<source>Remove entry</source>
-			</trans-unit>
+                <source>Remove entry</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersons.fe.title.vita">
-				<source>Vita</source>
-			</trans-unit>
+                <source>Vita</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.lectures">
-				<source>Lectures</source>
-			</trans-unit>
+                <source>Lectures</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.memberships">
-				<source>Memberships and committee activities</source>
-			</trans-unit>
+                <source>Memberships and committee activities</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.publication_external_link">
-				<source>Link to external publications</source>
-			</trans-unit>
+                <source>Link to external publications</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.label.field.publication_external_link_title">
-				<source>Publication Link Title</source>
-			</trans-unit>
+                <source>Publication Link Title</source>
+            </trans-unit>
             <trans-unit id="tx_academicpersonsedit.fe.title.publications">
-				<source>Publications</source>
-			</trans-unit>
+                <source>Publications</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

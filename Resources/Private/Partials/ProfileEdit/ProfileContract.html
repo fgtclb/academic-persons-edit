@@ -1,86 +1,115 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 >
-
-<div class="row mt-5 mb-3">
-		<div class="col-12">
-				<h2>
-						<f:translate key="tx_academicpersonsedit.fe.label.employeeContracts" extensionName="academic_persons_edit"/>
-				</h2>
-		</div>
-</div>
-
-<f:for each="{profile.contracts}" as="contract" iteration="contractIterator">
-		<div class="row mb-3">
-				<div class="col-12">
-					<h3>
-							<f:translate key="tx_academicpersonsedit.fe.label.contractInformation" extensionName="academic_persons_edit"/>
-					</h3>
-					<f:form.checkbox value="1"
-														class="form-check-inpu"
-														id="contract-{contract.uid}-publish"
-														property="contracts.{contractIterator.index}.publish" />
-					<label for="contract-{contract.uid}-publish" class="form-check-label">
-							<f:translate key="tx_academicpersonsedit.fe.label.publish" extensionName="academic_persons_edit"/>
-					</label>
+    <div class="row mt-5 mb-3">
+        <div class="col-12">
+            <h2>
+                {f:translate(
+                    key:'tx_academicpersonsedit.fe.label.employeeContracts',
+                    extensionName:'academic_persons_edit'
+                )}
+            </h2>
         </div>
     </div>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="contract-{contract.uid}-position" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.label.position" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
+    <f:for
+        each="{profile.contracts}"
+        as="contract"
+        iteration="contractIterator"
+    >
+        <div class="row mb-3">
+            <div class="col-12">
+                <h3>
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.contract',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </h3>
+                <f:form.checkbox
+                    value="1"
+                    class="form-check-inpu"
+                    id="contract-{contract.uid}-publish"
+                    property="contracts.{contractIterator.index}.publish"
+                />
+                <label for="contract-{contract.uid}-publish" class="form-check-label">
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.publish',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </label>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="contract-{contract.uid}-position" class="form-label">
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.position',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </label>
+                <f:form.textfield
                     property="contracts.{contractIterator.index}.position"
                     id="contract-{contract.uid}-position"
                     class="form-control"
-                    maxlength="100"
-            />
-        </div>
-        <div class="col-6">
-            <label for="contract-{contract.uid}-location" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.label.location" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.select property="contracts.{contractIterator.index}.location"
-                           id="contract-{contract.uid}-location"
-                           class="form-select"
-                           prependOptionLabel="Please choose"
-                           options="{availableLocations}"
-                           optionLabelField="title"
-           />
-        </div>
-        <div class="col-6">
-            <label for="contract-{contract.uid}-room" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.label.room" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textfield
+                />
+            </div>
+            <div class="col-6">
+                <label for="contract-{contract.uid}-location" class="form-label">
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.location',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </label>
+                <f:form.select
+                    property="contracts.{contractIterator.index}.location"
+                    id="contract-{contract.uid}-location"
+                    class="form-select"
+                    prependOptionLabel="Please choose"
+                    prependOptionValue="0"
+                    options="{availableLocations}"
+                    optionLabelField="title"
+                />
+            </div>
+            <div class="col-6">
+                <label for="contract-{contract.uid}-room" class="form-label">
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.room',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </label>
+                <f:form.textfield
                     property="contracts.{contractIterator.index}.room"
                     id="contract-{contract.uid}-room"
                     class="form-control"
-                    maxlength="100"
-            />
+                />
+            </div>
         </div>
-    </div>
-
-    <f:if condition="!{constrat.physicalAddressesFromOrganisation}">
-        <f:render partial="ProfileEdit/Contract/Addresses" arguments="{_all}"/>
-    </f:if>
-    <f:render partial="ProfileEdit/Contract/EmailAddresses" arguments="{_all}"/>
-    <f:render partial="ProfileEdit/Contract/PhoneNumbers" arguments="{_all}"/>
-
-    <div class="row mb-3">
-        <div class="col-12">
-            <label for="contract-{contract.uid}-office-hours" class="form-label">
-								<f:translate key="tx_academicpersonsedit.fe.label.officeHours" extensionName="academic_persons_edit"/>
-						</label>
-            <f:form.textarea
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="contract-{contract.uid}-office-hours" class="form-label">
+                    {f:translate(
+                        key:'tx_academicpersonsedit.fe.label.officeHours',
+                        extensionName:'academic_persons_edit'
+                    )}
+                </label>
+                <f:form.textarea
                     property="contracts.{contractIterator.index}.officeHours"
                     id="contract-{contract.uid}-office-hours"
                     class="form-control"
-            />
+                />
+            </div>
         </div>
-    </div>
-</f:for>
-
+        <f:render
+            partial="ProfileEdit/Contract/Addresses"
+            arguments="{_all}"
+        />
+        <f:render
+            partial="ProfileEdit/Contract/EmailAddresses"
+            arguments="{_all}"
+        />
+        <f:render
+            partial="ProfileEdit/Contract/PhoneNumbers"
+            arguments="{_all}"
+        />
+    </f:for>
 </html>
