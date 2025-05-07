@@ -23,8 +23,8 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         [
             ProfileController::class => 'showProfileSwitch,executeProfileSwitch',
         ],
+        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
-
     ExtensionUtility::configurePlugin(
         'AcademicPersonsEdit',
         'ProfileEditing',
@@ -60,6 +60,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'removeProfileInformation',
             ]),
         ],
+        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
 
 })();

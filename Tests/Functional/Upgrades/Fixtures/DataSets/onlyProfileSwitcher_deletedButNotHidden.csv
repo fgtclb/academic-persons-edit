@@ -1,0 +1,8 @@
+"pages",
+,"uid","pid","doktype","title","slug",
+,1,0,1,"site 1","/",
+"tt_content",
+,"uid","pid","hidden","deleted","CType","list_type",
+,1,1,0,1,"list","academicpersonsedit_profileswitcher",
+,2,1,0,0,"list","unrelated_plugin",
+,3,1,0,0,"text","",

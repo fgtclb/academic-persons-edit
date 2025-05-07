@@ -7,8 +7,7 @@ mod.wizards.newContentElement.wizardItems.academic {
             title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
             description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
             tt_content_defValues {
-                CType = list
-                list_type = academicpersonsedit_profileediting
+                CType = academicpersonsedit_profileediting
             }
         }
         academicpersonsedit_profileswitcher {
@@ -16,8 +15,7 @@ mod.wizards.newContentElement.wizardItems.academic {
             title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileSwitcher.title
             description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileSwitcher.description
             tt_content_defValues {
-                CType = list
-                list_type = academicpersonsedit_profileswitcher
+                CType = academicpersonsedit_profileswitcher
             }
         }
     }
