@@ -14,6 +14,7 @@
         "source": "https://github.com/fgtclb/academic-extensions",
         "email": "hello@fgtclb.com"
     },
+    "homepage": "https://www.fgtclb.com/",
     "require": {
         "php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
         "fgtclb/academic-persons": "2.0.*@dev",
@@ -45,6 +46,5 @@
         "branch-alias": {
             "dev-main": "2.0.x-dev"
         }
-    },
-    "homepage": "https://www.fgtclb.com/"
+    }
 }

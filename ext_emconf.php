@@ -1,15 +1,10 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'FGTCLB: Academic Persons Edit',
-    'description' => 'dds the option to assign frontend users to academic persons and allow editing the profiles in frontend.',
+    'author' => 'FGTCLB',
+    'author_company' => 'FGTCLB GmbH',
+    'author_email' => 'hello@fgtclb.com',
     'category' => 'plugin',
-    'author' => 'Tim Schreiner',
-    'author_email' => 'tim.schreiner@km2.de',
-    'author_company' => 'FGTCLB',
-    'state' => 'beta',
-    'version' => '2.0.2',
-    'clearCacheOnLoad' => true,
     'constraints' => [
         'depends' => [
             'typo3' => '12.4.0-13.4.99',
@@ -21,4 +16,8 @@ $EM_CONF[$_EXTKEY] = [
         'suggests' => [
         ],
     ],
+    'description' => 'Provides the option to assign frontend users to academic persons and allow editing the profiles in frontend.',
+    'state' => 'beta',
+    'title' => 'FGTCLB: Academic Persons Edit',
+    'version' => '2.0.2',
 ];
