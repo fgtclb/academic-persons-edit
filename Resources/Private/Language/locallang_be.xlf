@@ -26,7 +26,7 @@
             <trans-unit id="fe_users.tabs.tx_academicpersons_profiles.label">
                 <source>Profiles</source>
             </trans-unit>
-            <trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_Academicpersonsedit_Domain_Model_FrontendUser">
+            <trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_AcademicPersonsEdit_Domain_Model_FrontendUser">
                 <source>Academic Persons: User</source>
             </trans-unit>
 

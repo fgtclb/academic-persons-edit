@@ -33,7 +33,7 @@
                 <source>Profiles</source>
                 <target>Profile</target>
             </trans-unit>
-            <trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_Academicpersonsedit_Domain_Model_FrontendUser">
+            <trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_AcademicPersonsEdit_Domain_Model_FrontendUser">
                 <source>Academic Persons: User</source>
                 <target>Akademische Personen: Benutzer</target>
             </trans-unit>
