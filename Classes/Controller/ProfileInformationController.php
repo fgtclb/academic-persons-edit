@@ -42,9 +42,24 @@ final class ProfileInformationController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'type' => $type,
             'profileInformations' => $profile->_getProperty($type),
+        ]);
+
+        return $this->htmlResponse();
+    }
+
+    public function showAction(ProfileInformation $profileInformation): ResponseInterface
+    {
+        $this->userSessionService->saveRefererToSession($this->request);
+
+        $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'profile' => $profileInformation->getProfile(),
+            'type' => $profileInformation->getType(),
+            'profileInformation' => $profileInformation,
         ]);
 
         return $this->htmlResponse();
@@ -57,6 +72,7 @@ final class ProfileInformationController extends AbstractActionController
     public function newAction(Profile $profile, string $type, ?ProfileInformationFormData $profileInformationFormData = null): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'type' => $type,
             'profileInformationFormData' => $profileInformationFormData ?? ProfileInformationFormData::createEmptyForType($this->settingsRegistry->getProfileInformationTypeMapping($type)),
@@ -96,6 +112,7 @@ final class ProfileInformationController extends AbstractActionController
     public function editAction(ProfileInformation $profileInformation): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profileInformation->getProfile(),
             'profileInformation' => $profileInformation,
             'profileInformationFormData' => ProfileInformationFormData::createFromProfileInformation($profileInformation),
@@ -185,6 +202,7 @@ final class ProfileInformationController extends AbstractActionController
     public function confirmDeleteAction(ProfileInformation $profileInformation): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profileInformation->getProfile(),
             'profileInformation' => $profileInformation,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),

@@ -41,6 +41,7 @@ final class EmailAddressController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'emailAddresses' => $contract->getEmailAddresses(),
@@ -53,6 +54,7 @@ final class EmailAddressController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $emailAddress->getContract()->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
@@ -67,6 +69,7 @@ final class EmailAddressController extends AbstractActionController
     public function newAction(Contract $contract, ?EmailFormData $emailAddressFormData = null): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'emailAddressFormData' => $emailAddressFormData ?? new EmailFormData(),
@@ -103,6 +106,7 @@ final class EmailAddressController extends AbstractActionController
     public function editAction(Email $emailAddress): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $emailAddress->getContract()->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
@@ -191,6 +195,7 @@ final class EmailAddressController extends AbstractActionController
     public function confirmDeleteAction(Email $emailAddress): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $emailAddress->getContract()->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,

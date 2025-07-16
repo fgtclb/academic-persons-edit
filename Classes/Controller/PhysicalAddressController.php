@@ -41,6 +41,7 @@ final class PhysicalAddressController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'physicalAddresses' => $contract->getPhysicalAddresses(),
@@ -54,6 +55,7 @@ final class PhysicalAddressController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $physicalAddress->getContract()->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
@@ -69,6 +71,7 @@ final class PhysicalAddressController extends AbstractActionController
     public function newAction(Contract $contract, ?AddressFormData $addressFormData = null): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'addressFormData' => $addressFormData ?? new AddressFormData(),
@@ -106,6 +109,7 @@ final class PhysicalAddressController extends AbstractActionController
     public function editAction(Address $physicalAddress): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $physicalAddress->getContract()->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
@@ -195,6 +199,7 @@ final class PhysicalAddressController extends AbstractActionController
     public function confirmDeleteAction(Address $physicalAddress): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $physicalAddress->getContract()->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,

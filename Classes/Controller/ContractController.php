@@ -43,6 +43,7 @@ final class ContractController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
         ]);
         return $this->htmlResponse();
@@ -53,6 +54,7 @@ final class ContractController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
         ]);
@@ -66,6 +68,7 @@ final class ContractController extends AbstractActionController
     public function newAction(Profile $profile, ?ContractFormData $contractFormData = null): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'contractFormData' => $contractFormData ?? new ContractFormData(),
             'functionTypes' => $this->functionTypeRepository->findAll(),
@@ -103,6 +106,7 @@ final class ContractController extends AbstractActionController
     public function editAction(Contract $contract): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'contractFormData' => ContractFormData::createFromContract($contract),
@@ -186,6 +190,7 @@ final class ContractController extends AbstractActionController
     public function confirmDeleteAction(Contract $contract): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'contract' => $contract,
         ]);
         return $this->htmlResponse();

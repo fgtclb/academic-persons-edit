@@ -39,6 +39,7 @@ final class PhoneNumberController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'phoneNumbers' => $contract->getPhoneNumbers(),
@@ -52,6 +53,7 @@ final class PhoneNumberController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $phoneNumber->getContract()->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
@@ -67,6 +69,7 @@ final class PhoneNumberController extends AbstractActionController
     public function newAction(Contract $contract, ?PhoneNumberFormData $phoneNumberFormData = null): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'phoneNumberFormData' => $phoneNumberFormData ?? new PhoneNumberFormData(),
@@ -104,6 +107,7 @@ final class PhoneNumberController extends AbstractActionController
     public function editAction(PhoneNumber $phoneNumber): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $phoneNumber->getContract()->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
@@ -189,6 +193,7 @@ final class PhoneNumberController extends AbstractActionController
     public function confirmDeleteAction(PhoneNumber $phoneNumber): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $phoneNumber->getContract()->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,

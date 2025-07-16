@@ -44,6 +44,7 @@ final class ProfileController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profiles' => $profiles,
         ]);
 
@@ -55,6 +56,7 @@ final class ProfileController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
         ]);
 
@@ -68,6 +70,7 @@ final class ProfileController extends AbstractActionController
     public function editAction(Profile $profile): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'profileFormData' => ProfileFormData::createFromProfile($profile),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
@@ -116,6 +119,7 @@ final class ProfileController extends AbstractActionController
     public function editImageAction(Profile $profile): ResponseInterface
     {
         $this->view->assignMultiple([
+            'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);
