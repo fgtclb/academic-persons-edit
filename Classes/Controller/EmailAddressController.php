@@ -55,7 +55,7 @@ final class EmailAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $emailAddress->getContract()->getProfile(),
+            'profile' => $emailAddress->getContract()?->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
         ]);
@@ -107,7 +107,7 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $emailAddress->getContract()->getProfile(),
+            'profile' => $emailAddress->getContract()?->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
             'emailAddressFormData' => EmailFormData::createFromEmail($emailAddress),
@@ -143,6 +143,13 @@ final class EmailAddressController extends AbstractActionController
     public function sortAction(Email $emailAddressFromForm, string $sortDirection): ResponseInterface
     {
         $contract = $emailAddressFromForm->getContract();
+        if ($contract === null) {
+            // @todo Needs to be handled properly.
+            throw new \RuntimeException(
+                'Could not get contract.',
+                1752939173,
+            );
+        }
 
         if (!in_array($sortDirection, ['up', 'down'])
             || $contract->getEmailAddresses()->count() <= 1
@@ -196,7 +203,7 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $emailAddress->getContract()->getProfile(),
+            'profile' => $emailAddress->getContract()?->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),

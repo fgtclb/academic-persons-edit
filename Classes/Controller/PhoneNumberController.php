@@ -54,7 +54,7 @@ final class PhoneNumberController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $phoneNumber->getContract()->getProfile(),
+            'profile' => $phoneNumber->getContract()?->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
         ]);
@@ -108,7 +108,7 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $phoneNumber->getContract()->getProfile(),
+            'profile' => $phoneNumber->getContract()?->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
             'phoneNumberFormData' => PhoneNumberFormData::createFromPhoneNumber($phoneNumber),
@@ -141,6 +141,13 @@ final class PhoneNumberController extends AbstractActionController
     public function sortAction(PhoneNumber $phoneNumberFromForm, string $sortDirection): ResponseInterface
     {
         $contract = $phoneNumberFromForm->getContract();
+        if ($contract === null) {
+            // @todo Needs to be handled properly.
+            throw new \RuntimeException(
+                'Could not get contract.',
+                1752939240,
+            );
+        }
 
         if (!in_array($sortDirection, ['up', 'down'])
             || $contract->getPhoneNumbers()->count() <= 1
@@ -194,7 +201,7 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $phoneNumber->getContract()->getProfile(),
+            'profile' => $phoneNumber->getContract()?->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),

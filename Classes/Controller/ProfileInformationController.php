@@ -146,6 +146,13 @@ final class ProfileInformationController extends AbstractActionController
     {
         $sortingItemFromForm = $profileInformation;
         $profile = $sortingItemFromForm->getProfile();
+        if ($profile === null) {
+            // @todo Needs to be handled properly.
+            throw new \RuntimeException(
+                'Could not get contract.',
+                1752938963,
+            );
+        }
         $sortingItems = $this->profileInformationRepository->findByProfileAndType(
             $profile,
             $sortingItemFromForm->getType()

@@ -56,7 +56,7 @@ final class PhysicalAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $physicalAddress->getContract()->getProfile(),
+            'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
         ]);
@@ -110,7 +110,7 @@ final class PhysicalAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $physicalAddress->getContract()->getProfile(),
+            'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
             'addressFormData' => AddressFormData::createFromAddress($physicalAddress),
@@ -147,6 +147,13 @@ final class PhysicalAddressController extends AbstractActionController
     public function sortAction(Address $physicalAddressFromForm, string $sortDirection): ResponseInterface
     {
         $contract = $physicalAddressFromForm->getContract();
+        if ($contract === null) {
+            // @todo Needs to be handled properly.
+            throw new \RuntimeException(
+                'Could not get contract.',
+                1752938846,
+            );
+        }
 
         if (!in_array($sortDirection, ['up', 'down'])
             || $contract->getPhysicalAddresses()->count() <= 1
@@ -200,7 +207,7 @@ final class PhysicalAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
-            'profile' => $physicalAddress->getContract()->getProfile(),
+            'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),

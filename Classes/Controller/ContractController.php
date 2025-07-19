@@ -138,6 +138,13 @@ final class ContractController extends AbstractActionController
     public function sortAction(Contract $contractFromForm, string $sortDirection): ResponseInterface
     {
         $profile = $contractFromForm->getProfile();
+        if ($profile === null) {
+            // @todo Needs to be handled properly.
+            throw new \RuntimeException(
+                'Contract does not have a profile.',
+                1752936133,
+            );
+        }
 
         if (!in_array($sortDirection, ['up', 'down'])
             || $profile->getContracts()->count() <= 1
