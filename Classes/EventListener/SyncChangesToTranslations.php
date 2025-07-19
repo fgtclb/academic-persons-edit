@@ -11,9 +11,18 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Site\Entity\NullSite;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @todo This event reacts on an PSR-14 event dispatched in FE, BE and CLI(BE) context AND relies on a global
+ *       request object ($GLOBALS['TYPO3_REQUEST']) providing attribute `site` and the expectation limits it
+ *       to a frontend request. Overall this is a bad design and fails, because the PSR-14 event will also
+ *       dispatched in CLI context (cli command) AND eventualy in BE context when project using DataHandler
+ *       hooks dispatching that event again. That means, the whole working chain with the event, this listener
+ *       needs to be made context unaware and hard gobal expectations on request must fall.
+ */
 final class SyncChangesToTranslations
 {
     private ?int $defaultLanguage = null;
@@ -334,6 +343,7 @@ final class SyncChangesToTranslations
 
     private function getSite(): ?Site
     {
-        return ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('site');
+        $site = ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('site');
+        return $site instanceof NullSite ? null : $site;
     }
 }
