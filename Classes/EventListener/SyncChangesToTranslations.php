@@ -11,7 +11,8 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Site\Entity\NullSite;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -33,15 +34,20 @@ final class SyncChangesToTranslations
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly ProfileTranslator $profileTranslator,
+        private readonly SiteFinder $siteFinder,
     ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
     {
-        $this->init();
         $profile = $event->getProfile();
-        if ($profile->getUid() === null || $profile->getIsTranslation() === true) {
+        if ($profile->getUid() === null) {
             return;
         }
+
+        var_dump($profile);
+        $pid = $profile->getPid();
+        $site = $this->getSite($pid);
+        $this->init($site);
 
         $this->synchronizeTranslations(
             'tx_academicpersons_domain_model_profile',
@@ -322,9 +328,9 @@ final class SyncChangesToTranslations
         return $queryBuilder;
     }
 
-    private function init(): void
+    private function init(Site $site): void
     {
-        $this->defaultLanguage ??= $this->getSite()?->getDefaultLanguage()->getLanguageId() ?? 0;
+        $this->defaultLanguage ??= $site->getDefaultLanguage()->getLanguageId() ?? 0;
         $this->allowedLanguages ??= $this->profileTranslator->getAllowedLanguageIds();
     }
 
@@ -340,10 +346,20 @@ final class SyncChangesToTranslations
     {
         return $this->allowedLanguages ?? [];
     }
-
-    private function getSite(): ?Site
+    /**
+     * @param int $pid
+     * @return Site
+     */
+    private function getSite(int $pid):?Site
     {
-        $site = ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('site');
-        return $site instanceof NullSite ? null : $site;
+        try {
+            return $this->siteFinder->getSiteByPageId($pid);
+        } catch (\Exception $e) {
+            throw new SiteNotFoundException(
+                'An error occurred while retrieving the site for page ID: ' . $pid,
+                0,
+                $e
+            );
+        }
     }
 }
