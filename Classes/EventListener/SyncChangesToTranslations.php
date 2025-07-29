@@ -11,61 +11,79 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\Entity\NullSite;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @todo This event reacts on an PSR-14 event dispatched in FE, BE and CLI(BE) context AND relies on a global
  *       request object ($GLOBALS['TYPO3_REQUEST']) providing attribute `site` and the expectation limits it
  *       to a frontend request. Overall this is a bad design and fails, because the PSR-14 event will also
- *       dispatched in CLI context (cli command) AND eventualy in BE context when project using DataHandler
+ *       dispatched in CLI context (cli command) AND eventually in BE context when project using DataHandler
  *       hooks dispatching that event again. That means, the whole working chain with the event, this listener
- *       needs to be made context unaware and hard gobal expectations on request must fall.
+ *       needs to be made context unaware and hard global expectations on request must fall.
  */
 final class SyncChangesToTranslations
 {
-    private ?int $defaultLanguage = null;
-
-    /** @var int[] */
-    private ?array $allowedLanguages = null;
-
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly ProfileTranslator $profileTranslator,
+        private readonly SiteFinder $siteFinder,
     ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
     {
-        $this->init();
         $profile = $event->getProfile();
-        if ($profile->getUid() === null || $profile->getIsTranslation() === true) {
+        if ($profile->getUid() === null) {
+            // Not persisted or invalid profile. Skip.
             return;
         }
-
+        if ($profile->getPid() === null) {
+            // Invalid profile pid. Skip.
+            return;
+        }
+        if ($profile->getIsTranslation() === true) {
+            // Already n translation sync mode. Skip.
+            return;
+        }
+        // @todo Site should be part of the event, determine it dynamically for now.
+        $site = $this->getSite($profile->getPid());
+        if ($site === null) {
+            // No site found, nothing to do.
+            return;
+        }
         $this->synchronizeTranslations(
+            $site,
+            $site->getDefaultLanguage()->getLanguageId(),
+            $this->profileTranslator->getAllowedLanguageIds(),
             'tx_academicpersons_domain_model_profile',
-            $profile->getUid()
+            $profile->getUid(),
+            [],
         );
     }
 
     /**
-     * @param string $table
-     * @param int $uid
+     * @param int[] $allowedLanguageIds
      * @param array<string, mixed> $values
      */
     private function synchronizeTranslations(
+        Site $site,
+        int $defaultLanguageId,
+        array $allowedLanguageIds,
         string $table,
         int $uid,
-        array $values = []
+        array $values,
     ): void {
-        $defaultRecord = $this->getDefaultRecord($table, $uid);
+        $defaultRecord = $this->getDefaultRecord($table, $uid, $defaultLanguageId);
         if (empty($defaultRecord)) {
             return;
         }
 
         $tcaColumns = $GLOBALS['TCA'][$table]['columns'];
-        foreach ($this->allowedLanguages() as $languageUid) {
+        foreach ($allowedLanguageIds as $languageUid) {
             $translatedRecord = $this->getTranslatedRecord($table, $uid, $languageUid);
 
             // Create translation if it does not exist
@@ -76,7 +94,7 @@ final class SyncChangesToTranslations
                     $languageUid,
                     $values
                 );
-                // TODO: Add error handling
+                // @todo Add error handling
                 if (empty($translatedRecord)) {
                     continue;
                 }
@@ -87,7 +105,7 @@ final class SyncChangesToTranslations
 
             // Synchronize inline child records
             foreach ($tcaColumns as $columnName => $columnDefinition) {
-                // TODO: Check if this condition fits for all cases
+                // @todo Check if this condition fits for all cases
                 if ($columnDefinition['config']['type'] === 'inline'
                     && $columnName !== 'sys_file_reference'
                 ) {
@@ -97,14 +115,23 @@ final class SyncChangesToTranslations
                     $inlineChilds = $this->getInlineChilds(
                         $inlineTable,
                         $inlineField,
-                        $defaultRecord['uid']
+                        $defaultRecord['uid'],
+                        $defaultLanguageId,
                     );
-
-                    while ($inlineChild = $inlineChilds?->fetchAssociative()) {
+                    if ($inlineChilds === null) {
+                        // No inline children. Skip to next loop iteration.
+                        continue;
+                    }
+                    while ($inlineChild = $inlineChilds->fetchAssociative()) {
                         $this->synchronizeTranslations(
+                            $site,
+                            $defaultLanguageId,
+                            $allowedLanguageIds,
                             $inlineTable,
                             $inlineChild['uid'],
-                            [(string)$inlineField => $translatedRecord['uid']]
+                            [
+                                (string)$inlineField => $translatedRecord['uid'],
+                            ],
                         );
                     }
                 }
@@ -212,13 +239,12 @@ final class SyncChangesToTranslations
     }
 
     /**
-     * @param string $table
-     * @param int $uid
      * @return array<string, mixed>
      */
     private function getDefaultRecord(
         string $table,
-        int $uid
+        int $uid,
+        int $defaultLanguageId,
     ): array {
         $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
@@ -232,7 +258,7 @@ final class SyncChangesToTranslations
                 ),
                 $queryBuilder->expr()->eq(
                     $tcaCtrl['languageField'],
-                    $queryBuilder->createNamedParameter($this->defaultLanguageId(), Connection::PARAM_INT)
+                    $queryBuilder->createNamedParameter($defaultLanguageId, Connection::PARAM_INT)
                 )
             )
             ->setMaxResults(1);
@@ -276,14 +302,13 @@ final class SyncChangesToTranslations
     }
 
     /**
-     * @param string $table
-     * @param int $uid
      * @return Result|null
      */
     private function getInlineChilds(
         string $table,
         string $field,
         int $uid,
+        int $defaultLanguageId,
     ): ?Result {
         $tcaCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
@@ -300,7 +325,7 @@ final class SyncChangesToTranslations
                 ),
                 $queryBuilder->expr()->eq(
                     $tcaCtrl['languageField'],
-                    $queryBuilder->createNamedParameter($this->defaultLanguageId(), Connection::PARAM_INT)
+                    $queryBuilder->createNamedParameter($defaultLanguageId, Connection::PARAM_INT)
                 )
             );
 
@@ -322,28 +347,25 @@ final class SyncChangesToTranslations
         return $queryBuilder;
     }
 
-    private function init(): void
-    {
-        $this->defaultLanguage ??= $this->getSite()?->getDefaultLanguage()->getLanguageId() ?? 0;
-        $this->allowedLanguages ??= $this->profileTranslator->getAllowedLanguageIds();
-    }
-
-    private function defaultLanguageId(): int
-    {
-        return $this->defaultLanguage ?? 0;
-    }
-
     /**
-     * @return int[]
+     * @param int<0, max> $pid
+     * @todo The site object should be passed when dispatching {@see AfterProfileUpdateEvent} as part of the event,
+     *       so listener do not have the need to determine it on their own.
      */
-    private function allowedLanguages(): array
+    private function getSite(int $pid): ?Site
     {
-        return $this->allowedLanguages ?? [];
-    }
-
-    private function getSite(): ?Site
-    {
+        // First, try to get Site from global request
         $site = ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('site');
-        return $site instanceof NullSite ? null : $site;
+        // Second, take NullSite as not set, which indicates backend usage without a selected page in the page tree,
+        // and may be wrong anyway.
+        $site = $site instanceof NullSite ? null : $site;
+        // No site yet, get the related site config for `$pid`.
+        try {
+            $site ??= $this->siteFinder->getSiteByPageId($pid);
+        } catch (PageNotFoundException|SiteNotFoundException) {
+            // Site could not determined.
+            $site = null;
+        }
+        return $site;
     }
 }
