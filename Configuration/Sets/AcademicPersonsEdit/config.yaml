@@ -1,2 +1,4 @@
 name: fgtclb/academic-persons-edit
 label: Academic Persons Edit
+dependencies:
+  - fgtclb/academic-base-ctype-group

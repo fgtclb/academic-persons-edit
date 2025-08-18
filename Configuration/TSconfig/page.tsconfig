@@ -1,15 +1,13 @@
 mod.wizards.newContentElement.wizardItems.academic {
-    header = LLL:EXT:academic_persons/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic
-    after = special
-    elements {
-        academicpersonsedit_profileediting {
-            iconIdentifier = persons_edit_icon
-            title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
-            description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
-            tt_content_defValues {
-                CType = academicpersonsedit_profileediting
-            }
-        }
+  elements {
+    academicpersonsedit_profileediting {
+      iconIdentifier = persons_edit_icon
+      title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
+      description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
+      tt_content_defValues {
+        CType = academicpersonsedit_profileediting
+      }
     }
-    show := addToList(academicpersonsedit_profileediting)
+  }
+  show := addToList(academicpersonsedit_profileediting)
 }
