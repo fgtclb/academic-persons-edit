@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" target-language="de" datatype="plaintext" product-name="academic_persons_edit">
-        <header/>
-        <body>
-            <trans-unit id="plugin.profile_switcher.label">
-                <source>Profiles: Profile Switcher</source>
-                <target>Profile: Profil wechseln</target>
-            </trans-unit>
-            <trans-unit id="plugin.profile_editing.label">
-                <source>Profiles: Profile Editing</source>
-                <target>Profile: Profil Editor</target>
-            </trans-unit>
+	<file
+		source-language="en"
+		target-language="de"
+		datatype="plaintext"
+		original="EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf"
+		date="2015-11-10T06:53:10Z"
+		product-name="academic_persons_edit"
+	>
+		<header/>
+		<body>
+			<trans-unit id="plugin.profile_switcher.label">
+				<source>Profiles: Profile Switcher</source>
+				<target>Profile: Profil wechseln</target>
+			</trans-unit>
+			<trans-unit id="plugin.profile_editing.label">
+				<source>Profiles: Profile Editing</source>
+				<target>Profile: Profil Editor</target>
+			</trans-unit>
 
-            <trans-unit id="extension_configuration.profile.autoCreateProfiles.label">
-                <source>Auto create profile: Automatically creates a new profile for FE users</source>
-                <target>Automatisch Profil erstellen: Legt automatisch ein neues Profil für FE Benutzer an</target>
-            </trans-unit>
-            <trans-unit id="extension_configuration.profile.createProfileForUserGroups.label">
-                <source>Create for user groups: Create profiles only if current user is in one of these user group IDs.</source>
-                <target>Für Benutzergruppen erstellen: Legt Profile an, wenn der aktuelle Benutzer Teil dieser Gruppen-IDs ist</target>
-            </trans-unit>
-            <trans-unit id="extension_configuration.profile.allowedLanguages.label">
-                <source>Allowed languages: List of language IDs which a profile can be translated to.</source>
-                <target>Erlaubte Sprachen: Liste der Sprach-IDs in welche Profile übersetzt werden können</target>
-            </trans-unit>
+			<trans-unit id="extension_configuration.profile.autoCreateProfiles.label">
+				<source>Auto create profile: Automatically creates a new profile for FE users</source>
+				<target>Automatisch Profil erstellen: Legt automatisch ein neues Profil für FE Benutzer an</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.profile.createProfileForUserGroups.label">
+				<source>Create for user groups: Create profiles only if current user is in one of these user group IDs.</source>
+				<target>Für Benutzergruppen erstellen: Legt Profile an, wenn der aktuelle Benutzer Teil dieser Gruppen-IDs ist</target>
+			</trans-unit>
+			<trans-unit id="extension_configuration.profile.allowedLanguages.label">
+				<source>Allowed languages: List of language IDs which a profile can be translated to.</source>
+				<target>Erlaubte Sprachen: Liste der Sprach-IDs in welche Profile übersetzt werden können</target>
+			</trans-unit>
 
-            <trans-unit id="fe_users.columns.tx_academicpersons_profiles.label">
-                <source>Assigned Profiles</source>
-                <target>Zugewiesene Profile</target>
-            </trans-unit>
-            <trans-unit id="fe_users.tabs.tx_academicpersons_profiles.label">
-                <source>Profiles</source>
-                <target>Profile</target>
-            </trans-unit>
-            <trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_AcademicPersonsEdit_Domain_Model_FrontendUser">
-                <source>Academic Persons: User</source>
-                <target>Akademische Personen: Benutzer</target>
-            </trans-unit>
+			<trans-unit id="fe_users.columns.tx_academicpersons_profiles.label">
+				<source>Assigned Profiles</source>
+				<target>Zugewiesene Profile</target>
+			</trans-unit>
+			<trans-unit id="fe_users.tabs.tx_academicpersons_profiles.label">
+				<source>Profiles</source>
+				<target>Profile</target>
+			</trans-unit>
+			<trans-unit id="fe_users.columns.tx_extbase_type.items.Tx_AcademicPersonsEdit_Domain_Model_FrontendUser">
+				<source>Academic Persons: User</source>
+				<target>Akademische Personen: Benutzer</target>
+			</trans-unit>
 
-            <trans-unit id="tx_academicpersons_domain_model_profile.columns.frontend_users.label">
-                <source>Assigned Users</source>
-                <target>Zugewiesene Benutzer</target>
-            </trans-unit>
-            <trans-unit id="tx_academicpersons_domain_model_profile.tabs.frontend_users.label">
-                <source>Frontend Users</source>
-                <target>Frontend Benutzer</target>
-            </trans-unit>
+			<trans-unit id="tx_academicpersons_domain_model_profile.columns.frontend_users.label">
+				<source>Assigned Users</source>
+				<target>Zugewiesene Benutzer</target>
+			</trans-unit>
+			<trans-unit id="tx_academicpersons_domain_model_profile.tabs.frontend_users.label">
+				<source>Frontend Users</source>
+				<target>Frontend Benutzer</target>
+			</trans-unit>
 
-            <trans-unit id="newContentElement.wizardItems.academic.profileEditing.title">
-                <source>Academic Persons Profile Editing</source>
-                <target>Akademische Personen Profil Bearbeitung</target>
-            </trans-unit>
-            <trans-unit id="newContentElement.wizardItems.academic.profileEditing.description">
-                <source>Plugin for editing profiles in the frontend</source>
-                <target>Plugin zur Bearbeitung von Profilen im Frontend</target>
-            </trans-unit>
-            <trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.title">
-                <source>Academic Persons Edit Profile Switcher</source>
-                <target>Akademische Personen Profil wechseln</target>
-            </trans-unit>
-            <trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.description">
-                <source>Plugin for switching profiles in the frontend</source>
-                <target>Plugin zum wechsel der Profile im Frontend</target>
-            </trans-unit>
-        </body>
-    </file>
+			<trans-unit id="newContentElement.wizardItems.academic.profileEditing.title">
+				<source>Academic Persons Profile Editing</source>
+				<target>Akademische Personen Profil Bearbeitung</target>
+			</trans-unit>
+			<trans-unit id="newContentElement.wizardItems.academic.profileEditing.description">
+				<source>Plugin for editing profiles in the frontend</source>
+				<target>Plugin zur Bearbeitung von Profilen im Frontend</target>
+			</trans-unit>
+			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.title">
+				<source>Academic Persons Edit Profile Switcher</source>
+				<target>Akademische Personen Profil wechseln</target>
+			</trans-unit>
+			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.description">
+				<source>Plugin for switching profiles in the frontend</source>
+				<target>Plugin zum wechsel der Profile im Frontend</target>
+			</trans-unit>
+		</body>
+	</file>
 </xliff>

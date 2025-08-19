@@ -1,280 +1,286 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" datatype="plaintext" product-name="academic_persons_edit">
-        <header/>
-        <body>
-            <!-- Contract form -->
+	<file
+		source-language="en"
+		datatype="plaintext"
+		original="EXT:academic_persons_edit/Resources/Private/Language/locallang.xlf"
+		date="2015-11-10T06:53:10Z"
+		product-name="academic_persons_edit"
+	>
+		<header/>
+		<body>
+			<!-- Contract form -->
 
-            <trans-unit id="contract.success.create.done">
-                <source>Contract successfully created.</source>
-            </trans-unit>
-            <trans-unit id="contract.success.update.done">
-                <source>Contract successfully updated.</source>
-            </trans-unit>
+			<trans-unit id="contract.success.create.done">
+				<source>Contract successfully created.</source>
+			</trans-unit>
+			<trans-unit id="contract.success.update.done">
+				<source>Contract successfully updated.</source>
+			</trans-unit>
 
-            <trans-unit id="form.contract.functionType.label">
-                <source>Function Type</source>
-            </trans-unit>
-            <trans-unit id="form.contract.location.label">
-                <source>Location</source>
-            </trans-unit>
-            <trans-unit id="form.contract.officeHours.label">
-                <source>Office Hours</source>
-            </trans-unit>
-            <trans-unit id="form.contract.organisationalUnit.label">
-                <source>Organisationa Unit</source>
-            </trans-unit>
-            <trans-unit id="form.contract.position.label">
-                <source>Position</source>
-            </trans-unit>
-            <trans-unit id="form.contract.publish.label">
-                <source>publish</source>
-            </trans-unit>
-            <trans-unit id="form.contract.room.label">
-                <source>Room</source>
-            </trans-unit>
-            <trans-unit id="form.contract.validFrom.label">
-                <source>Valid from</source>
-            </trans-unit>
-            <trans-unit id="form.contract.validTo.label">
-                <source>Valid to</source>
-            </trans-unit>
+			<trans-unit id="form.contract.functionType.label">
+				<source>Function Type</source>
+			</trans-unit>
+			<trans-unit id="form.contract.location.label">
+				<source>Location</source>
+			</trans-unit>
+			<trans-unit id="form.contract.officeHours.label">
+				<source>Office Hours</source>
+			</trans-unit>
+			<trans-unit id="form.contract.organisationalUnit.label">
+				<source>Organisationa Unit</source>
+			</trans-unit>
+			<trans-unit id="form.contract.position.label">
+				<source>Position</source>
+			</trans-unit>
+			<trans-unit id="form.contract.publish.label">
+				<source>publish</source>
+			</trans-unit>
+			<trans-unit id="form.contract.room.label">
+				<source>Room</source>
+			</trans-unit>
+			<trans-unit id="form.contract.validFrom.label">
+				<source>Valid from</source>
+			</trans-unit>
+			<trans-unit id="form.contract.validTo.label">
+				<source>Valid to</source>
+			</trans-unit>
 
-            <!-- Email address form -->
+			<!-- Email address form -->
 
-            <trans-unit id="emailAddress.success.create.done">
-                <source>Email address successfully created.</source>
-            </trans-unit>
-            <trans-unit id="emailAddress.success.update.done">
-                <source>Email address successfully updated.</source>
-            </trans-unit>
+			<trans-unit id="emailAddress.success.create.done">
+				<source>Email address successfully created.</source>
+			</trans-unit>
+			<trans-unit id="emailAddress.success.update.done">
+				<source>Email address successfully updated.</source>
+			</trans-unit>
 
-            <trans-unit id="form.emailAddress.email.label">
-                <source>Email Address</source>
-            </trans-unit>
-            <trans-unit id="form.emailAddress.email.error.1221560718">
-                <source>The email address is required.</source>
-            </trans-unit>
-            <trans-unit id="form.emailAddress.email.error.1221559976">
-                <source>The email address does not have the correct format.</source>
-            </trans-unit>
-            <trans-unit id="form.emailAddress.type.label">
-                <source>Type</source>
-            </trans-unit>
+			<trans-unit id="form.emailAddress.email.label">
+				<source>Email Address</source>
+			</trans-unit>
+			<trans-unit id="form.emailAddress.email.error.1221560718">
+				<source>The email address is required.</source>
+			</trans-unit>
+			<trans-unit id="form.emailAddress.email.error.1221559976">
+				<source>The email address does not have the correct format.</source>
+			</trans-unit>
+			<trans-unit id="form.emailAddress.type.label">
+				<source>Type</source>
+			</trans-unit>
 
-            <!-- Phone number form -->
+			<!-- Phone number form -->
 
-            <trans-unit id="phoneNumber.success.create.done">
-                <source>Phone number successfully created.</source>
-            </trans-unit>
-            <trans-unit id="phoneNumber.success.update.done">
-                <source>Phone number successfully updated.</source>
-            </trans-unit>
+			<trans-unit id="phoneNumber.success.create.done">
+				<source>Phone number successfully created.</source>
+			</trans-unit>
+			<trans-unit id="phoneNumber.success.update.done">
+				<source>Phone number successfully updated.</source>
+			</trans-unit>
 
-            <trans-unit id="form.phoneNumber.phoneNumber.label">
-                <source>Phone Number</source>
-            </trans-unit>
-            <trans-unit id="form.phoneNumber.type.label">
-                <source>Type</source>
-            </trans-unit>
+			<trans-unit id="form.phoneNumber.phoneNumber.label">
+				<source>Phone Number</source>
+			</trans-unit>
+			<trans-unit id="form.phoneNumber.type.label">
+				<source>Type</source>
+			</trans-unit>
 
-            <!-- Physical address form -->
+			<!-- Physical address form -->
 
-            <trans-unit id="physicalAddress.success.cretae.done">
-                <source>Physical address successfully created.</source>
-            </trans-unit>
-            <trans-unit id="physicalAddress.success.update.done">
-                <source>Physical address successfully updated.</source>
-            </trans-unit>
+			<trans-unit id="physicalAddress.success.cretae.done">
+				<source>Physical address successfully created.</source>
+			</trans-unit>
+			<trans-unit id="physicalAddress.success.update.done">
+				<source>Physical address successfully updated.</source>
+			</trans-unit>
 
-            <trans-unit id="form.physicalAddress.additional.label">
-                <source>Additional</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.city.label">
-                <source>City</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.country.label">
-                <source>Country</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.state.label">
-                <source>State</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.street.label">
-                <source>Street</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.streetNumber.label">
-                <source>Street Number</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.type.label">
-                <source>Type</source>
-            </trans-unit>
-            <trans-unit id="form.physicalAddress.zip.label">
-                <source>Zip</source>
-            </trans-unit>
+			<trans-unit id="form.physicalAddress.additional.label">
+				<source>Additional</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.city.label">
+				<source>City</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.country.label">
+				<source>Country</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.state.label">
+				<source>State</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.street.label">
+				<source>Street</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.streetNumber.label">
+				<source>Street Number</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.type.label">
+				<source>Type</source>
+			</trans-unit>
+			<trans-unit id="form.physicalAddress.zip.label">
+				<source>Zip</source>
+			</trans-unit>
 
-            <!-- Profile form -->
+			<!-- Profile form -->
 
-            <trans-unit id="form.profile.coreCompetences.label">
-                <source>Core competences</source>
-            </trans-unit>
-            <trans-unit id="form.profile.coreCompetences.placeholder">
-                <source>Core competences</source>
-            </trans-unit>
-            <trans-unit id="form.profile.firstName.label">
-                <source>First name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.firstName.placeholder">
-                <source>First name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.firstName.error.1221560718">
-                <source>The field first name is required.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.gender.label">
-                <source>Gender</source>
-            </trans-unit>
-          <trans-unit id="form.profile.gender.placeholder">
-                <source>Gender</source>
-            </trans-unit>
-            <trans-unit id="form.profile.lastName.label">
-                <source>Last name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.lastName.placeholder">
-                <source>Last name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.lastName.error.1221560718">
-                <source>The field last name is required.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.middleName.label">
-                <source>Middle name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.middleName.placeholder">
-                <source>Middle name</source>
-            </trans-unit>
-            <trans-unit id="form.profile.miscellaneous.label">
-                <source>Miscellaneous</source>
-            </trans-unit>
-            <trans-unit id="form.profile.miscellaneous.placeholder">
-                <source>Miscellaneous</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publicationsLink.label">
-                <source>Publications link</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publicationsLink.placeholder">
-                <source>Publications link</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publicationsLinkTitle.label">
-                <source>Publications link title</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publicationsLinkTitle.placeholder">
-                <source>Publications link title</source>
-            </trans-unit>
-            <trans-unit id="form.profile.supervisedDoctoralThesis.label">
-                <source>Supervised doctoral thesis</source>
-            </trans-unit>
-            <trans-unit id="form.profile.supervisedDoctoralThesis.placeholder">
-                <source>Supervised doctoral thesis</source>
-            </trans-unit>
-            <trans-unit id="form.profile.supervisedThesis.label">
-                <source>Supervised thesis</source>
-            </trans-unit>
-            <trans-unit id="form.profile.supervisedThesis.placeholder">
-                <source>Supervised thesis</source>
-            </trans-unit>
-            <trans-unit id="form.profile.teachingArea.label">
-                <source>Teaching area</source>
-            </trans-unit>
-            <trans-unit id="form.profile.teachingArea.placeholder">
-                <source>Teaching area</source>
-            </trans-unit>
-            <trans-unit id="form.profile.title.label">
-                <source>Title</source>
-            </trans-unit>
-            <trans-unit id="form.profile.title.placeholder">
-                <source>Title</source>
-            </trans-unit>
-            <trans-unit id="form.profile.website.label">
-                <source>Website</source>
-            </trans-unit>
-            <trans-unit id="form.profile.website.placeholder">
-                <source>Website</source>
-            </trans-unit>
-            <trans-unit id="form.profile.websiteTitle.label">
-                <source>Website title</source>
-            </trans-unit>
-            <trans-unit id="form.profile.websiteTitle.placeholder">
-                <source>Website title</source>
-            </trans-unit>
+			<trans-unit id="form.profile.coreCompetences.label">
+				<source>Core competences</source>
+			</trans-unit>
+			<trans-unit id="form.profile.coreCompetences.placeholder">
+				<source>Core competences</source>
+			</trans-unit>
+			<trans-unit id="form.profile.firstName.label">
+				<source>First name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.firstName.placeholder">
+				<source>First name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.firstName.error.1221560718">
+				<source>The field first name is required.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.gender.label">
+				<source>Gender</source>
+			</trans-unit>
+			<trans-unit id="form.profile.gender.placeholder">
+				<source>Gender</source>
+			</trans-unit>
+			<trans-unit id="form.profile.lastName.label">
+				<source>Last name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.lastName.placeholder">
+				<source>Last name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.lastName.error.1221560718">
+				<source>The field last name is required.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.middleName.label">
+				<source>Middle name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.middleName.placeholder">
+				<source>Middle name</source>
+			</trans-unit>
+			<trans-unit id="form.profile.miscellaneous.label">
+				<source>Miscellaneous</source>
+			</trans-unit>
+			<trans-unit id="form.profile.miscellaneous.placeholder">
+				<source>Miscellaneous</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publicationsLink.label">
+				<source>Publications link</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publicationsLink.placeholder">
+				<source>Publications link</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publicationsLinkTitle.label">
+				<source>Publications link title</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publicationsLinkTitle.placeholder">
+				<source>Publications link title</source>
+			</trans-unit>
+			<trans-unit id="form.profile.supervisedDoctoralThesis.label">
+				<source>Supervised doctoral thesis</source>
+			</trans-unit>
+			<trans-unit id="form.profile.supervisedDoctoralThesis.placeholder">
+				<source>Supervised doctoral thesis</source>
+			</trans-unit>
+			<trans-unit id="form.profile.supervisedThesis.label">
+				<source>Supervised thesis</source>
+			</trans-unit>
+			<trans-unit id="form.profile.supervisedThesis.placeholder">
+				<source>Supervised thesis</source>
+			</trans-unit>
+			<trans-unit id="form.profile.teachingArea.label">
+				<source>Teaching area</source>
+			</trans-unit>
+			<trans-unit id="form.profile.teachingArea.placeholder">
+				<source>Teaching area</source>
+			</trans-unit>
+			<trans-unit id="form.profile.title.label">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="form.profile.title.placeholder">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="form.profile.website.label">
+				<source>Website</source>
+			</trans-unit>
+			<trans-unit id="form.profile.website.placeholder">
+				<source>Website</source>
+			</trans-unit>
+			<trans-unit id="form.profile.websiteTitle.label">
+				<source>Website title</source>
+			</trans-unit>
+			<trans-unit id="form.profile.websiteTitle.placeholder">
+				<source>Website title</source>
+			</trans-unit>
 
-            <trans-unit id="form.profile.cooperation.header">
-                <source>Cooperation Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.cooperation.count">
-                <source>%s cooperation entry/entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.lectures.header">
-                <source>Lectures Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.lectures.count">
-                <source>%s lectures entry/entries found.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.memberships.header">
-                <source>Memberships Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.memberships.count">
-                <source>%s memberships entry/entries found.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.pressMedia.header">
-                <source>Press media Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.pressMedia.count">
-                <source>%s press media entry/entries found.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publications.header">
-                <source>Publications Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.publications.count">
-                <source>%s publication entry/entries found.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.scientificResearch.header">
-                <source>Scientific Research Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.scientificResearch.count">
-                <source>%s scientific research entry/entries found.</source>
-            </trans-unit>
-            <trans-unit id="form.profile.vita.header">
-                <source>Vita Entries</source>
-            </trans-unit>
-            <trans-unit id="form.profile.vita.count">
-                <source>%s vita entry/entries found.</source>
-            </trans-unit>
+			<trans-unit id="form.profile.cooperation.header">
+				<source>Cooperation Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.cooperation.count">
+				<source>%s cooperation entry/entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.lectures.header">
+				<source>Lectures Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.lectures.count">
+				<source>%s lectures entry/entries found.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.memberships.header">
+				<source>Memberships Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.memberships.count">
+				<source>%s memberships entry/entries found.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.pressMedia.header">
+				<source>Press media Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.pressMedia.count">
+				<source>%s press media entry/entries found.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publications.header">
+				<source>Publications Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.publications.count">
+				<source>%s publication entry/entries found.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.scientificResearch.header">
+				<source>Scientific Research Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.scientificResearch.count">
+				<source>%s scientific research entry/entries found.</source>
+			</trans-unit>
+			<trans-unit id="form.profile.vita.header">
+				<source>Vita Entries</source>
+			</trans-unit>
+			<trans-unit id="form.profile.vita.count">
+				<source>%s vita entry/entries found.</source>
+			</trans-unit>
 
-            <!-- Profile information form -->
+			<!-- Profile information form -->
 
-            <trans-unit id="profileInformation.success.create.done">
-                <source>Profile information successfully created.</source>
-            </trans-unit>
-            <trans-unit id="profileInformation.success.update.done">
-                <source>Profile information successfully updated.</source>
-            </trans-unit>
+			<trans-unit id="profileInformation.success.create.done">
+				<source>Profile information successfully created.</source>
+			</trans-unit>
+			<trans-unit id="profileInformation.success.update.done">
+				<source>Profile information successfully updated.</source>
+			</trans-unit>
 
-            <trans-unit id="form.profileInformation.bodytext.label">
-                <source>Description</source>
-            </trans-unit>
-            <trans-unit id="form.profileInformation.link.label">
-                <source>Link</source>
-            </trans-unit>
-            <trans-unit id="form.profileInformation.title.label">
-                <source>Title</source>
-            </trans-unit>
-            <trans-unit id="form.profileInformation.year.label">
-                <source>Year</source>
-            </trans-unit>
-            <trans-unit id="form.profileInformation.yearEnd.label">
-                <source>End Year</source>
-            </trans-unit>
-            <trans-unit id="form.profileInformation.yearStart.label">
-                <source>Start Year</source>
-            </trans-unit>
-        </body>
-    </file>
+			<trans-unit id="form.profileInformation.bodytext.label">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="form.profileInformation.link.label">
+				<source>Link</source>
+			</trans-unit>
+			<trans-unit id="form.profileInformation.title.label">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="form.profileInformation.year.label">
+				<source>Year</source>
+			</trans-unit>
+			<trans-unit id="form.profileInformation.yearEnd.label">
+				<source>End Year</source>
+			</trans-unit>
+			<trans-unit id="form.profileInformation.yearStart.label">
+				<source>Start Year</source>
+			</trans-unit>
+		</body>
+	</file>
 </xliff>
