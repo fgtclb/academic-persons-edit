@@ -140,9 +140,9 @@ final class EmailAddressController extends AbstractActionController
         return (new ForwardResponse('edit'))->withArguments(['emailAddress' => $emailAddress]);
     }
 
-    public function sortAction(Email $emailAddressFromForm, string $sortDirection): ResponseInterface
+    public function sortAction(Email $emailAddress, string $sortDirection): ResponseInterface
     {
-        $contract = $emailAddressFromForm->getContract();
+        $contract = $emailAddress->getContract();
         if ($contract === null) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
@@ -160,8 +160,8 @@ final class EmailAddressController extends AbstractActionController
 
         // Convert contracts to array
         $emailAddressArray = [];
-        foreach ($contract->getEmailAddresses() as $emailAddress) {
-            $emailAddressArray[] = $emailAddress;
+        foreach ($contract->getEmailAddresses() as $contractEmailAddress) {
+            $emailAddressArray[] = $contractEmailAddress;
         }
 
         // Revert array, if sort direction is down
@@ -172,7 +172,7 @@ final class EmailAddressController extends AbstractActionController
         // Switch sorting values
         $prevEmailAddress = null;
         foreach ($emailAddressArray as $currentEmailAddress) {
-            if ($emailAddressFromForm != $currentEmailAddress) {
+            if ($emailAddress != $currentEmailAddress) {
                 $prevEmailAddress = $currentEmailAddress;
             } else {
                 // Only switch sorting if the selected contract is not the first one in the array

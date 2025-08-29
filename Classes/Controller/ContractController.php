@@ -135,9 +135,9 @@ final class ContractController extends AbstractActionController
         return (new ForwardResponse('edit'))->withArguments(['contract' => $contract]);
     }
 
-    public function sortAction(Contract $contractFromForm, string $sortDirection): ResponseInterface
+    public function sortAction(Contract $contract, string $sortDirection): ResponseInterface
     {
-        $profile = $contractFromForm->getProfile();
+        $profile = $contract->getProfile();
         if ($profile === null) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
@@ -155,8 +155,8 @@ final class ContractController extends AbstractActionController
 
         // Convert contracts to array
         $contractsArray = [];
-        foreach ($profile->getContracts() as $contract) {
-            $contractsArray[$contract->getUid()] = $contract;
+        foreach ($profile->getContracts() as $profileContract) {
+            $contractsArray[$profileContract->getUid()] = $profileContract;
         }
 
         // Revert array, if sort direction is down
@@ -167,7 +167,7 @@ final class ContractController extends AbstractActionController
         // Switch sorting values
         $prevContract = null;
         foreach ($contractsArray as $currentContract) {
-            if ($contractFromForm != $currentContract) {
+            if ($contract != $currentContract) {
                 $prevContract = $currentContract;
             } else {
                 // Only switch sorting if the selected contract is not the first one in the array

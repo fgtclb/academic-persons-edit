@@ -144,8 +144,7 @@ final class ProfileInformationController extends AbstractActionController
      */
     public function sortAction(ProfileInformation $profileInformation, string $sortDirection): ResponseInterface
     {
-        $sortingItemFromForm = $profileInformation;
-        $profile = $sortingItemFromForm->getProfile();
+        $profile = $profileInformation->getProfile();
         if ($profile === null) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
@@ -155,7 +154,7 @@ final class ProfileInformationController extends AbstractActionController
         }
         $sortingItems = $this->profileInformationRepository->findByProfileAndType(
             $profile,
-            $sortingItemFromForm->getType()
+            $profileInformation->getType()
         );
 
         if (!in_array($sortDirection, ['up', 'down'])
@@ -179,7 +178,7 @@ final class ProfileInformationController extends AbstractActionController
         // Switch sorting values
         $prevItem = null;
         foreach ($sortingItemsArray as $currentItem) {
-            if ($sortingItemFromForm != $currentItem) {
+            if ($profileInformation != $currentItem) {
                 $prevItem = $currentItem;
             } else {
                 // Only switch sorting if the selected contract is not the first one in the array

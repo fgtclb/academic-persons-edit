@@ -138,9 +138,9 @@ final class PhoneNumberController extends AbstractActionController
         return (new ForwardResponse('edit'))->withArguments(['phoneNumber' => $phoneNumber]);
     }
 
-    public function sortAction(PhoneNumber $phoneNumberFromForm, string $sortDirection): ResponseInterface
+    public function sortAction(PhoneNumber $phoneNumber, string $sortDirection): ResponseInterface
     {
-        $contract = $phoneNumberFromForm->getContract();
+        $contract = $phoneNumber->getContract();
         if ($contract === null) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
@@ -158,8 +158,8 @@ final class PhoneNumberController extends AbstractActionController
 
         // Convert contracts to array
         $phoneNumberArray = [];
-        foreach ($contract->getPhoneNumbers() as $phoneNumber) {
-            $phoneNumberArray[] = $phoneNumber;
+        foreach ($contract->getPhoneNumbers() as $contractPhoneNumber) {
+            $phoneNumberArray[] = $contractPhoneNumber;
         }
 
         // Revert array, if sort direction is down
@@ -170,7 +170,7 @@ final class PhoneNumberController extends AbstractActionController
         // Switch sorting values
         $prevPhoneNumber = null;
         foreach ($phoneNumberArray as $currentPhoneNumber) {
-            if ($phoneNumberFromForm != $currentPhoneNumber) {
+            if ($phoneNumber != $currentPhoneNumber) {
                 $prevPhoneNumber = $currentPhoneNumber;
             } else {
                 // Only switch sorting if the selected contract is not the first one in the array
