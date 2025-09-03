@@ -86,6 +86,13 @@ final class PhoneNumberController extends AbstractActionController
             $contract,
             $phoneNumberFormData,
         );
+        $maxSortingValue = 0;
+        foreach ($contract->getPhoneNumbers() as $existingPhoneNumber) {
+            $maxSortingValue = max($maxSortingValue, $existingPhoneNumber->getSorting());
+        }
+        // Use next available sorting value
+        $maxSortingValue += 1;
+        $phoneNumber->setSorting($maxSortingValue);
         $this->phoneNumberRepository->add($phoneNumber);
         $this->persistenceManager->persistAll();
 

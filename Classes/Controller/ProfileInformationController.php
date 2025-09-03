@@ -90,6 +90,17 @@ final class ProfileInformationController extends AbstractActionController
             $profileInformationFormData
         );
 
+        $sortingItems = $this->profileInformationRepository->findByProfileAndType(
+            $profile,
+            $profileInformation->getType()
+        );
+        $maxSortingValue = 0;
+        foreach ($sortingItems as $existingProfileInformation) {
+            $maxSortingValue = max($maxSortingValue, $existingProfileInformation->getSorting());
+        }
+        // Use next available sorting value
+        $maxSortingValue += 1;
+        $profileInformation->setSorting($maxSortingValue);
         $profileInformation->setPid((int)$profile->getPid());
         $this->profileInformationRepository->add($profileInformation);
         $this->persistenceManager->persistAll();

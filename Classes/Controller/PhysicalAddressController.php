@@ -88,6 +88,13 @@ final class PhysicalAddressController extends AbstractActionController
             $contract,
             $addressFormData
         );
+        $maxSortingValue = 0;
+        foreach ($contract->getPhysicalAddresses() as $existingAddress) {
+            $maxSortingValue = max($maxSortingValue, $existingAddress->getSorting());
+        }
+        // Use next available sorting value
+        $maxSortingValue += 1;
+        $physicalAddress->setSorting($maxSortingValue);
         $this->addressRepository->add($physicalAddress);
         $this->persistenceManager->persistAll();
 

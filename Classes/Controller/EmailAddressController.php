@@ -85,6 +85,13 @@ final class EmailAddressController extends AbstractActionController
             $contract,
             $emailAddressFormData
         );
+        $maxSortingValue = 0;
+        foreach ($contract->getEmailAddresses() as $existingEmailAddress) {
+            $maxSortingValue = max($maxSortingValue, $existingEmailAddress->getSorting());
+        }
+        // Use next available sorting value
+        $maxSortingValue += 1;
+        $emailAddress->setSorting($maxSortingValue);
         $this->emailAddressRepository->add($emailAddress);
         $this->persistenceManager->persistAll();
 

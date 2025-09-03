@@ -85,6 +85,13 @@ final class ContractController extends AbstractActionController
             $profile,
             $contractFormData
         );
+        $maxSortingValue = 0;
+        foreach ($profile->getContracts() as $existingContract) {
+            $maxSortingValue = max($maxSortingValue, $existingContract->getSorting());
+        }
+        // Use next available sorting value
+        $maxSortingValue += 1;
+        $contract->setSorting($maxSortingValue);
         $this->contractRepository->add($contract);
         $this->persistenceManager->persistAll();
 
