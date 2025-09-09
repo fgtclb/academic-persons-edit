@@ -66,11 +66,16 @@
         }"
     />
     <f:render
-        partial="Forms/Textfield"
+        partial="Forms/Select"
         arguments="{
             element: {
                 form: 'contract',
                 identifier: 'location',
+                options: locations,
+                optionValueField: 'uid',
+                optionLabelField: 'title',
+                prependOptionValue: '',
+                prependOptionLabel: '---',
                 validations: validations
             }
         }"

@@ -74,7 +74,7 @@ final class PhoneNumberController extends AbstractActionController
             'contract' => $contract,
             'phoneNumberFormData' => $phoneNumberFormData ?? new PhoneNumberFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('phoneNumber'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber')->validations,
         ]);
 
         return $this->htmlResponse();
@@ -83,6 +83,7 @@ final class PhoneNumberController extends AbstractActionController
     public function createAction(Contract $contract, PhoneNumberFormData $phoneNumberFormData): ResponseInterface
     {
         $phoneNumber = $this->phoneNumberFactory->createFromFormData(
+            $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber'),
             $contract,
             $phoneNumberFormData,
         );
@@ -120,7 +121,7 @@ final class PhoneNumberController extends AbstractActionController
             'phoneNumber' => $phoneNumber,
             'phoneNumberFormData' => PhoneNumberFormData::createFromPhoneNumber($phoneNumber),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('phoneNumber'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber')->validations,
         ]);
 
         return $this->htmlResponse();
@@ -131,7 +132,11 @@ final class PhoneNumberController extends AbstractActionController
         PhoneNumberFormData $phoneNumberFormData
     ): ResponseInterface {
         $this->phoneNumberRepository->update(
-            $this->phoneNumberFactory->updateFromFormData($phoneNumber, $phoneNumberFormData),
+            $this->phoneNumberFactory->updateFromFormData(
+                $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber'),
+                $phoneNumber,
+                $phoneNumberFormData,
+            ),
         );
 
         $this->addTranslatedSuccessMessage('phoneNumber.success.update.done');

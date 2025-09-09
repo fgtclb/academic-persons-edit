@@ -15,6 +15,7 @@ use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\FunctionTypeRepository;
+use FGTCLB\AcademicPersons\Domain\Repository\LocationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\OrganisationalUnitRepository;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ContractFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
@@ -32,6 +33,7 @@ final class ContractController extends AbstractActionController
         private readonly ContractRepository $contractRepository,
         private readonly FunctionTypeRepository $functionTypeRepository,
         private readonly OrganisationalUnitRepository $organisationalUnitRepository,
+        private readonly LocationRepository $locationRepository,
     ) {}
 
     // =================================================================================================================
@@ -73,8 +75,9 @@ final class ContractController extends AbstractActionController
             'contractFormData' => $contractFormData ?? new ContractFormData(),
             'functionTypes' => $this->functionTypeRepository->findAll(),
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
+            'locations' => $this->locationRepository->findAll(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('contract'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('contract')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -82,8 +85,9 @@ final class ContractController extends AbstractActionController
     public function createAction(Profile $profile, ContractFormData $contractFormData): ResponseInterface
     {
         $contract = $this->contractFactory->createFromFormData(
+            $this->academicPersonsSettings->getValidationSetWithFallback('contract'),
             $profile,
-            $contractFormData
+            $contractFormData,
         );
         $maxSortingValue = 0;
         foreach ($profile->getContracts() as $existingContract) {
@@ -120,7 +124,7 @@ final class ContractController extends AbstractActionController
             'functionTypes' => $this->functionTypeRepository->findAll(),
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('contract'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('contract')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -128,7 +132,11 @@ final class ContractController extends AbstractActionController
     public function updateAction(Contract $contract, ContractFormData $contractFormData): ResponseInterface
     {
         $this->contractRepository->update(
-            $this->contractFactory->updateFromFormData($contract, $contractFormData)
+            $this->contractFactory->updateFromFormData(
+                $this->academicPersonsSettings->getValidationSetWithFallback('contract'),
+                $contract,
+                $contractFormData,
+            ),
         );
 
         $this->addTranslatedSuccessMessage('contracts.success.update.done');

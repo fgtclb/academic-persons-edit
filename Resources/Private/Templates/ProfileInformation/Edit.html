@@ -8,12 +8,13 @@
         <h1>Edit profile information</h1>
         <f:render
             partial="Forms/Errors"
-            arguments="{object:ProfileInformation}"
+            arguments="{object:ProfileInformationFormData}"
         />
         <f:form
             action="update"
-            name="profileInformation"
-            object="{profileInformation}"
+            name="profileInformationFormData"
+            object="{profileInformationFormData}"
+            arguments="{profileInformation: profileInformation}"
         >
             <f:render
                 partial="Buttons/SaveExitCancel"
@@ -22,8 +23,8 @@
             <f:render
                 partial="Properties/ProfileInformation"
                 arguments="{
-                    profileInformation: profileInformation,
-                    validations: validations
+                    profileInformation: profileInformationFormData,
+                    validations: validations,
                 }"
             />
             <f:render

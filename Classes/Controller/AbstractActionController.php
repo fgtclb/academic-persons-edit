@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
-use FGTCLB\AcademicPersons\Registry\AcademicPersonsSettingsRegistry as SettingsRegistry;
+use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Service\UserSessionService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Context\Context;
@@ -49,7 +49,7 @@ abstract class AbstractActionController extends ActionController
     protected PersistenceManager $persistenceManager;
     protected UserSessionService $userSessionService;
     protected LocalizationUtility $localizationUtility;
-    protected SettingsRegistry $settingsRegistry;
+    protected AcademicPersonsSettings $academicPersonsSettings;
     protected Context $context;
 
     public function injectContext(Context $context): void
@@ -72,9 +72,9 @@ abstract class AbstractActionController extends ActionController
         $this->localizationUtility = $localizationUtility;
     }
 
-    public function injectSettingsRegistry(SettingsRegistry $settingsRegistry): void
+    public function injectAcademicPersonsSettings(AcademicPersonsSettings $academicPersonsSettings): void
     {
-        $this->settingsRegistry = $settingsRegistry;
+        $this->academicPersonsSettings = $academicPersonsSettings;
     }
 
     /**

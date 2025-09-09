@@ -76,7 +76,7 @@ final class PhysicalAddressController extends AbstractActionController
             'contract' => $contract,
             'addressFormData' => $addressFormData ?? new AddressFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('physicalAddress'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress')->validations,
         ]);
 
         return $this->htmlResponse();
@@ -85,6 +85,7 @@ final class PhysicalAddressController extends AbstractActionController
     public function createAction(Contract $contract, AddressFormData $addressFormData): ResponseInterface
     {
         $physicalAddress = $this->addressFactory->createFromFormData(
+            $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress'),
             $contract,
             $addressFormData
         );
@@ -122,7 +123,7 @@ final class PhysicalAddressController extends AbstractActionController
             'physicalAddress' => $physicalAddress,
             'addressFormData' => AddressFormData::createFromAddress($physicalAddress),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('physicalAddress'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress')->validations,
         ]);
 
         return $this->htmlResponse();
@@ -137,7 +138,11 @@ final class PhysicalAddressController extends AbstractActionController
         AddressFormData $addressFormData
     ): ResponseInterface {
         $this->addressRepository->update(
-            $this->addressFactory->updateFromFormData($physicalAddress, $addressFormData)
+            $this->addressFactory->updateFromFormData(
+                $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress'),
+                $physicalAddress,
+                $addressFormData,
+            ),
         );
 
         $this->addTranslatedSuccessMessage('physicalAddress.success.update.done');

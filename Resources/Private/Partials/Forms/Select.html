@@ -1,12 +1,14 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:p="http://typo3.org/ns/FGTCLB/AcademicPersons/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
     <f:variable
         name="elementId"
         value="{element.form}.{element.identifier}"
     />
+    <f:variable name="validation"><p:validationEnsure validations="{element.validations}" identifier="{element.identifier}" /></f:variable>
     <f:render
         partial="Forms/FieldWrapper"
         arguments="{element: element, elementId: elementId}"
@@ -21,7 +23,9 @@
             optionLabelField="{element.optionLabelField}"
             prependOptionValue="{element.prependOptionValue}"
             prependOptionLabel="{element.prependOptionLabel}"
-            disabled="{disabled}"
+            disabled="{validation.disabled ? 'disabled' : ''}"
+            required="{validation.required ? 'required' : ''}"
+            readonly="{validation.readOnly ? 'readonly' : ''}"
         />
     </f:render>
 </html>

@@ -74,7 +74,7 @@ final class EmailAddressController extends AbstractActionController
             'contract' => $contract,
             'emailAddressFormData' => $emailAddressFormData ?? new EmailFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('emailAddress'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -82,8 +82,9 @@ final class EmailAddressController extends AbstractActionController
     public function createAction(Contract $contract, EmailFormData $emailAddressFormData): ResponseInterface
     {
         $emailAddress = $this->emailAddressFactory->createFromFormData(
+            $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress'),
             $contract,
-            $emailAddressFormData
+            $emailAddressFormData,
         );
         $maxSortingValue = 0;
         foreach ($contract->getEmailAddresses() as $existingEmailAddress) {
@@ -119,7 +120,7 @@ final class EmailAddressController extends AbstractActionController
             'emailAddress' => $emailAddress,
             'emailAddressFormData' => EmailFormData::createFromEmail($emailAddress),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('emailAddress'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -133,7 +134,11 @@ final class EmailAddressController extends AbstractActionController
         EmailFormData $emailAddressFormData
     ): ResponseInterface {
         $this->emailAddressRepository->update(
-            $this->emailAddressFactory->updateFromFormData($emailAddress, $emailAddressFormData)
+            $this->emailAddressFactory->updateFromFormData(
+                $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress'),
+                $emailAddress,
+                $emailAddressFormData,
+            ),
         );
 
         $this->addTranslatedSuccessMessage('emailAddress.success.update.done');

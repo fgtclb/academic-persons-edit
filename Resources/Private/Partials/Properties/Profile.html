@@ -3,12 +3,14 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
+
     <f:render
         partial="Forms/Textfield"
         arguments="{
             element: {
                 form: 'profile',
                 identifier: 'gender',
+                validations: validations
             }
         }"
     />
@@ -18,6 +20,7 @@
             element: {
                 form: 'profile',
                 identifier: 'title',
+                validations: validations
             }
         }"
     />
@@ -27,7 +30,7 @@
             element: {
                 form: 'profile',
                 identifier: 'firstName',
-                required: 1
+                validations: validations
             }
         }"
     />
@@ -36,7 +39,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'middleName'
+                identifier: 'middleName',
+                validations: validations
             }
         }"
     />
@@ -46,7 +50,7 @@
             element: {
                 form: 'profile',
                 identifier: 'lastName',
-                required: 1
+                validations: validations
             }
         }"
     />
@@ -55,7 +59,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'website'
+                identifier: 'website',
+                validations: validations
             }
         }"
     />
@@ -64,7 +69,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'website'
+                identifier: 'websiteTitle',
+                validations: validations
             }
         }"
     />
@@ -73,7 +79,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'websiteTitle'
+                identifier: 'publicationsLink',
+                validations: validations
             }
         }"
     />
@@ -82,16 +89,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'publicationsLink'
-            }
-        }"
-    />
-    <f:render
-        partial="Forms/Textfield"
-        arguments="{
-            element: {
-                form: 'profile',
-                identifier: 'publicationsLinkTitle'
+                identifier: 'publicationsLinkTitle',
+                validations: validations
             }
         }"
     />
@@ -100,7 +99,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'teachingArea'
+                identifier: 'teachingArea',
+                validations: validations
             }
         }"
     />
@@ -109,7 +109,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'coreCompetences'
+                identifier: 'coreCompetences',
+                validations: validations
             }
         }"
     />
@@ -118,7 +119,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'supervisedThesis'
+                identifier: 'supervisedThesis',
+                validations: validations
             }
         }"
     />
@@ -127,7 +129,8 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'supervisedDoctoralThesis'
+                identifier: 'supervisedDoctoralThesis',
+                validations: validations
             }
         }"
     />
@@ -136,8 +139,9 @@
         arguments="{
             element: {
                 form: 'profile',
-                identifier: 'miscellaneous'
+                identifier: 'miscellaneous',
+                validations: validations
             }
         }"
-    />    
+    />
 </html>

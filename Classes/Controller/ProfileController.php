@@ -74,7 +74,7 @@ final class ProfileController extends AbstractActionController
             'profile' => $profile,
             'profileFormData' => ProfileFormData::createFromProfile($profile),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->settingsRegistry->getValidationsForFrontend('profile'),
+            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profile')->validations,
         ]);
 
         return $this->htmlResponse();
@@ -85,7 +85,11 @@ final class ProfileController extends AbstractActionController
         ProfileFormData $profileFormData
     ): ResponseInterface {
         $this->profileRepository->update(
-            $this->profileFactory->updateFromFormData($profile, $profileFormData)
+            $this->profileFactory->updateFromFormData(
+                $this->academicPersonsSettings->getValidationSetWithFallback('profile'),
+                $profile,
+                $profileFormData,
+            ),
         );
 
         $this->addTranslatedSuccessMessage('profiles.update.success');

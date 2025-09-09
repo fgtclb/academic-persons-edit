@@ -45,7 +45,7 @@
             />
             <f:render
                 partial="Properties/Profile"
-                arguments="{profile: profileFormData}"
+                arguments="{profile: profileFormData, validations: validations}"
             />
             <f:render
                 partial="Buttons/SaveExitCancel"
@@ -58,7 +58,7 @@
         <p>
             {f:translate(
                 key: 'tx_academicpersonsedit.fe.error.no_translation',
-                extensionName: 'academic_persons_edit_hnee'
+                extensionName: 'academic_persons_edit'
             )}
         </p>
         <f:if condition="{translationAllowed}">
@@ -69,7 +69,7 @@
             >
                 {f:translate(
                     key: 'tx_academicpersonsedit.fe.profile.btn.translate',
-                    extensionName: 'academic_persons_edit_hnee'
+                    extensionName: 'academic_persons_edit'
                 )}
             </f:link.action>
         </f:if>
