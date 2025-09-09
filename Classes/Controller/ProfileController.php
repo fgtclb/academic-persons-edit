@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
+use FGTCLB\AcademicBase\Extbase\Property\TypeConverter\FileUploadConverter;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
-use FGTCLB\AcademicPersonsEdit\Property\TypeConverter\ProfileImageUploadConverter;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -129,30 +129,21 @@ final class ProfileController extends AbstractActionController
 
     public function initializeAddImageAction(): void
     {
-        $targetFolderIdentifier = $this->settings['editForm']['profileImage']['targetFolder'] ?? null;
-        $maxFilesize = $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? '0kb';
-        $allowedImeTypes = $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? '';
-        $profileImageTypeConverter = GeneralUtility::makeInstance(ProfileImageUploadConverter::class);
-
         $profileUid = 0;
         $body = $this->request->getParsedBody();
         if (is_array($body)) {
             $profileUid = (int)($body['tx_academicpersonsedit_profileediting']['profile']['__identity'] ?? 0);
         }
-        $targetFileName = $this->buildProfileImageNameWithoutExtension($profileUid);
-
-        $this->arguments
-            ->getArgument('profile')
-            ->getPropertyMappingConfiguration()
-            ->forProperty('image')
-            ->setTypeConverter($profileImageTypeConverter)
-            ->setTypeConverterOptions(
-                ProfileImageUploadConverter::class,
+        GeneralUtility::makeInstance(FileUploadConverter::class)
+            ->setArgumentTypeConverterConfiguration(
+                $this->arguments,
+                'profile',
+                'image',
                 [
-                    ProfileImageUploadConverter::CONFIGURATION_TARGET_DIRECTORY_COMBINED_IDENTIFIER => $targetFolderIdentifier,
-                    ProfileImageUploadConverter::CONFIGURATION_MAX_UPLOAD_SIZE => $maxFilesize,
-                    ProfileImageUploadConverter::CONFIGURATION_ALLOWED_MIME_TYPES => $allowedImeTypes,
-                    ProfileImageUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $targetFileName,
+                    FileUploadConverter::CONFIGURATION_UPLOAD_FOLDER => $this->settings['editForm']['profileImage']['targetFolder'] ?? null,
+                    FileUploadConverter::CONFIGURATION_VALIDATION_FILESIZE_MAXIMUM =>  $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? null,
+                    FileUploadConverter::CONFIGURATION_VALIDATION_MIME_TYPE_ALLOWED_MIME_TYPES => $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? null,
+                    FileUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $this->buildProfileImageNameWithoutExtension($profileUid),
                 ]
             );
     }

@@ -7,9 +7,6 @@ services:
   FGTCLB\AcademicPersonsEdit\:
     resource: '../Classes/*'
 
-  FGTCLB\AcademicPersonsEdit\Property\TypeConverter\FileUploadConverter:
-    public: true
-
   FGTCLB\AcademicPersonsEdit\EventListener\GenerateSlugForProfile:
     tags:
       - name: event.listener
