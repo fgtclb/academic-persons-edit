@@ -1,108 +1,108 @@
 <html
     lang="en"
-    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:topwire="http://typo3.org/ns/Topwire/ViewHelpers"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>Profile of {profile.firstName} {profile.lastName}</h1>
-        <hr />
-        <f:link.action
-            action="editImage"
-            arguments="{profile: profile}"
-            class="btn btn-primary mb-3"
-        >
-            Add image
-        </f:link.action>
-        <h2>Personal data</h2>
-        <f:link.action
-            action="edit"
-            arguments="{profile: profile}"
-            class="btn btn-primary mb-3"
-        >
-            Edit
-        </f:link.action>
-        <table class="table table-striped table-hover align-middle">
-            <tr>
-                <th>Gender</th>
-                <td>{profile.gender}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{profile.title}</td>
-            </tr>
-            <tr>
-                <th>First Name</th>
-                <td>{profile.firstName}</td>
-            </tr>
-            <tr>
-                <th>Middle Name</th>
-                <td>{profile.middleName}</td>
-            </tr>
-            <tr>
-                <th>Last Name</th>
-                <td>{profile.lastName}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td></td>
-            </tr>
-            <tr>
-                <th>Publications Link</th>
-                <td>{profile.publicationsLink}</td>
-            </tr>
-            <tr>
-                <th>Publications Link Title</th>
-                <td>{profile.publicationsLinkTitle}</td>
-            </tr>
-            <tr>
-                <th>Website</th>
-                <td>{profile.website}</td>
-            </tr>
-            <tr>
-                <th>Website Title</th>
-                <td>{profile.websiteTitle}</td>
-            </tr>
-            <tr>
-                <th>Core Competences</th>
-                <td>{profile.coreCompetences -> f:format.raw()}</td>
-            </tr>
-            <tr>
-                <th>Miscellaneous</th>
-                <td>{profile.miscellaneous -> f:format.raw()}</td>
-            </tr>
-            <tr>
-                <th>Supervised Thesis</th>
-                <td>{profile.supervisedThesis -> f:format.raw()}</td>
-            </tr>
-            <tr>
-                <th>Supervised Doctoral Thesis</th>
-                <td>{profile.supervisedDoctoralThesis -> f:format.raw()}</td>
-            </tr>
-            <tr>
-                <th>Teaching Area</th>
-                <td>{profile.teachingArea -> f:format.raw()}</td>
-            </tr>
-        </table>
-        <h2>Contracts</h2>
-        <f:link.action
-            controller="Contract"
-            action="list"
-            arguments="{profile: profile}"
-            class="btn btn-primary"
-        >
-            List
-        </f:link.action>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+    <div class="academic-persons-edit-profile">
         <f:render
-            partial="Lists/Contracts"
+            partial="Profile/Header"
             arguments="{
-                profile: profile,
-                contracts: profile.contracts
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
             }"
         />
-        <f:variable
-            name="profileInformationTypes"
-            value="{
+
+        <div class="row">
+            <div class="col-12 col-md-5 col-lg-4 profile-image">
+                <f:render
+                    partial="Profile/SectionHeader"
+                    arguments="{
+                        header: '{f:translate(key: \'profile.image\', extensionName: \'academic_persons_edit\')}',
+                        layout: '{data.header_layout}',
+                        subheader: '{data.subheader}',
+                        detail: 'true',
+                    }"
+                />
+
+                <f:render
+                    partial="Profile/Show/Image"
+                    arguments="{_all}"
+                />
+
+                <f:if condition="{profile.image}">
+                    <f:then>
+                        <f:link.action action="removeImage" arguments="{profile: profile}" class="btn btn-danger">
+                            {f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
+                        </f:link.action>
+                    </f:then>
+                    <f:else>
+                        <f:link.action action="editImage" arguments="{profile: profile}" class="btn btn-primary">
+                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-add-image" alternativeMarkupIdentifier="inline"/>
+                        </f:link.action>
+                    </f:else>
+                </f:if>
+            </div>
+
+            <div class="col-12 col-md-7 col-lg-8">
+                <f:render
+                    partial="Profile/Show/Personal"
+                    arguments="{_all}"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 profile-contracts">
+                <div class="section-head">
+                    <f:render
+                        partial="Profile/SectionHeader"
+                        arguments="{
+                            header: '{f:translate(key: \'profile.contracts\', extensionName: \'academic_persons_edit\')}',
+                            layout: '{data.header_layout}',
+                            subheader: '{data.subheader}',
+                            detail: 'true',
+                            positionClass: 'header'
+                        }"
+                    />
+
+                    <div class="btn-wrapper right text-end">
+                        <f:link.action
+                            controller="Contract"
+                            action="new"
+                            arguments="{profile: profile}"
+                            class="btn"
+                        >
+                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
+                        </f:link.action>
+                    </div>
+                </div>
+
+                <f:render
+                    partial="Profile/List/Contracts"
+                    arguments="{
+                        profile: profile,
+                        contracts: profile.contracts
+                    }"
+                />
+            </div>
+        </div>
+
+        <f:for
+            each="{
                 0: 'cooperation',
                 1: 'lectures',
                 2: 'memberships',
@@ -111,30 +111,51 @@
                 5: 'scientificResearch',
                 6: 'vita'
             }"
-        />
-        <f:for each="{profileInformationTypes}" as="type">
-            <h2>
-                {f:translate(
-                    key: 'form.profile.{type}.header',
-                    extensionName: 'academic_persons_edit'
-                )}
-            </h2>
-            <f:link.action
-                controller="ProfileInformation"
-                action="list"
-                arguments="{profile: profile, type: type}"
-                class="btn btn-primary"
-            >
-                List
-            </f:link.action>
-            <f:render
-                partial="Lists/ProfileInformations"
-                arguments="{
-                    profile: profile,
-                    type: type,
-                    profileInformations: '{profile.{type}}'
-                }"
-            />
+            as="type"
+        >
+            <div class="row">
+                <div class="col-12 profile-informations">
+                    <div class="section-head">
+                        <f:render
+                            partial="Profile/SectionHeader"
+                            arguments="{
+                                header: '{f:translate(
+                                    key: \'profile.{type}\',
+                                    extensionName: \'academic_persons_edit\'
+                                )}',
+                                layout: '{data.header_layout}',
+                                subheader: '{data.subheader}',
+                                detail: 'true',
+                                positionClass: 'header'
+                            }"
+                        />
+
+                        <div class="btn-wrapper right text-end">
+                            <f:link.action
+                                controller="ProfileInformation"
+                                action="new"
+                                arguments="{profile: profile, type: type}"
+                                class="btn"
+                            >
+                                {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                                <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
+                            </f:link.action>
+                        </div>
+                    </div>
+
+                    <f:render
+                        partial="Profile/List/ProfileInformation"
+                        arguments="{
+                            profile: profile,
+                            type: type,
+                            profileInformations: '{profile.{type}}'
+                        }"
+                    />
+                </div>
+            </div>
         </f:for>
-    </f:section>
+    </div>
+</f:section>
+
 </html>

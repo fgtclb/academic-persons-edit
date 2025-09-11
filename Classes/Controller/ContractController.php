@@ -54,12 +54,14 @@ final class ContractController extends AbstractActionController
 
     public function showAction(Contract $contract): ResponseInterface
     {
+        $cancelUrl = $this->userSessionService->loadRefererFromSession($this->request);
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
+            'cancelUrl' => $cancelUrl,
         ]);
         return $this->htmlResponse();
     }
@@ -104,7 +106,7 @@ final class ContractController extends AbstractActionController
         $this->contractRepository->add($contract);
         $this->persistenceManager->persistAll();
 
-        $this->addTranslatedSuccessMessage('contracts.success.create.done');
+        $this->addTranslatedSuccessMessage('contract.create.success');
 
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
@@ -148,7 +150,7 @@ final class ContractController extends AbstractActionController
             ),
         );
 
-        $this->addTranslatedSuccessMessage('contracts.success.update.done');
+        $this->addTranslatedSuccessMessage('contract.update.success');
 
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
@@ -204,7 +206,7 @@ final class ContractController extends AbstractActionController
                     $this->contractRepository->update($currentContract);
 
                     $this->persistenceManager->persistAll();
-                    $this->addTranslatedSuccessMessage('contracts.sort.success.done');
+                    $this->addTranslatedSuccessMessage('contract.sort.success');
                 }
                 break;
             }
@@ -228,7 +230,7 @@ final class ContractController extends AbstractActionController
     public function deleteAction(Contract $contract): ResponseInterface
     {
         $this->contractRepository->remove($contract);
-        $this->addTranslatedSuccessMessage('contracts.success.delete.done');
+        $this->addTranslatedSuccessMessage('contract.delete.success');
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

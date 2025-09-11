@@ -1,0 +1,88 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'title',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'link',
+                    validations: validations,
+                    autocomplete: 'url'
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'year',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'yearStart',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'yearEnd',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profileInformation',
+                    identifier: 'bodytext',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+</div>
+
+</html>

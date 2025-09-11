@@ -3,13 +3,50 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>New email address</h1>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+
+    <f:render
+        partial="Profile/Forms/Errors"
+        arguments="{object: EmailAddressFormData}"
+    />
+
+    <div class="academic-persons-edit-edit">
         <f:render
-            partial="Forms/Errors"
-            arguments="{object:EmailAddress}"
+            partial="Profile/Header"
+            arguments="{
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
+            }"
         />
+
+        <f:render
+            partial="Profile/SectionHeader"
+            arguments="{
+                header: '{contract.position}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'contract-header'
+            }"
+        />
+
+        <f:render
+            partial="Profile/DataHeader"
+            arguments="{
+                header: '{f:translate(key: \'contract.emailAddress\', extensionName: \'academic_persons_edit\')}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'header'
+            }"
+        />
+
         <f:form
             action="create"
             name="emailAddressFormData"
@@ -17,20 +54,20 @@
             arguments="{contract: contract}"
         >
             <f:render
-                partial="Buttons/SaveExitCancel"
-                arguments="{cancelUrl: cancelUrl}"
-            />
-            <f:render
-                partial="Properties/EmailAddress"
+                partial="Profile/Properties/EmailAddress"
                 arguments="{
                     availableTypes: availableTypes,
-                    emailAddress: emailAddress,
+                    emailAddress: emailAddressFormData,
+                    validations: validations
                 }"
             />
+
             <f:render
-                partial="Buttons/SaveExitCancel"
-                arguments="{cancelUrl: cancelUrl}"
+                partial="Profile/Buttons/SaveExitCancel"
+                arguments="{cancelUrl: cancelUrl, action: 'create'}"
             />
         </f:form>
-    </f:section>
+    </div>
+</f:section>
+
 </html>

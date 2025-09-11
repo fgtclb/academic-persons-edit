@@ -1,0 +1,164 @@
+<html
+    lang="en"
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+
+<f:if condition="{profileInformations}">
+    <f:then>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="desktop">
+                        {f:translate(key: 'list.profileInformations.year', extensionName: 'academic_persons_edit')}
+                    </th>
+                    <th>{f:translate(key: 'list.profileInformations.title', extensionName: 'academic_persons_edit')}</th>
+                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{profileInformations}" as="profileInformation" iteration="profileInformationIteration">
+                    <tr>
+                        <td class="year desktop">
+                            <f:if condition="{profileInformation.yearStart} || {profileInformation.yearEnd}">
+                                <f:then>
+                                    <f:if condition="!{profileInformation.yearEnd} && {profileInformation.yearStart}">
+                                        {f:translate(key: 'detail.since', extensionName: 'academic_persons')}
+                                    </f:if>
+
+                                    {f:if(condition: '{profileInformation.yearStart}', then: '{profileInformation.yearStart}')}
+
+                                    <f:if condition="{profileInformation.yearEnd} && {profileInformation.yearStart}">
+                                        -
+                                    </f:if>
+
+                                    <f:if condition="!{profileInformation.yearStart} && {profileInformation.yearEnd}">
+                                        {f:translate(key: 'detail.till', extensionName: 'academic_persons')}
+                                    </f:if>
+
+                                    {f:if(condition: '{profileInformation.yearEnd}', then: '{profileInformation.yearEnd}')}
+                                </f:then>
+                                <f:else if="{profileInformation.year}">
+                                    {profileInformation.year}
+                                </f:else>
+                            </f:if>
+                        </td>
+
+                        <td>{profileInformation.title}</td>
+
+                        <td class="text-end">
+                            <div class="actions">
+                                <f:link.action
+                                    controller="ProfileInformation"
+                                    action="show"
+                                    arguments="{profileInformation: profileInformation}"
+                                    class="btn btn-outline-primary"
+                                    aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                    title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                >
+                                    <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
+                                </f:link.action>
+
+                                <f:link.action
+                                    controller="ProfileInformation"
+                                    action="edit"
+                                    arguments="{profileInformation: profileInformation}"
+                                    class="btn btn-primary"
+                                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                    title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                >
+                                    <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+                                </f:link.action>
+
+                                <f:if condition="{profileInformationIteration.cycle} > 1">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="ProfileInformation"
+                                            action="sort"
+                                            arguments="{profileInformation: profileInformation, sortDirection: 'up'}"
+                                            class="btn btn-outline-secondary sort-up desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.sortUp',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.sortUp',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{profileInformations -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <f:if condition="{profileInformationIteration.cycle} < {profileInformations -> f:count()}">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="ProfileInformation"
+                                            action="sort"
+                                            arguments="{profileInformation: profileInformation, sortDirection: 'down'}"
+                                            class="btn btn-outline-secondary sort-down desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.sortDown',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.sortDown',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{profileInformations -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <button
+                                    class="btn btn-danger"
+                                    aria-label="{f:translate(
+                                        key: 'actions.delete',
+                                        extensionName: 'academic_persons_edit'
+                                    )}"
+                                    title="{f:translate(
+                                        key: 'actions.delete',
+                                        extensionName: 'academic_persons_edit'
+                                    )}"
+                                    onclick="document.getElementById('delete-{type}-{profileInformation.uid}').showModal()"
+                                >
+                                    <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
+                                </button>
+
+                                <f:render
+                                    partial="Profile/Buttons/DeleteCancel"
+                                    arguments="{
+                                        deleteUrl: '{f:uri.action(
+                                            action: \'delete\',
+                                            controller: \'ProfileInformation\',
+                                            arguments: \'{profileInformation: profileInformation}\')}',
+                                        property: type,
+                                        id: '{profileInformation.uid}'
+                                    }"
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </f:then>
+    <f:else>
+        <p>{f:translate(key: 'list.no{type}Found', extensionName: 'academic_persons_edit')}</p>
+    </f:else>
+</f:if>
+
+</html>

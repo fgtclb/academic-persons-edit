@@ -99,6 +99,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
             ]),
             ProfileInformationController::class => implode(',', [
                 'list',
+                'show',
                 'new',
                 'create',
                 'edit',

@@ -16,8 +16,10 @@ plugin.tx_academicpersonsedit {
       1 = {$plugin.tx_academicpersonsedit.view.templateRootPath}
     }
     partialRootPaths {
-      0 = EXT:academic_persons_edit/Resources/Private/Partials/
-      1 = {$plugin.tx_academicpersonsedit.view.partialRootPath}
+      0 = EXT:academic_persons/Resources/Private/Partials/
+      10 = EXT:academic_persons_edit/Resources/Private/Partials/
+      20 = EXT:fluid_styled_content/Resources/Private/Partials/
+      30 = {$plugin.tx_academicpersonsedit.view.partialRootPath}
     }
     layoutRootPaths {
       0 = EXT:academic_persons_edit/Resources/Private/Layouts/

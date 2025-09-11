@@ -3,94 +3,214 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>Contract of {profile.firstName} {profile.lastName}</h1>
-        <hr />
-        <h2>Contract data</h2>
-        <f:link.action
-            action="edit"
-            arguments="{contract: contract}"
-            class="btn btn-primary mb-3"
-        >
-            Edit
-        </f:link.action>
-        <table class="table table-striped table-hover align-middle">
-            <tr>
-                <th>Position</th>
-                <td>{contract.position}</td>
-            </tr>
-            <tr>
-                <th>Organisational Unit</th>
-                <td>{contract.organisationalUnit.unitName}</td>
-            </tr>
-            <tr>
-                <th>Function Type</th>
-                <td>{contract.functionType.functionName}</td>
-            </tr>
-            <tr>
-                <th>Valid from</th>
-                <td>{contract.validFrom -> f:format.date(format: 'd.m.Y')}</td>
-            </tr>
-            <tr>
-                <th>Valid to</th>
-                <td>{contract.validTo -> f:format.date(format: 'd.m.Y')}</td>
-            </tr>
-            <tr>
-                <th>Location</th>
-                <td>{contract.location}</td>
-            </tr>
-            <tr>
-                <th>Room</th>
-                <td>{contract.room}</td>
-            </tr>
-            <tr>
-                <th>Office Hours</th>
-                <td>{contract.officeHours}</td>
-            </tr>
-            <tr>
-                <th>Published</th>
-                <td>{contract.published}</td>
-            </tr>
-        </table>
-        <h2>Physical Addresses</h2>
-        <f:link.action
-            controller="PhysicalAddress"
-            action="list"
-            arguments="{contract: contract}"
-            class="btn btn-primary"
-        >
-            List
-        </f:link.action>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+    <div class="academic-persons-edit-contract">
         <f:render
-            partial="Lists/PhysicalAddresses"
-            arguments="{contract: contract}"
+            partial="Profile/Header"
+            arguments="{
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
+            }"
         />
-        <h2>Phone Numbers</h2>
-        <f:link.action
-            controller="PhoneNumber"
-            action="list"
-            arguments="{contract: contract}"
-            class="btn btn-primary"
-        >
-            List
-        </f:link.action>
+
         <f:render
-            partial="Lists/PhoneNumbers"
-            arguments="{contract: contract}"
+            partial="Profile/SectionHeader"
+            arguments="{
+                header: '{contract.position}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'contract-header'
+            }"
         />
-        <h2>Email Addresses</h2>
-        <f:link.action
-            controller="EmailAddress"
-            action="list"
-            arguments="{contract: contract}"
-            class="btn btn-primary"
-        >
-            List
-        </f:link.action>
-        <f:render
-            partial="Lists/EmailAddresses"
-            arguments="{contract: contract}"
-        />
-    </f:section>
+
+        <div class="row">
+            <div class="col-12 contract-information">
+                <f:render
+                    partial="Profile/DataHeader"
+                    arguments="{
+                        header: '{f:translate(key: \'contract.data\', extensionName: \'academic_persons_edit\')}',
+                        layout: '{data.header_layout}',
+                        subheader: '{data.subheader}',
+                        detail: 'true',
+                        positionClass: 'header'
+                    }"
+                />
+
+                <table class="table table-striped">
+                    <f:for
+                        each="{
+                            0: 'position',
+                            1: 'organisationalUnit',
+                            2: 'functionType',
+                            3: 'validFrom',
+                            4: 'validTo',
+                            5: 'location',
+                            6: 'room',
+                            7: 'officeHours',
+                            8: 'published'
+                        }"
+                        as="field"
+                    >
+                        <f:if condition="{field} == 'organisationalUnit'">
+                            <f:then>
+                                <tr>
+                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                    <td>{contract.{field}.unitName}</td>
+                                </tr>
+                            </f:then>
+                            <f:else if="{field} == 'functionType'">
+                                <tr>
+                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                    <td>{contract.{field}.functionName}</td>
+                                </tr>
+                            </f:else>
+                            <f:else if="{field} == 'validFrom' || {field} == 'validTo'">
+                                <tr>
+                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                    <td>{contract.{field} -> f:format.date(format: 'd.m.Y')}</td>
+                                </tr>
+                            </f:else>
+                            <f:else>
+                                <tr>
+                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                    <td>{contract.{field}}</td>
+                                </tr>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </table>
+
+                <div class="btn-wrapper right text-end">
+                    <f:link.action action="edit" arguments="{contract: contract}" class="btn btn-primary">
+                        {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+
+                        <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+                    </f:link.action>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 contract-items">
+                <div class="section-head">
+                    <f:render
+                        partial="Profile/DataHeader"
+                        arguments="{
+                            header: '{f:translate(
+                                key: \'contract.physicalAddresses\',
+                                extensionName: \'academic_persons_edit\'
+                            )}',
+                            layout: '{data.header_layout}',
+                            subheader: '{data.subheader}',
+                            detail: 'true',
+                            positionClass: 'header'
+                        }"
+                    />
+
+                    <div class="btn-wrapper right text-end">
+                        <f:link.action
+                            controller="PhysicalAddress"
+                            action="new"
+                            arguments="{contract: contract}"
+                            class="btn"
+                        >
+                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
+                        </f:link.action>
+                    </div>
+                </div>
+
+                <f:render
+                    partial="Profile/List/PhysicalAddresses"
+                    arguments="{contract: contract}"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 contract-items">
+                <div class="section-head">
+                    <f:render
+                        partial="Profile/DataHeader"
+                        arguments="{
+                            header: '{f:translate(
+                                key: \'contract.emailAddresses\',
+                                extensionName: \'academic_persons_edit\'
+                            )}',
+                            layout: '{data.header_layout}',
+                            subheader: '{data.subheader}',
+                            detail: 'true',
+                            positionClass: 'header'
+                        }"
+                    />
+
+                    <div class="btn-wrapper right text-end">
+                        <f:link.action
+                            controller="EmailAddress"
+                            action="new"
+                            arguments="{contract: contract}"
+                            class="btn"
+                        >
+                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
+                        </f:link.action>
+                    </div>
+                </div>
+
+                <f:render
+                    partial="Profile/List/EmailAddresses"
+                    arguments="{contract: contract}"
+                />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 contract-items">
+                <div class="section-head">
+                    <f:render
+                        partial="Profile/DataHeader"
+                        arguments="{
+                            header: '{f:translate(
+                                key: \'contract.phoneNumbers\',
+                                extensionName: \'academic_persons_edit\'
+                            )}',
+                            layout: '{data.header_layout}',
+                            subheader: '{data.subheader}',
+                            detail: 'true',
+                            positionClass: 'header'
+                        }"
+                    />
+
+                    <div class="btn-wrapper right text-end">
+                        <f:link.action
+                            controller="PhoneNumber"
+                            action="new"
+                            arguments="{contract: contract}"
+                            class="btn"
+                        >
+                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
+                        </f:link.action>
+                    </div>
+                </div>
+
+                <f:render
+                    partial="Profile/List/PhoneNumbers"
+                    arguments="{contract: contract}"
+                />
+            </div>
+        </div>
+    </div>
+</f:section>
+
 </html>

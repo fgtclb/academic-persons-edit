@@ -1,0 +1,63 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:if condition="{profile.image}">
+    <figure>
+        <f:if condition="{image.properties.show_copyright} && {image.properties.copyright}">
+            <span class="copyright">&copy; {image.properties.copyright}</span>
+        </f:if>
+
+        <picture>
+            <source
+                srcset="{f:uri.image(
+                    image: profile.image,
+                    maxWidth: '390',
+                    fileExtension: 'webp',
+                )}"
+                media="(min-width: 992px)"
+            >
+            <source
+                srcset="{f:uri.image(
+                    image: profile.image,
+                    maxWidth: '370',
+                    fileExtension: 'webp',
+                )}"
+                media="(min-width: 768px)"
+            >
+            <source
+                srcset="{f:uri.image(
+                    image: profile.image,
+                    maxWidth: '690',
+                    fileExtension: 'webp',
+                )}"
+                media="(min-width: 576px)"
+            >
+            <source
+                srcset="{f:uri.image(
+                    image: profile.image,
+                    maxWidth: '535',
+                    fileExtension: 'webp',
+                )}"
+            >
+            <img
+                src="{f:uri.image(
+                    image: profile.image,
+                    maxWidth: 690,
+                    fileExtension: 'webp',
+                )}"
+                alt="{profile.image.alternative}"
+                title="{profile.image.title}"
+                loading="lazy"
+            >
+        </picture>
+
+        <f:if condition="{image.description}">
+            <figcaption class="visually-hidden">{image.description}</figcaption>
+        </f:if>
+    </figure>
+</f:if>
+
+</html>

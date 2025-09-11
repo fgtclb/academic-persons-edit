@@ -1,0 +1,90 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:render
+    partial="Profile/SectionHeader"
+    arguments="{
+        header: '{f:translate(key: \'profile.personal\', extensionName: \'academic_persons_edit\')}',
+        layout: '{data.header_layout}',
+        subheader: '{data.subheader}',
+        detail: 'true',
+    }"
+/>
+
+<ul class="personal-data">
+    <li>
+        <b>{f:translate(key: 'profile.gender.label', extensionName: 'academic_persons_edit')}:</b>
+
+        <f:if condition="{profile.gender}">
+            <span>{profile.gender}</span>
+        </f:if>
+    </li>
+
+    <li>
+        <b>{f:translate(key: 'profile.name.label', extensionName: 'academic_persons_edit')}:</b>
+
+        <span>{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}</span>
+    </li>
+
+    <li>
+        <b>{f:translate(key: 'profile.publicationsLink.label', extensionName: 'academic_persons_edit')}:</b>
+
+        <f:if condition="{profile.publicationsLink}">
+            <a href="{profile.publicationsLink}" target="_blank">
+                {f:if(
+                    condition: '{profile.publicationsLinkTitle}',
+                    then: '{profile.publicationsLinkTitle}',
+                    else: '{profile.publicationsLink}'
+                )}
+            </a>
+        </f:if>
+    </li>
+
+    <li>
+        <b>{f:translate(key: 'profile.website.label', extensionName: 'academic_persons_edit')}:</b>
+
+        <f:if condition="{profile.website}">
+            <a href="{profile.website}" target="_blank">
+                {f:if(
+                    condition: '{profile.websiteTitle}',
+                    then: '{profile.websiteTitle}',
+                    else: '{profile.website}'
+                )}
+            </a>
+        </f:if>
+    </li>
+
+    <f:for
+        each="{
+            0: 'coreCompetences',
+            1: 'miscellaneous',
+            2: 'supervisedThesis',
+            3: 'supervisedDoctoralThesis',
+            4: 'teachingArea'
+        }"
+        as="textarea"
+    >
+        <li class="textarea">
+            <b>{f:translate(key: 'profile.{textarea}.label', extensionName: 'academic_persons_edit')}:</b>
+
+            <f:if condition="{profile.{textarea}}">
+                <span>
+                    <f:format.raw>{profile.{textarea}}</f:format.raw>
+                </span>
+            </f:if>
+        </li>
+    </f:for>
+</ul>
+
+<div class="btn-wrapper right text-end">
+    <f:link.action action="edit" arguments="{profile: profile}" class="btn btn-primary">
+        {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+
+        <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+    </f:link.action>
+</div>
+
+</html>

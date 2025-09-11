@@ -1,0 +1,42 @@
+<html
+    lang="en"
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:topwire="http://typo3.org/ns/Topwire/ViewHelpers"
+>
+
+<div class="academic-persons-edit">
+
+    <f:render partial="Header/All" arguments="{_all}" />
+
+    <f:if condition="{contract} && !{cancelUrl} && ({physicalAddress} || {emailAddress} || {phoneNumber})">
+        <f:then>
+            <f:link.action controller="Contract" action="show" arguments="{contract: contract}" class="back-link">
+                <core:icon identifier="academic-persons-edit-back" alternativeMarkupIdentifier="inline"/>
+
+                {f:translate(key: 'back', extensionName: 'academic_persons_edit')}
+            </f:link.action>
+        </f:then>
+        <f:else if="{profile} && !{cancelUrl} && ({profileInformation} || {contract})">
+            <f:link.action controller="Profile" action="show" arguments="{profile: profile}" class="back-link">
+                <core:icon identifier="academic-persons-edit-back" alternativeMarkupIdentifier="inline"/>
+
+                {f:translate(key: 'back', extensionName: 'academic_persons_edit')}
+            </f:link.action>
+        </f:else>
+        <f:else if="{cancelUrl}">
+            <a href="{cancelUrl}" class="back-link">
+                <core:icon identifier="academic-persons-edit-back" alternativeMarkupIdentifier="inline"/>
+
+                {f:translate(key: 'back', extensionName: 'academic_persons_edit')}
+            </a>
+        </f:else>
+    </f:if>
+
+    <f:flashMessages />
+
+    <f:render section="Main" />
+</div>
+
+</html>

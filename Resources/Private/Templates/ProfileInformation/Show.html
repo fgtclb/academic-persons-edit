@@ -1,0 +1,83 @@
+<html
+    lang="en"
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+    <div class="academic-persons-edit-contract-items">
+        <f:render
+            partial="Profile/Header"
+            arguments="{
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
+            }"
+        />
+
+        <f:render
+            partial="Profile/SectionHeader"
+            arguments="{
+                header: '{f:translate(key: \'profile.profileInformations.{type}\', extensionName: \'academic_persons_edit\')}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'contract-header header'
+            }"
+        />
+
+        <table class="table table-striped">
+            <f:for
+                each="{
+                    0: 'year',
+                    1: 'yearStart',
+                    2: 'yearEnd',
+                    3: 'title',
+                    4: 'link',
+                    5: 'bodytext',
+                }"
+                as="field"
+            >
+                <f:if condition="{field} == 'bodytext'">
+                    <f:then>
+                        <tr>
+                            <th>
+                                {f:translate(
+                                    key: 'profileInformation.{field}.label',
+                                    extensionName: 'academic_persons_edit'
+                                )}:
+                            </th>
+                            <td>{profileInformation.{field} -> f:format.html()}</td>
+                        </tr>
+                    </f:then>
+                    <f:else>
+                        <tr>
+                            <th>
+                                {f:translate(
+                                    key: 'profileInformation.{field}.label',
+                                    extensionName: 'academic_persons_edit'
+                                )}:
+                            </th>
+                            <td>{profileInformation.{field}}</td>
+                        </tr>
+                    </f:else>
+                </f:if>
+            </f:for>
+        </table>
+
+        <div class="btn-wrapper right text-end">
+            <f:link.action action="edit" arguments="{profileInformation: profileInformation}" class="btn btn-primary">
+                {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+
+                <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+            </f:link.action>
+        </div>
+    </div>
+</f:section>
+
+</html>

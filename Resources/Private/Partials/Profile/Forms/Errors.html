@@ -1,0 +1,32 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:form.validationResults for="{object}">
+    <f:if condition="{validationResults.flattenedErrors}">
+        <ul class="typo3-messages">
+            <f:for
+                each="{validationResults.flattenedErrors}"
+                key="propertyName"
+                as="errors"
+            >
+                <f:for each="{errors}" as="error">
+                    <li class="alert alert-danger" role="alert">
+                        <f:debug>{propertyName}.error.{error.code}</f:debug>
+                        <p>
+                            {f:translate(
+                                key: '{propertyName}.error.{error.code}',
+                                default: propertyName,
+                                extensionName: 'academic_persons_edit'
+                            )}
+                        </p>
+                    </li>
+                </f:for>
+            </f:for>
+        </ul>
+    </f:if>
+</f:form.validationResults>
+
+</html>

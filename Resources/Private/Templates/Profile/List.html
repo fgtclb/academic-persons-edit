@@ -1,52 +1,73 @@
 <html
     lang="en"
-    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>Your assigned profiles</h1>
-        <table class="table table-striped table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <f:if condition="{profiles}">
-                <tbody class="table-group-divider">
-                    <f:for each="{profiles}" as="profile">
+
+<f:layout name="ProfileEdit"/>
+
+<f:section name="Main">
+    <div class="academic-persons-edit-list">
+        <f:render
+            partial="Profile/Header"
+            arguments="{
+                header: '{f:translate(key: \'list.profile.assigned\', extensionName: \'academic_persons_edit\')}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'header'
+            }"
+        />
+
+        <f:if condition="{profiles}">
+            <f:then>
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{profile.firstName}</td>
-                            <td>{profile.lastName}</td>
-                            <td>
-                                <f:link.action
-                                    action="show"
-                                    arguments="{profile: profile}"
-                                    class="btn btn-primary btn-sm"
-                                >
-                                    Show
-                                </f:link.action>
-                                <f:link.action
-                                    action="edit"
-                                    arguments="{profile: profile}"
-                                    class="btn btn-primary btn-sm"
-                                >
-                                    Edit
-                                </f:link.action>
-                            </td>
+                            <th class="single-column">
+                                {f:translate(key: 'list.profile', extensionName: 'academic_persons_edit')}
+                            </th>
+                            <th class="actions text-end">
+                                {f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}
+                            </th>
                         </tr>
-                    </f:for>
-                </tbody>
-            </f:if>
-            <tfoot class="table-group-divider">
-                <tr>
-                    <td class="text-center" colspan="99">
-                        {profiles -> f:count()} profile(s) found
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </f:section>
+                    </thead>
+                    <tbody>
+                        <f:for each="{profiles}" as="profile">
+                            <tr>
+                                <td>{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}</td>
+
+                                <td class="text-end">
+                                    <div class="actions">
+                                        <f:link.action action="show" arguments="{profile: profile}" class="btn btn-outline-primary">
+                                            <span class="desktop">
+                                                {f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}
+                                            </span>
+
+                                            <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+
+                                        <f:link.action action="edit" arguments="{profile: profile}" class="btn btn-primary">
+                                            <span class="desktop">
+                                                {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+                                            </span>
+
+                                            <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </div>
+                                </td>
+                            </tr>
+                        </f:for>
+                    </tbody>
+                </table>
+            </f:then>
+            <f:else>
+                <p>{f:translate(key: 'list.noProfilesFound', extensionName: 'academic_persons_edit')}</p>
+            </f:else>
+        </f:if>
+    </div>
+</f:section>
+
+
 </html>

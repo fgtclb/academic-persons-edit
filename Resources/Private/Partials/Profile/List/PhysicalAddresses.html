@@ -1,0 +1,145 @@
+<html
+    lang="en"
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+
+<f:if condition="{contract.physicalAddresses}">
+    <f:then>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{f:translate(key: 'physicalAddress.street.label', extensionName: 'academic_persons_edit')}</th>
+                    <th class="desktop">
+                        {f:translate(key: 'physicalAddress.city.label', extensionName: 'academic_persons_edit')}
+                    </th>
+                    <th class="desktop">
+                        {f:translate(key: 'physicalAddress.country.label', extensionName: 'academic_persons_edit')}
+                    </th>
+                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{contract.physicalAddresses}" as="physicalAddress" iteration="physicalAddressIteration">
+                    <tr>
+                        <td>{physicalAddress.street} {physicalAddress.streetNumber}</td>
+                        <td class="desktop">{physicalAddress.zip} {physicalAddress.city}</td>
+                        <td class="desktop">{physicalAddress.country}</td>
+                        <td class="text-end">
+                            <div class="actions">
+                                <f:link.action
+                                    controller="PhysicalAddress"
+                                    action="show"
+                                    arguments="{physicalAddress: physicalAddress}"
+                                    class="btn btn-outline-primary"
+                                    aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                    title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                >
+                                    <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
+                                </f:link.action>
+
+                                <f:link.action
+                                    controller="PhysicalAddress"
+                                    action="edit"
+                                    arguments="{physicalAddress: physicalAddress}"
+                                    class="btn btn-primary"
+                                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                    title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                >
+                                    <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+                                </f:link.action>
+
+                                <f:if condition="{physicalAddressIteration.cycle} > 1">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="PhysicalAddress"
+                                            action="sort"
+                                            arguments="{physicalAddress: physicalAddress, sortDirection: 'up'}"
+                                            class="btn btn-outline-secondary sort-up desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.sortUp',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.sortUp',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{contract.physicalAddresses -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <f:if condition="{physicalAddressIteration.cycle} < {contract.physicalAddresses -> f:count()}">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="PhysicalAddress"
+                                            action="sort"
+                                            arguments="{physicalAddress: physicalAddress, sortDirection: 'down'}"
+                                            class="btn btn-outline-secondary sort-down desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.sortDown',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.sortDown',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{contract.physicalAddresses -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <button
+                                    class="btn btn-danger"
+                                    aria-label="{f:translate(
+                                        key: 'actions.delete',
+                                        extensionName: 'academic_persons_edit'
+                                    )}"
+                                    title="{f:translate(
+                                        key: 'actions.delete',
+                                        extensionName: 'academic_persons_edit'
+                                    )}"
+                                    onclick="document.getElementById('delete-physicalAddress-{physicalAddress.uid}').showModal()"
+                                >
+                                    <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
+                                </button>
+
+                                <f:render
+                                    partial="Profile/Buttons/DeleteCancel"
+                                    arguments="{
+                                        deleteUrl: '{f:uri.action(
+                                            action: \'delete\',
+                                            controller: \'PhysicalAddress\',
+                                            arguments: \'{physicalAddress: physicalAddress}\')}',
+                                        property: 'physicalAddress',
+                                        id: '{physicalAddress.uid}'
+                                    }"
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </f:then>
+    <f:else>
+        <p>
+            {f:translate(key: 'list.noPhysicalAddressesFound', extensionName: 'academic_persons_edit')}
+        </p>
+    </f:else>
+</f:if>
+
+</html>

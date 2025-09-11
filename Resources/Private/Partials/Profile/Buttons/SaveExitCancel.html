@@ -1,0 +1,34 @@
+<html
+    lang="en"
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+
+<div class="action-buttons d-flex justify-content-between">
+    <div class="btn-wrapper">
+        <a href="{cancelUrl}" class="btn btn-danger">
+            {f:translate(key: 'actions.cancel', extensionName: 'academic_persons_edit')}
+
+            <core:icon identifier="academic-persons-edit-cancel" alternativeMarkupIdentifier="inline"/>
+        </a>
+    </div>
+
+    <div class="btn-wrapper right text-end">
+        <f:if condition="{action} != 'create'">
+            <f:form.button name="submit" value="save-and-edit" class="btn btn-outline-primary">
+                {f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}
+
+                <core:icon identifier="academic-persons-edit-save" alternativeMarkupIdentifier="inline"/>
+            </f:form.button>
+        </f:if>
+
+        <f:form.button name="submit" value="save-and-close" class="btn btn-primary">
+            {f:translate(key: 'actions.saveAndExit', extensionName: 'academic_persons_edit')}
+
+            <core:icon identifier="academic-persons-edit-save" alternativeMarkupIdentifier="inline"/>
+        </f:form.button>
+    </div>
+</div>
+
+</html>

@@ -1,0 +1,40 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:p="http://typo3.org/ns/FGTCLB/AcademicPersons/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:variable
+    name="elementId"
+    value="{element.form}.{element.identifier}"
+/>
+
+<f:variable
+    name="validation"
+    value="{p:validationEnsure(identifier: element.identifier, validations: element.validations)}"
+/>
+
+<f:render
+    partial="Profile/Forms/FieldWrapper"
+    arguments="{
+        element: element,
+        elementId: elementId,
+        validation: validation,
+        class: 'form-date-wrap',
+    }"
+    contentAs="elementContent"
+>
+    <f:form.textfield
+        property="{element.identifier}"
+        value="{element.value -> f:format.date(format:'d.m.Y')}"
+        placeholder="dd.mm.yyyy"
+        id="{elementId}"
+        class="form-control"
+        disabled="{validation.disabled ? 'disabled' : ''}"
+        required="{validation.required ? 'required' : ''}"
+        readonly="{validation.readOnly ? 'readonly' : ''}"
+    />
+</f:render>
+
+</html>

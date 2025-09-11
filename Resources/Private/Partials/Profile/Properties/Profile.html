@@ -1,0 +1,206 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="row">
+    <div class="col-6">
+        <f:render
+            partial="Profile/Forms/Select"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'gender',
+                    options: genderOptions,
+                    optionValueField: 'value',
+                    optionLabelField: 'label',
+                    prependOptionValue: '',
+                    prependOptionLabel: '---',
+                    validations: validations,
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'title',
+                    autocomplete: 'honorific-prefix',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-md-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'firstName',
+                    autocomplete: 'given-name',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-md-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'middleName',
+                    autocomplete: 'additional-name',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-md-4">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'lastName',
+                    autocomplete: 'family-name',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'website',
+                    autocomplete: 'url',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'websiteTitle',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'publicationsLink',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <f:render
+            partial="Profile/Forms/Textfield"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'publicationsLinkTitle',
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'teachingArea',
+                    richtext: true,
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'coreCompetences',
+                    richtext: true,
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'supervisedThesis',
+                    richtext: true,
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'supervisedDoctoralThesis',
+                    richtext: true,
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+
+    <div class="col-12">
+        <f:render
+            partial="Profile/Forms/Textarea"
+            arguments="{
+                element: {
+                    form: 'profile',
+                    identifier: 'miscellaneous',
+                    richtext: true,
+                    validations: validations
+                }
+            }"
+        />
+    </div>
+</div>
+
+</html>

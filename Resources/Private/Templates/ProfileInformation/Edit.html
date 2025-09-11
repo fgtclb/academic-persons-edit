@@ -3,34 +3,67 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>Edit profile information</h1>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+
+    <f:render
+        partial="Profile/Forms/Errors"
+        arguments="{object: ProfileInformationFormData}"
+    />
+
+    <div class="academic-persons-edit-edit">
         <f:render
-            partial="Forms/Errors"
-            arguments="{object:ProfileInformationFormData}"
+            partial="Profile/Header"
+            arguments="{
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
+            }"
         />
+
+        <f:render
+            partial="Profile/SectionHeader"
+            arguments="{
+                header: '{f:translate(
+                    key: \'profile.profileInformations.{profileInformation.type}\',
+                    extensionName: \'academic_persons_edit\'
+                )}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'contract-header'
+            }"
+        />
+
         <f:form
             action="update"
             name="profileInformationFormData"
             object="{profileInformationFormData}"
             arguments="{profileInformation: profileInformation}"
         >
+            <div class="mobile">
+                <f:render
+                    partial="Profile/Buttons/SaveExitCancel"
+                    arguments="{cancelUrl: cancelUrl}"
+                />
+            </div>
+
             <f:render
-                partial="Buttons/SaveExitCancel"
-                arguments="{cancelUrl: cancelUrl}"
-            />
-            <f:render
-                partial="Properties/ProfileInformation"
+                partial="Profile/Properties/ProfileInformation"
                 arguments="{
                     profileInformation: profileInformationFormData,
-                    validations: validations,
+                    validations: validations
                 }"
             />
             <f:render
-                partial="Buttons/SaveExitCancel"
+                partial="Profile/Buttons/SaveExitCancel"
                 arguments="{cancelUrl: cancelUrl}"
             />
         </f:form>
-    </f:section>
+    </div>
+</f:section>
 </html>

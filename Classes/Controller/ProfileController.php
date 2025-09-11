@@ -54,11 +54,13 @@ final class ProfileController extends AbstractActionController
 
     public function showAction(Profile $profile): ResponseInterface
     {
+        $cancelUrl = $this->userSessionService->loadRefererFromSession($this->request);
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
+            'cancelUrl' => $cancelUrl,
         ]);
 
         return $this->htmlResponse();
@@ -95,7 +97,7 @@ final class ProfileController extends AbstractActionController
             ),
         );
 
-        $this->addTranslatedSuccessMessage('profiles.update.success');
+        $this->addTranslatedSuccessMessage('profile.update.success');
 
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'

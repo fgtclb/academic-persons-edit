@@ -1,0 +1,41 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:p="http://typo3.org/ns/FGTCLB/AcademicPersons/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:variable
+    name="elementId"
+    value="{element.form}.{element.identifier}"
+/>
+
+<f:variable
+    name="validation"
+    value="{p:validationEnsure(identifier: element.identifier, validations: element.validations)}"
+/>
+
+<f:render
+    partial="Profile/Forms/FieldWrapper"
+    arguments="{
+        element: element,
+        elementId: elementId,
+        validation: validation,
+        class: 'form-textfield-wrap',
+    }"
+    contentAs="elementContent"
+>
+    <f:form.textfield
+        type="{validation.inputType ? validation.inputType : 'text'}"
+        property="{element.identifier}"
+        id="{elementId}"
+        placeholder="{f:translate(key:'{elementId}.placeholder', extensionName: 'academic_persons_edit')}"
+        class="form-control"
+        disabled="{validation.disabled ? 'disabled' : ''}"
+        required="{validation.required ? 'required' : ''}"
+        readonly="{validation.readOnly ? 'readonly' : ''}"
+        autocomplete="{element.autocomplete}"
+    />
+</f:render>
+
+</html>

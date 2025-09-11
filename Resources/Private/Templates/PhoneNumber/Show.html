@@ -1,27 +1,70 @@
 <html
     lang="en"
-    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 >
-    <f:layout name="Default" />
-    <f:section name="Main">
-        <h1>Phone Number</h1>
-        <f:link.action
-            action="edit"
-            arguments="{phoneNumber: phonenNumber}"
-            class="btn btn-primary mb-3"
-        >
-            Edit
-        </f:link.action>
-        <table class="table table-striped table-hover align-middle">
-            <tr>
-                <th>Phone Number</th>
-                <td>{phoneNumber.phoneNumber}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{phoneNumber.type}</td>
-            </tr>
+
+<f:layout name="ProfileEdit" />
+
+<f:section name="Main">
+    <div class="academic-persons-edit-contract-items">
+        <f:render
+            partial="Profile/Header"
+            arguments="{
+                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'profile-header'
+            }"
+        />
+
+        <f:render
+            partial="Profile/SectionHeader"
+            arguments="{
+                header: '{contract.position}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'contract-header header'
+            }"
+        />
+
+        <f:render
+            partial="Profile/DataHeader"
+            arguments="{
+                header: '{f:translate(key: \'contract.phoneNumber\', extensionName: \'academic_persons_edit\')}',
+                layout: '{data.header_layout}',
+                subheader: '{data.subheader}',
+                detail: 'true',
+                positionClass: 'header'
+            }"
+        />
+
+        <table class="table table-striped">
+            <f:for
+                each="{
+                    0: 'phoneNumber',
+                    1: 'type'
+                }"
+                as="field"
+            >
+                <tr>
+                    <th>{f:translate(key: 'phoneNumber.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                    <td>{phoneNumbers.{field}}</td>
+                </tr>
+            </f:for>
         </table>
-    </f:section>
+
+        <div class="btn-wrapper right text-end">
+            <f:link.action action="edit" arguments="{phoneNumber: phoneNumber}" class="btn btn-primary">
+                {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+
+                <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+            </f:link.action>
+        </div>
+    </div>
+</f:section>
+
 </html>

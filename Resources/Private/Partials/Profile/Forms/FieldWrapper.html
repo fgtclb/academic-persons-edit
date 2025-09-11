@@ -1,0 +1,38 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:form.validationResults for="{elementId}" as="validationResults">
+    <div class="mb-3{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')} {class}">
+        <f:if condition="{validationResults.flattenedErrors}">
+            <ul>
+                <f:for each="{validationResults.flattenedErrors}" as="errors">
+                    <f:for each="{errors}" as="error">
+                        <li class="notification notification--is-danger">{propertyName}
+                            {f:translate(
+                                key: 'form.{elementId}.error.{error.code}',
+                                default: propertyName,
+                                extensionName: 'academic_persons_edit'
+                            )}
+                        </li>
+                    </f:for>
+                </f:for>
+            </ul>
+        </f:if>
+
+        <label class="form-label" for="{elementId}">
+            {f:translate(key:'{elementId}.label', extensionName: 'academic_persons_edit')}
+            {f:if(condition: validation.required, then: '<abbr title="required">*</abbr>')}
+        </label>
+
+        {elementContent->f:format.raw()}
+
+        <f:if condition="{element.help}">
+            <div class="form-text">{element.help->f:format.raw()}</div>
+        </f:if>
+    </div>
+</f:form.validationResults>
+
+</html>
