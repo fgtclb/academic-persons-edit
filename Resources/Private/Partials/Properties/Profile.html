@@ -3,14 +3,18 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-
     <f:render
-        partial="Forms/Textfield"
+        partial="Forms/Select"
         arguments="{
             element: {
                 form: 'profile',
                 identifier: 'gender',
-                validations: validations
+                options: genderOptions,
+                optionValueField: 'value',
+                optionLabelField: 'label',
+                prependOptionValue: '',
+                prependOptionLabel: '---',
+                validations: validations,
             }
         }"
     />

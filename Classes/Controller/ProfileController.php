@@ -73,6 +73,7 @@ final class ProfileController extends AbstractActionController
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
             'profileFormData' => ProfileFormData::createFromProfile($profile),
+            'genderOptions' => $this->getAvailableGenderSelectItems(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profile')->validations,
         ]);
@@ -185,5 +186,40 @@ final class ProfileController extends AbstractActionController
             $profile->getLastName(),
             $profileUid
         );
+    }
+
+    /**
+     * @return array<int<0, max>, array{
+     *      label: string,
+     *      labelTranslationIdentifier: string,
+     *      value: string,
+     *  }>
+     * @todo Evaluating TCA in frontend for available options is a hard task to do correctly requiring to execute
+     *       TCA item proc functions and so on. It also does not account for eventually FormEngine nodes processing
+     *       additional stuff. Current implementation takes only directly added TCA items into account to show them
+     *       as valid select options.
+     * @todo Use TcaSchema for TYPO3 v13, either as dual version OR when dropping TYPO3 v12 support.
+     */
+    private function getAvailableGenderSelectItems(): array
+    {
+        $items = [];
+        foreach ($GLOBALS['TCA']['tx_academicpersons_domain_model_profile']['columns']['gender']['config']['items'] ?? [] as $item) {
+            $itemValue = (string)($item['value'] ?? '');
+            if ($itemValue === '') {
+                // Skip empty string values, handled with `<f:form.select prependOptionLabel="---" />`
+                // in the fluid template.
+                continue;
+            }
+            $labelIdentifier = (string)($item['label'] ?? '');
+            $items[] = [
+                'label' => ($this->localizationUtility->translate(
+                    $labelIdentifier,
+                    'persons_edit',
+                ) ?? $labelIdentifier) ?: $labelIdentifier,
+                'labelTranslationIdentifier' => $labelIdentifier,
+                'value' => $itemValue,
+            ];
+        }
+        return $items;
     }
 }

@@ -45,7 +45,11 @@
             />
             <f:render
                 partial="Properties/Profile"
-                arguments="{profile: profileFormData, validations: validations}"
+                arguments="{
+                    profile: profileFormData,
+                    genderOptions: genderOptions,
+                    validations: validations,
+                }"
             />
             <f:render
                 partial="Buttons/SaveExitCancel"
