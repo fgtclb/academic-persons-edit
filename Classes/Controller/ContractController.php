@@ -123,6 +123,7 @@ final class ContractController extends AbstractActionController
             'contractFormData' => ContractFormData::createFromContract($contract),
             'functionTypes' => $this->functionTypeRepository->findAll(),
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
+            'locations' => $this->locationRepository->findAll(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('contract')->validations,
         ]);
