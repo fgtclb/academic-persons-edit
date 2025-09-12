@@ -12,16 +12,18 @@
         />
         <f:form
             action="create"
-            name="emailAddress"
-            object="{emailAddress}"
+            name="emailAddressFormData"
+            object="{emailAddressFormData}"
+            arguments="{contract: contract}"
         >
             <f:render
                 partial="Buttons/SaveExitCancel"
                 arguments="{cancelUrl: cancelUrl}"
             />
             <f:render
-                partial="Properties/PhoneNumber"
+                partial="Properties/EmailAddress"
                 arguments="{
+                    availableTypes: availableTypes,
                     emailAddress: emailAddress,
                 }"
             />

@@ -74,11 +74,16 @@
         }"
     />
     <f:render
-        partial="Forms/Textfield"
+        partial="Forms/Select"
         arguments="{
             element: {
                 form: 'physicalAddress',
                 identifier: 'type',
+                options: availableTypes,
+                optionValueField: 'value',
+                optionLabelField: 'label',
+                prependOptionValue: '',
+                prependOptionLabel: '---',
                 validations: validations
             }
         }"
