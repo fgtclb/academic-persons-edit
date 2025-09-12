@@ -19,7 +19,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -77,7 +76,6 @@ final class ProfileController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profile')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -98,10 +96,9 @@ final class ProfileController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['profile' => $profile]);
+        return $this->createFormPersistencePrgRedirect('edit', ['profile' => $profile]);
     }
 
     // =================================================================================================================
@@ -128,7 +125,6 @@ final class ProfileController extends AbstractActionController
             'profile' => $profile,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -157,8 +153,7 @@ final class ProfileController extends AbstractActionController
     {
         $this->profileRepository->update($profile);
         $this->persistenceManager->persistAll();
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     public function removeImageAction(Profile $profile): ResponseInterface
@@ -168,8 +163,7 @@ final class ProfileController extends AbstractActionController
             $imageFile = $image->getOriginalResource()->getOriginalFile();
             $imageFile->getStorage()->deleteFile($imageFile);
         }
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     private function buildProfileImageNameWithoutExtension(int $profileUid): string

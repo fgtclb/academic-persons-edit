@@ -18,7 +18,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileInformationFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -47,7 +46,6 @@ final class ProfileInformationController extends AbstractActionController
             'type' => $type,
             'profileInformations' => $profile->_getProperty($type),
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -61,7 +59,6 @@ final class ProfileInformationController extends AbstractActionController
             'type' => $profileInformation->getType(),
             'profileInformation' => $profileInformation,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -113,10 +110,9 @@ final class ProfileInformationController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['profileInformation' => $profileInformation]);
+        return $this->createFormPersistencePrgRedirect('edit', ['profileInformation' => $profileInformation]);
     }
 
     // =================================================================================================================
@@ -133,7 +129,6 @@ final class ProfileInformationController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -154,10 +149,9 @@ final class ProfileInformationController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['profileInformation' => $profileInformation]);
+        return $this->createFormPersistencePrgRedirect('edit', ['profileInformation' => $profileInformation]);
     }
 
     /**
@@ -182,7 +176,7 @@ final class ProfileInformationController extends AbstractActionController
             || $sortingItems->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('profileInformations.sort.error.notPossible');
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
 
         // Convert profile informations to array
@@ -218,8 +212,7 @@ final class ProfileInformationController extends AbstractActionController
                 break;
             }
         }
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     // =================================================================================================================
@@ -234,16 +227,13 @@ final class ProfileInformationController extends AbstractActionController
             'profileInformation' => $profileInformation,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);
-
         return $this->htmlResponse();
     }
 
     public function deleteAction(ProfileInformation $profileInformation): ResponseInterface
     {
         $this->profileInformationRepository->remove($profileInformation);
-
         $this->addTranslatedSuccessMessage('profileInformation.success.delete.done');
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

@@ -20,7 +20,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\AddressFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Extbase\Annotation\Validate;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -46,7 +45,6 @@ final class PhysicalAddressController extends AbstractActionController
             'contract' => $contract,
             'physicalAddresses' => $contract->getPhysicalAddresses(),
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -60,7 +58,6 @@ final class PhysicalAddressController extends AbstractActionController
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -78,7 +75,6 @@ final class PhysicalAddressController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -104,10 +100,9 @@ final class PhysicalAddressController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['physicalAddress' => $physicalAddress]);
+        return $this->createFormPersistencePrgRedirect('edit', ['physicalAddress' => $physicalAddress]);
     }
 
     // =================================================================================================================
@@ -125,7 +120,6 @@ final class PhysicalAddressController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -150,10 +144,9 @@ final class PhysicalAddressController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['physicalAddress' => $physicalAddress]);
+        return $this->createFormPersistencePrgRedirect('edit', ['physicalAddress' => $physicalAddress]);
     }
 
     public function sortAction(Address $physicalAddress, string $sortDirection): ResponseInterface
@@ -171,7 +164,7 @@ final class PhysicalAddressController extends AbstractActionController
             || $contract->getPhysicalAddresses()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('contracts.sort.error.notPossible');
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
 
         // Convert contracts to array
@@ -207,8 +200,7 @@ final class PhysicalAddressController extends AbstractActionController
                 break;
             }
         }
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     // =================================================================================================================
@@ -224,16 +216,13 @@ final class PhysicalAddressController extends AbstractActionController
             'physicalAddress' => $physicalAddress,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);
-
         return $this->htmlResponse();
     }
 
     public function deleteAction(Address $physicalAddress): ResponseInterface
     {
         $this->addressRepository->remove($physicalAddress);
-
         $this->addTranslatedSuccessMessage('physicalAddress.success.delete.done');
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

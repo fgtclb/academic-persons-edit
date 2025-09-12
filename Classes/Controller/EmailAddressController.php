@@ -20,7 +20,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\EmailFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Extbase\Annotation\Validate;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -101,10 +100,9 @@ final class EmailAddressController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['emailAddress' => $emailAddress]);
+        return $this->createFormPersistencePrgRedirect('edit', ['emailAddress' => $emailAddress]);
     }
 
     // =================================================================================================================
@@ -146,10 +144,9 @@ final class EmailAddressController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['emailAddress' => $emailAddress]);
+        return $this->createFormPersistencePrgRedirect('edit', ['emailAddress' => $emailAddress]);
     }
 
     public function sortAction(Email $emailAddress, string $sortDirection): ResponseInterface
@@ -167,7 +164,7 @@ final class EmailAddressController extends AbstractActionController
             || $contract->getEmailAddresses()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('emailAddress.sort.error.notPossible');
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
 
         // Convert contracts to array
@@ -204,7 +201,7 @@ final class EmailAddressController extends AbstractActionController
             }
         }
 
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     // =================================================================================================================
@@ -227,6 +224,6 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->emailAddressRepository->remove($emailAddress);
         $this->addTranslatedSuccessMessage('emailAddress.success.delete.done');
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

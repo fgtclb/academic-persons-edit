@@ -18,7 +18,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\PhoneNumberFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\PhoneNumberFormData;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -44,7 +43,6 @@ final class PhoneNumberController extends AbstractActionController
             'contract' => $contract,
             'phoneNumbers' => $contract->getPhoneNumbers(),
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -58,7 +56,6 @@ final class PhoneNumberController extends AbstractActionController
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -76,7 +73,6 @@ final class PhoneNumberController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -102,10 +98,9 @@ final class PhoneNumberController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['phoneNumber' => $phoneNumber]);
+        return $this->createFormPersistencePrgRedirect('edit', ['phoneNumber' => $phoneNumber]);
     }
 
     // =================================================================================================================
@@ -123,7 +118,6 @@ final class PhoneNumberController extends AbstractActionController
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber')->validations,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -144,10 +138,9 @@ final class PhoneNumberController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['phoneNumber' => $phoneNumber]);
+        return $this->createFormPersistencePrgRedirect('edit', ['phoneNumber' => $phoneNumber]);
     }
 
     public function sortAction(PhoneNumber $phoneNumber, string $sortDirection): ResponseInterface
@@ -165,7 +158,7 @@ final class PhoneNumberController extends AbstractActionController
             || $contract->getPhoneNumbers()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('phoneNumber.sort.error.notPossible');
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
 
         // Convert contracts to array
@@ -201,8 +194,7 @@ final class PhoneNumberController extends AbstractActionController
                 break;
             }
         }
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     // =================================================================================================================
@@ -218,7 +210,6 @@ final class PhoneNumberController extends AbstractActionController
             'phoneNumber' => $phoneNumber,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -226,6 +217,6 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->phoneNumberRepository->remove($phoneNumber);
         $this->addTranslatedSuccessMessage('phoneNumber.success.delete.done');
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

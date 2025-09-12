@@ -21,7 +21,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ContractFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Extbase\Http\ForwardResponse;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -104,10 +103,9 @@ final class ContractController extends AbstractActionController
         if ($this->request->hasArgument('submit')
             && $this->request->getArgument('submit') === 'save-and-close'
         ) {
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['contract' => $contract]);
+        return $this->createFormPersistencePrgRedirect('edit', ['contract' => $contract]);
     }
 
     // =================================================================================================================
@@ -147,8 +145,7 @@ final class ContractController extends AbstractActionController
         ) {
             return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
         }
-
-        return (new ForwardResponse('edit'))->withArguments(['contract' => $contract]);
+        return $this->createFormPersistencePrgRedirect('edit', ['contract' => $contract]);
     }
 
     public function sortAction(Contract $contract, string $sortDirection): ResponseInterface
@@ -166,7 +163,7 @@ final class ContractController extends AbstractActionController
             || $profile->getContracts()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('contracts.sort.error.notPossible');
-            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
 
         // Convert contracts to array
@@ -202,8 +199,7 @@ final class ContractController extends AbstractActionController
                 break;
             }
         }
-
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
     // =================================================================================================================
@@ -223,6 +219,6 @@ final class ContractController extends AbstractActionController
     {
         $this->contractRepository->remove($contract);
         $this->addTranslatedSuccessMessage('contracts.success.delete.done');
-        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request));
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 }

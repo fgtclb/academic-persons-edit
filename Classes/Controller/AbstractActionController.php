@@ -16,6 +16,7 @@ use FGTCLB\AcademicPersonsEdit\Service\UserSessionService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -152,5 +153,33 @@ abstract class AbstractActionController extends ActionController
     protected function getCurrentContentObjectRenderer(): ?ContentObjectRenderer
     {
         return $this->request->getAttribute('currentContentObject');
+    }
+
+    /**
+     * Creates a redirect with status code `303` to be used to add
+     * `post-redirect-get (PRG)` for form persistence submission
+     * actions and should be used to avoid duplicate data handling
+     * when user uses reload (F5) in the browser after sending the
+     * form data.
+     *
+     * @param string $action
+     * @param array<string, mixed> $arguments
+     * @return ResponseInterface
+     */
+    protected function createFormPersistencePrgRedirect(
+        string $action,
+        array $arguments = [],
+    ): ResponseInterface {
+        // Use `303 - see other` as semantically correct status code to tell the browser / client to redirect
+        // to another uri and discard the POST data (not sending it along with the redirect), which is what
+        // we want for a `post-redirect-get (PRG)` implementation
+        return (new Response())
+            ->withStatus(303)
+            ->withHeader('location', $this->uriBuilder
+                ->reset()
+                ->setRequest($this->request)
+                ->setCreateAbsoluteUri(true)
+                ->uriFor($action, $arguments))
+            ->withHeader('x-redirected-by', 'TYPO3 academic-persons-edit');
     }
 }
