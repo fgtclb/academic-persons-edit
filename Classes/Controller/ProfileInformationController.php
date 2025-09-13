@@ -68,10 +68,10 @@ final class ProfileInformationController extends AbstractActionController
     //  Handle creation of new entity
     // =================================================================================================================
 
-    public function newAction(Profile $profile, string $type, ?ProfileInformationFormData $profileInformationFormData = null): ResponseInterface
+    public function newAction(Profile $profile, string $type): ResponseInterface
     {
         $mappedType = $this->academicPersonsSettings->getProfileInformationType($type)?->type ?? '';
-        $profileInformationFormData ??= ProfileInformationFormData::createEmptyForType($mappedType);
+        $profileInformationFormData = ProfileInformationFormData::createEmptyForType($mappedType);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,

@@ -66,13 +66,13 @@ final class PhysicalAddressController extends AbstractActionController
     //  Handle creation of new entity
     // =================================================================================================================
 
-    public function newAction(Contract $contract, ?AddressFormData $addressFormData = null): ResponseInterface
+    public function newAction(Contract $contract): ResponseInterface
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
-            'addressFormData' => $addressFormData ?? new AddressFormData(),
+            'addressFormData' => new AddressFormData(),
             'availableTypes' => $this->getAvailableTypes(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('physicalAddress')->validations,

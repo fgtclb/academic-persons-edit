@@ -68,12 +68,12 @@ final class ContractController extends AbstractActionController
     //  Handle creation of new entity
     // =================================================================================================================
 
-    public function newAction(Profile $profile, ?ContractFormData $contractFormData = null): ResponseInterface
+    public function newAction(Profile $profile): ResponseInterface
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
-            'contractFormData' => $contractFormData ?? new ContractFormData(),
+            'contractFormData' => new ContractFormData(),
             'functionTypes' => $this->functionTypeRepository->findAll(),
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
             'locations' => $this->locationRepository->findAll(),

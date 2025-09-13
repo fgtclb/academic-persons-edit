@@ -66,14 +66,14 @@ final class EmailAddressController extends AbstractActionController
     //  Handle creation of new entity
     // =================================================================================================================
 
-    public function newAction(Contract $contract, ?EmailFormData $emailAddressFormData = null): ResponseInterface
+    public function newAction(Contract $contract): ResponseInterface
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $contract,
-            'emailAddressFormData' => $emailAddressFormData ?? new EmailFormData(),
+            'emailAddressFormData' => new EmailFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress')->validations,
         ]);

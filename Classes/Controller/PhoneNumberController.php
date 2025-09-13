@@ -66,14 +66,14 @@ final class PhoneNumberController extends AbstractActionController
     //  Handle creation of new entity
     // =================================================================================================================
 
-    public function newAction(Contract $contract, ?PhoneNumberFormData $phoneNumberFormData = null): ResponseInterface
+    public function newAction(Contract $contract): ResponseInterface
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $contract,
-            'phoneNumberFormData' => $phoneNumberFormData ?? new PhoneNumberFormData(),
+            'phoneNumberFormData' => new PhoneNumberFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('phoneNumber')->validations,
         ]);
