@@ -31,6 +31,23 @@ class PhoneNumberFactory
         return $phoneNumber;
     }
 
+    /**
+     * A value is applied to the domain model only when the property may be written
+     * (not readOnly / disabled by validation configuration) and has been sent within
+     * the current request or registered as override on the form data object.
+     */
+    private function mayApplyProperty(ValidationSet $validationSet, PhoneNumberFormData $form, string $propertyName): bool
+    {
+        $validation = $validationSet->get($propertyName);
+        if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
+            // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
+            return false;
+        }
+        // Only apply values sent within the current request or registered as override
+        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        return $form->shouldApplyProperty($propertyName);
+    }
+
     private function setContract(ValidationSet $validationSet, PhoneNumberModel $model, Contract $contract): PhoneNumberModel
     {
         // ValidationSet not evaluated as contract is required to be set for new models
@@ -40,33 +57,19 @@ class PhoneNumberFactory
 
     private function setPhoneNumber(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form): PhoneNumberModel
     {
-        $validation = $validationSet->get('phoneNumber');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setPhoneNumber($form->getPhoneNumber());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'phoneNumber')) {
+            $override = $form->getPropertyOverride('phoneNumber');
+            $model->setPhoneNumber(is_string($override) ? $override : $form->getPhoneNumber());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setPhoneNumber($form->getPhoneNumber());
         return $model;
     }
 
     private function setType(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form): PhoneNumberModel
     {
-        $validation = $validationSet->get('type');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setType($form->getType());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+            $override = $form->getPropertyOverride('type');
+            $model->setType(is_string($override) ? $override : $form->getType());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setType($form->getType());
         return $model;
     }
 }

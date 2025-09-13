@@ -50,6 +50,23 @@ class AddressFactory
         return $address;
     }
 
+    /**
+     * A value is applied to the domain model only when the property may be written
+     * (not readOnly / disabled by validation configuration) and has been sent within
+     * the current request or registered as override on the form data object.
+     */
+    private function mayApplyProperty(ValidationSet $validationSet, AddressFormData $form, string $propertyName): bool
+    {
+        $validation = $validationSet->get($propertyName);
+        if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
+            // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
+            return false;
+        }
+        // Only apply values sent within the current request or registered as override
+        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        return $form->shouldApplyProperty($propertyName);
+    }
+
     private function setContract(ValidationSet $validationSet, AddressModel $model, Contract $contract): AddressModel
     {
         // ValidationSet not evaluated as contract is required to be set for new models
@@ -59,129 +76,73 @@ class AddressFactory
 
     private function setStreet(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('street');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setStreet($form->getStreet());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'street')) {
+            $override = $form->getPropertyOverride('street');
+            $model->setStreet(is_string($override) ? $override : $form->getStreet());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setStreet($form->getStreet());
         return $model;
     }
 
     private function setStreetNumber(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('streetNumber');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setStreetNumber($form->getStreetNumber());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'streetNumber')) {
+            $override = $form->getPropertyOverride('streetNumber');
+            $model->setStreetNumber(is_string($override) ? $override : $form->getStreetNumber());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setStreetNumber($form->getStreetNumber());
         return $model;
     }
 
     private function setAdditional(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('additional');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setAdditional($form->getAdditional());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'additional')) {
+            $override = $form->getPropertyOverride('additional');
+            $model->setAdditional(is_string($override) ? $override : $form->getAdditional());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setAdditional($form->getAdditional());
         return $model;
     }
 
     private function setZip(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('zip');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setZip($form->getZip());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'zip')) {
+            $override = $form->getPropertyOverride('zip');
+            $model->setZip(is_string($override) ? $override : $form->getZip());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setZip($form->getZip());
         return $model;
     }
 
     private function setCity(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('city');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setCity($form->getCity());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'city')) {
+            $override = $form->getPropertyOverride('city');
+            $model->setCity(is_string($override) ? $override : $form->getCity());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setCity($form->getCity());
         return $model;
     }
 
     private function setState(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('state');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setState($form->getState());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'state')) {
+            $override = $form->getPropertyOverride('state');
+            $model->setState(is_string($override) ? $override : $form->getState());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setState($form->getState());
         return $model;
     }
 
     private function setCountry(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('country');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setCountry($form->getCountry());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'country')) {
+            $override = $form->getPropertyOverride('country');
+            $model->setCountry(is_string($override) ? $override : $form->getCountry());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setCountry($form->getCountry());
         return $model;
     }
 
     private function setType(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
     {
-        $validation = $validationSet->get('type');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setType($form->getType());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+            $override = $form->getPropertyOverride('type');
+            $model->setType(is_string($override) ? $override : $form->getType());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setType($form->getType());
         return $model;
     }
 }

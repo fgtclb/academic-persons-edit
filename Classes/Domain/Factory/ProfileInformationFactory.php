@@ -41,6 +41,23 @@ class ProfileInformationFactory
         return $profileInformation;
     }
 
+    /**
+     * A value is applied to the domain model only when the property may be written
+     * (not readOnly / disabled by validation configuration) and has been sent within
+     * the current request or registered as override on the form data object.
+     */
+    private function mayApplyProperty(ValidationSet $validationSet, ProfileInformationFormData $form, string $propertyName): bool
+    {
+        $validation = $validationSet->get($propertyName);
+        if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
+            // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
+            return false;
+        }
+        // Only apply values sent within the current request or registered as override
+        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        return $form->shouldApplyProperty($propertyName);
+    }
+
     private function setProfile(ValidationSet $validationSet, ProfileInformationModel $model, Profile $profile): ProfileInformationModel
     {
         // ValidationSet not evaluated as profile is required to be set for new models
@@ -50,113 +67,64 @@ class ProfileInformationFactory
 
     private function setType(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('type');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setType($form->getType());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+            $override = $form->getPropertyOverride('type');
+            $model->setType(is_string($override) ? $override : $form->getType());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setType($form->getType());
         return $model;
     }
 
     private function setTitle(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('title');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setTitle($form->getTitle());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'title')) {
+            $override = $form->getPropertyOverride('title');
+            $model->setTitle(is_string($override) ? $override : $form->getTitle());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setTitle($form->getTitle());
         return $model;
     }
 
     private function setBodytext(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('bodytext');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setBodytext($form->getBodytext());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'bodytext')) {
+            $override = $form->getPropertyOverride('bodytext');
+            $model->setBodytext(is_string($override) ? $override : $form->getBodytext());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setBodytext($form->getBodytext());
         return $model;
     }
 
     private function setLink(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('link');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setLink($form->getLink());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'link')) {
+            $override = $form->getPropertyOverride('link');
+            $model->setLink(is_string($override) ? $override : $form->getLink());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setLink($form->getLink());
         return $model;
     }
 
     private function setYear(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('year');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setYear($form->getYear());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'year')) {
+            $override = $form->getPropertyOverride('year');
+            $model->setYear(is_int($override) ? $override : $form->getYear());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setYear($form->getYear());
         return $model;
     }
 
     private function setYearStart(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('yearStart');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setYearStart($form->getYearStart());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'yearStart')) {
+            $override = $form->getPropertyOverride('yearStart');
+            $model->setYearStart(is_int($override) ? $override : $form->getYearStart());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setYearStart($form->getYearStart());
         return $model;
     }
 
     private function setYearEnd(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
-        $validation = $validationSet->get('yearEnd');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setYearEnd($form->getYearEnd());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'yearEnd')) {
+            $override = $form->getPropertyOverride('yearEnd');
+            $model->setYearEnd(is_int($override) ? $override : $form->getYearEnd());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setYearEnd($form->getYearEnd());
         return $model;
     }
 }

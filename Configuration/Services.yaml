@@ -18,3 +18,11 @@ services:
       - name: 'event.listener'
         identifier: syncChangesToTranslations
         event: 'FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent'
+
+  # @internal not part of public API
+  FGTCLB\AcademicPersonsEdit\Property\TypeConverter\AbstractFormDataConverter:
+    tags:
+      - name: extbase.type_converter
+        priority: 50
+        target: FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData
+        sources: array

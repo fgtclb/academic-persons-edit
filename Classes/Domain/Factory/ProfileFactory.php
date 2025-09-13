@@ -55,243 +55,155 @@ class ProfileFactory
         return $profile;
     }
 
+    /**
+     * A value is applied to the domain model only when the property may be written
+     * (not readOnly / disabled by validation configuration) and has been sent within
+     * the current request or registered as override on the form data object.
+     */
+    private function mayApplyProperty(ValidationSet $validationSet, ProfileFormData $form, string $propertyName): bool
+    {
+        $validation = $validationSet->get($propertyName);
+        if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
+            // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
+            return false;
+        }
+        // Only apply values sent within the current request or registered as override
+        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        return $form->shouldApplyProperty($propertyName);
+    }
+
     private function setGender(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('gender');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setGender($form->getGender());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'gender')) {
+            $override = $form->getPropertyOverride('gender');
+            $model->setGender(is_string($override) ? $override : $form->getGender());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setGender($form->getGender());
         return $model;
     }
 
     private function setTitle(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('title');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setTitle($form->getTitle());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'title')) {
+            $override = $form->getPropertyOverride('title');
+            $model->setTitle(is_string($override) ? $override : $form->getTitle());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setTitle($form->getTitle());
         return $model;
     }
 
     private function setFirstName(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('firstName');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setFirstName($form->getFirstName());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'firstName')) {
+            $override = $form->getPropertyOverride('firstName');
+            $model->setFirstName(is_string($override) ? $override : $form->getFirstName());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setFirstName($form->getFirstName());
         return $model;
     }
 
     private function setMiddleName(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('middleName');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setMiddleName($form->getMiddleName());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'middleName')) {
+            $override = $form->getPropertyOverride('middleName');
+            $model->setMiddleName(is_string($override) ? $override : $form->getMiddleName());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setMiddleName($form->getMiddleName());
         return $model;
     }
 
     private function setLastName(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('lastName');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setLastName($form->getLastName());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'lastName')) {
+            $override = $form->getPropertyOverride('lastName');
+            $model->setLastName(is_string($override) ? $override : $form->getLastName());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setLastName($form->getLastName());
         return $model;
     }
 
     private function setWebsite(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('website');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setWebsite($form->getWebsite());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'website')) {
+            $override = $form->getPropertyOverride('website');
+            $model->setWebsite(is_string($override) ? $override : $form->getWebsite());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setWebsite($form->getWebsite());
         return $model;
     }
 
     private function setWebsiteTitle(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('websiteTitle');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setWebsiteTitle($form->getWebsiteTitle());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'websiteTitle')) {
+            $override = $form->getPropertyOverride('websiteTitle');
+            $model->setWebsiteTitle(is_string($override) ? $override : $form->getWebsiteTitle());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setWebsiteTitle($form->getWebsiteTitle());
         return $model;
     }
 
     private function setPublicationsLink(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('publicationsLink');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setPublicationsLink($form->getPublicationsLink());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'publicationsLink')) {
+            $override = $form->getPropertyOverride('publicationsLink');
+            $model->setPublicationsLink(is_string($override) ? $override : $form->getPublicationsLink());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setPublicationsLink($form->getPublicationsLink());
         return $model;
     }
 
     private function setPublicationsLinkTitle(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('publicationsLinkTitle');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setPublicationsLinkTitle($form->getPublicationsLinkTitle());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'publicationsLinkTitle')) {
+            $override = $form->getPropertyOverride('publicationsLinkTitle');
+            $model->setPublicationsLinkTitle(is_string($override) ? $override : $form->getPublicationsLinkTitle());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setPublicationsLinkTitle($form->getPublicationsLinkTitle());
         return $model;
     }
 
     private function setTeachingArea(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('teachingArea');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setTeachingArea($form->getTeachingArea());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'teachingArea')) {
+            $override = $form->getPropertyOverride('teachingArea');
+            $model->setTeachingArea(is_string($override) ? $override : $form->getTeachingArea());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setTeachingArea($form->getTeachingArea());
         return $model;
     }
 
     private function setCoreCompetences(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('coreCompetences');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setCoreCompetences($form->getCoreCompetences());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'coreCompetences')) {
+            $override = $form->getPropertyOverride('coreCompetences');
+            $model->setCoreCompetences(is_string($override) ? $override : $form->getCoreCompetences());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setCoreCompetences($form->getCoreCompetences());
         return $model;
     }
 
     private function setSupervisedThesis(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('supervisedThesis');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setSupervisedThesis($form->getSupervisedThesis());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'supervisedThesis')) {
+            $override = $form->getPropertyOverride('supervisedThesis');
+            $model->setSupervisedThesis(is_string($override) ? $override : $form->getSupervisedThesis());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setSupervisedThesis($form->getSupervisedThesis());
         return $model;
     }
 
     private function setSupervisedDoctoralThesis(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('supervisedDoctoralThesis');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setSupervisedDoctoralThesis($form->getSupervisedDoctoralThesis());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'supervisedDoctoralThesis')) {
+            $override = $form->getPropertyOverride('supervisedDoctoralThesis');
+            $model->setSupervisedDoctoralThesis(is_string($override) ? $override : $form->getSupervisedDoctoralThesis());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setSupervisedDoctoralThesis($form->getSupervisedDoctoralThesis());
         return $model;
     }
 
     private function setMiscellaneous(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('miscellaneous');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setMiscellaneous($form->getMiscellaneous());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'miscellaneous')) {
+            $override = $form->getPropertyOverride('miscellaneous');
+            $model->setMiscellaneous(is_string($override) ? $override : $form->getMiscellaneous());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setMiscellaneous($form->getMiscellaneous());
         return $model;
     }
 
     private function setSkipSync(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
     {
-        $validation = $validationSet->get('skipSync');
-        if ($validation === null) {
-            // No validation configured, assume that value is valid and needs to be set.
-            $model->setSkipSync($form->getSkipSync());
-            return $model;
+        if ($this->mayApplyProperty($validationSet, $form, 'skipSync')) {
+            $override = $form->getPropertyOverride('skipSync');
+            $model->setSkipSync(is_bool($override) ? $override : $form->getSkipSync());
         }
-        if ($validation->readOnly || $validation->disabled) {
-            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
-            return $model;
-        }
-        $model->setSkipSync($form->getSkipSync());
         return $model;
     }
 }

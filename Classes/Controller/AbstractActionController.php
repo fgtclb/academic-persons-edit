@@ -13,6 +13,8 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
+use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
+use FGTCLB\AcademicPersonsEdit\Property\TypeConverter\AbstractFormDataConverter;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\UserSessionService;
@@ -25,6 +27,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -120,6 +123,11 @@ abstract class AbstractActionController extends ActionController
             );
         }
 
+        /** @var Argument $argument */
+        foreach ($this->arguments as $argument) {
+            $this->setCurrentRequestForAbstractFormDataBasedArguments($argument);
+        }
+
         // Map date and time arguments
         foreach (self::DATETIME_ARGUMENTS as $argument => $datetimeProperties) {
             if ($this->arguments->hasArgument($argument)) {
@@ -135,6 +143,29 @@ abstract class AbstractActionController extends ActionController
                 }
             }
         }
+    }
+
+    /**
+     * @param Argument $argument
+     */
+    private function setCurrentRequestForAbstractFormDataBasedArguments(Argument $argument): void
+    {
+        $dataType = $argument->getDataType();
+        if (!class_exists($dataType)
+            || !in_array(AbstractFormData::class, class_parents($dataType), true)
+        ) {
+            // Argument is not mapped to an object and is not based on AbstractFormData. Skip.
+            return;
+        }
+        $argument
+            ->getPropertyMappingConfiguration()
+            ->setTypeConverterOptions(
+                AbstractFormDataConverter::class,
+                [
+                    'request' => $this->request,
+                    'argumentName' => $argument->getName(),
+                ]
+            );
     }
 
     /**
