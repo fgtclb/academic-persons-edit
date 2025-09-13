@@ -16,11 +16,21 @@ use TYPO3\CMS\Extbase\Validation\Validator\ValidatorInterface;
  */
 abstract class AbstractFormDataValidator extends AbstractValidator
 {
-    private AcademicPersonsSettings $settings;
+    /**
+     * Note that validator DI (injectMethods) only works since TYPO3 v13 and
+     * {@see self::getAcademicPersonsSettings()} is provided as TYPO3 v12
+     * compatibility layer. That means access should be done using that
+     * {@see self::getAcademicPersonsSettings()} instead of the property
+     * directly.
+     */
+    private ?AcademicPersonsSettings $academicPersonsSettings = null;
 
-    public function injectSettings(AcademicPersonsSettings $settings): void
+    /**
+     * Works only since TYPO3 v13, see {@see self::getAcademicPersonsSettings()} as TYPO3 v12 fallback.
+     */
+    public function injectAcademicPersonsSettings(AcademicPersonsSettings $academicPersonsSettings): void
     {
-        $this->settings = $settings;
+        $this->academicPersonsSettings = $academicPersonsSettings;
     }
 
     /**
@@ -30,7 +40,7 @@ abstract class AbstractFormDataValidator extends AbstractValidator
      */
     public function processValidations(object $subject, string $validationsIdentifier): void
     {
-        $validations = $this->settings->getValidationSet($validationsIdentifier)?->validations ?? [];
+        $validations = $this->getAcademicPersonsSettings()->getValidationSet($validationsIdentifier)?->validations ?? [];
         foreach ($validations as $property => $validation) {
             $value = ObjectAccess::getPropertyPath($subject, $property);
             foreach ($validation->validatorClassNames as $validatorClassName) {
@@ -50,5 +60,16 @@ abstract class AbstractFormDataValidator extends AbstractValidator
                 );
             }
         }
+    }
+
+    /**
+     * Fallback method required for TYPO3 v12 support, because DI injection
+     * with {@see self::injectAcademicPersonsSettings()} does not work in TYPO3 v12.
+     *
+     * @todo Drop this fallback when TYPO3 v12 support has been dropped.
+     */
+    private function getAcademicPersonsSettings(): AcademicPersonsSettings
+    {
+        return $this->academicPersonsSettings ??= GeneralUtility::makeInstance(AcademicPersonsSettings::class);
     }
 }
