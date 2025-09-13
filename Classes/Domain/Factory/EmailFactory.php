@@ -26,9 +26,9 @@ class EmailFactory
 
     public function updateFromFormData(ValidationSet $validationSet, EmailModel $email, EmailFormData $form): EmailModel
     {
-        $emailAddress = $this->setEmail($validationSet, $email, $form);
-        $emailAddress = $this->setType($validationSet, $email, $form);
-        return $emailAddress;
+        $email = $this->setEmail($validationSet, $email, $form);
+        $email = $this->setType($validationSet, $email, $form);
+        return $email;
     }
 
     private function setContract(ValidationSet $validationSet, EmailModel $model, Contract $contract): EmailModel
