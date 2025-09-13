@@ -80,6 +80,10 @@ final class PhysicalAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
+    #[Validate([
+        'param' => 'addressFormData',
+        'validator' => AddressFormDataValidator::class,
+    ])]
     public function createAction(Contract $contract, AddressFormData $addressFormData): ResponseInterface
     {
         $physicalAddress = $this->addressFactory->createFromFormData(

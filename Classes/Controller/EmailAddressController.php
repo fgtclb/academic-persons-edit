@@ -80,6 +80,10 @@ final class EmailAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
+    #[Validate([
+        'param' => 'emailAddressFormData',
+        'validator' => EmailFormDataValidator::class,
+    ])]
     public function createAction(Contract $contract, EmailFormData $emailAddressFormData): ResponseInterface
     {
         $emailAddress = $this->emailAddressFactory->createFromFormData(

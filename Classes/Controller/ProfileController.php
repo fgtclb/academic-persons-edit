@@ -16,9 +16,11 @@ use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
+use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -79,10 +81,12 @@ final class ProfileController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    public function updateAction(
-        Profile $profile,
-        ProfileFormData $profileFormData
-    ): ResponseInterface {
+    #[Validate([
+        'param' => 'profileFormData',
+        'validator' => ProfileFormDataValidator::class,
+    ])]
+    public function updateAction(Profile $profile, ProfileFormData $profileFormData): ResponseInterface
+    {
         $this->profileRepository->update(
             $this->profileFactory->updateFromFormData(
                 $this->academicPersonsSettings->getValidationSetWithFallback('profile'),
