@@ -58,32 +58,29 @@
                         }"
                         as="field"
                     >
-                        <f:if condition="{field} == 'organisationalUnit'">
-                            <f:then>
-                                <tr>
-                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                        <tr>
+                            <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                            <f:switch expression="{field}">
+                                <f:case value="organisationalUnit">
                                     <td>{contract.{field}.unitName}</td>
-                                </tr>
-                            </f:then>
-                            <f:else if="{field} == 'functionType'">
-                                <tr>
-                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                </f:case>
+                                <f:case value="functionType">
                                     <td>{contract.{field}.functionName}</td>
-                                </tr>
-                            </f:else>
-                            <f:else if="{field} == 'validFrom' || {field} == 'validTo'">
-                                <tr>
-                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                </f:case>
+                                <f:case value="location">
+                                    <td>{contract.{field}.title}</td>
+                                </f:case>
+                                <f:case value="validFrom">
                                     <td>{contract.{field} -> f:format.date(format: 'd.m.Y')}</td>
-                                </tr>
-                            </f:else>
-                            <f:else>
-                                <tr>
-                                    <th>{f:translate(key: 'contract.{field}.label', extensionName: 'academic_persons_edit')}:</th>
+                                </f:case>
+                                <f:case value="validTo">
+                                    <td>{contract.{field} -> f:format.date(format: 'd.m.Y')}</td>
+                                </f:case>
+                                <f:defaultCase>
                                     <td>{contract.{field}}</td>
-                                </tr>
-                            </f:else>
-                        </f:if>
+                                </f:defaultCase>
+                            </f:switch>
+                        </tr>
                     </f:for>
                 </table>
 
