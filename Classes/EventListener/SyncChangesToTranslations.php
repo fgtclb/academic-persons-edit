@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\EventListener;
 
-use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SyncronizerContext;
+use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SynchronizerContext;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
-use FGTCLB\AcademicPersons\Service\RecordSyncronizerInterface;
+use FGTCLB\AcademicPersons\Service\RecordSynchronizerInterface;
 use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -27,7 +27,7 @@ final class SyncChangesToTranslations
     public function __construct(
         private readonly ProfileTranslator $profileTranslator,
         private readonly SiteFinder $siteFinder,
-        private readonly RecordSyncronizerInterface $recordSyncronizer,
+        private readonly RecordSynchronizerInterface $recordSyncronizer,
     ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
@@ -52,14 +52,14 @@ final class SyncChangesToTranslations
             return;
         }
 
-        $context = SyncronizerContext::create(
+        $context = SynchronizerContext::create(
             recordSyncronizer: $this->recordSyncronizer,
             site: $site,
             allowedLanguageIds: $this->profileTranslator->getAllowedLanguageIds(),
             tableName: 'tx_academicpersons_domain_model_profile',
             uid: $profile->getUid(),
         );
-        $this->recordSyncronizer->syncronize($context);
+        $this->recordSyncronizer->synchronize($context);
     }
 
     /**

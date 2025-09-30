@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\EventListener;
 
-use FGTCLB\AcademicPersons\Service\RecordSyncronizer;
-use FGTCLB\AcademicPersons\Service\RecordSyncronizerInterface;
+use FGTCLB\AcademicPersons\Service\RecordSynchronizer;
+use FGTCLB\AcademicPersons\Service\RecordSynchronizerInterface;
 use FGTCLB\AcademicPersonsEdit\EventListener\SyncChangesToTranslations;
 use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
@@ -21,8 +21,8 @@ final class SyncChangesToTranslationsTest extends AbstractAcademicPersonsEditTes
         $this->assertInstanceOf(SyncChangesToTranslations::class, $eventListener);
 
         $eventListenerReflection = new \ReflectionClass($eventListener);
-        $this->assertInstanceOf(RecordSyncronizerInterface::class, $eventListenerReflection->getProperty('recordSyncronizer')->getValue($eventListener));
-        $this->assertInstanceOf(RecordSyncronizer::class, $eventListenerReflection->getProperty('recordSyncronizer')->getValue($eventListener));
+        $this->assertInstanceOf(RecordSynchronizerInterface::class, $eventListenerReflection->getProperty('recordSyncronizer')->getValue($eventListener));
+        $this->assertInstanceOf(RecordSynchronizer::class, $eventListenerReflection->getProperty('recordSyncronizer')->getValue($eventListener));
         $this->assertInstanceOf(ProfileTranslator::class, $eventListenerReflection->getProperty('profileTranslator')->getValue($eventListener));
         $this->assertInstanceOf(SiteFinder::class, $eventListenerReflection->getProperty('siteFinder')->getValue($eventListener));
     }
