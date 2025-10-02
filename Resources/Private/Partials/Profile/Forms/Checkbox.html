@@ -12,8 +12,10 @@
 
 <f:variable
     name="validation"
-    value="{p:validationEnsure(identifier: element.identifier, validations: element.validations)}"
-/>
+><p:validationEnsure
+    validations="{element.validations}"
+    identifier="{element.identifier}"
+/></f:variable>
 
 <f:render
     partial="Profile/Forms/FieldWrapper"
