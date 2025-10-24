@@ -48,3 +48,4 @@ This extension provides plugins to edit the assigned profiles from the TYPO3 fro
     Configuration/Index
     Templates/Index
     KnownProblems/Index
+    Changelog/Changelog-2
