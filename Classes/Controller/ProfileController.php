@@ -54,7 +54,10 @@ final class ProfileController extends AbstractActionController
 
     public function showAction(Profile $profile): ResponseInterface
     {
-        $cancelUrl = $this->userSessionService->loadRefererFromSession($this->request);
+        $cancelUrl = $this->uriBuilder->reset()->uriFor(
+            'list',
+        );
+
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([

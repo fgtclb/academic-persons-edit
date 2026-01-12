@@ -54,7 +54,12 @@ final class ContractController extends AbstractActionController
 
     public function showAction(Contract $contract): ResponseInterface
     {
-        $cancelUrl = $this->userSessionService->loadRefererFromSession($this->request);
+        $cancelUrl = $this->uriBuilder->reset()->uriFor(
+            'show',
+            ['profile' => $contract->getProfile()],
+            'Profile'
+        );
+
         $this->userSessionService->saveRefererToSession($this->request);
 
         $this->view->assignMultiple([
