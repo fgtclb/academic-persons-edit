@@ -19,7 +19,7 @@ class ProfileInformationFormData extends AbstractFormData
     protected ?int $yearStart = null;
     protected ?int $yearEnd = null;
 
-    final public function __construct(
+    public function __construct(
         string $type = '',
         string $title = '',
         string $bodytext = '',
