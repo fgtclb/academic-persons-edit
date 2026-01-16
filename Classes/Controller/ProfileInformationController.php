@@ -29,6 +29,7 @@ final class ProfileInformationController extends AbstractActionController
     public function __construct(
         private readonly ProfileInformationFactory $profileInformationFactory,
         private readonly ProfileInformationRepository $profileInformationRepository,
+        private readonly string $profileInformationFormDataClassName = ProfileInformationFormData::class,
     ) {}
 
     // =================================================================================================================
@@ -71,7 +72,7 @@ final class ProfileInformationController extends AbstractActionController
     public function newAction(Profile $profile, string $type): ResponseInterface
     {
         $mappedType = $this->academicPersonsSettings->getProfileInformationType($type)?->type ?? '';
-        $profileInformationFormData = ProfileInformationFormData::createEmptyForType($mappedType);
+        $profileInformationFormData = $this->profileInformationFormDataClassName::createEmptyForType($mappedType);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
@@ -131,7 +132,7 @@ final class ProfileInformationController extends AbstractActionController
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profileInformation->getProfile(),
             'profileInformation' => $profileInformation,
-            'profileInformationFormData' => ProfileInformationFormData::createFromProfileInformation($profileInformation),
+            'profileInformationFormData' => $this->profileInformationFormDataClassName::createFromProfileInformation($profileInformation),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation')->validations,
         ]);

@@ -19,7 +19,7 @@ class ProfileInformationFormData extends AbstractFormData
     protected ?int $yearStart = null;
     protected ?int $yearEnd = null;
 
-    public function __construct(
+    final public function __construct(
         string $type = '',
         string $title = '',
         string $bodytext = '',
@@ -39,14 +39,14 @@ class ProfileInformationFormData extends AbstractFormData
 
     public static function createEmptyForType(string $type): self
     {
-        $instance = new self();
+        $instance = new static();
         $instance->type = $type;
         return $instance;
     }
 
     public static function createFromProfileInformation(ProfileInformation $profileInformation): self
     {
-        $instance = new self();
+        $instance = new static();
         $instance->type = $profileInformation->getType();
         $instance->title = $profileInformation->getTitle();
         $instance->bodytext = $profileInformation->getBodytext();
