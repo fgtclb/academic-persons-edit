@@ -249,6 +249,12 @@
 			<trans-unit id="profile.miscellaneous.placeholder">
 				<source>e.g. Hobbies, Interests</source>
 			</trans-unit>
+			<trans-unit id="profile.skipSync.label">
+				<source>Disable profile sync</source>
+			</trans-unit>
+			<trans-unit id="profile.skipSync.description">
+				<source>Disabling the profile synchronization will prevent automatic updates from external sources.</source>
+			</trans-unit>
 
 			<!-- Profile information fields -->
 

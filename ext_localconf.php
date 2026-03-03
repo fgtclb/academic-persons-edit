@@ -30,6 +30,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'editImage',
                 'addImage',
                 'removeImage',
+                'toggleSkipSync',
             ]),
             ProfileInformationController::class => implode(',', [
                 'list',
@@ -96,6 +97,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'editImage',
                 'addImage',
                 'removeImage',
+                'toggleSkipSync',
             ]),
             ProfileInformationController::class => implode(',', [
                 'list',

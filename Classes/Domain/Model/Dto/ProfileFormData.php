@@ -25,6 +25,7 @@ class ProfileFormData extends AbstractFormData
     protected string $supervisedDoctoralThesis = '';
     protected string $supervisedThesis = '';
     protected string $teachingArea = '';
+    protected bool $skipSync = false;
 
     public function __construct(
         string $title = '',
@@ -40,7 +41,8 @@ class ProfileFormData extends AbstractFormData
         string $miscellaneous = '',
         string $supervisedDoctoralThesis = '',
         string $supervisedThesis = '',
-        string $teachingArea = ''
+        string $teachingArea = '',
+        bool $skipSync = false
     ) {
         $this->title = $title;
         $this->firstName = $firstName;
@@ -56,6 +58,7 @@ class ProfileFormData extends AbstractFormData
         $this->supervisedDoctoralThesis = $supervisedDoctoralThesis;
         $this->supervisedThesis = $supervisedThesis;
         $this->teachingArea = $teachingArea;
+        $this->skipSync = $skipSync;
     }
 
     public static function createFromProfile(Profile $profile): self
@@ -75,6 +78,7 @@ class ProfileFormData extends AbstractFormData
         $instance->supervisedDoctoralThesis = $profile->getSupervisedDoctoralThesis();
         $instance->supervisedThesis = $profile->getSupervisedThesis();
         $instance->teachingArea = $profile->getTeachingArea();
+        $instance->skipSync = $profile->getSkipSync();
         return $instance;
     }
 
@@ -146,5 +150,10 @@ class ProfileFormData extends AbstractFormData
     public function getTeachingArea(): string
     {
         return $this->teachingArea;
+    }
+
+    public function getSkipSync(): bool
+    {
+        return $this->skipSync;
     }
 }

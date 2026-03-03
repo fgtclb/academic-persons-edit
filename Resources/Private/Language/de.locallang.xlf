@@ -324,6 +324,14 @@
 				<source>e.g. Hobbies, Interests</source>
 				<target>z.B. Hobbys, Interessen</target>
 			</trans-unit>
+			<trans-unit id="profile.skipSync.label">
+				<source>Disable profile sync</source>
+				<target>Profil-Synchronisation deaktivieren</target>
+			</trans-unit>
+			<trans-unit id="profile.skipSync.description">
+				<source>Disabling the profile synchronization will prevent automatic updates from external sources.</source>
+				<target>Die Deaktivierung der Profil-Synchronisation verhindert automatische Aktualisierungen aus externen Quellen.</target>
+			</trans-unit>
 
 			<!-- Profile information fields -->
 

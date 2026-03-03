@@ -31,6 +31,7 @@ class ProfileFactory
         $profile = $this->setSupervisedThesis($validationSet, $profile, $form);
         $profile = $this->setSupervisedDoctoralThesis($validationSet, $profile, $form);
         $profile = $this->setMiscellaneous($validationSet, $profile, $form);
+        $profile = $this->setSkipSync($validationSet, $profile, $form);
         return $profile;
     }
 
@@ -50,6 +51,7 @@ class ProfileFactory
         $profile = $this->setSupervisedThesis($validationSet, $profile, $form);
         $profile = $this->setSupervisedDoctoralThesis($validationSet, $profile, $form);
         $profile = $this->setMiscellaneous($validationSet, $profile, $form);
+        $profile = $this->setSkipSync($validationSet, $profile, $form);
         return $profile;
     }
 
@@ -274,6 +276,22 @@ class ProfileFactory
             return $model;
         }
         $model->setMiscellaneous($form->getMiscellaneous());
+        return $model;
+    }
+
+    private function setSkipSync(ValidationSet $validationSet, ProfileModel $model, ProfileFormData $form): ProfileModel
+    {
+        $validation = $validationSet->get('skipSync');
+        if ($validation === null) {
+            // No validation configured, assume that value is valid and needs to be set.
+            $model->setSkipSync($form->getSkipSync());
+            return $model;
+        }
+        if ($validation->readOnly || $validation->disabled) {
+            // ReadOnly or disabled, ignore value to prevent empty existing persisted data
+            return $model;
+        }
+        $model->setSkipSync($form->getSkipSync());
         return $model;
     }
 }

@@ -63,6 +63,7 @@ final class ProfileController extends AbstractActionController
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
+            'profileFormData' => ProfileFormData::createFromProfile($profile),
             'cancelUrl' => $cancelUrl,
         ]);
 
@@ -172,6 +173,14 @@ final class ProfileController extends AbstractActionController
             $imageFile = $image->getOriginalResource()->getOriginalFile();
             $imageFile->getStorage()->deleteFile($imageFile);
         }
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+    }
+
+    public function toggleSkipSyncAction(Profile $profile): ResponseInterface
+    {
+        $profile->setSkipSync(!$profile->getSkipSync());
+        $this->profileRepository->update($profile);
+        $this->persistenceManager->persistAll();
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 

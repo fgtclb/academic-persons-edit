@@ -64,6 +64,29 @@
         </div>
 
         <div class="row">
+            <div class="col-12">
+                <f:form
+                    action="toggleSkipSync"
+                    name="profileFormData"
+                    object="{profileFormData}"
+                    arguments="{profile: profile}"
+                >
+                    <f:render
+                        partial="Profile/Forms/Checkbox"
+                        arguments="{
+                            element: {
+                                form: 'profile',
+                                identifier: 'skipSync',
+                                help: '{f:translate(key: \'profile.skipSync.description\', extensionName: \'academic_persons_edit\')}',
+                                onChange: 'this.form.submit()',
+                            }
+                        }"
+                    />
+                </f:form>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-12 profile-contracts">
                 <div class="section-head">
                     <f:render
