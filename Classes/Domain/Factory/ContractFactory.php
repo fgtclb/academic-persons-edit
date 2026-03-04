@@ -54,7 +54,7 @@ class ContractFactory
 
     private function setOrganisationalUnit(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
     {
-        $validation = $validationSet->get('organizationalUnit');
+        $validation = $validationSet->get('organisationalUnit');
         if ($validation === null) {
             // No validation configured, assume that value is valid and needs to be set.
             $model->setOrganisationalUnit($form->getOrganisationalUnit());
