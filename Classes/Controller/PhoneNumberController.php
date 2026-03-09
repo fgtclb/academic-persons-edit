@@ -14,6 +14,7 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\PhoneNumber;
 use FGTCLB\AcademicPersons\Domain\Repository\PhoneNumberRepository;
+use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\PhoneNumberFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\PhoneNumberFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\PhoneNumberFormDataValidator;
@@ -159,53 +160,23 @@ final class PhoneNumberController extends AbstractActionController
     public function sortAction(PhoneNumber $phoneNumber, string $sortDirection): ResponseInterface
     {
         $contract = $phoneNumber->getContract();
-        if ($contract === null) {
+        if ($contract === null || $phoneNumber->getUid() <= 0) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
                 'Could not get contract.',
                 1752939240,
             );
         }
-
-        if (!in_array($sortDirection, ['up', 'down'])
+        $sortMode = ListSortingMode::tryFromDefault($sortDirection);
+        if ($sortMode === ListSortingMode::NONE
             || $contract->getPhoneNumbers()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('phoneNumber.sort.error.notPossible');
             return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        // Convert contracts to array
-        $phoneNumberArray = [];
-        foreach ($contract->getPhoneNumbers() as $contractPhoneNumber) {
-            $phoneNumberArray[] = $contractPhoneNumber;
-        }
-
-        // Revert array, if sort direction is down
-        if ($sortDirection === 'down') {
-            $phoneNumberArray = array_reverse($phoneNumberArray);
-        }
-
-        // Switch sorting values
-        $prevPhoneNumber = null;
-        foreach ($phoneNumberArray as $currentPhoneNumber) {
-            if ($phoneNumber != $currentPhoneNumber) {
-                $prevPhoneNumber = $currentPhoneNumber;
-            } else {
-                // Only switch sorting if the selected contract is not the first one in the array
-                // (normally the sorting options for this case should be hidden in the Fluid template)
-                if ($prevPhoneNumber !== null) {
-                    $prevSorting = $prevPhoneNumber->getSorting();
-                    $prevPhoneNumber->setSorting($currentPhoneNumber->getSorting());
-                    $currentPhoneNumber->setSorting($prevSorting);
-
-                    $this->phoneNumberRepository->update($prevPhoneNumber);
-                    $this->phoneNumberRepository->update($currentPhoneNumber);
-
-                    $this->persistenceManager->persistAll();
-                    $this->addTranslatedSuccessMessage('phoneNumber.sort.success');
-                }
-                break;
-            }
+        $process = $this->sortItems($contract->getPhoneNumbers()->toArray(), $phoneNumber->getUid(), $sortMode);
+        if ($process->changed) {
+            $this->addTranslatedSuccessMessage('phoneNumber.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }

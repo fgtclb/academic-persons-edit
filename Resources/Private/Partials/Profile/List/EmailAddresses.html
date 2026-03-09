@@ -40,6 +40,32 @@
                                         <f:link.action
                                             controller="EmailAddress"
                                             action="sort"
+                                            arguments="{emailAddress: emailAddress, sortDirection: 'top'}"
+                                            class="btn btn-outline-secondary sort-top desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.setToTop',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.setToTop',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{contract.emailAddresses -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <f:if condition="{emailAddressIteration.cycle} > 1">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="EmailAddress"
+                                            action="sort"
                                             arguments="{emailAddress: emailAddress, sortDirection: 'up'}"
                                             class="btn btn-outline-secondary sort-up desktop"
                                             aria-label="{f:translate(
@@ -78,6 +104,32 @@
                                             )}"
                                         >
                                             <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{contract.emailAddresses -> f:count()} > 2">
+                                            <span class="btn-hidden desktop"></span>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+
+                                <f:if condition="{emailAddressIteration.cycle} < {contract.emailAddresses -> f:count()}">
+                                    <f:then>
+                                        <f:link.action
+                                            controller="EmailAddress"
+                                            action="sort"
+                                            arguments="{emailAddress: emailAddress, sortDirection: 'bottom'}"
+                                            class="btn btn-outline-secondary sort-bottom desktop"
+                                            aria-label="{f:translate(
+                                                key: 'actions.setToBottom',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                            title="{f:translate(
+                                                key: 'actions.setToBottom',
+                                                extensionName: 'academic_persons_edit'
+                                            )}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
                                         </f:link.action>
                                     </f:then>
                                     <f:else>

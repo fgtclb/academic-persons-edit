@@ -14,6 +14,7 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicPersons\Domain\Model\Address;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Repository\AddressRepository;
+use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\AddressFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AddressFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\AddressFormDataValidator;
@@ -159,53 +160,23 @@ final class PhysicalAddressController extends AbstractActionController
     public function sortAction(Address $physicalAddress, string $sortDirection): ResponseInterface
     {
         $contract = $physicalAddress->getContract();
-        if ($contract === null) {
+        if ($contract === null || $physicalAddress->getUid() <= 0) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
                 'Could not get contract.',
                 1752938846,
             );
         }
-
-        if (!in_array($sortDirection, ['up', 'down'])
+        $sortMode = ListSortingMode::tryFromDefault($sortDirection);
+        if ($sortMode === ListSortingMode::NONE
             || $contract->getPhysicalAddresses()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('contracts.sort.error.notPossible');
             return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        // Convert contracts to array
-        $addressArray = [];
-        foreach ($contract->getPhysicalAddresses() as $contractPhysicalAddress) {
-            $addressArray[] = $contractPhysicalAddress;
-        }
-
-        // Revert array, if sort direction is down
-        if ($sortDirection === 'down') {
-            $addressArray = array_reverse($addressArray);
-        }
-
-        // Switch sorting values
-        $prevAddress = null;
-        foreach ($addressArray as $currentAddress) {
-            if ($physicalAddress != $currentAddress) {
-                $prevAddress = $currentAddress;
-            } else {
-                // Only switch sorting if the selected contract is not the first one in the array
-                // (normally the sorting options for this case should be hidden in the Fluid template)
-                if ($prevAddress !== null) {
-                    $prevSorting = $prevAddress->getSorting();
-                    $prevAddress->setSorting($currentAddress->getSorting());
-                    $currentAddress->setSorting($prevSorting);
-
-                    $this->addressRepository->update($prevAddress);
-                    $this->addressRepository->update($currentAddress);
-
-                    $this->persistenceManager->persistAll();
-                    $this->addTranslatedSuccessMessage('physicalAddress.sort.success');
-                }
-                break;
-            }
+        $process = $this->sortItems($contract->getPhysicalAddresses()->toArray(), $physicalAddress->getUid(), $sortMode);
+        if ($process->changed) {
+            $this->addTranslatedSuccessMessage('physicalAddress.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }

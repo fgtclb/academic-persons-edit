@@ -14,6 +14,7 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Email;
 use FGTCLB\AcademicPersons\Domain\Repository\EmailRepository;
+use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\EmailFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\EmailFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\EmailFormDataValidator;
@@ -159,55 +160,24 @@ final class EmailAddressController extends AbstractActionController
     public function sortAction(Email $emailAddress, string $sortDirection): ResponseInterface
     {
         $contract = $emailAddress->getContract();
-        if ($contract === null) {
+        if ($contract === null || $emailAddress->getUid() <= 0) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
                 'Could not get contract.',
                 1752939173,
             );
         }
-
-        if (!in_array($sortDirection, ['up', 'down'])
+        $sortMode = ListSortingMode::tryFromDefault($sortDirection);
+        if ($sortMode === ListSortingMode::NONE
             || $contract->getEmailAddresses()->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('emailAddress.sort.error.notPossible');
             return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        // Convert contracts to array
-        $emailAddressArray = [];
-        foreach ($contract->getEmailAddresses() as $contractEmailAddress) {
-            $emailAddressArray[] = $contractEmailAddress;
+        $process = $this->sortItems($contract->getEmailAddresses()->toArray(), $emailAddress->getUid(), $sortMode);
+        if ($process->changed) {
+            $this->addTranslatedSuccessMessage('emailAddress.sort.success');
         }
-
-        // Revert array, if sort direction is down
-        if ($sortDirection === 'down') {
-            $emailAddressArray = array_reverse($emailAddressArray);
-        }
-
-        // Switch sorting values
-        $prevEmailAddress = null;
-        foreach ($emailAddressArray as $currentEmailAddress) {
-            if ($emailAddress != $currentEmailAddress) {
-                $prevEmailAddress = $currentEmailAddress;
-            } else {
-                // Only switch sorting if the selected contract is not the first one in the array
-                // (normally the sorting options for this case should be hidden in the Fluid template)
-                if ($prevEmailAddress !== null) {
-                    $prevSorting = $prevEmailAddress->getSorting();
-                    $prevEmailAddress->setSorting($currentEmailAddress->getSorting());
-                    $currentEmailAddress->setSorting($prevSorting);
-
-                    $this->emailAddressRepository->update($prevEmailAddress);
-                    $this->emailAddressRepository->update($currentEmailAddress);
-
-                    $this->persistenceManager->persistAll();
-                    $this->addTranslatedSuccessMessage('emailAddress.sort.success');
-                }
-                break;
-            }
-        }
-
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 

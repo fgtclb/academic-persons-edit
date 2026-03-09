@@ -424,10 +424,16 @@
 				<source>Add</source>
 			</trans-unit>
 			<trans-unit id="actions.sortUp">
-				<source>Sort up</source>
+				<source>Move upwards</source>
 			</trans-unit>
 			<trans-unit id="actions.sortDown">
-				<source>Sort down</source>
+				<source>Move downwards</source>
+			</trans-unit>
+			<trans-unit id="actions.setToTop">
+				<source>Move to the top</source>
+			</trans-unit>
+			<trans-unit id="actions.setToBottom">
+				<source>Move to the bottom</source>
 			</trans-unit>
 			<trans-unit id="actions.delete">
 				<source>Delete</source>

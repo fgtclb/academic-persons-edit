@@ -12,13 +12,18 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
+use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
+use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
+use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\UserSessionService;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
@@ -47,35 +52,47 @@ abstract class AbstractActionController extends ActionController
         ],
     ];
 
+    protected ListSortingService $listSortingService;
     protected PersistenceManager $persistenceManager;
     protected UserSessionService $userSessionService;
     protected LocalizationUtility $localizationUtility;
     protected AcademicPersonsSettings $academicPersonsSettings;
     protected Context $context;
 
+    #[Required]
     public function injectContext(Context $context): void
     {
         $this->context = $context;
     }
 
+    #[Required]
     public function injectPersistenceManager(PersistenceManager $persistenceManager): void
     {
         $this->persistenceManager = $persistenceManager;
     }
 
+    #[Required]
     public function injectUserSessionService(UserSessionService $userSessionService): void
     {
         $this->userSessionService = $userSessionService;
     }
 
+    #[Required]
     public function injectLocalizationUtility(LocalizationUtility $localizationUtility): void
     {
         $this->localizationUtility = $localizationUtility;
     }
 
+    #[Required]
     public function injectAcademicPersonsSettings(AcademicPersonsSettings $academicPersonsSettings): void
     {
         $this->academicPersonsSettings = $academicPersonsSettings;
+    }
+
+    #[Required]
+    public function injectListSortingService(ListSortingService $listSortingService): void
+    {
+        $this->listSortingService = $listSortingService;
     }
 
     /**
@@ -181,5 +198,19 @@ abstract class AbstractActionController extends ActionController
                 ->setCreateAbsoluteUri(true)
                 ->uriFor($action, $arguments))
             ->withHeader('x-redirected-by', 'TYPO3 academic-persons-edit');
+    }
+
+    /**
+     * @param AbstractEntity[] $items
+     * @param int<1,max> $tagetUid
+     * @param ListSortingMode $mode
+     * @return ListSortingProcess
+     */
+    protected function sortItems(
+        array $items,
+        int $tagetUid,
+        ListSortingMode $mode,
+    ): ListSortingProcess {
+        return $this->listSortingService->sort($items, $tagetUid, $mode);
     }
 }

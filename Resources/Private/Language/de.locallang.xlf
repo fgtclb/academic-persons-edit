@@ -551,12 +551,20 @@
 				<target>Hinzufügen</target>
 			</trans-unit>
 			<trans-unit id="actions.sortUp">
-				<source>Sort up</source>
-				<target>Nach oben sortieren</target>
+				<source>Move upwards</source>
+				<target>Nach oben verschieben</target>
 			</trans-unit>
 			<trans-unit id="actions.sortDown">
-				<source>Sort down</source>
-				<target>Nach unten sortieren</target>
+				<source>Move downwards</source>
+				<target>Nach unten verschieben</target>
+			</trans-unit>
+			<trans-unit id="actions.setToTop">
+				<source>Move to the top</source>
+				<target>An erste Stelle verschieben</target>
+			</trans-unit>
+			<trans-unit id="actions.setToBottom">
+				<source>Move to the bottom</source>
+				<target>An letzte Stelle verschieben</target>
 			</trans-unit>
 			<trans-unit id="actions.delete">
 				<source>Delete</source>

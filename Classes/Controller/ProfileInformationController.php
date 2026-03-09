@@ -14,6 +14,7 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
+use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileInformationFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileInformationFormDataValidator;
@@ -171,7 +172,7 @@ final class ProfileInformationController extends AbstractActionController
     public function sortAction(ProfileInformation $profileInformation, string $sortDirection): ResponseInterface
     {
         $profile = $profileInformation->getProfile();
-        if ($profile === null) {
+        if ($profile === null || $profileInformation->getUid() <= 0) {
             // @todo Needs to be handled properly.
             throw new \RuntimeException(
                 'Could not get contract.',
@@ -182,46 +183,16 @@ final class ProfileInformationController extends AbstractActionController
             $profile,
             $profileInformation->getType()
         );
-
-        if (!in_array($sortDirection, ['up', 'down'])
+        $sortMode = ListSortingMode::tryFromDefault($sortDirection);
+        if ($sortMode === ListSortingMode::NONE
             || $sortingItems->count() <= 1
         ) {
             $this->addTranslatedErrorMessage('profileInformations.sort.error.notPossible');
             return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
         }
-
-        // Convert profile informations to array
-        $sortingItemsArray = [];
-        foreach ($sortingItems as $item) {
-            $sortingItemsArray[] = $item;
-        }
-
-        // Revert array, if sort direction is down
-        if ($sortDirection === 'down') {
-            $sortingItemsArray = array_reverse($sortingItemsArray);
-        }
-
-        // Switch sorting values
-        $prevItem = null;
-        foreach ($sortingItemsArray as $currentItem) {
-            if ($profileInformation != $currentItem) {
-                $prevItem = $currentItem;
-            } else {
-                // Only switch sorting if the selected contract is not the first one in the array
-                // (normally the sorting options for this case should be hidden in the Fluid template)
-                if ($prevItem !== null) {
-                    $prevSorting = $prevItem->getSorting();
-                    $prevItem->setSorting($currentItem->getSorting());
-                    $currentItem->setSorting($prevSorting);
-
-                    $this->profileInformationRepository->update($prevItem);
-                    $this->profileInformationRepository->update($currentItem);
-
-                    $this->persistenceManager->persistAll();
-                    $this->addTranslatedSuccessMessage($profileInformation->getType() . '.sort.success');
-                }
-                break;
-            }
+        $process = $this->sortItems($sortingItems->toArray(), $profileInformation->getUid(), $sortMode);
+        if ($process->changed) {
+            $this->addTranslatedSuccessMessage($profileInformation->getType() . '.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
