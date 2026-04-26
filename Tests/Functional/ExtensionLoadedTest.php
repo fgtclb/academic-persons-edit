@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional;
 
-use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use FGTCLB\TestingHelper\FunctionalTestCase\ExtensionsLoadedTestsTrait;
 
 final class ExtensionLoadedTest extends AbstractAcademicPersonsEditTestCase
 {
-    #[Test]
-    public function testCaseLoadsExtension(): void
-    {
-        $this->assertContains('fgtclb/academic-persons-edit', $this->testExtensionsToLoad);
-    }
+    use ExtensionsLoadedTestsTrait;
 
-    #[Test]
-    public function extensionIsLoaded(): void
-    {
-        $this->assertTrue(ExtensionManagementUtility::isLoaded('academic_persons_edit'));
-    }
+    private static $expectedLoadedExtensions = [
+        // composer package names
+        'fgtclb/academic-base',
+        'fgtclb/academic-persons',
+        'fgtclb/academic-persons-edit',
+        // extension keys
+        'academic_base',
+        'academic_persons',
+        'academic_persons_edit',
+    ];
 }
