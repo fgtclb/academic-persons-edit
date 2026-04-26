@@ -71,7 +71,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
         $listSortingService = new ListSortingService();
         $listSortingService->injectPersistenceManager($persistenceManagerMock);
         $invoker = (new \ReflectionMethod($listSortingService, 'createListSortingProcess'));
-        $invoker->setAccessible(true);
 
         $this->expectException(InvalidItemProvidedException::class);
         $this->expectExceptionCode(1774370991);
@@ -88,7 +87,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
         $listSortingService = new ListSortingService();
         $listSortingService->injectPersistenceManager($persistenceManagerMock);
         $invoker = (new \ReflectionMethod($listSortingService, 'createListSortingProcess'));
-        $invoker->setAccessible(true);
 
         $this->expectException(InvalidItemProvidedException::class);
         $this->expectExceptionCode(1774371062);
@@ -105,7 +103,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
         $listSortingService = new ListSortingService();
         $listSortingService->injectPersistenceManager($persistenceManagerMock);
         $invoker = (new \ReflectionMethod($listSortingService, 'createListSortingProcess'));
-        $invoker->setAccessible(true);
         $process = $invoker->invoke($listSortingService, [], 0);
         $this->assertInstanceOf(ListSortingProcess::class, $process);
         $this->assertSame(0, $process->targetItemUid);
@@ -129,7 +126,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
         $model2 = self::createTestModel(1);
         $items = [0 => $model1, 1 => $model2];
         $invoker = (new \ReflectionMethod($listSortingService, 'createListSortingProcess'));
-        $invoker->setAccessible(true);
         $process = $invoker->invoke($listSortingService, $items, 1);
         $this->assertInstanceOf(ListSortingProcess::class, $process);
         $this->assertSame(1, $process->targetItemUid);
@@ -153,7 +149,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
         $model2 = self::createTestModel(1);
         $items = [0 => $model1, 1 => $model2];
         $invoker = (new \ReflectionMethod($listSortingService, 'createListSortingProcess'));
-        $invoker->setAccessible(true);
         $process = $invoker->invoke($listSortingService, $items, 3);
         $this->assertInstanceOf(ListSortingProcess::class, $process);
         $this->assertSame(3, $process->targetItemUid);
@@ -177,7 +172,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
             items: [],
         );
         $invoker = (new \ReflectionMethod($listSortingService, 'applyArrayItemsIndexAsSortingValue'));
-        $invoker->setAccessible(true);
         $returnedProcess = $invoker->invoke($listSortingService, $process);
         $this->assertInstanceOf(ListSortingProcess::class, $returnedProcess);
         $this->assertFalse($returnedProcess->changed);
@@ -199,7 +193,6 @@ final class ListSortingServiceTest extends AbstractAcademicPersonsEditTestCase
             items: $items,
         );
         $invoker = (new \ReflectionMethod($listSortingService, 'applyArrayItemsIndexAsSortingValue'));
-        $invoker->setAccessible(true);
         $returnedProcess = $invoker->invoke($listSortingService, $process);
         $this->assertInstanceOf(ListSortingProcess::class, $returnedProcess);
         $this->assertTrue($returnedProcess->changed);
