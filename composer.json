@@ -45,7 +45,7 @@
             "extension-key": "academic_persons_edit"
         },
         "branch-alias": {
-            "dev-main": "2.1.x-dev"
+            "dev-main": "2.3.3-dev"
         }
     }
 }
