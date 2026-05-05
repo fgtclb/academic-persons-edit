@@ -11,10 +11,12 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
+use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
 use FGTCLB\AcademicBase\Extbase\Property\TypeConverter\FileUploadConverter;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
+use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +32,7 @@ final class ProfileController extends AbstractActionController
     public function __construct(
         private readonly ProfileFactory $profileFactory,
         private readonly ProfileRepository $profileRepository,
+        private readonly ProfileFormDataFactoryInterface $profileFormDataFactory,
     ) {}
 
     // =================================================================================================================
@@ -54,19 +57,17 @@ final class ProfileController extends AbstractActionController
 
     public function showAction(Profile $profile): ResponseInterface
     {
+        $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
         $cancelUrl = $this->uriBuilder->reset()->uriFor(
             'list',
         );
-
         $this->userSessionService->saveRefererToSession($this->request);
-
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
-            'profileFormData' => ProfileFormData::createFromProfile($profile),
+            'profileFormData' => $this->profileFormDataFactory->createFromProfile($pluginControllerActionContext, $profile),
             'cancelUrl' => $cancelUrl,
         ]);
-
         return $this->htmlResponse();
     }
 
@@ -76,10 +77,11 @@ final class ProfileController extends AbstractActionController
 
     public function editAction(Profile $profile): ResponseInterface
     {
+        $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $profile,
-            'profileFormData' => ProfileFormData::createFromProfile($profile),
+            'profileFormData' => $this->profileFormDataFactory->createFromProfile($pluginControllerActionContext, $profile),
             'genderOptions' => $this->getAvailableGenderSelectItems(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
             'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profile')->validations,

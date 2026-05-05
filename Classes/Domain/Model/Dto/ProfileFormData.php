@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Domain\Model\Dto;
 
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API. May change at any time.
@@ -61,25 +62,33 @@ class ProfileFormData extends AbstractFormData
         $this->skipSync = $skipSync;
     }
 
+    /**
+     * @deprecated since 2.3 and will be removed in 3.0. Use {@see ProfileFormDataFactoryInterface::createFromProfile()} instead.
+     */
     public static function createFromProfile(Profile $profile): self
     {
-        $instance = new self();
-        $instance->title = $profile->getTitle();
-        $instance->firstName = $profile->getFirstName();
-        $instance->middleName = $profile->getMiddleName();
-        $instance->lastName = $profile->getLastName();
-        $instance->gender = $profile->getGender();
-        $instance->publicationsLink = $profile->getPublicationsLink();
-        $instance->publicationsLinkTitle = $profile->getPublicationsLinkTitle();
-        $instance->website = $profile->getWebsite();
-        $instance->websiteTitle = $profile->getWebsiteTitle();
-        $instance->coreCompetences = $profile->getCoreCompetences();
-        $instance->miscellaneous = $profile->getMiscellaneous();
-        $instance->supervisedDoctoralThesis = $profile->getSupervisedDoctoralThesis();
-        $instance->supervisedThesis = $profile->getSupervisedThesis();
-        $instance->teachingArea = $profile->getTeachingArea();
-        $instance->skipSync = $profile->getSkipSync();
-        return $instance;
+        trigger_error(
+            'ProfileFormData::createFromProfile() is deprecated since 2.3 and will be removed in 3.0. Use '
+            . 'ProfileFormDataFactoryInterface->createFromProfile() instead.',
+            E_USER_DEPRECATED,
+        );
+        return new ProfileFormData(
+            title: $profile->getTitle(),
+            firstName: $profile->getFirstName(),
+            middleName: $profile->getMiddleName(),
+            lastName: $profile->getLastName(),
+            gender: $profile->getGender(),
+            publicationsLink: $profile->getPublicationsLink(),
+            publicationsLinkTitle: $profile->getPublicationsLinkTitle(),
+            website: $profile->getWebsite(),
+            websiteTitle: $profile->getWebsiteTitle(),
+            coreCompetences: $profile->getCoreCompetences(),
+            miscellaneous: $profile->getMiscellaneous(),
+            supervisedDoctoralThesis: $profile->getSupervisedDoctoralThesis(),
+            supervisedThesis: $profile->getSupervisedThesis(),
+            teachingArea: $profile->getTeachingArea(),
+            skipSync: $profile->getSkipSync(),
+        );
     }
 
     public function getTitle(): string
