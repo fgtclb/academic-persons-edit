@@ -5,7 +5,7 @@
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 >
 
-<f:if condition="{contract.phoneNumbers}">
+<f:if condition="{phoneNumbers}">
     <f:then>
         <table class="table table-striped">
             <thead>
@@ -18,153 +18,207 @@
                 </tr>
             </thead>
             <tbody>
-                <f:for each="{contract.phoneNumbers}" as="phoneNumber" iteration="physicalAddressIteration">
-                    <tr>
+                <f:for each="{phoneNumbers}" as="phoneNumber" iteration="phoneNumberIteration">
+                    <tr class="{f:if(condition: phoneNumber.hidden, then: 'record-hidden')}">
                         <td class="desktop">{phoneNumber.type}</td>
-                        <td>{phoneNumber.phoneNumber}</td>
+                        <td>
+                            {phoneNumber.phoneNumber}
+
+                            <f:if condition="{phoneNumber.hidden}">
+                                <span class="badge bg-secondary record-hidden-badge">
+                                    {f:translate(key: 'list.hidden.badge', extensionName: 'academic_persons_edit')}
+                                </span>
+                            </f:if>
+                        </td>
                         <td class="text-end">
                             <div class="actions">
-                                <f:link.action
+                                <f:form
+                                    action="toggleVisibility"
                                     controller="PhoneNumber"
-                                    action="edit"
-                                    arguments="{phoneNumber: phoneNumber}"
-                                    class="btn btn-primary"
-                                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                                    title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                    arguments="{phoneNumber: phoneNumber.uid}"
+                                    class="d-inline"
                                 >
-                                    <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
-                                </f:link.action>
+                                    <f:if condition="{phoneNumber.hidden}">
+                                        <f:then>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-outline-secondary toggle-visibility show"
+                                                aria-label="{f:translate(
+                                                    key: 'actions.show',
+                                                    extensionName: 'academic_persons_edit'
+                                                )}"
+                                                title="{f:translate(
+                                                    key: 'actions.show',
+                                                    extensionName: 'academic_persons_edit'
+                                                )}"
+                                            >
+                                                <core:icon identifier="actions-edit-unhide" alternativeMarkupIdentifier="inline"/>
+                                            </button>
+                                        </f:then>
+                                        <f:else>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-outline-secondary toggle-visibility hide"
+                                                aria-label="{f:translate(
+                                                    key: 'actions.hide',
+                                                    extensionName: 'academic_persons_edit'
+                                                )}"
+                                                title="{f:translate(
+                                                    key: 'actions.hide',
+                                                    extensionName: 'academic_persons_edit'
+                                                )}"
+                                            >
+                                                <core:icon identifier="actions-edit-hide" alternativeMarkupIdentifier="inline"/>
+                                            </button>
+                                        </f:else>
+                                    </f:if>
+                                </f:form>
 
-                                <f:if condition="{physicalAddressIteration.cycle} > 1">
-                                    <f:then>
+                                <f:if condition="{phoneNumber.hidden}">
+                                    <f:else>
                                         <f:link.action
                                             controller="PhoneNumber"
-                                            action="sort"
-                                            arguments="{phoneNumber: phoneNumber, sortDirection: 'top'}"
-                                            class="btn btn-outline-secondary sort-top desktop"
+                                            action="edit"
+                                            arguments="{phoneNumber: phoneNumber}"
+                                            class="btn btn-primary"
+                                            aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                            title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                        >
+                                            <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
+                                        </f:link.action>
+
+                                        <f:if condition="{phoneNumberIteration.cycle} > 1">
+                                            <f:then>
+                                                <f:link.action
+                                                    controller="PhoneNumber"
+                                                    action="sort"
+                                                    arguments="{phoneNumber: phoneNumber, sortDirection: 'top'}"
+                                                    class="btn btn-outline-secondary sort-top desktop"
+                                                    aria-label="{f:translate(
+                                                        key: 'actions.setToTop',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                    title="{f:translate(
+                                                        key: 'actions.setToTop',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                >
+                                                    <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{phoneNumbers -> f:count()} > 2">
+                                                    <span class="btn-hidden desktop"></span>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+
+                                        <f:if condition="{phoneNumberIteration.cycle} > 1">
+                                            <f:then>
+                                                <f:link.action
+                                                    controller="PhoneNumber"
+                                                    action="sort"
+                                                    arguments="{phoneNumber: phoneNumber, sortDirection: 'up'}"
+                                                    class="btn btn-outline-secondary sort-up desktop"
+                                                    aria-label="{f:translate(
+                                                        key: 'actions.sortUp',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                    title="{f:translate(
+                                                        key: 'actions.sortUp',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                >
+                                                    <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{phoneNumbers -> f:count()} > 2">
+                                                    <span class="btn-hidden desktop"></span>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+
+                                        <f:if condition="{phoneNumberIteration.cycle} < {phoneNumbers -> f:count()}">
+                                            <f:then>
+                                                <f:link.action
+                                                    controller="PhoneNumber"
+                                                    action="sort"
+                                                    arguments="{phoneNumber: phoneNumber, sortDirection: 'down'}"
+                                                    class="btn btn-outline-secondary sort-down desktop"
+                                                    aria-label="{f:translate(
+                                                        key: 'actions.sortDown',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                    title="{f:translate(
+                                                        key: 'actions.sortDown',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                >
+                                                    <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{phoneNumbers -> f:count()} > 2">
+                                                    <span class="btn-hidden desktop"></span>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+
+                                        <f:if condition="{phoneNumberIteration.cycle} < {phoneNumbers -> f:count()}">
+                                            <f:then>
+                                                <f:link.action
+                                                    controller="PhoneNumber"
+                                                    action="sort"
+                                                    arguments="{phoneNumber: phoneNumber, sortDirection: 'bottom'}"
+                                                    class="btn btn-outline-secondary sort-bottom desktop"
+                                                    aria-label="{f:translate(
+                                                        key: 'actions.setToBottom',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                    title="{f:translate(
+                                                        key: 'actions.setToBottom',
+                                                        extensionName: 'academic_persons_edit'
+                                                    )}"
+                                                >
+                                                    <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{phoneNumbers -> f:count()} > 2">
+                                                    <span class="btn-hidden desktop"></span>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+
+                                        <button
+                                            class="btn btn-danger"
                                             aria-label="{f:translate(
-                                                key: 'actions.setToTop',
+                                                key: 'actions.delete',
                                                 extensionName: 'academic_persons_edit'
                                             )}"
                                             title="{f:translate(
-                                                key: 'actions.setToTop',
+                                                key: 'actions.delete',
                                                 extensionName: 'academic_persons_edit'
                                             )}"
+                                            onclick="document.getElementById('delete-phoneNumber-{phoneNumber.uid}').showModal()"
                                         >
-                                            <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
-                                        </f:link.action>
-                                    </f:then>
-                                    <f:else>
-                                        <f:if condition="{contract.phoneNumbers -> f:count()} > 2">
-                                            <span class="btn-hidden desktop"></span>
-                                        </f:if>
+                                            <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
+                                        </button>
+
+                                        <f:render
+                                            partial="Profile/Buttons/DeleteCancel"
+                                            arguments="{
+                                                deleteUrl: '{f:uri.action(
+                                                    action: \'delete\',
+                                                    controller: \'PhoneNumber\',
+                                                    arguments: \'{phoneNumber: phoneNumber}\')}',
+                                                property: 'phoneNumber',
+                                                id: '{phoneNumber.uid}'
+                                            }"
+                                        />
                                     </f:else>
                                 </f:if>
-
-                                <f:if condition="{physicalAddressIteration.cycle} > 1">
-                                    <f:then>
-                                        <f:link.action
-                                            controller="PhoneNumber"
-                                            action="sort"
-                                            arguments="{phoneNumber: phoneNumber, sortDirection: 'up'}"
-                                            class="btn btn-outline-secondary sort-up desktop"
-                                            aria-label="{f:translate(
-                                                key: 'actions.sortUp',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                            title="{f:translate(
-                                                key: 'actions.sortUp',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                        >
-                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
-                                        </f:link.action>
-                                    </f:then>
-                                    <f:else>
-                                        <f:if condition="{contract.phoneNumbers -> f:count()} > 2">
-                                            <span class="btn-hidden desktop"></span>
-                                        </f:if>
-                                    </f:else>
-                                </f:if>
-
-                                <f:if condition="{physicalAddressIteration.cycle} < {contract.phoneNumbers -> f:count()}">
-                                    <f:then>
-                                        <f:link.action
-                                            controller="PhoneNumber"
-                                            action="sort"
-                                            arguments="{phoneNumber: phoneNumber, sortDirection: 'down'}"
-                                            class="btn btn-outline-secondary sort-down desktop"
-                                            aria-label="{f:translate(
-                                                key: 'actions.sortDown',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                            title="{f:translate(
-                                                key: 'actions.sortDown',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                        >
-                                            <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
-                                        </f:link.action>
-                                    </f:then>
-                                    <f:else>
-                                        <f:if condition="{contract.phoneNumbers -> f:count()} > 2">
-                                            <span class="btn-hidden desktop"></span>
-                                        </f:if>
-                                    </f:else>
-                                </f:if>
-
-                                <f:if condition="{physicalAddressIteration.cycle} < {contract.phoneNumbers -> f:count()}">
-                                    <f:then>
-                                        <f:link.action
-                                            controller="PhoneNumber"
-                                            action="sort"
-                                            arguments="{phoneNumber: phoneNumber, sortDirection: 'bottom'}"
-                                            class="btn btn-outline-secondary sort-bottom desktop"
-                                            aria-label="{f:translate(
-                                                key: 'actions.setToBottom',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                            title="{f:translate(
-                                                key: 'actions.setToBottom',
-                                                extensionName: 'academic_persons_edit'
-                                            )}"
-                                        >
-                                            <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
-                                        </f:link.action>
-                                    </f:then>
-                                    <f:else>
-                                        <f:if condition="{contract.phoneNumbers -> f:count()} > 2">
-                                            <span class="btn-hidden desktop"></span>
-                                        </f:if>
-                                    </f:else>
-                                </f:if>
-
-                                <button
-                                    class="btn btn-danger"
-                                    aria-label="{f:translate(
-                                        key: 'actions.delete',
-                                        extensionName: 'academic_persons_edit'
-                                    )}"
-                                    title="{f:translate(
-                                        key: 'actions.delete',
-                                        extensionName: 'academic_persons_edit'
-                                    )}"
-                                    onclick="document.getElementById('delete-phoneNumber-{phoneNumber.uid}').showModal()"
-                                >
-                                    <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
-                                </button>
-
-                                <f:render
-                                    partial="Profile/Buttons/DeleteCancel"
-                                    arguments="{
-                                        deleteUrl: '{f:uri.action(
-                                            action: \'delete\',
-                                            controller: \'PhoneNumber\',
-                                            arguments: \'{phoneNumber: phoneNumber}\')}',
-                                        property: 'phoneNumber',
-                                        id: '{phoneNumber.uid}'
-                                    }"
-                                />
                             </div>
                         </td>
                     </tr>

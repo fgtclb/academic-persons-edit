@@ -33,6 +33,9 @@
 			<trans-unit id="list.actions">
 				<source>Actions</source>
 			</trans-unit>
+			<trans-unit id="list.hidden.badge">
+				<source>Hidden</source>
+			</trans-unit>
 
 			<!-- No items found messages -->
 
@@ -450,6 +453,12 @@
 			<trans-unit id="actions.translate">
 				<source>Translate</source>
 			</trans-unit>
+			<trans-unit id="actions.hide">
+				<source>Hide in frontend</source>
+			</trans-unit>
+			<trans-unit id="actions.show">
+				<source>Show in frontend</source>
+			</trans-unit>
 
 			<!-- Confirm deletion -->
 
@@ -516,6 +525,15 @@
 			<trans-unit id="physicalAddress.sort.success">
 				<source>Physical address sorted successfully.</source>
 			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.hidden.success">
+				<source>Physical address is now hidden in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.visible.success">
+				<source>Physical address is now visible in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.error.notFound">
+				<source>Physical address could not be found.</source>
+			</trans-unit>
 			<trans-unit id="phoneNumber.create.success">
 				<source>Phone number created successfully.</source>
 			</trans-unit>
@@ -528,6 +546,15 @@
 			<trans-unit id="phoneNumber.sort.success">
 				<source>Phone number sorted successfully.</source>
 			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.hidden.success">
+				<source>Phone number is now hidden in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.visible.success">
+				<source>Phone number is now visible in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.error.notFound">
+				<source>Phone number could not be found.</source>
+			</trans-unit>
 			<trans-unit id="emailAddress.create.success">
 				<source>Email address created successfully.</source>
 			</trans-unit>
@@ -539,6 +566,15 @@
 			</trans-unit>
 			<trans-unit id="emailAddress.sort.success">
 				<source>Email address sorted successfully.</source>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.hidden.success">
+				<source>Email address is now hidden in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.visible.success">
+				<source>Email address is now visible in the frontend.</source>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.error.notFound">
+				<source>Email address could not be found.</source>
 			</trans-unit>
 			<trans-unit id="scientific_research.create.success">
 				<source>Scientific research created successfully.</source>

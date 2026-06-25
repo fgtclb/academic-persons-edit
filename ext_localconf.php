@@ -64,6 +64,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
             EmailAddressController::class => implode(',', [
                 'list',
@@ -75,6 +76,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
             PhoneNumberController::class => implode(',', [
                 'list',
@@ -86,6 +88,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
         ],
         [
@@ -131,6 +134,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
             EmailAddressController::class => implode(',', [
                 'list',
@@ -142,6 +146,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
             PhoneNumberController::class => implode(',', [
                 'list',
@@ -153,6 +158,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
                 'confirmDelete',
                 'delete',
                 'sort',
+                'toggleVisibility',
             ]),
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT

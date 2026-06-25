@@ -41,6 +41,10 @@
 				<source>Actions</source>
 				<target>Aktionen</target>
 			</trans-unit>
+			<trans-unit id="list.hidden.badge">
+				<source>Hidden</source>
+				<target>Ausgeblendet</target>
+			</trans-unit>
 
 			<!-- No items found messages -->
 
@@ -586,6 +590,14 @@
 				<source>Translate</source>
 				<target>Übersetzen</target>
 			</trans-unit>
+			<trans-unit id="actions.hide">
+				<source>Hide in frontend</source>
+				<target>Im Frontend ausblenden</target>
+			</trans-unit>
+			<trans-unit id="actions.show">
+				<source>Show in frontend</source>
+				<target>Im Frontend einblenden</target>
+			</trans-unit>
 
 			<!-- Confirm deletion -->
 
@@ -672,6 +684,18 @@
 				<source>Physical address sorted successfully.</source>
 				<target>Physische Adresse erfolgreich sortiert.</target>
 			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.hidden.success">
+				<source>Physical address is now hidden in the frontend.</source>
+				<target>Physische Adresse ist jetzt im Frontend ausgeblendet.</target>
+			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.visible.success">
+				<source>Physical address is now visible in the frontend.</source>
+				<target>Physische Adresse ist jetzt im Frontend sichtbar.</target>
+			</trans-unit>
+			<trans-unit id="physicalAddress.toggleVisibility.error.notFound">
+				<source>Physical address could not be found.</source>
+				<target>Physische Adresse konnte nicht gefunden werden.</target>
+			</trans-unit>
 			<trans-unit id="phoneNumber.create.success">
 				<source>Phone number created successfully.</source>
 				<target>Telefonnummer erfolgreich erstellt.</target>
@@ -688,6 +712,18 @@
 				<source>Phone number sorted successfully.</source>
 				<target>Telefonnummer erfolgreich sortiert.</target>
 			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.hidden.success">
+				<source>Phone number is now hidden in the frontend.</source>
+				<target>Telefonnummer ist jetzt im Frontend ausgeblendet.</target>
+			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.visible.success">
+				<source>Phone number is now visible in the frontend.</source>
+				<target>Telefonnummer ist jetzt im Frontend sichtbar.</target>
+			</trans-unit>
+			<trans-unit id="phoneNumber.toggleVisibility.error.notFound">
+				<source>Phone number could not be found.</source>
+				<target>Telefonnummer konnte nicht gefunden werden.</target>
+			</trans-unit>
 			<trans-unit id="emailAddress.create.success">
 				<source>Email address created successfully.</source>
 				<target>E-Mail-Adresse erfolgreich erstellt.</target>
@@ -703,6 +739,18 @@
 			<trans-unit id="emailAddress.sort.success">
 				<source>Email address sorted successfully.</source>
 				<target>E-Mail-Adresse erfolgreich sortiert.</target>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.hidden.success">
+				<source>Email address is now hidden in the frontend.</source>
+				<target>E-Mail-Adresse ist jetzt im Frontend ausgeblendet.</target>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.visible.success">
+				<source>Email address is now visible in the frontend.</source>
+				<target>E-Mail-Adresse ist jetzt im Frontend sichtbar.</target>
+			</trans-unit>
+			<trans-unit id="emailAddress.toggleVisibility.error.notFound">
+				<source>Email address could not be found.</source>
+				<target>E-Mail-Adresse konnte nicht gefunden werden.</target>
 			</trans-unit>
 			<trans-unit id="scientific_research.create.success">
 				<source>Scientific research created successfully.</source>

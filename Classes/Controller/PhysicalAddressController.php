@@ -204,6 +204,33 @@ final class PhysicalAddressController extends AbstractActionController
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
+    // =================================================================================================================
+    // Handle frontend visibility toggling
+    // =================================================================================================================
+
+    /**
+     * Toggles the frontend visibility (`hidden` enable field) of an address. The record is resolved
+     * including hidden ones, because Extbase argument mapping respects enable fields and a typed
+     * model argument would not resolve an already hidden record.
+     */
+    public function toggleVisibilityAction(int $physicalAddress): ResponseInterface
+    {
+        $address = $this->addressRepository->findByUidIncludingHidden($physicalAddress);
+        if ($address === null) {
+            $this->addTranslatedErrorMessage('physicalAddress.toggleVisibility.error.notFound');
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+        }
+        $address->setHidden(!$address->getHidden());
+        $this->addressRepository->update($address);
+        $this->persistenceManager->persistAll();
+        $this->addTranslatedSuccessMessage(
+            $address->getHidden()
+                ? 'physicalAddress.toggleVisibility.hidden.success'
+                : 'physicalAddress.toggleVisibility.visible.success'
+        );
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+    }
+
     /**
      * @return array<int<0, max>, array{
      *      label: string,

@@ -13,10 +13,13 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersons\Domain\Repository\AddressRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
+use FGTCLB\AcademicPersons\Domain\Repository\EmailRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\FunctionTypeRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\LocationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\OrganisationalUnitRepository;
+use FGTCLB\AcademicPersons\Domain\Repository\PhoneNumberRepository;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ContractFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
@@ -36,6 +39,9 @@ final class ContractController extends AbstractActionController
         private readonly FunctionTypeRepository $functionTypeRepository,
         private readonly OrganisationalUnitRepository $organisationalUnitRepository,
         private readonly LocationRepository $locationRepository,
+        private readonly AddressRepository $addressRepository,
+        private readonly EmailRepository $emailAddressRepository,
+        private readonly PhoneNumberRepository $phoneNumberRepository,
     ) {}
 
     // =================================================================================================================
@@ -63,10 +69,17 @@ final class ContractController extends AbstractActionController
 
         $this->userSessionService->saveRefererToSession($this->request);
 
+        $contractUid = (int)$contract->getUid();
+
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'profile' => $contract->getProfile(),
             'contract' => $contract,
+            // Load including hidden records so the owner can always see and toggle the visibility
+            // of records that have been hidden in the frontend.
+            'physicalAddresses' => $this->addressRepository->findByContractIncludingHidden($contractUid),
+            'emailAddresses' => $this->emailAddressRepository->findByContractIncludingHidden($contractUid),
+            'phoneNumbers' => $this->phoneNumberRepository->findByContractIncludingHidden($contractUid),
             'cancelUrl' => $cancelUrl,
         ]);
         return $this->htmlResponse();

@@ -204,6 +204,33 @@ final class PhoneNumberController extends AbstractActionController
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
+    // =================================================================================================================
+    // Handle frontend visibility toggling
+    // =================================================================================================================
+
+    /**
+     * Toggles the frontend visibility (`hidden` enable field) of a phone number. The record is
+     * resolved including hidden ones, because Extbase argument mapping respects enable fields and a
+     * typed model argument would not resolve an already hidden record.
+     */
+    public function toggleVisibilityAction(int $phoneNumber): ResponseInterface
+    {
+        $phoneNumberRecord = $this->phoneNumberRepository->findByUidIncludingHidden($phoneNumber);
+        if ($phoneNumberRecord === null) {
+            $this->addTranslatedErrorMessage('phoneNumber.toggleVisibility.error.notFound');
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+        }
+        $phoneNumberRecord->setHidden(!$phoneNumberRecord->getHidden());
+        $this->phoneNumberRepository->update($phoneNumberRecord);
+        $this->persistenceManager->persistAll();
+        $this->addTranslatedSuccessMessage(
+            $phoneNumberRecord->getHidden()
+                ? 'phoneNumber.toggleVisibility.hidden.success'
+                : 'phoneNumber.toggleVisibility.visible.success'
+        );
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+    }
+
     /**
      * @return array<int<0, max>, array{
      *      label: string,

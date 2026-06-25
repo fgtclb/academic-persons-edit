@@ -204,6 +204,33 @@ final class EmailAddressController extends AbstractActionController
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
+    // =================================================================================================================
+    // Handle frontend visibility toggling
+    // =================================================================================================================
+
+    /**
+     * Toggles the frontend visibility (`hidden` enable field) of an email address. The record is
+     * resolved including hidden ones, because Extbase argument mapping respects enable fields and a
+     * typed model argument would not resolve an already hidden record.
+     */
+    public function toggleVisibilityAction(int $emailAddress): ResponseInterface
+    {
+        $email = $this->emailAddressRepository->findByUidIncludingHidden($emailAddress);
+        if ($email === null) {
+            $this->addTranslatedErrorMessage('emailAddress.toggleVisibility.error.notFound');
+            return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+        }
+        $email->setHidden(!$email->getHidden());
+        $this->emailAddressRepository->update($email);
+        $this->persistenceManager->persistAll();
+        $this->addTranslatedSuccessMessage(
+            $email->getHidden()
+                ? 'emailAddress.toggleVisibility.hidden.success'
+                : 'emailAddress.toggleVisibility.visible.success'
+        );
+        return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
+    }
+
     /**
      * @return array<int<0, max>, array{
      *      label: string,
