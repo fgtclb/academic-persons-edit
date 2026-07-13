@@ -3,7 +3,7 @@
 $EM_CONF[$_EXTKEY] = [
     'title' => 'FGTCLB: Academic Persons Edit',
     'description' => 'Provides the option to assign frontend users to academic persons and allow editing the profiles in frontend.',
-    'version' => '2.4.0',
+    'version' => '3.0.0',
     'category' => 'plugin',
     'state' => 'beta',
     'author' => 'FGTCLB',
@@ -13,8 +13,8 @@ $EM_CONF[$_EXTKEY] = [
         'depends' => [
             'typo3' => '12.4.22-13.4.99',
             'install' => '12.4.22-13.4.99',
-            'academic_base' => '2.4.0',
-            'academic_persons' => '2.4.0',
+            'academic_base' => '3.0.0',
+            'academic_persons' => '3.0.0',
         ],
     ],
 ];

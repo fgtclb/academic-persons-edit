@@ -17,8 +17,8 @@
     "homepage": "https://www.fgtclb.com/",
     "require": {
         "php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
-        "fgtclb/academic-base": "~2.4.0@dev",
-        "fgtclb/academic-persons": "~2.4.0@dev",
+        "fgtclb/academic-base": "~3.0.0@dev",
+        "fgtclb/academic-persons": "~3.0.0@dev",
         "typo3/cms-core": "^12.4.22 || ^13.4",
         "typo3/cms-install": "^12.4.22 || ^13.4"
     },
@@ -48,7 +48,7 @@
             "extension-key": "academic_persons_edit"
         },
         "branch-alias": {
-            "dev-main": "2.4.x-dev"
+            "dev-main": "3.0.x-dev"
         }
     }
 }
