@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Profile;
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -27,7 +28,11 @@ final class ProfileTranslator
     public function translateTo(int $profileUid, int $languageUid): int
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->neverHideAtCopy = true;
+        // Keep the localized (internally copied) record visible instead of
+        // auto-hiding it. TYPO3 v13 exposes this as DataHandler::$neverHideAtCopy.
+        if (property_exists($dataHandler, 'neverHideAtCopy')) {
+            $dataHandler->neverHideAtCopy = true;
+        }
 
         $dataHandler->start([], [
             'tx_academicpersons_domain_model_profile' => [
@@ -36,6 +41,14 @@ final class ProfileTranslator
                 ],
             ],
         ]);
+
+        // TYPO3 v14 removed the property and reads the flag from the backend
+        // user's uc settings instead (BE_USER is populated by start()).
+        // See https://docs.typo3.org/permalink/changelog:breaking-107856-1763715381
+        if (!property_exists($dataHandler, 'neverHideAtCopy') && $dataHandler->BE_USER instanceof BackendUserAuthentication) {
+            $dataHandler->BE_USER->uc['neverHideAtCopy'] = true;
+        }
+
         $dataHandler->process_cmdmap();
 
         return $dataHandler->copyMappingArray_merged['tx_academicpersons_domain_model_profile'][$profileUid];

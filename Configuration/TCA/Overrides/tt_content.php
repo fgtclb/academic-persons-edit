@@ -9,8 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use FGTCLB\AcademicBase\TcaManipulator;
 
 (static function (): void {
 
@@ -20,28 +19,26 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
     //==================================================================================================================
     // Plugin: academicpersonsedit_profileediting
     //==================================================================================================================
-    ExtensionManagementUtility::addPlugin(
+    (new TcaManipulator())->addContentElementPlugin(
         [
             'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_editing.label',
             'value' => 'academicpersonsedit_profileediting',
             'icon' => 'persons_edit_icon',
             'group' => 'academic',
         ],
-        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
         'academic_persons_edit'
     );
 
     //==================================================================================================================
     // Plugin: academicpersonsedit_profileswitcher
     //==================================================================================================================
-    ExtensionManagementUtility::addPlugin(
+    (new TcaManipulator())->addContentElementPlugin(
         [
             'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_switcher.label',
             'value' => 'academicpersonsedit_profileswitcher',
             'icon' => 'persons_edit_icon',
             'group' => 'academic',
         ],
-        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
         'academic_persons_edit'
     );
 
