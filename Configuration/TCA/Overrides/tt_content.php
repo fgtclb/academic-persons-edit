@@ -30,11 +30,6 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
         'academic_persons_edit'
     );
-    $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileediting'] = implode(',', [
-        'pages',
-        'recursive',
-        'select_key',
-    ]);
 
     //==================================================================================================================
     // Plugin: academicpersonsedit_profileswitcher
@@ -49,10 +44,5 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
         'academic_persons_edit'
     );
-    $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileswitcher'] = implode(',', [
-        'pages',
-        'recursive',
-        'select_key',
-    ]);
 
 })();
