@@ -6,11 +6,22 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Upgrades;
 
 use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
 use FGTCLB\AcademicPersonsEdit\Upgrades\PluginContentWizard;
+use FGTCLB\TestingHelper\FunctionalTestCase\EnsureTtContentListTypeColumnTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PluginContentWizardTest extends AbstractAcademicPersonsEditTestCase
 {
+    use EnsureTtContentListTypeColumnTrait;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // TYPO3 v14 removed tt_content.list_type; re-create it so the legacy
+        // list_type fixtures import and the migration is exercised on v14 too.
+        $this->ensureTtContentListTypeColumnExists();
+    }
+
     #[Test]
     public function updateNecessaryReturnsFalseWhenListTypeRecordsAreAvailable(): void
     {

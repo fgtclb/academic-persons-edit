@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Upgrades;
 
+use Doctrine\DBAL\Schema\Column;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -33,6 +34,9 @@ final class PluginContentWizard implements UpgradeWizardInterface
 
     public function executeUpdate(): bool
     {
+        if (!$this->contentTableHasListTypeColumn()) {
+            return true;
+        }
         foreach (self::MIGRATE_CONTENT_TYPES_LIST as $oldName => $newName) {
             $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
             $queryBuilder->getRestrictions()->removeAll();
@@ -50,6 +54,9 @@ final class PluginContentWizard implements UpgradeWizardInterface
 
     public function updateNecessary(): bool
     {
+        if (!$this->contentTableHasListTypeColumn()) {
+            return false;
+        }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
         $queryBuilder->getRestrictions()->removeAll();
         return (int)($queryBuilder
@@ -71,5 +78,23 @@ final class PluginContentWizard implements UpgradeWizardInterface
         return [
             DatabaseUpdatedPrerequisite::class,
         ];
+    }
+
+    /**
+     * TYPO3 v14 removed the `tt_content.list_type` column together with the
+     * plugin sub-type feature, so there is nothing to migrate there anymore.
+     * See https://docs.typo3.org/permalink/changelog:important-105538-1730752784
+     */
+    private function contentTableHasListTypeColumn(): bool
+    {
+        $columnNames = array_map(
+            static fn(Column $column): string => strtolower($column->getName()),
+            $this->connectionPool
+                ->getConnectionForTable('tt_content')
+                ->createSchemaManager()
+                ->listTableColumns('tt_content')
+        );
+
+        return in_array('list_type', $columnNames, true);
     }
 }
