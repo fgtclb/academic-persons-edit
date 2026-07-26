@@ -49,6 +49,7 @@ final class ProfileController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profiles' => $profiles,
         ]);
 
@@ -64,6 +65,7 @@ final class ProfileController extends AbstractActionController
         $this->userSessionService->saveRefererToSession($this->request);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'profileFormData' => $this->profileFormDataFactory->createFromProfile($pluginControllerActionContext, $profile),
             'cancelUrl' => $cancelUrl,
@@ -80,6 +82,7 @@ final class ProfileController extends AbstractActionController
         $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'profileFormData' => $this->profileFormDataFactory->createFromProfile($pluginControllerActionContext, $profile),
             'genderOptions' => $this->getAvailableGenderSelectItems(),
@@ -134,6 +137,7 @@ final class ProfileController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
         ]);

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
+use FGTCLB\AcademicBase\Controller\GetCurrentContentRecordMethodTrait;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
@@ -42,6 +43,7 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
  */
 abstract class AbstractActionController extends ActionController
 {
+    use GetCurrentContentRecordMethodTrait;
     public const FLASH_MESSAGE_QUEUE_IDENTIFIER = 'academic_profile';
 
     protected const DATETIME_ARGUMENTS = [

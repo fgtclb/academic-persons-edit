@@ -46,6 +46,7 @@ final class ProfileInformationController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'type' => $type,
             'profileInformations' => $profile->_getProperty($type),
@@ -59,6 +60,7 @@ final class ProfileInformationController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profileInformation->getProfile(),
             'type' => $profileInformation->getType(),
             'profileInformation' => $profileInformation,
@@ -76,6 +78,7 @@ final class ProfileInformationController extends AbstractActionController
         $profileInformationFormData = $this->profileInformationFormDataClassName::createEmptyForType($mappedType);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'type' => $type,
             'profileInformationFormData' => $profileInformationFormData,
@@ -131,6 +134,7 @@ final class ProfileInformationController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profileInformation->getProfile(),
             'profileInformation' => $profileInformation,
             'profileInformationFormData' => $this->profileInformationFormDataClassName::createFromProfileInformation($profileInformation),
@@ -205,6 +209,7 @@ final class ProfileInformationController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profileInformation->getProfile(),
             'profileInformation' => $profileInformation,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),

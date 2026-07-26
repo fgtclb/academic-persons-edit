@@ -43,6 +43,7 @@ final class EmailAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'emailAddresses' => $contract->getEmailAddresses(),
@@ -56,6 +57,7 @@ final class EmailAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $emailAddress->getContract()?->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,
@@ -71,6 +73,7 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $contract,
@@ -120,6 +123,7 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $emailAddress->getContract()?->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $emailAddress->getContract(),
@@ -189,6 +193,7 @@ final class EmailAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $emailAddress->getContract()?->getProfile(),
             'contract' => $emailAddress->getContract(),
             'emailAddress' => $emailAddress,

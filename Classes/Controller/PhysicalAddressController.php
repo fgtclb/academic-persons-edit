@@ -43,6 +43,7 @@ final class PhysicalAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'physicalAddresses' => $contract->getPhysicalAddresses(),
@@ -56,6 +57,7 @@ final class PhysicalAddressController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
@@ -71,6 +73,7 @@ final class PhysicalAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'addressFormData' => new AddressFormData(),
@@ -120,6 +123,7 @@ final class PhysicalAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,
@@ -189,6 +193,7 @@ final class PhysicalAddressController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $physicalAddress->getContract()?->getProfile(),
             'contract' => $physicalAddress->getContract(),
             'physicalAddress' => $physicalAddress,

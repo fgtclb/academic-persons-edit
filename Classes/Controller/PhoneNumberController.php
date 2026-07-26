@@ -43,6 +43,7 @@ final class PhoneNumberController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'phoneNumbers' => $contract->getPhoneNumbers(),
@@ -56,6 +57,7 @@ final class PhoneNumberController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $phoneNumber->getContract()?->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,
@@ -71,6 +73,7 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $contract,
@@ -120,6 +123,7 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $phoneNumber->getContract()?->getProfile(),
             'availableTypes' => $this->getAvailableTypes(),
             'contract' => $phoneNumber->getContract(),
@@ -189,6 +193,7 @@ final class PhoneNumberController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $phoneNumber->getContract()?->getProfile(),
             'contract' => $phoneNumber->getContract(),
             'phoneNumber' => $phoneNumber,

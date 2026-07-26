@@ -54,6 +54,7 @@ final class ContractController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
         ]);
         return $this->htmlResponse();
@@ -73,6 +74,7 @@ final class ContractController extends AbstractActionController
 
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             // Load including hidden records so the owner can always see and toggle the visibility
@@ -93,6 +95,7 @@ final class ContractController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
             'contractFormData' => new ContractFormData(),
             'functionTypes' => $this->functionTypeRepository->findAll(),
@@ -143,6 +146,7 @@ final class ContractController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $contract->getProfile(),
             'contract' => $contract,
             'contractFormData' => ContractFormData::createFromContract($contract),
@@ -211,6 +215,7 @@ final class ContractController extends AbstractActionController
     {
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
+            'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'contract' => $contract,
         ]);
         return $this->htmlResponse();
