@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
-use FGTCLB\AcademicBase\Extbase\Property\TypeConverter\FileUploadConverter;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
@@ -20,8 +19,17 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\FileUploadConfiguration;
+use TYPO3\CMS\Extbase\Validation\Validator\FileSizeValidator;
+use TYPO3\CMS\Extbase\Validation\Validator\MimeTypeValidator;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -32,6 +40,7 @@ final class ProfileController extends AbstractActionController
         private readonly ProfileFactory $profileFactory,
         private readonly ProfileRepository $profileRepository,
         private readonly ProfileFormDataFactoryInterface $profileFormDataFactory,
+        private readonly ResourceFactory $resourceFactory,
     ) {}
 
     // =================================================================================================================
@@ -146,29 +155,21 @@ final class ProfileController extends AbstractActionController
 
     public function initializeAddImageAction(): void
     {
-        $profileUid = 0;
-        $body = $this->request->getParsedBody();
-        if (is_array($body)) {
-            $profileUid = (int)($body['tx_academicpersonsedit_profileediting']['profile']['__identity'] ?? 0);
-        }
-        GeneralUtility::makeInstance(FileUploadConverter::class)
-            ->setArgumentTypeConverterConfiguration(
-                $this->arguments,
-                'profile',
-                'image',
-                [
-                    FileUploadConverter::CONFIGURATION_UPLOAD_FOLDER => $this->settings['editForm']['profileImage']['targetFolder'] ?? null,
-                    FileUploadConverter::CONFIGURATION_VALIDATION_FILESIZE_MAXIMUM =>  $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? null,
-                    FileUploadConverter::CONFIGURATION_VALIDATION_MIME_TYPE_ALLOWED_MIME_TYPES => $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? null,
-                    FileUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $this->buildProfileImageNameWithoutExtension($profileUid),
-                ]
-            );
+        $this->configureImageFileUpload();
     }
 
     public function addImageAction(Profile $profile): ResponseInterface
     {
+        // The file handling service already stored the uploaded file and rewired the profile
+        // image property to it, so the replaced file can only be determined from the state
+        // still persisted at this point - which the update below overwrites.
+        $replacedImageFile = $this->getPersistedProfileImageFile($profile);
+
         $this->profileRepository->update($profile);
         $this->persistenceManager->persistAll();
+
+        $this->deleteReplacedProfileImageFile($replacedImageFile, $profile);
+
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
@@ -190,20 +191,146 @@ final class ProfileController extends AbstractActionController
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 
-    private function buildProfileImageNameWithoutExtension(int $profileUid): string
+    /**
+     * Configures the native Extbase file upload handling for the profile image.
+     *
+     * The configuration is built here instead of using the `#[FileUpload]` attribute, because
+     * upload folder and both validation limits are integrator configuration read from TypoScript
+     * at runtime, which a static attribute cannot provide - and the attribute would have to be
+     * placed on the `Profile` persistence model of `EXT:academic_persons`.
+     */
+    private function configureImageFileUpload(): void
     {
-        /** @var Profile|null $profile */
-        $profile = $this->profileRepository->findByUid($profileUid);
-        if ($profile === null) {
-            return '';
+        $profileArgument = $this->arguments->getArgument('profile');
+
+        $fileUploadConfiguration = (new FileUploadConfiguration('image'))
+            // The profile holds a single image, but the limit is validated against the already
+            // referenced file plus the upload. Allowing two therefore means "replace", which is
+            // what this form does - the file handling service repoints the existing reference to
+            // the uploaded file, and `addImageAction()` cleans the replaced file up afterwards.
+            // Registering a file deletion instead would delete the replaced file unconditionally,
+            // even when another record still references it.
+            ->setMaxFiles(2)
+            ->setUploadFolder(
+                (string)($this->settings['editForm']['profileImage']['targetFolder'] ?? '1:/user_upload/')
+            );
+
+        $fileSizeValidator = GeneralUtility::makeInstance(FileSizeValidator::class);
+        $fileSizeValidator->setOptions([
+            'maximum' => (string)($this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? PHP_INT_MAX . 'B'),
+        ]);
+        $fileUploadConfiguration->addValidator($fileSizeValidator);
+
+        // An empty list means "no mime type restriction". `MimeTypeValidator` throws
+        // for an empty `allowedMimeTypes` option, so it is only added when configured.
+        $allowedMimeTypes = GeneralUtility::trimExplode(
+            ',',
+            (string)($this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? ''),
+            true
+        );
+        if ($allowedMimeTypes !== []) {
+            $mimeTypeValidator = GeneralUtility::makeInstance(MimeTypeValidator::class);
+            $mimeTypeValidator->setOptions(['allowedMimeTypes' => $allowedMimeTypes]);
+            $fileUploadConfiguration->addValidator($mimeTypeValidator);
         }
 
-        return sprintf(
-            '%s-%s-%d',
-            $profile->getFirstName(),
-            $profile->getLastName(),
-            $profileUid
-        );
+        $profileArgument->getFileHandlingServiceConfiguration()
+            ->addFileUploadConfiguration($fileUploadConfiguration);
+        // The upload is handled by the file handling service, not by the property mapper.
+        $profileArgument->getPropertyMappingConfiguration()->skipProperties('image');
+    }
+
+    /**
+     * Returns the file currently referenced as profile image according to the database.
+     *
+     * Reading the persisted state instead of the mapped object is intentional: the in-memory
+     * profile already carries the newly uploaded file when an upload action is processed.
+     */
+    private function getPersistedProfileImageFile(Profile $profile): ?File
+    {
+        $profileUid = $profile->getUid();
+        if ($profileUid === null) {
+            return null;
+        }
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_reference');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $fileUid = (int)$queryBuilder
+            ->select('uid_local')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'tablenames',
+                    $queryBuilder->createNamedParameter('tx_academicpersons_domain_model_profile')
+                ),
+                $queryBuilder->expr()->eq(
+                    'fieldname',
+                    $queryBuilder->createNamedParameter('image')
+                ),
+                $queryBuilder->expr()->eq(
+                    'uid_foreign',
+                    $queryBuilder->createNamedParameter($profileUid, Connection::PARAM_INT)
+                ),
+            )
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchOne();
+        if ($fileUid <= 0) {
+            return null;
+        }
+
+        try {
+            return $this->resourceFactory->getFileObject($fileUid);
+        } catch (FileDoesNotExistException) {
+            return null;
+        }
+    }
+
+    /**
+     * Removes the file a profile image upload replaced.
+     *
+     * The native file upload handling generates the stored file name and therefore always adds
+     * a new file instead of overwriting the previous one, so it has to be cleaned up explicitly
+     * to avoid orphaned files piling up in the upload folder with every re-upload.
+     */
+    private function deleteReplacedProfileImageFile(?File $replacedImageFile, Profile $profile): void
+    {
+        if ($replacedImageFile === null) {
+            return;
+        }
+        $currentImageFile = $profile->getImage()?->getOriginalResource()->getOriginalFile();
+        if ($currentImageFile !== null && $currentImageFile->getUid() === $replacedImageFile->getUid()) {
+            // The upload did not result in a new file, nothing was replaced.
+            return;
+        }
+        if ($this->countFileReferences($replacedImageFile) > 0) {
+            // Still referenced elsewhere, for example by a content element or another record.
+            return;
+        }
+        $replacedImageFile->getStorage()->deleteFile($replacedImageFile);
+    }
+
+    private function countFileReferences(File $file): int
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_reference');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return (int)$queryBuilder
+            ->count('uid')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid_local',
+                    $queryBuilder->createNamedParameter($file->getUid(), Connection::PARAM_INT)
+                ),
+            )
+            ->executeQuery()
+            ->fetchOne();
     }
 
     /**
