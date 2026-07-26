@@ -21,7 +21,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\PhoneNumberFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -84,10 +83,16 @@ final class PhoneNumberController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'phoneNumberFormData',
-        'validator' => PhoneNumberFormDataValidator::class,
-    ])]
+    public function initializeCreateAction(): void
+    {
+        $this->addArgumentValidator('phoneNumberFormData', PhoneNumberFormDataValidator::class);
+    }
+
+    public function initializeUpdateAction(): void
+    {
+        $this->addArgumentValidator('phoneNumberFormData', PhoneNumberFormDataValidator::class);
+    }
+
     public function createAction(Contract $contract, PhoneNumberFormData $phoneNumberFormData): ResponseInterface
     {
         $phoneNumber = $this->phoneNumberFactory->createFromFormData(
@@ -135,10 +140,6 @@ final class PhoneNumberController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'phoneNumberFormData',
-        'validator' => PhoneNumberFormDataValidator::class,
-    ])]
     public function updateAction(
         PhoneNumber $phoneNumber,
         PhoneNumberFormData $phoneNumberFormData

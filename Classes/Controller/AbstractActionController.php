@@ -32,6 +32,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\Argument;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Extbase\Validation\Validator\ConjunctionValidator;
+use TYPO3\CMS\Extbase\Validation\Validator\ValidatorInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 
@@ -111,6 +113,46 @@ abstract class AbstractActionController extends ActionController
 
         $response = $this->htmlResponse($this->getFlattenedValidationErrorMessage());
         return $response->withStatus(400);
+    }
+
+    /**
+     * Adds a validator to the validators Extbase already built for an action argument.
+     *
+     * Used from `initialize<Action>Action()` methods instead of a `#[Validate]` attribute,
+     * because both attribute forms usable on TYPO3 v13 are deprecated on v14 and will be
+     * removed in v15: passing an array of configuration values, and naming the validated
+     * parameter. The documented replacement, placing the attribute on the method parameter,
+     * requires `Attribute::TARGET_PARAMETER`, which TYPO3 v13 does not declare. The API used
+     * here emits no deprecation on either version.
+     *
+     * `initializeActionMethodValidators()` runs before the action specific initialize method
+     * and already put a `ConjunctionValidator` holding the base validation on the argument,
+     * so it is extended rather than replaced — replacing it would silently drop the model
+     * level validation.
+     *
+     * @param class-string<ValidatorInterface> $validatorClassName
+     */
+    protected function addArgumentValidator(string $argumentName, string $validatorClassName): void
+    {
+        $argument = $this->arguments->getArgument($argumentName);
+        $additionalValidator = $this->validatorResolver->createValidator($validatorClassName);
+        if ($additionalValidator === null) {
+            return;
+        }
+
+        $validator = $argument->getValidator();
+        if ($validator instanceof ConjunctionValidator) {
+            $validator->addValidator($additionalValidator);
+            return;
+        }
+
+        /** @var ConjunctionValidator $conjunctionValidator */
+        $conjunctionValidator = $this->validatorResolver->createValidator(ConjunctionValidator::class);
+        if ($validator !== null) {
+            $conjunctionValidator->addValidator($validator);
+        }
+        $conjunctionValidator->addValidator($additionalValidator);
+        $argument->setValidator($conjunctionValidator);
     }
 
     public function initializeAction(): void

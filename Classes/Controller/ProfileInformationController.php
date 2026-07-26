@@ -20,7 +20,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileInformationFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -89,10 +88,16 @@ final class ProfileInformationController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'profileInformationFormData',
-        'validator' => ProfileInformationFormDataValidator::class,
-    ])]
+    public function initializeCreateAction(): void
+    {
+        $this->addArgumentValidator('profileInformationFormData', ProfileInformationFormDataValidator::class);
+    }
+
+    public function initializeUpdateAction(): void
+    {
+        $this->addArgumentValidator('profileInformationFormData', ProfileInformationFormDataValidator::class);
+    }
+
     public function createAction(Profile $profile, ProfileInformationFormData $profileInformationFormData): ResponseInterface
     {
         $profileInformation = $this->profileInformationFactory->createFromFormData(
@@ -144,10 +149,6 @@ final class ProfileInformationController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'profileInformationFormData',
-        'validator' => ProfileInformationFormDataValidator::class,
-    ])]
     public function updateAction(
         ProfileInformation $profileInformation,
         ProfileInformationFormData $profileInformationFormData,

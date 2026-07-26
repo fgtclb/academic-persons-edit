@@ -21,7 +21,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\EmailFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -84,10 +83,16 @@ final class EmailAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'emailAddressFormData',
-        'validator' => EmailFormDataValidator::class,
-    ])]
+    public function initializeCreateAction(): void
+    {
+        $this->addArgumentValidator('emailAddressFormData', EmailFormDataValidator::class);
+    }
+
+    public function initializeUpdateAction(): void
+    {
+        $this->addArgumentValidator('emailAddressFormData', EmailFormDataValidator::class);
+    }
+
     public function createAction(Contract $contract, EmailFormData $emailAddressFormData): ResponseInterface
     {
         $emailAddress = $this->emailAddressFactory->createFromFormData(
@@ -135,10 +140,6 @@ final class EmailAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'emailAddressFormData',
-        'validator' => EmailFormDataValidator::class,
-    ])]
     public function updateAction(
         Email $emailAddress,
         EmailFormData $emailAddressFormData

@@ -21,7 +21,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\AddressFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -84,10 +83,16 @@ final class PhysicalAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'addressFormData',
-        'validator' => AddressFormDataValidator::class,
-    ])]
+    public function initializeCreateAction(): void
+    {
+        $this->addArgumentValidator('addressFormData', AddressFormDataValidator::class);
+    }
+
+    public function initializeUpdateAction(): void
+    {
+        $this->addArgumentValidator('addressFormData', AddressFormDataValidator::class);
+    }
+
     public function createAction(Contract $contract, AddressFormData $addressFormData): ResponseInterface
     {
         $physicalAddress = $this->addressFactory->createFromFormData(
@@ -135,10 +140,6 @@ final class PhysicalAddressController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'addressFormData',
-        'validator' => AddressFormDataValidator::class,
-    ])]
     public function updateAction(
         Address $physicalAddress,
         AddressFormData $addressFormData

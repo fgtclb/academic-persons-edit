@@ -26,7 +26,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ContractFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Extbase\Annotation\Validate;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API.
@@ -107,10 +106,16 @@ final class ContractController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'contractFormData',
-        'validator' => ContractFormDataValidator::class,
-    ])]
+    public function initializeCreateAction(): void
+    {
+        $this->addArgumentValidator('contractFormData', ContractFormDataValidator::class);
+    }
+
+    public function initializeUpdateAction(): void
+    {
+        $this->addArgumentValidator('contractFormData', ContractFormDataValidator::class);
+    }
+
     public function createAction(Profile $profile, ContractFormData $contractFormData): ResponseInterface
     {
         $contract = $this->contractFactory->createFromFormData(
@@ -159,10 +164,6 @@ final class ContractController extends AbstractActionController
         return $this->htmlResponse();
     }
 
-    #[Validate([
-        'param' => 'contractFormData',
-        'validator' => ContractFormDataValidator::class,
-    ])]
     public function updateAction(Contract $contract, ContractFormData $contractFormData): ResponseInterface
     {
         $this->contractRepository->update(
