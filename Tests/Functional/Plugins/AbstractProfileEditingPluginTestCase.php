@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 
 use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
+use FGTCLB\TestingHelper\FunctionalTestCase\FrontendPluginRenderingTrait;
 use Psr\Http\Message\ResponseInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Session\UserSessionManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext;
 
@@ -22,6 +22,7 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestCon
  */
 abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPersonsEditTestCase
 {
+    use FrontendPluginRenderingTrait;
     use SiteBasedTestTrait;
 
     protected const FRONTEND_USER_ID = 1;
@@ -31,18 +32,6 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
         'EN' => ['id' => 0, 'title' => 'English', 'locale' => 'en_US.UTF8', 'iso' => 'en', 'hrefLang' => 'en-US', 'direction' => ''],
     ];
 
-    protected array $configurationToUseInTestInstance = [
-        'SYS' => [
-            'encryptionKey' => '4408d27a916d51e624b69af3554f516dbab61037a9f7b9fd6f81b4d3bedeccb6',
-            'features' => [
-                'subrequestPageErrors' => true,
-            ],
-        ],
-        'FE' => [
-            'debug' => false,
-        ],
-    ];
-
     /**
      * Session cookie of the logged in frontend user, see `logInFrontendUser()`.
      */
@@ -50,16 +39,14 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
 
     protected function setUp(): void
     {
-        $this->coreExtensionsToLoad = array_unique([
-            ...array_values($this->coreExtensionsToLoad),
-            'typo3/cms-fluid-styled-content',
-        ]);
+        $this->configurationToUseInTestInstance = $this->frontendPluginTestConfiguration();
+        $this->addCoreExtensionsToLoad('typo3/cms-fluid-styled-content');
         parent::setUp();
     }
 
     protected function tearDown(): void
     {
-        GeneralUtility::rmdir($this->instancePath . '/typo3conf/sites', true);
+        $this->removeWrittenSiteConfiguration();
         parent::tearDown();
     }
 
@@ -80,19 +67,12 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
                 ],
             ],
         );
-        $this->writeSiteConfiguration(
-            identifier: 'acme',
-            site: $this->buildSiteConfiguration(
-                rootPageId: 1,
-                base: 'https://www.acme.com/',
+        $this->writeFrontendPluginTestSite([
+            $this->buildDefaultLanguageConfiguration(
+                identifier: 'EN',
+                base: '/',
             ),
-            languages: [
-                $this->buildDefaultLanguageConfiguration(
-                    identifier: 'EN',
-                    base: '/',
-                ),
-            ],
-        );
+        ]);
         $this->logInFrontendUser();
     }
 
@@ -115,18 +95,17 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
 
     protected function requestAsFrontendUser(InternalRequest $request): ResponseInterface
     {
-        return $this->executeFrontendSubRequest(
-            $request->withCookieParams(['fe_typo_user' => $this->frontendUserSessionCookie]),
-            new InternalRequestContext(),
-        );
+        return $this->requestFrontendPage($this->withFrontendUserSession($request));
     }
 
     protected function getPageAsFrontendUser(string $url): string
     {
-        $response = $this->requestAsFrontendUser(new InternalRequest($url));
-        $this->assertSame(200, $response->getStatusCode(), sprintf('Request to "%s" failed.', $url));
+        return $this->renderFrontendPage($this->withFrontendUserSession(new InternalRequest($url)));
+    }
 
-        return (string)$response->getBody();
+    private function withFrontendUserSession(InternalRequest $request): InternalRequest
+    {
+        return $request->withCookieParams(['fe_typo_user' => $this->frontendUserSessionCookie]);
     }
 
     /**
