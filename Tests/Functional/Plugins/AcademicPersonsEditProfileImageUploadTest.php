@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 
-use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
-use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\UploadedFile;
-use TYPO3\CMS\Core\Session\UserSessionManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
-use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext;
 
 /**
  * Submits the profile image form of the `academicpersonsedit_profileediting` plugin and
@@ -32,145 +27,15 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestCon
  * @todo Drop the group once TYPO3 v13 support ends.
  */
 #[Group('not-core-13')]
-final class AcademicPersonsEditProfileImageUploadTest extends AbstractAcademicPersonsEditTestCase
+final class AcademicPersonsEditProfileImageUploadTest extends AbstractProfileEditingPluginTestCase
 {
-    use SiteBasedTestTrait;
-
-    private const FRONTEND_USER_ID = 1;
-    private const PROFILE_ID = 1;
-
-    /**
-     * Session cookie of the logged in frontend user, see `logInFrontendUser()`.
-     */
-    private string $frontendUserSessionCookie = '';
-
-    protected array $configurationToUseInTestInstance = [
-        'SYS' => [
-            'encryptionKey' => '4408d27a916d51e624b69af3554f516dbab61037a9f7b9fd6f81b4d3bedeccb6',
-            'features' => [
-                'subrequestPageErrors' => true,
-            ],
-        ],
-        'FE' => [
-            'debug' => false,
-        ],
-    ];
-
-    protected const LANGUAGE_PRESETS = [
-        'EN' => ['id' => 0, 'title' => 'English', 'locale' => 'en_US.UTF8', 'iso' => 'en', 'hrefLang' => 'en-US', 'direction' => ''],
-    ];
-
-    protected function setUp(): void
-    {
-        $this->coreExtensionsToLoad = array_unique([
-            ...array_values($this->coreExtensionsToLoad),
-            'typo3/cms-fluid-styled-content',
-        ]);
-        parent::setUp();
-    }
-
-    protected function tearDown(): void
-    {
-        GeneralUtility::rmdir($this->instancePath . '/typo3conf/sites', true);
-        parent::tearDown();
-    }
-
-    private function setUpTestCase(): void
-    {
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/AcademicPersonsEditProfilePlugin/profileEditingPage.csv');
-        $this->setUpFrontendRootPage(
-            pageId: 1,
-            typoScriptFiles: [
-                'constants' => [
-                    'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                    'EXT:academic_persons_edit/Configuration/TypoScript/constants.typoscript',
-                ],
-                'setup' => [
-                    'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                    'EXT:academic_persons_edit/Configuration/TypoScript/setup.typoscript',
-                    'EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/Rendering.typoscript',
-                ],
-            ],
-        );
-        $this->writeSiteConfiguration(
-            identifier: 'acme',
-            site: $this->buildSiteConfiguration(
-                rootPageId: 1,
-                base: 'https://www.acme.com/',
-            ),
-            languages: [
-                $this->buildDefaultLanguageConfiguration(
-                    identifier: 'EN',
-                    base: '/',
-                ),
-            ],
-        );
-        $this->logInFrontendUser();
-    }
-
-    /**
-     * Creates one frontend user session up front and reuses its cookie for every request.
-     *
-     * `InternalRequestContext::withFrontendUserId()` cannot be used here: it creates a new
-     * session per request, while the plugin stores the referrer it redirects to after an
-     * upload in the session of the request that rendered the form.
-     */
-    private function logInFrontendUser(): void
-    {
-        $userSessionManager = UserSessionManager::create('FE');
-        $userSession = $userSessionManager->elevateToFixatedUserSession(
-            $userSessionManager->createAnonymousSession(),
-            self::FRONTEND_USER_ID,
-        );
-        $this->frontendUserSessionCookie = $userSession->getJwt();
-    }
-
-    private function requestAsFrontendUser(InternalRequest $request): ResponseInterface
-    {
-        return $this->executeFrontendSubRequest(
-            $request->withCookieParams(['fe_typo_user' => $this->frontendUserSessionCookie]),
-            new InternalRequestContext(),
-        );
-    }
-
-    private function getPageAsFrontendUser(string $url): string
-    {
-        $response = $this->requestAsFrontendUser(new InternalRequest($url));
-        $this->assertSame(200, $response->getStatusCode(), sprintf('Request to "%s" failed.', $url));
-
-        return (string)$response->getBody();
-    }
-
-    /**
-     * Returns the absolute URI of the link the given Extbase action is rendered with. The
-     * links carry a cHash covering the plugin arguments and can therefore neither be
-     * hardcoded nor derived from each other.
-     */
-    private function extractActionLink(string $content, string $action): string
-    {
-        preg_match_all('@href="([^"]+)"@', $content, $matches);
-        foreach ($matches[1] as $href) {
-            $href = html_entity_decode($href);
-            if (!str_contains($href, urlencode('[action]') . '=' . $action)
-                && !str_contains($href, '[action]=' . $action)
-            ) {
-                continue;
-            }
-            return str_starts_with($href, '/') ? 'https://www.acme.com' . $href : $href;
-        }
-        $this->fail(sprintf('No link to action "%s" found in the rendered page.', $action));
-    }
-
     /**
      * Walks the plugin from the profile list to the profile image form the same way a
      * visitor does and returns the URI of that form page.
      */
     private function getProfileImageFormUrl(): string
     {
-        $listPage = $this->getPageAsFrontendUser('https://www.acme.com/home');
-        $showPage = $this->getPageAsFrontendUser($this->extractActionLink($listPage, 'show'));
-
-        return $this->extractActionLink($showPage, 'editImage');
+        return $this->extractActionLink($this->getProfileShowPage(), 'editImage');
     }
 
     /**
@@ -302,28 +167,6 @@ final class AcademicPersonsEditProfileImageUploadTest extends AbstractAcademicPe
             $current = &$current[$key];
         }
         $current = $value;
-    }
-
-    /**
-     * @return list<array{uid: int, identifier: string, mime_type: string}>
-     */
-    private function getStoredFiles(): array
-    {
-        $rows = $this->getConnectionPool()
-            ->getConnectionForTable('sys_file')
-            ->executeQuery('SELECT uid, identifier, mime_type FROM sys_file ORDER BY uid')
-            ->fetchAllAssociative();
-
-        $files = [];
-        foreach ($rows as $row) {
-            $files[] = [
-                'uid' => (int)$row['uid'],
-                'identifier' => (string)$row['identifier'],
-                'mime_type' => (string)$row['mime_type'],
-            ];
-        }
-
-        return $files;
     }
 
     #[Test]

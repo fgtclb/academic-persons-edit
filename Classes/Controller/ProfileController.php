@@ -178,7 +178,18 @@ final class ProfileController extends AbstractActionController
         $image = $profile->getImage();
         if ($image !== null) {
             $imageFile = $image->getOriginalResource()->getOriginalFile();
-            $imageFile->getStorage()->deleteFile($imageFile);
+            // The relation is dropped first, for two reasons: deleting the file alone leaves
+            // the reference count on the profile record pointing at a reference that no longer
+            // exists, and the file can only be checked for other usages once this profile does
+            // not reference it any more.
+            $profile->setImage(null);
+            $this->profileRepository->update($profile);
+            $this->persistenceManager->remove($image);
+            $this->persistenceManager->persistAll();
+
+            if ($this->countFileReferences($imageFile) === 0) {
+                $imageFile->getStorage()->deleteFile($imageFile);
+            }
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
