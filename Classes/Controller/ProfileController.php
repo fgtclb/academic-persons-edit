@@ -20,7 +20,11 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation\Validate;
 
@@ -173,7 +177,17 @@ final class ProfileController extends AbstractActionController
         $image = $profile->getImage();
         if ($image !== null) {
             $imageFile = $image->getOriginalResource()->getOriginalFile();
-            $imageFile->getStorage()->deleteFile($imageFile);
+            // The relation is dropped first, for two reasons: deleting the file alone leaves
+            // the reference count on the profile record pointing at a reference that no longer
+            // exists, and the file can only be checked for other usages once this profile does
+            // not reference it any more.
+            $this->persistenceManager->remove($image);
+            $this->persistenceManager->persistAll();
+            $this->resetProfileImageReferenceCount($profile);
+
+            if ($this->countFileReferences($imageFile) === 0) {
+                $imageFile->getStorage()->deleteFile($imageFile);
+            }
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
@@ -200,6 +214,49 @@ final class ProfileController extends AbstractActionController
             $profile->getLastName(),
             $profileUid
         );
+    }
+
+    /**
+     * Writes the reference count of the removed profile image back to the profile record.
+     *
+     * This deliberately does not go through `$profile->setImage(null)` and the repository:
+     * TYPO3 v12 maps a `null` property to SQL `NULL`, while the column is `NOT NULL`, so
+     * persisting the model would fail. TYPO3 v13 writes the count instead.
+     */
+    private function resetProfileImageReferenceCount(Profile $profile): void
+    {
+        $profileUid = $profile->getUid();
+        if ($profileUid === null) {
+            return;
+        }
+        GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('tx_academicpersons_domain_model_profile')
+            ->update(
+                'tx_academicpersons_domain_model_profile',
+                ['image' => 0],
+                ['uid' => $profileUid],
+                ['image' => Connection::PARAM_INT, 'uid' => Connection::PARAM_INT],
+            );
+    }
+
+    private function countFileReferences(File $file): int
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_file_reference');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return (int)$queryBuilder
+            ->count('uid')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid_local',
+                    $queryBuilder->createNamedParameter($file->getUid(), Connection::PARAM_INT)
+                ),
+            )
+            ->executeQuery()
+            ->fetchOne();
     }
 
     /**
