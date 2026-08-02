@@ -29,17 +29,4 @@ use FGTCLB\AcademicBase\TcaManipulator;
         'academic_persons_edit'
     );
 
-    //==================================================================================================================
-    // Plugin: academicpersonsedit_profileswitcher
-    //==================================================================================================================
-    (new TcaManipulator())->addContentElementPlugin(
-        [
-            'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_switcher.label',
-            'value' => 'academicpersonsedit_profileswitcher',
-            'icon' => 'persons_edit_icon',
-            'group' => 'academic',
-        ],
-        'academic_persons_edit'
-    );
-
 })();
