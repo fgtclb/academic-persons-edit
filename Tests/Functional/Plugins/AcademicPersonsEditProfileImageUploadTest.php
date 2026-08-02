@@ -200,6 +200,32 @@ final class AcademicPersonsEditProfileImageUploadTest extends AbstractProfileEdi
     }
 
     #[Test]
+    public function profileDetailPageOffersAFallbackForBrowsersWithoutWebpSupport(): void
+    {
+        $this->setUpTestCase();
+        $this->uploadProfileImage($this->getProfileImageFormUrl());
+
+        $content = $this->getProfileShowPage();
+
+        // Every candidate declares its format, so a browser that cannot decode WebP
+        // skips the `source` instead of picking it by media query and failing: without
+        // `type` the `picture` element offers no format fallback at all (ACE-303).
+        preg_match_all('#<source\b[^>]*>#s', $content, $sources);
+        $this->assertCount(4, $sources[0]);
+        foreach ($sources[0] as $source) {
+            $this->assertStringContainsString('type="image/webp"', $source);
+            $this->assertStringContainsString('.webp', $source);
+        }
+
+        // ... and the `img` fallback keeps the source format, so it stays renderable
+        // when the candidates are not.
+        preg_match('#<img\b[^>]*>#s', $content, $img);
+        $this->assertNotEmpty($img, 'Profile detail page renders no img element.');
+        $this->assertStringNotContainsString('.webp', $img[0]);
+        $this->assertMatchesRegularExpression('#src="[^"]+\.png"#', $img[0]);
+    }
+
+    #[Test]
     public function replacedProfileImageFileIsDeleted(): void
     {
         $this->setUpTestCase();
