@@ -57,6 +57,35 @@ specification, does not fall back to the :html:`<img>` when it cannot
 decode it — which was WebP as well, so there was no fallback at any
 point.
 
+Profile image copyright
+-----------------------
+
+:file:`Resources/Private/Partials/Profile/Show/Image.html`
+
+The partial rendered a copyright above the image:
+
+..  code-block:: html
+
+    <f:if condition="{image.properties.show_copyright} && {image.properties.copyright}">
+        <span class="copyright">&copy; {image.properties.copyright}</span>
+    </f:if>
+
+That block is removed. It has never rendered anything in any released
+version, for two independent reasons: the view variable `image` is never
+assigned — see :ref:`important-1785686400` — and `show_copyright` is not
+a field of TYPO3. It exists in no system extension, in no extension this
+package depends on or suggests, and nowhere in this repository except
+that condition. The `copyright` field itself is real, but comes with the
+system extension :file:`EXT:filemetadata`, which is not a dependency
+here.
+
+Repairing the property paths would therefore not have produced a working
+copyright — it would have produced a second, differently broken
+condition. Rendering the copyright of a profile image is a feature, not a
+defect fix: it needs a decision about where the value comes from, a
+declared dependency on whatever provides it, and test coverage proving it
+renders. It should be introduced that way if it is wanted.
+
 Impact
 ======
 
@@ -69,7 +98,8 @@ behaviour of their own copy:
 * an overridden :file:`Profile/EditImage.html` does not show the image
   being replaced,
 * an overridden :file:`Profile/Show/Image.html` continues to offer no
-  format fallback for the profile image.
+  format fallback for the profile image, and keeps its copy of the
+  copyright block — which renders nothing there either.
 
 Nothing breaks at runtime — the overrides keep working. What is lost is
 the new behaviour.
