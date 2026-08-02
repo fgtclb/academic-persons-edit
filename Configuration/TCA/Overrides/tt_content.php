@@ -36,23 +36,4 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         'select_key',
     ]);
 
-    //==================================================================================================================
-    // Plugin: academicpersonsedit_profileswitcher
-    //==================================================================================================================
-    ExtensionManagementUtility::addPlugin(
-        [
-            'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_switcher.label',
-            'value' => 'academicpersonsedit_profileswitcher',
-            'icon' => 'persons_edit_icon',
-            'group' => 'academic',
-        ],
-        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT,
-        'academic_persons_edit'
-    );
-    $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['academicpersonsedit_profileswitcher'] = implode(',', [
-        'pages',
-        'recursive',
-        'select_key',
-    ]);
-
 })();

@@ -12,9 +12,14 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 #[UpgradeWizard('academicPersonsEdit_pluginContent')]
 final class PluginContentWizard implements UpgradeWizardInterface
 {
+    /**
+     * `academicpersonsedit_profileswitcher` was migrated here until 2.4. It is not any
+     * more: the plugin behind it no longer exists, so migrating a record onto that
+     * content type would only move it from one dead state into another.
+     * `RemoveProfileSwitcherContentWizard` picks up both shapes instead.
+     */
     private const MIGRATE_CONTENT_TYPES_LIST = [
         'academicpersonsedit_profileediting' => 'academicpersonsedit_profileediting',
-        'academicpersonsedit_profileswitcher' => 'academicpersonsedit_profileswitcher',
     ];
 
     public function __construct(

@@ -10,10 +10,6 @@
 	>
 		<header/>
 		<body>
-			<trans-unit id="plugin.profile_switcher.label">
-				<source>Profiles: Profile Switcher</source>
-				<target>Profile: Profil wechseln</target>
-			</trans-unit>
 			<trans-unit id="plugin.profile_editing.label">
 				<source>Profiles: Profile Editing</source>
 				<target>Profile: Profil Editor</target>
@@ -61,14 +57,6 @@
 			<trans-unit id="newContentElement.wizardItems.academic.profileEditing.description">
 				<source>Plugin for editing profiles in the frontend</source>
 				<target>Plugin zur Bearbeitung von Profilen im Frontend</target>
-			</trans-unit>
-			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.title">
-				<source>Academic Persons Edit Profile Switcher</source>
-				<target>Akademische Personen Profil wechseln</target>
-			</trans-unit>
-			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.description">
-				<source>Plugin for switching profiles in the frontend</source>
-				<target>Plugin zum wechsel der Profile im Frontend</target>
 			</trans-unit>
 		</body>
 	</file>

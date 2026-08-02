@@ -9,9 +9,6 @@
 	>
 		<header/>
 		<body>
-			<trans-unit id="plugin.profile_switcher.label">
-				<source>Profiles: Profile Switcher</source>
-			</trans-unit>
 			<trans-unit id="plugin.profile_editing.label">
 				<source>Profiles: Profile Editing</source>
 			</trans-unit>
@@ -48,12 +45,6 @@
 			</trans-unit>
 			<trans-unit id="newContentElement.wizardItems.academic.profileEditing.description">
 				<source>Plugin for editing profiles in the frontend</source>
-			</trans-unit>
-			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.title">
-				<source>Academic Persons Edit Profile Switcher</source>
-			</trans-unit>
-			<trans-unit id="newContentElement.wizardItems.academic.profileSwitcher.description">
-				<source>Plugin for switching profiles in the frontend</source>
 			</trans-unit>
 		</body>
 	</file>
