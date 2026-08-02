@@ -48,5 +48,12 @@ download and install it using one of the following methods.
         #.  Enable :guilabel:`Upload Extension`.
         #.  Select or drag the extension ZIP archive and upload the file.
 
+..  note::
+
+    On **TYPO3 v12** one additional setting is required before the profile
+    editing plugin can render a profile image: `webp` has to be listed in
+    :php:`$GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']`. See
+    :ref:`configuration-general-webp`. On TYPO3 v13 it is part of the default.
+
 ..  _TER: https://extensions.typo3.org/extension/academic_persons_edit
 ..  _GitHub Releases: https://github.com/fgtclb/academic-persons-edit/releases
