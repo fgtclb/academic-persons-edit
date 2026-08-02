@@ -6,9 +6,6 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\StorageRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 /**
@@ -20,56 +17,6 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
  */
 final class AcademicPersonsEditProfileImageRemoveTest extends AbstractProfileEditingPluginTestCase
 {
-    private const PROFILE_PAGE_ID = 100;
-    private const IMAGE_IDENTIFIER = '/profile-images/profile-image.png';
-
-    /**
-     * Puts a profile image in place the way a completed upload leaves it behind: the file
-     * exists in the storage and is indexed, a file reference points from the profile to it,
-     * and the profile record carries the resulting reference count.
-     */
-    private function seedProfileImage(): int
-    {
-        $targetFolder = $this->instancePath . '/fileadmin/profile-images';
-        GeneralUtility::mkdir_deep($targetFolder);
-        copy(__DIR__ . '/Fixtures/Uploads/profile-image.png', $targetFolder . '/profile-image.png');
-
-        // Reading the file through the storage indexes it, so `sys_file` ends up with the
-        // same values an upload would have produced.
-        $storage = $this->get(StorageRepository::class)->findByUid(1);
-        $this->assertNotNull($storage, 'The default file storage is missing.');
-        $file = $storage->getFile(self::IMAGE_IDENTIFIER);
-        $this->assertInstanceOf(File::class, $file);
-
-        $this->addFileReference($file->getUid(), 'tx_academicpersons_domain_model_profile', 'image', self::PROFILE_ID);
-        $this->getConnectionPool()
-            ->getConnectionForTable('tx_academicpersons_domain_model_profile')
-            ->update(
-                'tx_academicpersons_domain_model_profile',
-                ['image' => 1],
-                ['uid' => self::PROFILE_ID],
-            );
-
-        return $file->getUid();
-    }
-
-    private function addFileReference(int $fileUid, string $tableName, string $fieldName, int $recordUid): void
-    {
-        $this->getConnectionPool()
-            ->getConnectionForTable('sys_file_reference')
-            ->insert(
-                'sys_file_reference',
-                [
-                    'pid' => self::PROFILE_PAGE_ID,
-                    'uid_local' => $fileUid,
-                    'uid_foreign' => $recordUid,
-                    'tablenames' => $tableName,
-                    'fieldname' => $fieldName,
-                    'sorting_foreign' => 1,
-                ],
-            );
-    }
-
     /**
      * @return list<array{tablenames: string, fieldname: string, uid_foreign: int}>
      */

@@ -426,6 +426,9 @@
       <trans-unit id="actions.add">
         <source>Add</source>
       </trans-unit>
+      <trans-unit id="actions.replace">
+        <source>Replace</source>
+      </trans-unit>
       <trans-unit id="actions.sortUp">
         <source>Move upwards</source>
       </trans-unit>

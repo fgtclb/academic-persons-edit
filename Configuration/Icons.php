@@ -26,6 +26,10 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:academic_persons_edit/Resources/Public/Icons/add-image-icon.svg',
     ],
+    'academic-persons-edit-replace-image' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:academic_persons_edit/Resources/Public/Icons/replace-image-icon.svg',
+    ],
     'academic-persons-edit-add-item' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:academic_persons_edit/Resources/Public/Icons/add-item-icon.svg',

@@ -28,6 +28,15 @@
         }"
     />
 
+    <f:if condition="{profile.image}">
+        <div class="profile-image">
+            <f:render
+                partial="Profile/Show/Image"
+                arguments="{_all}"
+            />
+        </div>
+    </f:if>
+
     <f:form
         action="addImage"
         name="profile"

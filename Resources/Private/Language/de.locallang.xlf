@@ -554,6 +554,10 @@
         <source>Add</source>
         <target>Hinzufügen</target>
       </trans-unit>
+      <trans-unit id="actions.replace">
+        <source>Replace</source>
+        <target>Ersetzen</target>
+      </trans-unit>
       <trans-unit id="actions.sortUp">
         <source>Move upwards</source>
         <target>Nach oben verschieben</target>

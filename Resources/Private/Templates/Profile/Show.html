@@ -39,6 +39,12 @@
 
                 <f:if condition="{profile.image}">
                     <f:then>
+                        <f:link.action action="editImage" arguments="{profile: profile}" class="btn btn-primary">
+                            {f:translate(key: 'actions.replace', extensionName: 'academic_persons_edit')}
+
+                            <core:icon identifier="academic-persons-edit-replace-image" alternativeMarkupIdentifier="inline"/>
+                        </f:link.action>
+
                         <f:link.action action="removeImage" arguments="{profile: profile}" class="btn btn-danger">
                             {f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}
 

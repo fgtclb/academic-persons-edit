@@ -237,7 +237,10 @@ final class AcademicPersonsEditProfileImageUploadTest extends AbstractProfileEdi
         $replacedFilePath = $this->instancePath . '/fileadmin' . $replacedFiles[0]['identifier'];
         $this->assertFileExists($replacedFilePath);
 
-        $this->assertSame(303, $this->uploadProfileImage($formUrl)->getStatusCode());
+        // The form URI is taken from the detail page again rather than reused, so the second
+        // upload goes through the link a visitor has. Before ACE-304 that link was rendered
+        // only while the profile had no image, which made this whole path unreachable.
+        $this->assertSame(303, $this->uploadProfileImage($this->getProfileImageFormUrl())->getStatusCode());
 
         // The native handling cannot overwrite the previous file, because it generates a new
         // file name for every upload. The replaced file is therefore deleted explicitly.
