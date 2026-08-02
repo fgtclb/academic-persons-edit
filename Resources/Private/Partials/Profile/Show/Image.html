@@ -6,10 +6,6 @@
 
 <f:if condition="{profile.image}">
     <figure>
-        <f:if condition="{image.properties.show_copyright} && {image.properties.copyright}">
-            <span class="copyright">&copy; {image.properties.copyright}</span>
-        </f:if>
-
         <picture>
             <source
                 srcset="{f:uri.image(
@@ -48,14 +44,14 @@
                     maxWidth: 690,
                     fileExtension: 'webp',
                 )}"
-                alt="{profile.image.alternative}"
-                title="{profile.image.title}"
+                alt="{profile.image.originalResource.alternative}"
+                title="{profile.image.originalResource.title}"
                 loading="lazy"
             >
         </picture>
 
-        <f:if condition="{image.description}">
-            <figcaption class="visually-hidden">{image.description}</figcaption>
+        <f:if condition="{profile.image.originalResource.description}">
+            <figcaption class="visually-hidden">{profile.image.originalResource.description}</figcaption>
         </f:if>
     </figure>
 </f:if>
