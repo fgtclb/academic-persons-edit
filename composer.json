@@ -45,7 +45,8 @@
         "typo3/cms": {
             "web-dir": ".Build/Web",
             "app-dir": ".Build",
-            "extension-key": "academic_persons_edit"
+            "extension-key": "academic_persons_edit",
+            "version": "2.4.0-dev"
         },
         "branch-alias": {
             "dev-2": "2.4.x-dev"
