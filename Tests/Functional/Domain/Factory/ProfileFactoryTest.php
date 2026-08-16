@@ -92,9 +92,17 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
      * The argument name is what turns the request arguments into "this form's" arguments, and it
      * is set by `AbstractFormDataConverter` only when the controller configured it - which
      * `AbstractActionController::initializeAction()` does for every argument of type
-     * `AbstractFormData`. A controller that does not go through that base class gets a form data
-     * object with a request but without an argument name, and then *nothing* is applied: the
-     * submitted values are dropped without any error.
+     * `AbstractFormData`. Without it *nothing* is applied: the submitted values are dropped
+     * without any error.
+     *
+     * A guard rail, not a reachable defect (ACE-424). Every shipped controller is `final`,
+     * extends `AbstractActionController` and does not override `initializeAction()`, so only
+     * third party code could produce this state. What the test protects is the contract itself:
+     * should the base class ever stop configuring the converter, the silent-drop is caught here
+     * rather than in a support ticket.
+     *
+     * @see \FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins\AcademicPersonsEditProfileFormSubmissionTest
+     *      for the same code path exercised through a real frontend request
      */
     #[Test]
     public function formDataWithoutAnArgumentNameAppliesNothingAlthoughValuesWereSubmitted(): void
@@ -116,9 +124,19 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * The same failure from the other side: the argument was renamed in the controller but the
-     * form still posts under the old name, so the values arrive, are mapped, and are then not
-     * recognised as belonging to this argument.
+     * The same failure from the other side: the form data object is bound to an argument name
+     * the request does not carry, so the values arrive, are mapped, and are then not recognised
+     * as belonging to this argument.
+     *
+     * Extbase cannot produce this. `mapRequestArgumentsToControllerArguments()` hands the
+     * converter `$argument->getName()`, and only enters that branch when
+     * `$this->request->hasArgument($argument->getName())` is true - so the bound name is always
+     * a key the request carries. A form posting under a name the controller does not declare
+     * raises `RequiredArgumentMissingException` 1298012500 instead, because no `*FormData`
+     * action argument is optional. The state is reached here by handing `mapFormData()` an
+     * explicit `$boundArgumentName`, which is the converter option a controller supplies.
+     *
+     * Kept as a guard rail over that invariant - see ACE-424.
      */
     #[Test]
     public function formDataBoundToAnotherArgumentNameAppliesNothing(): void
@@ -139,7 +157,12 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
 
     /**
      * An override is registered on the form data object, not in the request, so it survives both
-     * failures above - which is what makes it usable as a repair from a PSR-14 listener.
+     * failures above - which is what would make it usable as a repair from a listener.
+     *
+     * Note that no such listener can exist yet: the extension dispatches no event carrying an
+     * `AbstractFormData`, so `setPropertyOverride()` has no production caller at all. The event
+     * is ACE-445, and the typed read the factories need before it can ship is part of that
+     * issue's scope.
      */
     #[Test]
     public function registeredOverrideIsAppliedEvenWithoutAnArgumentName(): void
