@@ -32,6 +32,36 @@ assigned profile and that meets the criteria logs in.
     A comma-separated list of language IDs. These IDs configure in which languages a
     persons profile can be translated by a frontend user.
 
+..  _configuration-general-validations:
+
+Which fields can be edited
+==========================
+
+Which profile fields the editing forms offer, which are mandatory and which are
+locked is **not** configured in this extension. It comes from the validation
+settings shipped by :guilabel:`academic_persons`, in
+:file:`Configuration/AcademicPersons/Settings.yaml`, which the editing forms
+read directly.
+
+Consequences worth knowing before reporting a problem:
+
+*   A field configured :yaml:`disabled` or :yaml:`readonly` is rendered locked,
+    and a value submitted for it anyway is discarded rather than stored. This is
+    deliberate and protects already stored data.
+*   :guilabel:`First name`, :guilabel:`Middle name` and :guilabel:`Last name` are
+    **locked by default**, because profile names are usually owned by the
+    connected frontend user record and synchronised from elsewhere. They are
+    therefore not editable in the frontend form — and, since the same
+    configuration also drives the backend, not in the TYPO3 record editor
+    either.
+*   Because both editing contexts share one configuration, unlocking a field for
+    the frontend form also unlocks it in the backend.
+
+See `Validation settings
+<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Validations/Index.html>`__
+in the :guilabel:`academic_persons` manual for the available flags, the shipped
+defaults and how to override them.
+
 ..  _configuration-general-webp:
 
 Image processing: WebP is required
