@@ -1,0 +1,8 @@
+pages,
+,uid,pid,title,slug,doktype
+,1,0,Root,/,1
+,2,1,Storage,/storage,254
+tx_academicpersons_domain_model_profile,
+,uid,pid,gender,title,first_name,middle_name,last_name,website,website_title,publications_link,publications_link_title,teaching_area,core_competences,supervised_thesis,supervised_doctoral_thesis,miscellaneous,skip_sync
+,1,2,"mr","Cpt.","James","Tiberius","Kirk","https://stored.example.com","Stored Website","https://stored.example.com/publications","Stored Publications","Stored teaching area","Stored core competences","Stored supervised thesis","Stored supervised doctoral thesis","Stored miscellaneous",1
+,2,2,"mrs","Dr.","Beverly","Cheryl","Crusher","https://other.example.com","Other Website","https://other.example.com/publications","Other Publications","Other teaching area","Other core competences","Other supervised thesis","Other supervised doctoral thesis","Other miscellaneous",0

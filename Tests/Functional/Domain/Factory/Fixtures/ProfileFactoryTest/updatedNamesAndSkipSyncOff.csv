@@ -1,0 +1,3 @@
+tx_academicpersons_domain_model_profile,
+,uid,pid,gender,title,first_name,middle_name,last_name,website,website_title,publications_link,publications_link_title,teaching_area,core_competences,supervised_thesis,supervised_doctoral_thesis,miscellaneous,skip_sync
+,1,2,"mr","Cpt.","Jean-Luc","Tiberius","Picard","https://stored.example.com","Stored Website","https://stored.example.com/publications","Stored Publications","Stored teaching area","Stored core competences","Stored supervised thesis","Stored supervised doctoral thesis","Stored miscellaneous",0

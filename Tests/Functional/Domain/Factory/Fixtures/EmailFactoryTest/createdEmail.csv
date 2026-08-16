@@ -1,0 +1,4 @@
+tx_academicpersons_domain_model_email,
+,uid,pid,contract,email,type,sorting
+,1,2,1,"stored@example.com","office",1
+,2,2,1,"new@example.com","private",2

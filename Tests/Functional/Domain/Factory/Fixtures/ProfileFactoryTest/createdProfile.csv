@@ -1,0 +1,4 @@
+tx_academicpersons_domain_model_profile,
+,uid,pid,gender,title,first_name,middle_name,last_name,website,website_title,publications_link,publications_link_title,teaching_area,core_competences,supervised_thesis,supervised_doctoral_thesis,miscellaneous,skip_sync
+,1,2,"mr","Cpt.","James","Tiberius","Kirk","https://stored.example.com","Stored Website","https://stored.example.com/publications","Stored Publications","Stored teaching area","Stored core competences","Stored supervised thesis","Stored supervised doctoral thesis","Stored miscellaneous",1
+,2,2,"mrs","Dr.","Beverly","Cheryl","Crusher","https://new.example.com","New Website","https://new.example.com/publications","New Publications","New teaching area","New core competences","New supervised thesis","New supervised doctoral thesis","New miscellaneous",1

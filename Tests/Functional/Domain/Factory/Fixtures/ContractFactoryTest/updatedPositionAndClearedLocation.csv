@@ -1,0 +1,3 @@
+tx_academicpersons_domain_model_contract,
+,uid,pid,profile,organisational_unit,function_type,valid_from,valid_to,position,location,room,office_hours,publish,sorting
+,1,2,1,1,1,1580515200,1893456000,"New Position",0,"Stored Room","Stored office hours",1,1
