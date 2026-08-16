@@ -1,0 +1,4 @@
+tx_academicpersons_domain_model_profile_information,
+,uid,pid,profile,type,title,bodytext,link,year,year_start,year_end,sorting
+,1,2,1,"publications","Stored Title","Stored bodytext","https://stored.example.com",1999,1990,1995,1
+,2,2,1,"vita","New Title","New bodytext","https://new.example.com",2020,\NULL,\NULL,2

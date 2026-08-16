@@ -1,0 +1,3 @@
+tx_academicpersons_domain_model_address,
+,uid,pid,contract,type,street,street_number,additional,zip,city,state,country,sorting
+,1,2,1,"office","Stored Street","1a","Building A","12345","New City","Stored State","Stored Country",1

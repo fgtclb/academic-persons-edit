@@ -1,0 +1,3 @@
+tx_academicpersons_domain_model_phone_number,
+,uid,pid,contract,phone_number,type,sorting
+,1,2,1,"+49 000 111","overridden",1
