@@ -54,11 +54,11 @@ final class AcademicPersonsEditProfilePluginTest extends AbstractAcademicPersons
             typoScriptFiles: [
                 'constants' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                    'EXT:academic_persons_edit/Configuration/TypoScript/constants.typoscript',
+                    'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/constants.typoscript',
                 ],
                 'setup' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                    'EXT:academic_persons_edit/Configuration/TypoScript/setup.typoscript',
+                    'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/setup.typoscript',
                     'EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/Rendering.typoscript',
                 ],
             ],
