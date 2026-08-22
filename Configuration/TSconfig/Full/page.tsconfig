@@ -1,0 +1,7 @@
+# Aggregate page TSconfig: every component this extension ships.
+#
+# The counterpart of the set "fgtclb/academic-persons-edit" for installations
+# that include page TSconfig through the page field "Page TSconfig" instead of
+# through a site set - which on TYPO3 v12 is every installation, since site
+# sets arrived in v13.1 (Feature: #103437).
+@import 'EXT:academic_persons_edit/Configuration/TSconfig/ProfileEditing/page.tsconfig'

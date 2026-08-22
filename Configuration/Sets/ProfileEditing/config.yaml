@@ -1,0 +1,15 @@
+# The profile editing content element.
+#
+# "typoscript" points at the folder that "Configuration/TCA/Overrides/sys_template.php"
+# registers as a static template, and "pagets" at the file that
+# "Configuration/TCA/Overrides/pages.php" registers - there is exactly one
+# physical copy of each, so the two delivery mechanisms can never drift apart.
+#
+# Site sets arrived in TYPO3 v13.1 and are inert on TYPO3 v12: this file is
+# never read there, and the static registration is the only delivery path.
+name: fgtclb/academic-persons-edit-profile-editing
+label: 'Academic Persons Edit: Profile editing'
+dependencies:
+  - fgtclb/academic-base-ctype-group
+typoscript: 'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/'
+pagets: 'EXT:academic_persons_edit/Configuration/TSconfig/ProfileEditing/page.tsconfig'

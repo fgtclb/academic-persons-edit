@@ -1,0 +1,14 @@
+# Renders what the extension contributed to the TypoScript of this site, and nothing
+# else. The constant is what "constants.typoscript" of the component assigns, the copied
+# value is what its "setup.typoscript" assigns - so a delivery mechanism that did not
+# reach this site renders an empty or a literal value here.
+page = PAGE
+page {
+  10 = TEXT
+  10.value = {$plugin.tx_academicpersonsedit.view.templateRootPath}
+  10.wrap = <div id="constant">|</div>
+
+  20 = TEXT
+  20.value < plugin.tx_academicpersonsedit.settings.editForm.profileImage.targetFolder
+  20.wrap = <div id="setup">|</div>
+}

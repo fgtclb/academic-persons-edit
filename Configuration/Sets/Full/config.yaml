@@ -1,0 +1,11 @@
+# Aggregate set: everything this extension ships, in one dependency.
+#
+# It carries no payload of its own - each component is delivered by the set that
+# owns it, and listing it here would parse the same files a second time.
+#
+# Do not rename the set: it is the name this extension has always published, and
+# site configurations depend on it.
+name: fgtclb/academic-persons-edit
+label: Academic Persons Edit
+dependencies:
+  - fgtclb/academic-persons-edit-profile-editing

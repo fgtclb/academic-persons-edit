@@ -16,20 +16,19 @@ defined('TYPO3') || die();
 (static function (): void {
 
     //==================================================================================================================
-    // Static TypoScript templates, selectable in a "sys_template" record for installations that do not use site sets.
+    // Page TSconfig, selectable in the page field "Page TSconfig" for installations that do not use site sets.
     //
-    // The registered folders are the same ones the sets of this extension deliver through their "typoscript" key.
-    // Use one mechanism per site, not both - see the extension documentation, chapter "Configuration".
+    // The files are the same ones the sets of this extension deliver. Use one mechanism per site, not both.
     //==================================================================================================================
-    ExtensionManagementUtility::addStaticFile(
+    ExtensionManagementUtility::registerPageTSConfigFile(
         'academic_persons_edit',
-        'Configuration/TypoScript/ProfileEditing',
+        'Configuration/TSconfig/ProfileEditing/page.tsconfig',
         'Academic Persons Edit: Profile editing',
     );
 
-    ExtensionManagementUtility::addStaticFile(
+    ExtensionManagementUtility::registerPageTSConfigFile(
         'academic_persons_edit',
-        'Configuration/TypoScript/Full',
+        'Configuration/TSconfig/Full/page.tsconfig',
         'Academic Persons Edit: All components',
     );
 

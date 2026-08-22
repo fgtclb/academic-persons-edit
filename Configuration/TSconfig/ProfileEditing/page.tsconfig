@@ -1,0 +1,32 @@
+# Page TSconfig of the profile editing content element.
+#
+# Delivered by the set "fgtclb/academic-persons-edit-profile-editing" and
+# registered for the page field "Page TSconfig" by
+# "Configuration/TCA/Overrides/pages.php" - one physical copy, two ways to it.
+# Site sets arrived in TYPO3 v13.1, so on TYPO3 v12 the page field is the only
+# one of the two that delivers anything.
+#
+# The content element is hidden for the whole installation by
+# "Configuration/page.tsconfig"; this file is what makes it selectable again,
+# so it applies where the component is actually wanted instead of everywhere.
+TCEFORM.tt_content.CType.removeItems := removeFromList(academicpersonsedit_profileediting)
+
+mod.wizards.newContentElement.wizardItems.academic {
+  elements {
+    academicpersonsedit_profileediting {
+      iconIdentifier = persons_edit_icon
+      title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
+      description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
+      tt_content_defValues {
+        CType = academicpersonsedit_profileediting
+      }
+    }
+  }
+
+  # Load bearing on TYPO3 v12, where NewContentElementController builds the
+  # wizard from page TSconfig and offers an element only when the group lists
+  # it here. It has no reader left on v13, where the wizard is built from TCA
+  # (Feature: #102834), and it belongs in this file rather than in the global
+  # one so that the element definition and its "show" entry arrive together.
+  show := addToList(academicpersonsedit_profileediting)
+}
