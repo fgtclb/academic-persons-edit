@@ -9,5 +9,4 @@ mod.wizards.newContentElement.wizardItems.academic {
       }
     }
   }
-  show := addToList(academicpersonsedit_profileediting)
 }
