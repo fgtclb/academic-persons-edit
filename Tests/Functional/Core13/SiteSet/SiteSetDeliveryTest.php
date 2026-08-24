@@ -26,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * rather than merely carrying the group attribute: the group keeps PHPUnit from running
  * it, and the folder is what keeps PHPStan from analysing it against the v12 core, which
  * knows neither `SetRegistry` nor `SetDefinition`. What both versions share is asserted
- * by `SiteSet\StaticDeliveryTest`.
+ * by `SiteSet\StaticTemplateDeliveryTest`.
  */
 #[Group('not-core-12')]
 final class SiteSetDeliveryTest extends AbstractDeliveryTestCase

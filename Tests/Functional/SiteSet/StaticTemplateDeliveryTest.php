@@ -24,7 +24,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * everything the site sets contributed, and so does
  * `FunctionalTestCase::setUpFrontendRootPage()`.
  */
-final class StaticDeliveryTest extends AbstractDeliveryTestCase
+final class StaticTemplateDeliveryTest extends AbstractDeliveryTestCase
 {
     /**
      * Covers `Configuration/TypoScript/Full/include_static_file.txt`, whose entries are
