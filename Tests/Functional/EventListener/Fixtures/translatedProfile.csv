@@ -1,0 +1,8 @@
+"pages",,,,,
+,"uid","pid","title","slug","doktype"
+,1,0,"Root","/",1
+,2,1,"Storage","/storage",254
+"tx_academicpersons_domain_model_profile",,,,,,,,
+,"uid","pid","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","slug"
+,1,2,0,0,0,"Scrooge","Duck","scrooge-duck"
+,2,2,1,1,1,"Dagobert","Duck","dagobert-duck"
