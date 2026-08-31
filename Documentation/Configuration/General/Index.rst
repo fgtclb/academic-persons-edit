@@ -32,6 +32,12 @@ assigned profile and that meets the criteria logs in.
     A comma-separated list of language IDs. These IDs configure in which languages a
     persons profile can be translated by a frontend user.
 
+    The synchronisation into these languages runs after a profile is auto-created
+    on frontend user login, and after every change persisted through the frontend
+    editing plugins — the profile form as well as the contract, address, email
+    address, phone number and profile information forms. Left empty, frontend
+    edits do not touch translated profile records at all.
+
 ..  _configuration-general-validations:
 
 Which fields can be edited

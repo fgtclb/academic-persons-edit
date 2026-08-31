@@ -29,9 +29,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * point: the listener is rebuilt with it, and "the guard held" means "synchronize()
  * was never called". `ProfileTranslator` itself cannot be doubled - the class is
  * `final` and the constructor of the listener type-hints it - but the real instance
- * from the container works because no guarded path reaches it (which also keeps the
- * process-wide `static` cache in `getAllowedLanguageIds()` untouched, see
- * {@see SyncChangesToTranslationsSyncTest} for why that matters).
+ * from the container works because no guarded path reaches it.
  */
 final class SyncChangesToTranslationsSkipGuardsTest extends AbstractAcademicPersonsEditTestCase
 {

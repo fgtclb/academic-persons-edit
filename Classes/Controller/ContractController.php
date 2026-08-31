@@ -131,7 +131,7 @@ final class ContractController extends AbstractActionController
         $maxSortingValue += 1;
         $contract->setSorting($maxSortingValue);
         $this->contractRepository->add($contract);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($profile);
 
         $this->addTranslatedSuccessMessage('contract.create.success');
 
@@ -173,6 +173,7 @@ final class ContractController extends AbstractActionController
                 $contractFormData,
             ),
         );
+        $this->persistAndDispatchProfileUpdate($contract->getProfile());
 
         $this->addTranslatedSuccessMessage('contract.update.success');
 
@@ -203,6 +204,7 @@ final class ContractController extends AbstractActionController
         }
         $process = $this->sortItems($profile->getContracts()->toArray(), $contract->getUid(), $sortMode);
         if ($process->changed) {
+            $this->persistAndDispatchProfileUpdate($profile);
             $this->addTranslatedSuccessMessage('contract.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
@@ -224,7 +226,11 @@ final class ContractController extends AbstractActionController
 
     public function deleteAction(Contract $contract): ResponseInterface
     {
+        // Resolved before the removal - the persisted aggregate the listeners see is the
+        // one without the contract, but the relation is only navigable on the live object.
+        $profile = $contract->getProfile();
         $this->contractRepository->remove($contract);
+        $this->persistAndDispatchProfileUpdate($profile);
         $this->addTranslatedSuccessMessage('contract.delete.success');
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }

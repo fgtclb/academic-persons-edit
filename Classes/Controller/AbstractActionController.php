@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicBase\Controller\GetCurrentContentRecordMethodTrait;
+use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
@@ -273,6 +275,36 @@ abstract class AbstractActionController extends ActionController
                 ->setCreateAbsoluteUri(true)
                 ->uriFor($action, $arguments))
             ->withHeader('x-redirected-by', 'TYPO3 academic-persons-edit');
+    }
+
+    /**
+     * Persists all pending changes and announces the change to the profile aggregate.
+     *
+     * Every action that persists a change to a profile or one of its child records
+     * (contract, address, email address, phone number, profile information) calls this
+     * once after the change - the one place `EXT:academic_persons_edit` dispatches
+     * {@see AfterProfileUpdateEvent} from the frontend editing flow. The dispatch was
+     * lost in the a1a471c44 restructuring and restored with ACE-485; listeners keep the
+     * translated profile records in sync (`SyncChangesToTranslations`) and regenerate
+     * the profile slug (`GenerateSlugForProfile`).
+     *
+     * The event carries the persisted default language profile: listeners read the
+     * database, so the dispatch must happen after `persistAll()`, and a profile fetched
+     * as translation overlay is skipped - synchronisation runs from the default language
+     * record only, exactly as `AbstractProfileFactory::createProfileForUser()` does it.
+     * Child controllers resolve the owning profile through their relation accessors and
+     * pass `null` when the relation chain is broken, which skips the dispatch.
+     *
+     * Note: `skip_sync` on the profile gates the fe_users to profile data
+     * synchronisation and deliberately not this event.
+     */
+    protected function persistAndDispatchProfileUpdate(?Profile $profile): void
+    {
+        $this->persistenceManager->persistAll();
+        if ($profile === null || $profile->getUid() === null || $profile->getIsTranslation()) {
+            return;
+        }
+        $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent($profile));
     }
 
     /**

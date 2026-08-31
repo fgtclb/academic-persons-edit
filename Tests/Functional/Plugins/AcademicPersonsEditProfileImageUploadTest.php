@@ -121,54 +121,6 @@ final class AcademicPersonsEditProfileImageUploadTest extends AbstractProfileEdi
         return $this->submitProfileImageForm($submitData['action'], $submitData['fields']);
     }
 
-    /**
-     * Extracts the plugin arguments (controller, action, ...) the form encodes into its
-     * action URI, so they can be submitted through the request body. Keeping them out of
-     * the request URI avoids rebuilding a nested query array, which emits a PHP warning.
-     *
-     * @return array<string, mixed>
-     */
-    private function pluginArgumentsOfFormAction(string $action): array
-    {
-        $query = parse_url($action, PHP_URL_QUERY);
-        if (!is_string($query) || $query === '') {
-            return [];
-        }
-        $parsed = [];
-        parse_str($query, $parsed);
-
-        $arguments = [];
-        foreach ($parsed as $name => $value) {
-            $arguments[(string)$name] = $value;
-        }
-
-        return $arguments;
-    }
-
-    /**
-     * Turns `a[b][c]` notation into the nested array the request expects.
-     *
-     * @param array<string, mixed> $target
-     */
-    private function addFormValue(array &$target, string $name, string $value): void
-    {
-        $position = strpos($name, '[');
-        if ($position === false) {
-            $target[$name] = $value;
-            return;
-        }
-        preg_match_all('@\[([^]]*)]@', $name, $matches);
-        $keys = array_merge([substr($name, 0, $position)], $matches[1]);
-        $current = &$target;
-        foreach ($keys as $key) {
-            if (!isset($current[$key]) || !is_array($current[$key])) {
-                $current[$key] = [];
-            }
-            $current = &$current[$key];
-        }
-        $current = $value;
-    }
-
     #[Test]
     public function uploadedProfileImageIsStoredAndReferenced(): void
     {

@@ -10,8 +10,6 @@ use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
 use FGTCLB\AcademicPersonsEdit\EventListener\SyncChangesToTranslations;
 use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use FGTCLB\AcademicPersonsEdit\Tests\Functional\AbstractAcademicPersonsEditTestCase;
-use PHPUnit\Framework\Attributes\PreserveGlobalState;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -27,13 +25,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * `RecordSynchronizer::synchronize()` finds nothing to loop over. The full real
  * service chain runs; the observation is the database.
  *
- * The test runs in its own PHP process on purpose:
- * `ProfileTranslator::getAllowedLanguageIds()` caches its result in a method-local
- * `static` variable, so the first call in a PHP process fixes the value for every
- * later call of the whole functional suite run, whatever the instance configuration
- * of the test that makes it. Process isolation is the only way this test and
- * {@see SyncChangesToTranslationsSyncTest} can both observe their own extension
- * configuration.
+ * `ProfileTranslator::getAllowedLanguageIds()` used to cache its result in a
+ * method-local `static` variable, which forced this test and
+ * {@see SyncChangesToTranslationsSyncTest} into `#[RunInSeparateProcess]` - the first
+ * call in a PHP process fixed the value for the whole suite run. ACE-485 removed the
+ * cache (the service is stateless now), so both tests observe their own instance
+ * configuration in the shared process; the precondition assertion below would name a
+ * regression of exactly that.
  */
 final class SyncChangesToTranslationsGateTest extends AbstractAcademicPersonsEditTestCase
 {
@@ -67,8 +65,6 @@ final class SyncChangesToTranslationsGateTest extends AbstractAcademicPersonsEdi
     }
 
     #[Test]
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
     public function listenerCreatesNoTranslationsWithShippedDefaultConfiguration(): void
     {
         $this->assertSame([], $this->get(ProfileTranslator::class)->getAllowedLanguageIds());

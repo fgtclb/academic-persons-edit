@@ -60,24 +60,23 @@ final class ProfileTranslator
     }
 
     /**
+     * Reads the configured language ids on every call: the service is stateless on
+     * purpose (no static or instance level cache), so a configuration change is
+     * visible immediately and the class is testable - `ExtensionConfiguration->get()`
+     * is an array access on `$GLOBALS['TYPO3_CONF_VARS']`, not worth caching.
+     *
      * @return list<int>
      */
     public function getAllowedLanguageIds(): array
     {
-        static $languageUids = null;
-
-        if ($languageUids === null) {
-            try {
-                $allowedLanguageIdsList = $this->extensionConfiguration->get(
-                    'academic_persons_edit',
-                    'profile/allowedLanguages'
-                );
-                $languageUids = GeneralUtility::intExplode(',', $allowedLanguageIdsList, true);
-            } catch (ExtensionConfigurationExtensionNotConfiguredException |ExtensionConfigurationPathDoesNotExistException) {
-                $languageUids = [];
-            }
+        try {
+            $allowedLanguageIdsList = $this->extensionConfiguration->get(
+                'academic_persons_edit',
+                'profile/allowedLanguages'
+            );
+            return GeneralUtility::intExplode(',', $allowedLanguageIdsList, true);
+        } catch (ExtensionConfigurationExtensionNotConfiguredException |ExtensionConfigurationPathDoesNotExistException) {
+            return [];
         }
-
-        return $languageUids;
     }
 }

@@ -108,7 +108,7 @@ final class PhysicalAddressController extends AbstractActionController
         $maxSortingValue += 1;
         $physicalAddress->setSorting($maxSortingValue);
         $this->addressRepository->add($physicalAddress);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($contract->getProfile());
 
         $this->addTranslatedSuccessMessage('physicalAddress.create.success');
 
@@ -151,6 +151,7 @@ final class PhysicalAddressController extends AbstractActionController
                 $addressFormData,
             ),
         );
+        $this->persistAndDispatchProfileUpdate($physicalAddress->getContract()?->getProfile());
 
         $this->addTranslatedSuccessMessage('physicalAddress.update.success');
 
@@ -181,6 +182,7 @@ final class PhysicalAddressController extends AbstractActionController
         }
         $process = $this->sortItems($contract->getPhysicalAddresses()->toArray(), $physicalAddress->getUid(), $sortMode);
         if ($process->changed) {
+            $this->persistAndDispatchProfileUpdate($contract->getProfile());
             $this->addTranslatedSuccessMessage('physicalAddress.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
@@ -205,7 +207,11 @@ final class PhysicalAddressController extends AbstractActionController
 
     public function deleteAction(Address $physicalAddress): ResponseInterface
     {
+        // Resolved before the removal - the persisted aggregate the listeners see is the
+        // one without the address, but the relation is only navigable on the live object.
+        $profile = $physicalAddress->getContract()?->getProfile();
         $this->addressRepository->remove($physicalAddress);
+        $this->persistAndDispatchProfileUpdate($profile);
         $this->addTranslatedSuccessMessage('physicalAddress.delete.success');
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
@@ -228,7 +234,7 @@ final class PhysicalAddressController extends AbstractActionController
         }
         $address->setHidden(!$address->getHidden());
         $this->addressRepository->update($address);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($address->getContract()?->getProfile());
         $this->addTranslatedSuccessMessage(
             $address->getHidden()
                 ? 'physicalAddress.toggleVisibility.hidden.success'

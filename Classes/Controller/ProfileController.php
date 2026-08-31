@@ -114,6 +114,7 @@ final class ProfileController extends AbstractActionController
                 $profileFormData,
             ),
         );
+        $this->persistAndDispatchProfileUpdate($profile);
 
         $this->addTranslatedSuccessMessage('profile.update.success');
 
@@ -166,7 +167,7 @@ final class ProfileController extends AbstractActionController
         $replacedImageFile = $this->getPersistedProfileImageFile($profile);
 
         $this->profileRepository->update($profile);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($profile);
 
         $this->deleteReplacedProfileImageFile($replacedImageFile, $profile);
 
@@ -185,7 +186,7 @@ final class ProfileController extends AbstractActionController
             $profile->setImage(null);
             $this->profileRepository->update($profile);
             $this->persistenceManager->remove($image);
-            $this->persistenceManager->persistAll();
+            $this->persistAndDispatchProfileUpdate($profile);
 
             if ($this->countFileReferences($imageFile) === 0) {
                 $imageFile->getStorage()->deleteFile($imageFile);
@@ -198,7 +199,9 @@ final class ProfileController extends AbstractActionController
     {
         $profile->setSkipSync(!$profile->getSkipSync());
         $this->profileRepository->update($profile);
-        $this->persistenceManager->persistAll();
+        // `skip_sync` gates the fe_users to profile data synchronisation, not the
+        // translation synchronisation - toggling it is a profile change like any other.
+        $this->persistAndDispatchProfileUpdate($profile);
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
 

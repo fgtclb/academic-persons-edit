@@ -119,7 +119,7 @@ final class ProfileInformationController extends AbstractActionController
         $profileInformation->setSorting($maxSortingValue);
         $profileInformation->setPid((int)$profile->getPid());
         $this->profileInformationRepository->add($profileInformation);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($profile);
 
         $this->addTranslatedSuccessMessage($profileInformation->getType() . '.create.success');
 
@@ -160,6 +160,7 @@ final class ProfileInformationController extends AbstractActionController
                 $profileInformationFormData,
             ),
         );
+        $this->persistAndDispatchProfileUpdate($profileInformation->getProfile());
 
         $this->addTranslatedSuccessMessage($profileInformation->getType() . '.update.success');
 
@@ -197,6 +198,7 @@ final class ProfileInformationController extends AbstractActionController
         }
         $process = $this->sortItems($sortingItems->toArray(), $profileInformation->getUid(), $sortMode);
         if ($process->changed) {
+            $this->persistAndDispatchProfileUpdate($profile);
             $this->addTranslatedSuccessMessage($profileInformation->getType() . '.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
@@ -220,7 +222,11 @@ final class ProfileInformationController extends AbstractActionController
 
     public function deleteAction(ProfileInformation $profileInformation): ResponseInterface
     {
+        // Resolved before the removal - the persisted aggregate the listeners see is the
+        // one without the record, but the relation is only navigable on the live object.
+        $profile = $profileInformation->getProfile();
         $this->profileInformationRepository->remove($profileInformation);
+        $this->persistAndDispatchProfileUpdate($profile);
         $this->addTranslatedSuccessMessage($profileInformation->getType() . '.delete.success');
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }

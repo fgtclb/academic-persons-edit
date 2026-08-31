@@ -108,7 +108,7 @@ final class EmailAddressController extends AbstractActionController
         $maxSortingValue += 1;
         $emailAddress->setSorting($maxSortingValue);
         $this->emailAddressRepository->add($emailAddress);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($contract->getProfile());
 
         $this->addTranslatedSuccessMessage('emailAddress.create.success');
 
@@ -151,6 +151,7 @@ final class EmailAddressController extends AbstractActionController
                 $emailAddressFormData,
             ),
         );
+        $this->persistAndDispatchProfileUpdate($emailAddress->getContract()?->getProfile());
 
         $this->addTranslatedSuccessMessage('emailAddress.update.success');
 
@@ -181,6 +182,7 @@ final class EmailAddressController extends AbstractActionController
         }
         $process = $this->sortItems($contract->getEmailAddresses()->toArray(), $emailAddress->getUid(), $sortMode);
         if ($process->changed) {
+            $this->persistAndDispatchProfileUpdate($contract->getProfile());
             $this->addTranslatedSuccessMessage('emailAddress.sort.success');
         }
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
@@ -205,7 +207,11 @@ final class EmailAddressController extends AbstractActionController
 
     public function deleteAction(Email $emailAddress): ResponseInterface
     {
+        // Resolved before the removal - the persisted aggregate the listeners see is the
+        // one without the email address, but the relation is only navigable on the live object.
+        $profile = $emailAddress->getContract()?->getProfile();
         $this->emailAddressRepository->remove($emailAddress);
+        $this->persistAndDispatchProfileUpdate($profile);
         $this->addTranslatedSuccessMessage('emailAddress.delete.success');
         return new RedirectResponse($this->userSessionService->loadRefererFromSession($this->request), 303);
     }
@@ -228,7 +234,7 @@ final class EmailAddressController extends AbstractActionController
         }
         $email->setHidden(!$email->getHidden());
         $this->emailAddressRepository->update($email);
-        $this->persistenceManager->persistAll();
+        $this->persistAndDispatchProfileUpdate($email->getContract()?->getProfile());
         $this->addTranslatedSuccessMessage(
             $email->getHidden()
                 ? 'emailAddress.toggleVisibility.hidden.success'
