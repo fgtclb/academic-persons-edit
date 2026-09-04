@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator;
 
+use FGTCLB\AcademicBase\Settings\Exception\UnsuitableValidatorException;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ContractFormDataValidator;
-use FGTCLB\AcademicPersonsEdit\Exception\UnsuitableValidatorException;
 use FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures\RecordingValidator;
 use FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures\ValidationSettings;
 use PHPUnit\Framework\Attributes\DataProvider;

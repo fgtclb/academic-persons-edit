@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Domain\Factory;
 
-use FGTCLB\AcademicPersons\Settings\Validation;
-use FGTCLB\AcademicPersons\Settings\ValidationSet;
+use FGTCLB\AcademicBase\Settings\Validation;
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersonsEdit\Controller\AbstractActionController;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
 use FGTCLB\AcademicPersonsEdit\Property\TypeConverter\AbstractFormDataConverter;

@@ -86,6 +86,38 @@ defect fix: it needs a decision about where the value comes from, a
 declared dependency on whatever provides it, and test coverage proving it
 renders. It should be introduced that way if it is wanted.
 
+Form partials
+-------------
+
+:file:`Resources/Private/Partials/Profile/Forms/Checkbox.html`,
+:file:`Resources/Private/Partials/Profile/Forms/DateTime.html`,
+:file:`Resources/Private/Partials/Profile/Forms/Select.html`,
+:file:`Resources/Private/Partials/Profile/Forms/Textarea.html`,
+:file:`Resources/Private/Partials/Profile/Forms/Textfield.html`
+
+The five form partials resolve the validation of the field they render
+with the ``validationEnsure`` ViewHelper. That ViewHelper moved from
+`EXT:academic_persons` to `EXT:academic_base` (see
+:ref:`important-validator-exceptions-moved-to-academic-base`), so the
+namespace declaration of the partials changed from
+
+..  code-block:: html
+
+    xmlns:p="http://typo3.org/ns/FGTCLB/AcademicPersons/ViewHelpers"
+
+to
+
+..  code-block:: html
+
+    xmlns:p="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
+
+The ``p:validationEnsure`` calls themselves are unchanged. Unlike the
+other files on this page, an overridden copy that keeps the old
+declaration does not merely miss new behaviour: Fluid resolves the
+ViewHelper class under the declared namespace, the old class no longer
+exists, and rendering the form aborts with ``The ViewHelper
+"<p:validationEnsure>" could not be resolved.``
+
 Impact
 ======
 
@@ -99,21 +131,28 @@ behaviour of their own copy:
   being replaced,
 * an overridden :file:`Profile/Show/Image.html` continues to offer no
   format fallback for the profile image, and keeps its copy of the
-  copyright block — which renders nothing there either.
+  copyright block — which renders nothing there either,
+* an overridden :file:`Profile/Forms/*.html` partial that still declares
+  the ``p`` namespace as ``FGTCLB/AcademicPersons/ViewHelpers`` **fails
+  to render** the editing form until the declaration is updated.
 
-Nothing breaks at runtime — the overrides keep working. What is lost is
-the new behaviour.
+For the first three files nothing breaks at runtime — the overrides keep
+working, and what is lost is the new behaviour. The form partials are
+the exception: their override breaks the form.
 
 Affected Installations
 ======================
 
 All installations using the `EXT:academic_persons_edit` extension that
-override the profile detail template, the profile image form template or
-the profile image partial.
+override the profile detail template, the profile image form template,
+the profile image partial or one of the form partials.
 
 Migration
 =========
 
-Re-apply the project specific overrides on top of the updated files.
+Re-apply the project specific overrides on top of the updated files. For
+an overridden form partial, changing the ``xmlns:p`` URI to
+``http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers`` is the only
+change required.
 
 .. index:: Fluid, Frontend, Template, NotScanned

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Domain\Factory;
 
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Domain\Model\Profile as ProfileModel;
-use FGTCLB\AcademicPersons\Settings\ValidationSet;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 
 /**

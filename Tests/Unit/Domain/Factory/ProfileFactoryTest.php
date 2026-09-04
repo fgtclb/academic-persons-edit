@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Factory;
 
+use FGTCLB\AcademicBase\Settings\Validation;
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
-use FGTCLB\AcademicPersons\Settings\Validation;
-use FGTCLB\AcademicPersons\Settings\ValidationSet;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use PHPUnit\Framework\Attributes\Test;

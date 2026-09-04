@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures;
 
+use FGTCLB\AcademicBase\Settings\Exception\UnsuitableValidatorException;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\AbstractFormDataValidator;
-use FGTCLB\AcademicPersonsEdit\Exception\UnsuitableValidatorException;
 
 /**
  * The minimal concrete validator, shaped exactly like the six shipped ones: a type

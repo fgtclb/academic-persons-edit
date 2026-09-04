@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Domain\Factory;
 
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Domain\Model\Contract as ContractModel;
 use FGTCLB\AcademicPersons\Domain\Model\FunctionType;
 use FGTCLB\AcademicPersons\Domain\Model\Location;
 use FGTCLB\AcademicPersons\Domain\Model\OrganisationalUnit;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
-use FGTCLB\AcademicPersons\Settings\ValidationSet;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 
 /**

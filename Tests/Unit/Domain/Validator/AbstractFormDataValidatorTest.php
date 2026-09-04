@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator;
 
-use FGTCLB\AcademicPersonsEdit\Exception\UnknownValidatorException;
+use FGTCLB\AcademicBase\Settings\Exception\UnknownValidatorException;
 use FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures\NotAValidator;
 use FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures\RecordingValidator;
 use FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures\SilentValidator;

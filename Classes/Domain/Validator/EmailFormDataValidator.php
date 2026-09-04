@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Domain\Validator;
 
+use FGTCLB\AcademicBase\Settings\Exception\UnsuitableValidatorException;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\EmailFormData;
-use FGTCLB\AcademicPersonsEdit\Exception\UnsuitableValidatorException;
 
 /**
  * @internal to be used only in `EXT:academic_person_edit` and not part of public API. May change at any time.

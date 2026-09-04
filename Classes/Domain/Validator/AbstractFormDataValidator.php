@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Domain\Validator;
 
+use FGTCLB\AcademicBase\Settings\Exception\UnknownValidatorException;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
-use FGTCLB\AcademicPersonsEdit\Exception\UnknownValidatorException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator;

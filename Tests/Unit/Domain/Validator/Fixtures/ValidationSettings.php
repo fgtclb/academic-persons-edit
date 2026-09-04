@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Domain\Validator\Fixtures;
 
+use FGTCLB\AcademicBase\Settings\Validation;
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
-use FGTCLB\AcademicPersons\Settings\Validation;
-use FGTCLB\AcademicPersons\Settings\ValidationSet;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Validation\Validator\ValidatorInterface;
 
