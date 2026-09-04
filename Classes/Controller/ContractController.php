@@ -101,7 +101,7 @@ final class ContractController extends AbstractActionController
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
             'locations' => $this->locationRepository->findAll(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('contract')->validations,
+            'validations' => $this->academicPersonsSettings->getDocumentValidationSet('contracts')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -119,7 +119,7 @@ final class ContractController extends AbstractActionController
     public function createAction(Profile $profile, ContractFormData $contractFormData): ResponseInterface
     {
         $contract = $this->contractFactory->createFromFormData(
-            $this->academicPersonsSettings->getValidationSetWithFallback('contract'),
+            $this->academicPersonsSettings->getDocumentValidationSet('contracts'),
             $profile,
             $contractFormData,
         );
@@ -159,7 +159,7 @@ final class ContractController extends AbstractActionController
             'organisationalUnits' => $this->organisationalUnitRepository->findAll(),
             'locations' => $this->locationRepository->findAll(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('contract')->validations,
+            'validations' => $this->academicPersonsSettings->getDocumentValidationSet('contracts')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -168,7 +168,7 @@ final class ContractController extends AbstractActionController
     {
         $this->contractRepository->update(
             $this->contractFactory->updateFromFormData(
-                $this->academicPersonsSettings->getValidationSetWithFallback('contract'),
+                $this->academicPersonsSettings->getDocumentValidationSet('contracts'),
                 $contract,
                 $contractFormData,
             ),

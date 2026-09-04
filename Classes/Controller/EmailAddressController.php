@@ -78,7 +78,7 @@ final class EmailAddressController extends AbstractActionController
             'contract' => $contract,
             'emailAddressFormData' => new EmailFormData(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress')->validations,
+            'validations' => $this->academicPersonsSettings->getContractContactValidationSet('emailAddresses')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -96,7 +96,7 @@ final class EmailAddressController extends AbstractActionController
     public function createAction(Contract $contract, EmailFormData $emailAddressFormData): ResponseInterface
     {
         $emailAddress = $this->emailAddressFactory->createFromFormData(
-            $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress'),
+            $this->academicPersonsSettings->getContractContactValidationSet('emailAddresses'),
             $contract,
             $emailAddressFormData,
         );
@@ -135,7 +135,7 @@ final class EmailAddressController extends AbstractActionController
             'emailAddress' => $emailAddress,
             'emailAddressFormData' => EmailFormData::createFromEmail($emailAddress),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress')->validations,
+            'validations' => $this->academicPersonsSettings->getContractContactValidationSet('emailAddresses')->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -146,7 +146,7 @@ final class EmailAddressController extends AbstractActionController
     ): ResponseInterface {
         $this->emailAddressRepository->update(
             $this->emailAddressFactory->updateFromFormData(
-                $this->academicPersonsSettings->getValidationSetWithFallback('emailAddress'),
+                $this->academicPersonsSettings->getContractContactValidationSet('emailAddresses'),
                 $emailAddress,
                 $emailAddressFormData,
             ),

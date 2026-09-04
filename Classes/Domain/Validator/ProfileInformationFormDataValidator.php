@@ -21,6 +21,10 @@ final class ProfileInformationFormDataValidator extends AbstractFormDataValidato
             );
         }
 
-        $this->processValidations($profileInformationFormData, 'profileInformation');
+        // The form data carries the record type; the section owning that type validates it.
+        $this->processValidationSet(
+            $profileInformationFormData,
+            $this->getAcademicPersonsSettings()->getDocumentValidationSetByType($profileInformationFormData->getType()),
+        );
     }
 }

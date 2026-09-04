@@ -25,6 +25,9 @@ final class PhoneNumberFormDataValidator extends AbstractFormDataValidator
             );
         }
 
-        $this->processValidations($phoneNumberFormData, 'phoneNumber');
+        $this->processValidationSet(
+            $phoneNumberFormData,
+            $this->getAcademicPersonsSettings()->getContractContactValidationSet('phoneNumbers'),
+        );
     }
 }

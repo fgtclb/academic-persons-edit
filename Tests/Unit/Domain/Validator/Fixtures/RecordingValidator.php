@@ -19,7 +19,7 @@ use TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator;
  * `NotEmptyValidator` and `EmailAddressValidator`, and both translate their message
  * through `LocalizationUtility`, which needs a container. Recording the received
  * value here is what makes the property resolution of
- * `AbstractFormDataValidator::processValidations()` observable in a unit test.
+ * `AbstractFormDataValidator::processValidationSet()` observable in a unit test.
  */
 final class RecordingValidator extends AbstractValidator
 {

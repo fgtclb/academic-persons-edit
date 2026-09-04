@@ -95,7 +95,7 @@ final class ProfileController extends AbstractActionController
             'profileFormData' => $this->profileFormDataFactory->createFromProfile($pluginControllerActionContext, $profile),
             'genderOptions' => $this->getAvailableGenderSelectItems(),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profile')->validations,
+            'validations' => $this->academicPersonsSettings->getProfileUpdateValidationSet()->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -109,7 +109,7 @@ final class ProfileController extends AbstractActionController
     {
         $this->profileRepository->update(
             $this->profileFactory->updateFromFormData(
-                $this->academicPersonsSettings->getValidationSetWithFallback('profile'),
+                $this->academicPersonsSettings->getProfileUpdateValidationSet(),
                 $profile,
                 $profileFormData,
             ),

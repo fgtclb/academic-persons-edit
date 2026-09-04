@@ -16,15 +16,15 @@ use FGTCLB\AcademicPersonsEdit\Domain\Validator\AbstractFormDataValidator;
 
 /**
  * The minimal concrete validator, shaped exactly like the six shipped ones: a type
- * guard, then `processValidations()` with a validation set identifier.
- * `processValidations()` is public but writes into `$this->result`,
- * which only `AbstractValidator::validate()` initializes, so the shared machinery
- * can only be exercised through a subclass.
+ * guard, then `processValidationSet()` with the set of its section - here a document
+ * section resolved by identifier. `processValidationSet()` is public but writes into
+ * `$this->result`, which only `AbstractValidator::validate()` initializes, so the
+ * shared machinery can only be exercised through a subclass.
  */
 final class TestFormDataValidator extends AbstractFormDataValidator
 {
     public function __construct(
-        private readonly string $validationsIdentifier = 'testSet'
+        private readonly string $sectionIdentifier = 'testSet'
     ) {}
 
     protected function isValid(mixed $value): void
@@ -32,6 +32,9 @@ final class TestFormDataValidator extends AbstractFormDataValidator
         if (!$value instanceof TestFormData) {
             throw new UnsuitableValidatorException('Not a valid test form data object.', 1755350003);
         }
-        $this->processValidations($value, $this->validationsIdentifier);
+        $this->processValidationSet(
+            $value,
+            $this->getAcademicPersonsSettings()->getDocumentValidationSet($this->sectionIdentifier),
+        );
     }
 }

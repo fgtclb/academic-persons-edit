@@ -73,7 +73,7 @@ final class ProfileInformationController extends AbstractActionController
 
     public function newAction(Profile $profile, string $type): ResponseInterface
     {
-        $mappedType = $this->academicPersonsSettings->getProfileInformationType($type)?->type ?? '';
+        $mappedType = $this->academicPersonsSettings->getDocumentSection($type)?->type ?? '';
         $profileInformationFormData = $this->profileInformationFormDataClassName::createEmptyForType($mappedType);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
@@ -82,7 +82,7 @@ final class ProfileInformationController extends AbstractActionController
             'type' => $type,
             'profileInformationFormData' => $profileInformationFormData,
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation')->validations,
+            'validations' => $this->academicPersonsSettings->getDocumentValidationSetByType($mappedType)->validations,
         ]);
 
         return $this->htmlResponse();
@@ -101,7 +101,7 @@ final class ProfileInformationController extends AbstractActionController
     public function createAction(Profile $profile, ProfileInformationFormData $profileInformationFormData): ResponseInterface
     {
         $profileInformation = $this->profileInformationFactory->createFromFormData(
-            $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation'),
+            $this->academicPersonsSettings->getDocumentValidationSetByType($profileInformationFormData->getType()),
             $profile,
             $profileInformationFormData,
         );
@@ -144,7 +144,7 @@ final class ProfileInformationController extends AbstractActionController
             'profileInformation' => $profileInformation,
             'profileInformationFormData' => $this->profileInformationFormDataClassName::createFromProfileInformation($profileInformation),
             'cancelUrl' => $this->userSessionService->loadRefererFromSession($this->request),
-            'validations' => $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation')->validations,
+            'validations' => $this->academicPersonsSettings->getDocumentValidationSetByType($profileInformation->getType())->validations,
         ]);
         return $this->htmlResponse();
     }
@@ -155,7 +155,7 @@ final class ProfileInformationController extends AbstractActionController
     ): ResponseInterface {
         $this->profileInformationRepository->update(
             $this->profileInformationFactory->updateFromFormData(
-                $this->academicPersonsSettings->getValidationSetWithFallback('profileInformation'),
+                $this->academicPersonsSettings->getDocumentValidationSetByType($profileInformation->getType()),
                 $profileInformation,
                 $profileInformationFormData,
             ),

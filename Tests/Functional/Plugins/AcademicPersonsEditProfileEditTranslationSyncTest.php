@@ -81,6 +81,8 @@ final class AcademicPersonsEditProfileEditTranslationSyncTest extends AbstractPr
         $this->assertCount(1, $this->getProfileRows(), 'Precondition: only the default language profile exists.');
 
         $this->submitProfileForm($this->getProfileEditFormUrl(), [
+            // The shipped settings require the gender, as the rendered form always posts it.
+            'gender' => 'ms',
             'website' => 'https://submitted.example.org',
         ]);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Domain\Validator;
 
 use FGTCLB\AcademicBase\Settings\Exception\UnknownValidatorException;
+use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -34,14 +35,16 @@ abstract class AbstractFormDataValidator extends AbstractValidator
     }
 
     /**
-     * @param object $subject
-     * @param string $validationsIdentifier
+     * Runs the validators of every property of the set against the subject,
+     * collecting the errors per property. The concrete validators resolve the
+     * set from the settings graph - the section of their record type - so
+     * the validation of one section never reaches another.
+     *
      * @throws UnknownValidatorException
      */
-    public function processValidations(object $subject, string $validationsIdentifier): void
+    public function processValidationSet(object $subject, ValidationSet $validationSet): void
     {
-        $validations = $this->getAcademicPersonsSettings()->getValidationSet($validationsIdentifier)?->validations ?? [];
-        foreach ($validations as $property => $validation) {
+        foreach ($validationSet->validations as $property => $validation) {
             $value = ObjectAccess::getPropertyPath($subject, $property);
             foreach ($validation->validatorClassNames as $validatorClassName) {
                 $validator = GeneralUtility::makeInstance($validatorClassName);
@@ -68,7 +71,7 @@ abstract class AbstractFormDataValidator extends AbstractValidator
      *
      * @todo Drop this fallback when TYPO3 v12 support has been dropped.
      */
-    private function getAcademicPersonsSettings(): AcademicPersonsSettings
+    protected function getAcademicPersonsSettings(): AcademicPersonsSettings
     {
         return $this->academicPersonsSettings ??= GeneralUtility::makeInstance(AcademicPersonsSettings::class);
     }

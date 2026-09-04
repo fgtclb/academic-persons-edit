@@ -25,11 +25,11 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Validates the argument of `PhysicalAddressController::createAction()` and
- * `updateAction()` against the validation set `physicalAddress`.
+ * `updateAction()` against the contact section `physicalAddresses`.
  */
 final class AddressFormDataValidatorTest extends UnitTestCase
 {
-    private const VALIDATION_SET = 'physicalAddress';
+    private const VALIDATION_SET = 'physicalAddresses';
 
     /**
      * The set identifier is the contract with `Settings.yaml`. Changing it - or
@@ -37,7 +37,7 @@ final class AddressFormDataValidatorTest extends UnitTestCase
      * rather than raising, because an unregistered set validates nothing.
      */
     #[Test]
-    public function theValidationSetPhysicalAddressIsProcessed(): void
+    public function theSectionPhysicalAddressIsProcessed(): void
     {
         $result = $this->validate(
             ValidationSettings::forIdentifier(self::VALIDATION_SET, ['city' => [RecordingValidator::class]]),

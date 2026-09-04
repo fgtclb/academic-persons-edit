@@ -25,6 +25,9 @@ final class AddressFormDataValidator extends AbstractFormDataValidator
             );
         }
 
-        $this->processValidations($addressFormData, 'physicalAddress');
+        $this->processValidationSet(
+            $addressFormData,
+            $this->getAcademicPersonsSettings()->getContractContactValidationSet('physicalAddresses'),
+        );
     }
 }

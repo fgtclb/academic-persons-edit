@@ -26,16 +26,16 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Validates the argument of `EmailAddressController::createAction()` and
- * `updateAction()` against the validation set `emailAddress`. It is the only
+ * `updateAction()` against the contact section `emailAddresses`. It is the only
  * shipped set that stacks two validators on one property: `email` is both required
  * and syntax checked.
  */
 final class EmailFormDataValidatorTest extends UnitTestCase
 {
-    private const VALIDATION_SET = 'emailAddress';
+    private const VALIDATION_SET = 'emailAddresses';
 
     #[Test]
-    public function theValidationSetEmailAddressIsProcessed(): void
+    public function theSectionEmailAddressIsProcessed(): void
     {
         $result = $this->validate(
             ValidationSettings::forIdentifier(self::VALIDATION_SET, ['email' => [RecordingValidator::class]]),

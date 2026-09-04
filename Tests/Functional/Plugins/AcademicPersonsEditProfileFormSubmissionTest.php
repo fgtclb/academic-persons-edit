@@ -66,8 +66,10 @@ final class AcademicPersonsEditProfileFormSubmissionTest extends AbstractProfile
      * both fields would keep their seeded values.
      *
      * `website` and `websiteTitle` are used rather than the name fields, because the shipped
-     * `profile` validation set marks `firstName`, `middleName` and `lastName` as `disabled`,
-     * so `mayApplyProperty()` rejects them before the request is consulted at all.
+     * `profile` map marks `firstName`, `middleName` and `lastName` as `disabled`, so
+     * `mayApplyProperty()` rejects them before the request is consulted at all. `gender` is
+     * posted with every submission, as the rendered form does: the shipped map requires it,
+     * and a submission without it is rejected as a whole.
      */
     #[Test]
     public function submittedPropertyIsPersisted(): void
@@ -76,6 +78,7 @@ final class AcademicPersonsEditProfileFormSubmissionTest extends AbstractProfile
         $this->seedWebsiteFields();
 
         $this->submitProfileForm($this->getProfileEditFormUrl(), [
+            'gender' => 'ms',
             'website' => 'https://submitted.example.org',
             'websiteTitle' => 'Submitted title',
         ]);
@@ -103,7 +106,7 @@ final class AcademicPersonsEditProfileFormSubmissionTest extends AbstractProfile
 
         $this->submitProfileForm(
             $this->getProfileEditFormUrl(),
-            ['website' => 'https://submitted.example.org'],
+            ['gender' => 'ms', 'website' => 'https://submitted.example.org'],
         );
 
         $this->assertSame(

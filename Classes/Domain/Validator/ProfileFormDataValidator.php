@@ -25,6 +25,9 @@ final class ProfileFormDataValidator extends AbstractFormDataValidator
             );
         }
 
-        $this->processValidations($profileFormData, 'profile');
+        $this->processValidationSet(
+            $profileFormData,
+            $this->getAcademicPersonsSettings()->getProfileUpdateValidationSet(),
+        );
     }
 }

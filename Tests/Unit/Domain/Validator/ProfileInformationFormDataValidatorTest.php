@@ -25,38 +25,42 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Validates the argument of `ProfileInformationController::createAction()` and
- * `updateAction()` against the validation set `profileInformation`. This is the one
- * form data object whose required properties are not strings: `year` is `?int`, so
- * "not submitted" and "submitted empty" both arrive as `null` rather than as `''`.
+ * `updateAction()` against the document section owning the record type the form
+ * data carries - a publication is validated by the `publication` section and by no
+ * other. This is the one form data object whose required properties are not
+ * strings: `year` is `?int`, so "not submitted" and "submitted empty" both
+ * arrive as `null` rather than as `''`.
  */
 final class ProfileInformationFormDataValidatorTest extends UnitTestCase
 {
-    private const VALIDATION_SET = 'profileInformation';
+    private const VALIDATION_SET = 'publication';
 
     #[Test]
-    public function theValidationSetProfileInformationIsProcessed(): void
+    public function theSectionOfTheRecordTypeIsProcessed(): void
     {
         $result = $this->validate(
             ValidationSettings::forIdentifier(self::VALIDATION_SET, ['title' => [RecordingValidator::class]]),
-            new ProfileInformationFormData(title: 'A publication')
+            new ProfileInformationFormData(type: 'publication', title: 'A publication')
         );
 
         $this->assertSame(['string(A publication)'], $this->messagesFor($result, 'title'));
     }
 
+    /**
+     * The section of another record type does not apply, and neither does anything
+     * when the form data carries no type at all.
+     */
     #[Test]
-    public function aValidationSetRegisteredUnderAnotherIdentifierIsIgnored(): void
+    public function aSectionOfAnotherRecordTypeIsIgnored(): void
     {
-        $result = $this->validate(
-            ValidationSettings::forIdentifier('profileInformations', ['title' => [RecordingValidator::class]]),
-            new ProfileInformationFormData(title: 'A publication')
-        );
+        $settings = ValidationSettings::forIdentifier('lecture', ['title' => [RecordingValidator::class]]);
 
-        $this->assertFalse($result->hasErrors());
+        $this->assertFalse($this->validate($settings, new ProfileInformationFormData(type: 'publication', title: 'A publication'))->hasErrors());
+        $this->assertFalse($this->validate($settings, new ProfileInformationFormData(title: 'A publication'))->hasErrors());
     }
 
     /**
-     * `title` and `year` are the two the shipped configuration requires; the others
+     * `title` and `year` are the two the shipped sections require; the others
      * are what a project adds. All of them have to resolve off the DTO, because an
      * unreadable property silently becomes `null`.
      */
@@ -109,7 +113,7 @@ final class ProfileInformationFormDataValidatorTest extends UnitTestCase
     {
         $result = $this->validate(
             ValidationSettings::forIdentifier(self::VALIDATION_SET, ['year' => [RecordingValidator::class]]),
-            new ProfileInformationFormData(title: 'A publication')
+            new ProfileInformationFormData(type: 'publication', title: 'A publication')
         );
 
         $this->assertSame(['null'], $this->messagesFor($result, 'year'));

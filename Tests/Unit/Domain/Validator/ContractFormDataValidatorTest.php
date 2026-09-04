@@ -25,19 +25,19 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Validates the argument of `ContractController::createAction()` and
- * `updateAction()` against the validation set `contract`. `position` is the only
+ * `updateAction()` against the `contracts` document section. `position` is the only
  * property the shipped `Settings.yaml` requires.
  */
 final class ContractFormDataValidatorTest extends UnitTestCase
 {
-    private const VALIDATION_SET = 'contract';
+    private const VALIDATION_SET = 'contracts';
 
     /**
      * The set identifier is the contract with `Settings.yaml`; an identifier that
      * does not match a registered set disables contract validation silently.
      */
     #[Test]
-    public function theValidationSetContractIsProcessed(): void
+    public function theSectionContractIsProcessed(): void
     {
         $result = $this->validate(
             ValidationSettings::forIdentifier(self::VALIDATION_SET, ['position' => [RecordingValidator::class]]),
@@ -51,7 +51,7 @@ final class ContractFormDataValidatorTest extends UnitTestCase
     public function aValidationSetRegisteredUnderAnotherIdentifierIsIgnored(): void
     {
         $result = $this->validate(
-            ValidationSettings::forIdentifier('contracts', ['position' => [RecordingValidator::class]]),
+            ValidationSettings::forIdentifier('contract', ['position' => [RecordingValidator::class]]),
             new ContractFormData(position: 'Professor')
         );
 

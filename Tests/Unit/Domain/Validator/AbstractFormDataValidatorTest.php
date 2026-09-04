@@ -26,9 +26,9 @@ use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `AbstractFormDataValidator::processValidations()` is the only piece of validation
+ * `AbstractFormDataValidator::processValidationSet()` is the only piece of validation
  * logic in this extension - the six concrete validators do nothing but a type guard
- * and a call into it with their validation set identifier. Everything a profile
+ * and a call into it with the validation set of their section. Everything a profile
  * editor is allowed to save therefore goes through this one method, driven by
  * `Configuration/AcademicPersons/Settings.yaml`, which an integrator overrides.
  */
@@ -71,12 +71,12 @@ final class AbstractFormDataValidatorTest extends UnitTestCase
     }
 
     /**
-     * An identifier that no `Settings.yaml` registers must not raise - it means
-     * "nothing configured for this form", which is a valid state for a project that
-     * only overrides one of the six sets.
+     * A section that no `Settings.yaml` configures must not raise - its set is empty
+     * and means "nothing configured for this form", which is a valid state for a
+     * project that removed a section from its override.
      */
     #[Test]
-    public function anUnregisteredValidationSetValidatesNothing(): void
+    public function anUnconfiguredSectionValidatesNothing(): void
     {
         $subject = new TestFormDataValidator('setThatNobodyRegistered');
         $subject->injectAcademicPersonsSettings(
@@ -191,7 +191,7 @@ final class AbstractFormDataValidatorTest extends UnitTestCase
     /**
      * The counterpart of `Domain/Factory/*`: those ask `shouldApplyProperty()` before
      * they write a value onto the domain model, so a property that was not submitted
-     * is not applied. `processValidations()` does not ask - it reads every configured
+     * is not applied. `processValidationSet()` does not ask - it reads every configured
      * property off the DTO, where an unsubmitted one still carries its declared
      * default. A partial form submit is therefore validated as if the missing fields
      * had been sent empty, and a required field that a template does not render at
