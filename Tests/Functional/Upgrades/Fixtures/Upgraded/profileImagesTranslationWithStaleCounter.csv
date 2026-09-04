@@ -1,0 +1,8 @@
+"tx_academicpersons_domain_model_profile",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","image","l10n_state"
+,1,100,0,0,0,0,0,"Erika","Musterfrau",1,\NULL
+,2,100,0,0,1,1,1,"Erika","Musterfrau",1,"{""image"":""parent""}"
+"sys_file_reference",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,1,100,0,0,0,0,1,1,"tx_academicpersons_domain_model_profile","image",1
+,2,100,0,0,1,1,1,2,"tx_academicpersons_domain_model_profile","image",1

@@ -1,0 +1,15 @@
+"pages",
+,"uid","pid","doktype","deleted","hidden","sys_language_uid","l10n_parent","slug","title"
+,1,0,1,0,0,0,0,"/","Site Root"
+,100,1,254,0,0,0,0,"/records","Record Storage"
+"sys_file",
+,"uid","pid","storage","type","mime_type","missing","extension","name","identifier","identifier_hash","folder_hash","sha1","size","creation_date","modification_date"
+,1,0,1,2,"image/png",0,"png","portrait.png","/images/portrait.png","d82b65d423fe4a234ed73529a68b8262c1f763dc","ca306f2df2823c083069873158fd3b91fd4ebe01","0f4c7ac72a6360b0be1b82c2a9bc5837fafddd6c",1024,1700000000,1700000000
+,2,0,1,2,"image/png",0,"png","portrait-2.png","/images/portrait-2.png","5a1b3c9e7f2d4e6a8b0c1d2e3f4a5b6c7d8e9f01","ca306f2df2823c083069873158fd3b91fd4ebe01","1f4c7ac72a6360b0be1b82c2a9bc5837fafddd6d",1024,1700000000,1700000000
+"tx_academicpersons_domain_model_profile",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","image","l10n_state"
+,1,100,0,0,0,0,0,"Erika","Musterfrau",1,\NULL
+,2,100,0,0,1,1,1,"Erika","Musterfrau",1,\NULL
+"sys_file_reference",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,1,100,0,0,0,0,1,1,"tx_academicpersons_domain_model_profile","image",1

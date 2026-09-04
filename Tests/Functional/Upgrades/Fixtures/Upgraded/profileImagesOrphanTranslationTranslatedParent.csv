@@ -1,0 +1,5 @@
+"tx_academicpersons_domain_model_profile",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","image","l10n_state"
+,1,100,0,0,0,0,0,"Erika","Musterfrau",0,\NULL
+,2,100,0,0,1,1,1,"Erika","Musterfrau",0,\NULL
+,3,100,0,0,1,2,2,"Erika","Musterfrau",0,"{""image"":""custom""}"
