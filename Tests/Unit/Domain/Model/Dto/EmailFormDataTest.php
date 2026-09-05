@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `Controller\EmailAddressController::editAction()` prefills its form with
+ * Profile editing prefills its contact form with
  * {@see EmailFormData::createFromEmail()}.
  */
 final class EmailFormDataTest extends UnitTestCase
@@ -42,15 +42,14 @@ final class EmailFormDataTest extends UnitTestCase
     }
 
     /**
-     * The factory produces a display object: nothing is bound to a request and nothing is
-     * overridden, so `EmailFactory` may not write any of it back to the domain model.
+     * The factory produces a display object without explicit property overrides, so
+     * `EmailFactory` may not write any of it back to the domain model.
      */
     #[Test]
     public function aFormDataCreatedFromAnEmailAppliesNoPropertyToADomainModel(): void
     {
         $formData = EmailFormData::createFromEmail(new Email());
 
-        $this->assertNull($formData->getArgumentName());
         $this->assertFalse($formData->shouldApplyProperty('email'));
         $this->assertFalse($formData->shouldApplyProperty('type'));
     }
@@ -58,8 +57,7 @@ final class EmailFormDataTest extends UnitTestCase
     /**
      * `setEmail()` exists so a PSR-14 listener can correct the submitted address before
      * the transformation runs. It changes the form data only - the value the factory
-     * writes is still governed by the request/override machinery, and this object is
-     * bound to neither.
+     * writes is still governed by explicit property overrides, and this object has none.
      */
     #[Test]
     public function changingTheEmailOnTheFormDataDoesNotMakeItApplicable(): void

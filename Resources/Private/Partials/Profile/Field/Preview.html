@@ -1,0 +1,80 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <div
+        class="d-flex align-items-start gap-3"
+        data-form-field-button-area
+        data-pe-field-preview
+        data-pe-for="{elementId}"
+        data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'academic_persons_edit')}">
+        <div class="flex-grow-1 overflow-hidden">
+            <div class="fw-semibold d-flex flex-row align-items-center">
+                <f:translate
+                    key="profile.{field.identifier}.label"
+                    extensionName="academic_persons_edit" />
+                <f:if condition="{field.validation.required}">
+                    <abbr class="align-self-start" title="{f:translate(key: 'profileEditing.field.required', extensionName: 'academic_persons_edit')}">*</abbr>
+                </f:if>
+            </div>
+            <f:if condition="{richText}">
+                <f:then>
+                    <div
+                        class="text-break"
+                        data-pe-field-preview-content
+                        data-pe-rich-text-preview
+                        data-pe-for="{elementId}"
+                        data-empty-label="{f:translate(key: 'profileEditing.content.empty', extensionName: 'academic_persons_edit')}">
+                        <div data-pe-rich-text-preview-content>
+                            <f:if condition="{profile.{field.propertyName}}">
+                                <f:then
+                                    >{profile.{field.propertyName} ->
+                                    f:format.html()}</f:then
+                                >
+                                <f:else>
+                                    <span class="text-body-secondary">
+                                        <f:translate
+                                            key="profileEditing.content.empty"
+                                            extensionName="academic_persons_edit" />
+                                    </span>
+                                </f:else>
+                            </f:if>
+                        </div>
+                    </div>
+                </f:then>
+                <f:else>
+                    <div class="text-break" data-pe-field-preview-content>
+                        <f:if condition="{profile.{field.propertyName}}">
+                            <f:then>{profile.{field.propertyName}}</f:then>
+                            <f:else>
+                                <span class="text-body-secondary">
+                                    <f:translate
+                                        key="profileEditing.field.empty"
+                                        extensionName="academic_persons_edit" />
+                                </span>
+                            </f:else>
+                        </f:if>
+                    </div>
+                </f:else>
+            </f:if>
+        </div>
+        <f:if
+            condition="!{field.validation.disabled} && !{field.validation.readOnly}">
+            <button
+                class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0"
+                data-academic-persons-profile-editing-activate-btn
+                data-pe-for="{elementId}"
+                type="button"
+                aria-controls="{elementId}-editor"
+                aria-expanded="false"
+                title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}">
+                <core:icon
+                    identifier="academic-persons-edit-edit"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </button>
+        </f:if>
+    </div>
+</html>

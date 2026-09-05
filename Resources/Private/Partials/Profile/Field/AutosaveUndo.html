@@ -1,0 +1,21 @@
+<html
+    lang="en"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <button
+        class="btn btn-sm rounded-0 btn-outline-secondary ms-auto"
+        data-pe-autosave-undo
+        data-pe-cancel
+        data-pe-for="{elementId}"
+        type="button"
+        title="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}"
+        aria-label="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}">
+        <span aria-hidden="true" class="fs-5 lh-1">
+            <core:icon
+                identifier="academic-persons-edit-undo"
+                size="small"
+                alternativeMarkupIdentifier="inline" />
+        </span>
+    </button>
+</html>

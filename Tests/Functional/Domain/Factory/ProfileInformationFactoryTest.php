@@ -16,8 +16,8 @@ use PHPUnit\Framework\Attributes\Test;
  * an "empty" one. That makes it the place to pin two things the string based forms cannot show:
  *
  * - an empty year field that *was* submitted has to reach the record as `NULL`, and
- * - the override type check is `is_int()`, so `null` - the only value that could express
- *   "clear this year" - is the one value an override cannot carry.
+ * - a `null` override - the only way to say "clear this year" - is applied rather than falling
+ *   back to the submitted value.
  */
 final class ProfileInformationFactoryTest extends AbstractFactoryTestCase
 {
@@ -90,7 +90,7 @@ final class ProfileInformationFactoryTest extends AbstractFactoryTestCase
     {
         $formData = $this->mapFormDataForUpdate(['title' => 'New Title', 'year' => '']);
         $this->assertNull($formData->getYear());
-        $this->assertTrue($formData->wasPropertySentInRequest('year'));
+        $this->assertTrue($formData->shouldApplyProperty('year'));
 
         $this->applyAndPersist($formData);
 
@@ -106,33 +106,31 @@ final class ProfileInformationFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * Documents current behaviour, and it is the shape of a defect: `setYear()` applies the
-     * override only when it `is_int()`, so an override of `null` - the only way to say "clear
-     * the year" - falls through to the submitted value instead. A listener meaning to clear the
-     * year silently keeps whatever the editor sent.
+     * A `null` override is the only way an event listener can say "clear this year", and it is
+     * applied: the registered override *is* the value, so it wins over the value the editor
+     * submitted rather than falling through to it.
      *
      * @see ProfileInformationFactory::setYear()
      */
     #[Test]
-    public function nullOverrideCannotClearAYearAndFallsBackToTheSubmittedValue(): void
+    public function nullOverrideClearsAYearThatWasSubmitted(): void
     {
         $this->updateProfileInformationWith(
             ['title' => 'New Title', 'year' => '2022'],
             ['year' => null],
         );
 
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/ProfileInformationFactoryTest/updatedTitleAndSubmittedYear.csv');
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/ProfileInformationFactoryTest/updatedTitleAndClearedYear.csv');
     }
 
     /**
-     * The same trap with the stakes raised: the year was not submitted, so the fallback is the
-     * form data default `null`, and a `null` override wipes the stored year although the type
-     * check was supposed to reject the value.
+     * The same for a year that was not submitted at all: the override is registered, so the
+     * stored year is cleared.
      *
      * @see ProfileInformationFactory::setYear()
      */
     #[Test]
-    public function nullOverrideWipesAStoredYearThatWasNotSubmitted(): void
+    public function nullOverrideClearsAStoredYearThatWasNotSubmitted(): void
     {
         $this->updateProfileInformationWith(['title' => 'New Title'], ['year' => null]);
 

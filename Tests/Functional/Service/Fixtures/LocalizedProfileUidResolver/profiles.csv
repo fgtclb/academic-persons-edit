@@ -1,0 +1,8 @@
+"tx_academicpersons_domain_model_profile"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","first_name","last_name","slug"
+,1,1,0,0,0,0,"Translated","Profile","translated-profile"
+,2,1,0,0,1,1,"Übersetztes","Profil","uebersetztes-profil"
+,3,1,0,0,0,0,"Hidden","Translation","hidden-translation"
+,4,1,0,1,1,3,"Verborgene","Übersetzung","verborgene-uebersetzung"
+,5,1,0,0,0,0,"Untranslated","Profile","untranslated-profile"
+,6,1,1,0,0,0,"Deleted","Profile","deleted-profile"

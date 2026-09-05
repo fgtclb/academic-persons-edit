@@ -7,16 +7,10 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\UploadedFile;
-use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 /**
- * Submits the profile image form of the `academicpersonsedit_profileediting` plugin and
- * verifies the native Extbase file upload handling the plugin was migrated to.
- *
- * Modelled after the TYPO3 core test
- * `extbase/Tests/Functional/Mvc/Controller/FileUploadControllerTest.php`.
+ * Drives the multipart image upload of the profile editing plugin end to end.
  *
  * TYPO3 v13 is excluded on purpose: `ResourceStorage::assureFileUploadPermissions()`
  * calls `is_uploaded_file()` unconditionally there, which can never be true in a CLI
@@ -24,189 +18,205 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
  * skips it for an `UploadedFile`, which is what the Extbase file handling service
  * passes. Core added its own upload test on the v14 branch for the same reason.
  *
+ * The refusals that happen before Extbase maps the upload - the missing editor header,
+ * an anonymous caller and a foreign profile - are covered on both core versions by
+ * {@see AcademicPersonsEditProfileEditingAuthorizationTest}.
+ *
  * @todo Drop the group once TYPO3 v13 support ends.
  */
 #[Group('not-core-13')]
-final class AcademicPersonsEditProfileImageUploadTest extends AbstractProfileEditingPluginTestCase
+final class AcademicPersonsEditProfileImageUploadTest extends AbstractFrontendProfilePluginTestCase
 {
     /**
-     * Walks the plugin from the profile list to the profile image form the same way a
-     * visitor does and returns the URI of that form page.
+     * @param list<string> $additionalTypoScriptSetupFiles
      */
-    private function getProfileImageFormUrl(): string
-    {
-        return $this->extractActionLink($this->getProfileShowPage(), 'editImage');
-    }
-
-    /**
-     * Renders the form and returns its action URI together with its hidden fields. Both
-     * carry request bound values — the action selects the controller and action, the
-     * hidden fields carry hashes — and can therefore not be hardcoded.
-     *
-     * @return array{action: string, fields: array<string, string>}
-     */
-    private function renderFormAndExtractSubmitData(string $formUrl): array
-    {
-        $content = $this->getPageAsFrontendUser($formUrl);
-
-        $this->assertSame(1, preg_match('@<form [^>]*action="([^"]+)"@', $content, $actionMatch));
-
-        $fields = [];
-        preg_match_all(
-            '@<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"@',
-            $content,
-            $matches,
-            PREG_SET_ORDER
+    private function uploadFixtureFile(
+        string $fileName,
+        string $contents,
+        array $additionalTypoScriptSetupFiles = [],
+    ): ResponseInterface {
+        $this->setUpProfileEditingTestCase($additionalTypoScriptSetupFiles);
+        $submitData = $this->extractImageFormSubmissionData($this->renderProfileEditingPage());
+        $temporaryFile = $this->instancePath . '/typo3temp/'
+            . uniqid('profile-editing-image-', false) . '.upload';
+        file_put_contents($temporaryFile, $contents);
+        $uploadedFiles = [];
+        $this->addNestedFormValue(
+            $uploadedFiles,
+            $submitData['fileInputName'],
+            new UploadedFile(
+                $temporaryFile,
+                (int)filesize($temporaryFile),
+                UPLOAD_ERR_OK,
+                $fileName,
+                'application/octet-stream',
+            ),
         );
-        foreach ($matches as $match) {
-            $fields[html_entity_decode($match[1])] = html_entity_decode($match[2]);
-        }
-        $this->assertNotEmpty($fields, 'Profile image form contains no hidden fields.');
-
-        return [
-            'action' => html_entity_decode($actionMatch[1]),
-            'fields' => $fields,
-        ];
+        return $this->submitProfileImageForm(
+            $submitData['action'],
+            $submitData['body'],
+            $uploadedFiles,
+        );
     }
 
-    /**
-     * @param array<string, string> $hiddenFields
-     */
-    private function submitProfileImageForm(string $action, array $hiddenFields): ResponseInterface
+    private function assertUploadWasRejected(ResponseInterface $response): void
     {
-        $parsedBody = $this->pluginArgumentsOfFormAction($action);
-        foreach ($hiddenFields as $name => $value) {
-            $this->addFormValue($parsedBody, $name, $value);
-        }
-
-        // A successful upload consumes the file, therefore a copy is handed in.
-        $uploadFixture = __DIR__ . '/Fixtures/Uploads/profile-image.png';
-        $temporaryFile = $this->instancePath . '/typo3temp/' . uniqid('profile-image-', false) . '.upload';
-        copy($uploadFixture, $temporaryFile);
-
-        // The body is provided explicitly. The testing framework otherwise serialises the
-        // parsed body with `GuzzleHttp\Psr7\Query::build()`, which cannot handle the nested
-        // plugin arguments and emits an "Array to string conversion" warning.
-        $body = new Stream('php://temp', 'rw');
-        $body->write(http_build_query($parsedBody));
-        $body->rewind();
-
-        $request = (new InternalRequest('https://www.acme.com/home'))
-            ->withMethod('POST')
-            ->withAddedHeader('Content-Type', 'application/x-www-form-urlencoded')
-            ->withBody($body)
-            ->withParsedBody($parsedBody)
-            ->withUploadedFiles([
-                'tx_academicpersonsedit_profileediting' => [
-                    'profile' => [
-                        'image' => new UploadedFile(
-                            $temporaryFile,
-                            (int)filesize($temporaryFile),
-                            UPLOAD_ERR_OK,
-                            basename($uploadFixture),
-                            // Deliberately wrong: the client supplied type must not be trusted.
-                            'application/octet-stream',
-                        ),
-                    ],
-                ],
-            ]);
-
-        return $this->requestAsFrontendUser($request);
-    }
-
-    private function uploadProfileImage(string $formUrl): ResponseInterface
-    {
-        $submitData = $this->renderFormAndExtractSubmitData($formUrl);
-
-        return $this->submitProfileImageForm($submitData['action'], $submitData['fields']);
+        $this->assertSame(422, $response->getStatusCode(), (string)$response->getBody());
+        $body = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($body);
+        $this->assertFalse($body['success'] ?? true);
+        $this->assertSame('validation_failed', $body['error'] ?? null);
+        $this->assertSame(0, $this->getPersistedProfileImageCount());
+        $this->assertSame([], $this->getStoredFiles(), 'A rejected upload left a file behind.');
     }
 
     #[Test]
-    public function uploadedProfileImageIsStoredAndReferenced(): void
+    public function profileEditingImageUploadPersistsAndReturnsImageMetadata(): void
     {
-        $this->setUpTestCase();
-
-        $response = $this->uploadProfileImage($this->getProfileImageFormUrl());
-        $this->assertSame(303, $response->getStatusCode(), 'Profile image upload did not redirect.');
-
-        $files = $this->getStoredFiles();
-        $this->assertCount(1, $files, 'Expected exactly one stored file.');
-        // The mime type is detected from the file content, not from the client header.
-        $this->assertSame('image/png', $files[0]['mime_type']);
-        // The native handling adds a random suffix instead of building the file name from
-        // the profile data, as the removed type converter did.
-        $this->assertMatchesRegularExpression(
-            '@^/profile-images/profile-image-[0-9a-f]{16}\.png$@',
-            $files[0]['identifier']
+        $this->setUpProfileEditingTestCase();
+        $submitData = $this->extractImageFormSubmissionData($this->renderProfileEditingPage());
+        $fixture = __DIR__ . '/Fixtures/Uploads/profile-image.png';
+        $temporaryFile = $this->instancePath . '/typo3temp/'
+            . uniqid('profile-editing-image-', false) . '.upload';
+        copy($fixture, $temporaryFile);
+        $uploadedFiles = [];
+        $this->addNestedFormValue(
+            $uploadedFiles,
+            $submitData['fileInputName'],
+            new UploadedFile(
+                $temporaryFile,
+                (int)filesize($temporaryFile),
+                UPLOAD_ERR_OK,
+                basename($fixture),
+                'application/octet-stream',
+            ),
         );
+        $response = $this->submitProfileImageForm(
+            $submitData['action'],
+            $submitData['body'],
+            $uploadedFiles,
+        );
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(
+            [
+                'success' => true,
+                'profile' => self::PROFILE_ID,
+                'hasImage' => true,
+                'imageAlternative' => 'Max Müllermann',
+                'imageTitle' => 'Max Müllermann',
+            ],
+            json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR),
+        );
+        $this->assertSame(1, $this->getPersistedProfileImageCount());
+        $storedFiles = $this->getStoredFiles();
+        $this->assertCount(1, $storedFiles);
+        // The required fields of the file itself: an installation running
+        // EXT:filemetadata or `fgtclb/file-required-attributes` reports an uploaded
+        // file whose `alternative` is empty, and nothing but the upload ever fills it.
+        $this->assertSame(
+            ['title' => 'Max Müllermann', 'alternative' => 'Max Müllermann'],
+            $this->fetchFileMetadata($storedFiles[0]['uid']),
+        );
+    }
 
-        $reference = $this->getConnectionPool()
-            ->getConnectionForTable('sys_file_reference')
-            ->executeQuery('SELECT uid_local, tablenames, fieldname, uid_foreign FROM sys_file_reference')
+    /**
+     * @return array{title: string, alternative: string}|array{}
+     */
+    private function fetchFileMetadata(int $fileUid): array
+    {
+        $row = $this->getConnectionPool()
+            ->getConnectionForTable('sys_file_metadata')
+            ->select(['title', 'alternative'], 'sys_file_metadata', ['file' => $fileUid])
             ->fetchAssociative();
-        $this->assertIsArray($reference, 'No file reference was created.');
-        $this->assertSame('tx_academicpersons_domain_model_profile', $reference['tablenames']);
-        $this->assertSame('image', $reference['fieldname']);
-        $this->assertSame(self::PROFILE_ID, (int)$reference['uid_foreign']);
-        $this->assertSame($files[0]['uid'], (int)$reference['uid_local']);
+        return $row === false ? [] : ['title' => (string)$row['title'], 'alternative' => (string)$row['alternative']];
     }
 
+    /**
+     * The configured `maxFileSize` is enforced server side, not only by the browser.
+     */
     #[Test]
-    public function profileDetailPageOffersAFallbackForBrowsersWithoutWebpSupport(): void
+    public function anOversizedFileIsRejected(): void
     {
-        $this->setUpTestCase();
-        $this->uploadProfileImage($this->getProfileImageFormUrl());
+        $response = $this->uploadFixtureFile(
+            'profile-image.png',
+            (string)file_get_contents(__DIR__ . '/Fixtures/Uploads/profile-image.png'),
+            ['EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/TinyImageSizeLimit.typoscript'],
+        );
 
-        $content = $this->getProfileShowPage();
-
-        // Every candidate declares its format, so a browser that cannot decode WebP
-        // skips the `source` instead of picking it by media query and failing: without
-        // `type` the `picture` element offers no format fallback at all (ACE-303).
-        preg_match_all('#<source\b[^>]*>#s', $content, $sources);
-        $this->assertCount(4, $sources[0]);
-        foreach ($sources[0] as $source) {
-            $this->assertStringContainsString('type="image/webp"', $source);
-            $this->assertStringContainsString('.webp', $source);
-        }
-
-        // ... and the `img` fallback keeps the source format, so it stays renderable
-        // when the candidates are not.
-        preg_match('#<img\b[^>]*>#s', $content, $img);
-        $this->assertNotEmpty($img, 'Profile detail page renders no img element.');
-        $this->assertStringNotContainsString('.webp', $img[0]);
-        $this->assertMatchesRegularExpression('#src="[^"]+\.png"#', $img[0]);
+        $this->assertUploadWasRejected($response);
     }
 
+    /**
+     * An installation that blanks `allowedMimeTypes` used to get no MIME validator at
+     * all, so any file type reached the storage - while the file input kept advertising
+     * the default list. Both sides now read the same constant.
+     */
     #[Test]
-    public function replacedProfileImageFileIsDeleted(): void
+    public function aDisallowedMimeTypeIsRejectedEvenWithAnEmptyConfiguredList(): void
     {
-        $this->setUpTestCase();
+        $response = $this->uploadFixtureFile(
+            'not-an-image.txt',
+            'This is not an image.',
+            ['EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/BlankImageValidation.typoscript'],
+        );
 
-        $formUrl = $this->getProfileImageFormUrl();
-        $this->assertSame(303, $this->uploadProfileImage($formUrl)->getStatusCode());
-        $replacedFiles = $this->getStoredFiles();
-        $this->assertCount(1, $replacedFiles);
-        $replacedFilePath = $this->instancePath . '/fileadmin' . $replacedFiles[0]['identifier'];
-        $this->assertFileExists($replacedFilePath);
+        $this->assertUploadWasRejected($response);
+    }
 
-        // The form URI is taken from the detail page again rather than reused, so the second
-        // upload goes through the link a visitor has. Before ACE-304 that link was rendered
-        // only while the profile had no image, which made this whole path unreachable.
-        $this->assertSame(303, $this->uploadProfileImage($this->getProfileImageFormUrl())->getStatusCode());
+    /**
+     * Replacing the image of a profile that already has one leaves exactly one relation
+     * behind, not two. The old `AcademicPersonsEditProfileImageReplaceTest` covered this
+     * for the Extbase form flow; the JSON editor writes the relation through
+     * `ProfileImageRelationWriter` instead, and the property is the same.
+     */
+    #[Test]
+    public function replacingAnExistingImageKeepsExactlyOneReference(): void
+    {
+        $this->setUpProfileEditingTestCase();
+        $this->seedProfileImage();
+        $this->assertSame(1, $this->getPersistedProfileImageCount());
+        $submitData = $this->extractImageFormSubmissionData($this->renderProfileEditingPage());
+        $fixture = __DIR__ . '/Fixtures/Uploads/profile-image.png';
+        $temporaryFile = $this->instancePath . '/typo3temp/'
+            . uniqid('profile-editing-replacement-', false) . '.upload';
+        copy($fixture, $temporaryFile);
+        $uploadedFiles = [];
+        $this->addNestedFormValue(
+            $uploadedFiles,
+            $submitData['fileInputName'],
+            new UploadedFile(
+                $temporaryFile,
+                (int)filesize($temporaryFile),
+                UPLOAD_ERR_OK,
+                'replacement.png',
+                'application/octet-stream',
+            ),
+        );
 
-        // The native handling cannot overwrite the previous file, because it generates a new
-        // file name for every upload. The replaced file is therefore deleted explicitly.
-        $files = $this->getStoredFiles();
-        $this->assertCount(1, $files, 'The replaced file was not removed from the file index.');
-        $this->assertNotSame($replacedFiles[0]['uid'], $files[0]['uid']);
-        $this->assertFileDoesNotExist($replacedFilePath, 'The replaced file was not deleted.');
-        $this->assertFileExists($this->instancePath . '/fileadmin' . $files[0]['identifier']);
+        $response = $this->submitProfileImageForm(
+            $submitData['action'],
+            $submitData['body'],
+            $uploadedFiles,
+        );
 
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertSame(1, $this->getPersistedProfileImageCount());
         $references = $this->getConnectionPool()
             ->getConnectionForTable('sys_file_reference')
-            ->executeQuery('SELECT uid_local FROM sys_file_reference')
+            ->executeQuery(
+                'SELECT uid_local FROM sys_file_reference'
+                    . ' WHERE tablenames = ? AND fieldname = ? AND uid_foreign = ? AND deleted = 0',
+                ['tx_academicpersons_domain_model_profile', 'image', self::PROFILE_ID],
+            )
             ->fetchAllAssociative();
-        $this->assertCount(1, $references, 'Expected exactly one file reference.');
-        $this->assertSame($files[0]['uid'], (int)$references[0]['uid_local']);
+        $this->assertCount(1, $references, 'Replacing the image left more than one relation.');
+        $storedFiles = $this->getStoredFiles();
+        $this->assertCount(1, $storedFiles, 'The replaced file was not removed from the storage.');
+        $this->assertSame(
+            (int)$references[0]['uid_local'],
+            $storedFiles[0]['uid'],
+            'The profile references a file other than the one that remained.',
+        );
     }
 }

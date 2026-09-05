@@ -20,16 +20,16 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `Controller\ContractController::editAction()` prefills its form with
+ * Profile editing prefills document forms with
  * {@see ContractFormData::createFromContract()}. This is the only form data object
- * carrying relations and dates rather than plain strings, so it is the one where the
- * mapping can lose more than a text value.
+ * carrying relations and dates rather than plain strings, so it is the one where
+ * the mapping can lose more than a text value.
  */
 final class ContractFormDataTest extends UnitTestCase
 {
     /**
-     * The select fields of the edit form need the persisted relation itself, not a copy:
-     * Fluid compares the option value against the identity of the assigned object.
+     * The select fields of the document form need the persisted relation itself,
+     * not a copy.
      */
     #[Test]
     public function theRelationsOfAContractAreHandedOverAsTheSameObjects(): void
@@ -126,15 +126,14 @@ final class ContractFormDataTest extends UnitTestCase
     }
 
     /**
-     * The factory produces a display object: nothing is bound to a request and nothing is
-     * overridden, so `ContractFactory` may not write any of it back.
+     * The factory produces a display object without explicit property overrides, so
+     * `ContractFactory` may not write any of it back.
      */
     #[Test]
     public function aFormDataCreatedFromAContractAppliesNoPropertyToADomainModel(): void
     {
         $formData = ContractFormData::createFromContract(new Contract());
 
-        $this->assertNull($formData->getArgumentName());
         $this->assertFalse($formData->shouldApplyProperty('organisationalUnit'));
         $this->assertFalse($formData->shouldApplyProperty('validFrom'));
         $this->assertFalse($formData->shouldApplyProperty('publish'));

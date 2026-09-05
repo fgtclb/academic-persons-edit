@@ -33,8 +33,9 @@ resolves to `null` — which is why `{profile.image.alternative}` was as empty a
         <figcaption class="visually-hidden">{profile.image.originalResource.description}</figcaption>
     </f:if>
 
-The same partial rendered a copyright, which never worked either and was removed
-instead of repaired — see :ref:`breaking-adapted-frontend-editing-fluid-files`.
+The same partial rendered a copyright, which never worked either and was
+removed instead of repaired. The partial itself is gone from version 3.0 on -
+see :ref:`breaking-replaced-profile-editing-plugin`.
 
 Impact
 ======

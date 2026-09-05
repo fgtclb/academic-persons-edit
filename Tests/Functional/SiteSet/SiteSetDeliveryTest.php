@@ -74,6 +74,29 @@ final class SiteSetDeliveryTest extends AbstractAcademicPersonsEditTestCase
     }
 
     /**
+     * The profile list links to the public detail page through
+     * `settings.detailPid`, which is assigned from a constant EXT:academic_persons
+     * owns. A site that includes the editing component alone does not depend on
+     * that extension's sets, so the component ships the settings definition of the
+     * path itself - without it the constant is never substituted and the link is
+     * rendered with the literal placeholder as its page uid.
+     */
+    #[Test]
+    public function detailPidResolvesWithTheEditingComponentSetAlone(): void
+    {
+        $this->setUpSite(dependencies: [self::COMPONENT_SET]);
+
+        $body = $this->renderFrontendPage(self::FRONTEND_PLUGIN_TEST_BASE);
+
+        $this->assertStringContainsString(
+            '<div id="detailPid">detailPid=0</div>',
+            $body,
+            'The component set did not define "plugin.tx_academicpersons.detailPid".',
+        );
+        $this->assertStringNotContainsString('{$plugin.tx_academicpersons.detailPid}', $body);
+    }
+
+    /**
      * The counterpart of the test above for an installation without site sets. It also
      * covers `Configuration/TypoScript/Full/include_static_file.txt`, whose entries are
      * comma separated and reach nothing at all when they are written any other way.

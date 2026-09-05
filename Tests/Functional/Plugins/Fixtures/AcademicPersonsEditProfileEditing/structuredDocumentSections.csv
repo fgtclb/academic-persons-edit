@@ -1,0 +1,25 @@
+"tx_academicpersons_domain_model_contract",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","publish","sorting"
+,1,100,0,0,0,0,1,1914364800,"Rectorate",1,10
+,2,100,0,0,0,0,1,1756598400,"Professor",1,20
+"tx_academicpersons_domain_model_address",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","street","street_number","additional","zip","city","state","country","type","sorting"
+,1,100,0,0,0,0,1,"Campus Road","14","Building B","41061","Mönchengladbach","NRW","DE","business",10
+"tx_academicpersons_domain_model_email",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","email","type","sorting"
+,1,100,0,0,0,0,1,"rectorate@example.com","business",10
+,2,100,0,0,0,0,2,"professor@example.com","business",10
+"tx_academicpersons_domain_model_phone_number",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","phone_number","type","sorting"
+,1,100,0,0,0,0,1,"+49 2161 123456","business",10
+"tx_academicpersons_domain_model_profile_information",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","type","title","bodytext","link","year","year_start","year_end","sorting"
+,1,100,0,0,0,0,1,"cooperation","Cooperation first","<p>Cooperation body</p>","https://example.com/cooperation-first",\NULL,2025,2026,10
+,2,100,0,0,0,0,1,"cooperation","Cooperation second","","",\NULL,2024,2025,20
+,3,100,0,0,0,0,1,"lecture","Interdisciplinary perspectives on community development, welfare policy and social work practice","","",2025,\NULL,\NULL,10
+,4,100,0,0,0,0,1,"membership","Biodiversity monitoring association","","",\NULL,2025,2026,10
+,5,100,0,0,0,0,1,"membership","Sustainable development network","","",\NULL,2024,2025,20
+,6,100,0,0,0,0,1,"curriculum_vitae","Vita first","","",2025,\NULL,\NULL,10
+,7,100,0,0,0,0,1,"curriculum_vitae","Vita second","","",2024,\NULL,\NULL,20
+,8,100,0,0,0,0,1,"publication","Publication first","<p>Publication body</p>","https://example.com/publication",2023,\NULL,\NULL,10
+,9,100,0,0,0,0,1,"scientific_research","Research first","","",\NULL,2021,2024,10

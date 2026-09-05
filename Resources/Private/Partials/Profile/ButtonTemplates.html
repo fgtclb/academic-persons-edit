@@ -1,0 +1,36 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <template data-pe-edit-button-template>
+        <button
+            class="btn rounded-0 btn-outline-dark btn-sm text-truncate overflow-x-hidden mw-100"
+            data-academic-persons-profile-editing-activate-btn
+            data-pe-for=""
+            type="button"
+            aria-controls=""
+            aria-expanded="false"
+            title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}">
+            <span data-pe-button-label></span>
+        </button>
+    </template>
+    <template data-pe-new-button-template>
+        <button
+            class="btn rounded-0 btn-outline-success btn-sm text-truncate overflow-x-hidden mw-100"
+            data-academic-persons-profile-editing-activate-btn
+            data-pe-for=""
+            type="button"
+            aria-controls=""
+            aria-expanded="false"
+            title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}">
+            <span data-pe-button-label class="fs-5 lh-1">
+                <core:icon
+                    identifier="academic-persons-edit-edit"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </span>
+        </button>
+    </template>
+</html>

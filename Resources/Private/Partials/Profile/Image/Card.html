@@ -1,0 +1,105 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <section aria-labelledby="profile-editing-{profile.uid}-image-heading">
+        <f:if condition="{image}">
+            <h2
+                id="profile-editing-{profile.uid}-image-heading"
+                class="h2 fw-normal mb-4">
+                <f:translate
+                    key="profileEditing.image.heading"
+                    extensionName="academic_persons_edit" />
+            </h2>
+            <div data-pe-image-preview>
+                <f:if condition="{profile.image}">
+                    <f:then>
+                        <figure class="mb-0">
+                            <picture class="d-block">
+                                <source
+                                    srcset="{f:uri.image(
+                                        image: profile.image,
+                                        maxWidth: '390',
+                                        fileExtension: 'webp',
+                                    )}"
+                                    type="image/webp"
+                                    media="(min-width: 992px)" />
+                                <source
+                                    srcset="{f:uri.image(
+                                        image: profile.image,
+                                        maxWidth: '370',
+                                        fileExtension: 'webp',
+                                    )}"
+                                    type="image/webp"
+                                    media="(min-width: 768px)" />
+                                <source
+                                    srcset="{f:uri.image(
+                                        image: profile.image,
+                                        maxWidth: '690',
+                                        fileExtension: 'webp',
+                                    )}"
+                                    type="image/webp"
+                                    media="(min-width: 576px)" />
+                                <source
+                                    srcset="{f:uri.image(
+                                        image: profile.image,
+                                        maxWidth: '535',
+                                        fileExtension: 'webp',
+                                    )}"
+                                    type="image/webp" />
+                                <img
+                                    src="{f:uri.image(
+                                        image: profile.image,
+                                        maxWidth: 690,
+                                    )}"
+                                    alt="{profile.image.originalResource.alternative}"
+                                    class="img-fluid w-100 object-fit-cover"
+                                    title="{profile.image.originalResource.title}"
+                                    loading="lazy" />
+                            </picture>
+                            <f:if condition="{profile.image.originalResource.description}">
+                                <figcaption class="visually-hidden">
+                                    {profile.image.originalResource.description}
+                                </figcaption>
+                            </f:if>
+                        </figure>
+                    </f:then>
+                    <f:else>
+                        <figure class="mb-0">
+                            <img
+                                src="{f:uri.resource(path: 'Images/profile-placeholder.png')}"
+                                alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'academic_persons_edit')}"
+                                class="img-fluid w-100 object-fit-cover"
+                                title="{f:translate(key: 'profileEditing.user_image_not_available', extensionName: 'academic_persons_edit')}"
+                                loading="lazy" />
+                            <figcaption class="visually-hidden">
+                                {f:translate(key: 'profileEditing.user_image_not_available',
+                                extensionName: 'academic_persons_edit')}
+                            </figcaption>
+                        </figure>
+                    </f:else>
+                </f:if>
+            </div>
+            <f:if condition="{image.writable}">
+                <button
+                    class="btn rounded-0 btn-outline-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center mt-2"
+                    type="button"
+                    data-pe-open-image-view
+                    aria-expanded="false"
+                    aria-controls="profile-editing-{profile.uid}-image-view"
+                    title="{f:translate(key: 'profileEditing.image.edit', extensionName: 'academic_persons_edit')}"
+                    aria-label="{f:translate(key: 'profileEditing.image.edit', extensionName: 'academic_persons_edit')}">
+                    <core:icon
+                        identifier="academic-persons-edit-upload-image"
+                        size="small"
+                        alternativeMarkupIdentifier="inline" />
+                    <span class="ms-2"
+                        >{f:translate(key: 'profileEditing.image.edit',
+                        extensionName: 'academic_persons_edit')}</span
+                    >
+                </button>
+            </f:if>
+        </f:if>
+    </section>
+</html>

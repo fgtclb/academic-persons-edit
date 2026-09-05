@@ -1,0 +1,4 @@
+# A site that renders the editor without the page type its endpoints write
+# through - the shape of a site package that copied the extension's TypoScript
+# instead of including the site set or the static template.
+academicPersonsProfileEditingAjax >

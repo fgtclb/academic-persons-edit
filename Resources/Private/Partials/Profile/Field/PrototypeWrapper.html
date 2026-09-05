@@ -1,0 +1,71 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The row one field of a document or contact editor is rendered in.
+
+        Rendered three times into Partials/Profile/Prototypes.html - narrow,
+        wide and as a checkbox - so that the three differ in their column class
+        and in where the label sits, and in nothing else. The alternative was
+        three near identical <template> blocks, which is how the control set
+        drifted apart before Profile/Field/Control.html became its one home.
+
+        Arguments:
+          columnClass   the default column class of this shape; the server may
+                        override it per field through the "columnClass" slot
+          checkbox      the label follows the control instead of preceding it,
+                        and the row is the same "form-check form-switch" a
+                        profile field checkbox is rendered in by
+                        Profile/Field/Checkbox.html
+    </f:comment>
+    <div
+        class="{columnClass}"
+        data-pe-attr="class:columnClass data-pe-compact:compact">
+        <f:if condition="{checkbox}">
+            <f:then>
+                <div class="form-check form-switch">
+                    <template data-pe-list="control"></template>
+                    <label
+                        class="form-check-label ms-2"
+                        data-pe-attr="for:controlId"
+                        data-pe-slot="label"></label>
+                    <template data-pe-list="helptext"></template>
+                    <div
+                        class="invalid-feedback d-block"
+                        role="alert"
+                        data-pe-attr="id:errorId hidden:errorHidden"
+                        data-pe-slot="error"></div>
+                </div>
+            </f:then>
+            <f:else>
+                <div class="d-flex align-items-center">
+                    <label class="form-label" data-pe-attr="for:controlId">
+                        <span data-pe-slot="label"></span>
+                        <span
+                            class="text-danger ms-1"
+                            aria-hidden="true"
+                            data-pe-when="required"
+                            >*</span
+                        >
+                    </label>
+                    <template data-pe-list="helptext"></template>
+                </div>
+                <template data-pe-list="control"></template>
+                <div
+                    class="form-text text-end"
+                    aria-live="polite"
+                    data-pe-character-counter
+                    data-pe-when="hasCharacterLimit"
+                    data-pe-attr="data-pe-for:controlId">
+                    0 / <span data-pe-slot="characterLimit"></span>
+                </div>
+                <div
+                    class="invalid-feedback d-block"
+                    role="alert"
+                    data-pe-attr="id:errorId hidden:errorHidden"
+                    data-pe-slot="error"></div>
+            </f:else>
+        </f:if>
+    </div>
+</html>

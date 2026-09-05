@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `Controller\PhoneNumberController::editAction()` prefills its form with
+ * Profile editing prefills its contact form with
  * {@see PhoneNumberFormData::createFromPhoneNumber()}.
  */
 final class PhoneNumberFormDataTest extends UnitTestCase
@@ -58,15 +58,14 @@ final class PhoneNumberFormDataTest extends UnitTestCase
     }
 
     /**
-     * The factory produces a display object: nothing is bound to a request and nothing is
-     * overridden, so `PhoneNumberFactory` may not write any of it back.
+     * The factory produces a display object without explicit property overrides, so
+     * `PhoneNumberFactory` may not write any of it back.
      */
     #[Test]
     public function aFormDataCreatedFromAPhoneNumberAppliesNoPropertyToADomainModel(): void
     {
         $formData = PhoneNumberFormData::createFromPhoneNumber(new PhoneNumber());
 
-        $this->assertNull($formData->getArgumentName());
         $this->assertFalse($formData->shouldApplyProperty('phoneNumber'));
         $this->assertFalse($formData->shouldApplyProperty('type'));
     }

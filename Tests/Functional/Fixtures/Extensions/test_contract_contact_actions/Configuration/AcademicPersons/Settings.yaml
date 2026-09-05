@@ -1,0 +1,49 @@
+# A site package that takes the mutating actions away from the Contract
+# section without setting `readonly`, which is the shape the shipped
+# documentation calls "read-only rows with an editable Contract": `view` is
+# the only listed action, so no row may be edited, deleted or moved - and
+# `readonly` stays false, so a Contract itself can still be created.
+#
+# The `contracts` map is replaced as a whole, top-level merge, so it repeats
+# every key the section needs. The field lists are the minimum the Contract
+# editor and the three contact editors need to resolve at all; the actions are
+# what this fixture exists for.
+contracts:
+  label: 'Contracts'
+  type: contracts
+  fieldName: contracts
+  rowFields:
+    - position
+  actions:
+    - view
+  fields:
+    position:
+      fieldType: input
+      renderType: text
+      validators:
+        - required
+  contactSections:
+    physicalAddresses:
+      fields:
+        street:
+          fieldType: input
+          renderType: text
+          validators:
+            - required
+    emailAddresses:
+      fields:
+        emailAddress:
+          propertyName: email
+          fieldName: email
+          fieldType: input
+          renderType: email
+          validators:
+            - required
+            - email
+    phoneNumbers:
+      fields:
+        phoneNumber:
+          fieldType: input
+          renderType: phone
+          validators:
+            - required

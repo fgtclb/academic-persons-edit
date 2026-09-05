@@ -1,0 +1,103 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The editor of one contact, as a prototype.
+
+        One template for both places it is shown - below the section heading
+        for an "add" and inside its row for a view, an edit or a delete - which
+        is what the two partials this replaces already did, with the same
+        markup written twice.
+    </f:comment>
+    <template data-pe-proto="contact-editor-panel">
+        <section
+            class="border bg-body-tertiary p-3 p-lg-4"
+            data-pe-contract-contact-editor
+            data-pe-contract-contact-form
+            data-pe-attr="id:editorId aria-busy:busy">
+            <div
+                class="d-flex align-items-center justify-content-between gap-3 mb-4">
+                <h4
+                    class="h5 mb-0"
+                    tabindex="-1"
+                    data-pe-contract-contact-heading
+                    data-pe-slot="title"></h4>
+                <button
+                    type="button"
+                    class="btn rounded-0 btn-outline-secondary btn-sm"
+                    data-pe-contract-contact-cancel
+                    data-pe-when="showClose"
+                    data-pe-attr="disabled:pending">
+                    <f:translate
+                        key="actions.cancel"
+                        extensionName="academic_persons_edit" />
+                </button>
+            </div>
+            <div
+                class="alert alert-danger"
+                role="alert"
+                data-pe-attr="hidden:errorHidden"
+                data-pe-slot="error"></div>
+            <p
+                class="mb-4"
+                data-pe-when="isDelete"
+                data-pe-slot="deleteConfirmation"></p>
+            <dl class="row mb-0" data-pe-when="showDisplay">
+                <template data-pe-list="displayRows"></template>
+            </dl>
+            <div
+                class="row g-3"
+                data-pe-contract-contact-fields
+                data-pe-when="showFields">
+                <template data-pe-list="fields"></template>
+            </div>
+            <div
+                class="d-flex justify-content-end gap-2 mt-4"
+                data-pe-when="showActions">
+                <button
+                    type="button"
+                    class="btn rounded-0 btn-outline-secondary"
+                    data-pe-contract-contact-cancel
+                    data-pe-attr="disabled:pending">
+                    <f:translate
+                        key="actions.cancel"
+                        extensionName="academic_persons_edit" />
+                </button>
+                <button
+                    type="button"
+                    class="btn rounded-0 btn-primary"
+                    data-pe-contract-contact-save
+                    data-pe-when="isSave"
+                    data-pe-attr="disabled:pending">
+                    <span
+                        class="spinner-border spinner-border-sm me-1"
+                        aria-hidden="true"
+                        data-pe-attr="hidden:spinnerHidden"></span>
+                    <span>
+                        <f:translate
+                            key="actions.save"
+                            extensionName="academic_persons_edit" />
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    class="btn rounded-0 btn-danger"
+                    data-pe-contract-contact-save
+                    data-pe-when="isDelete"
+                    data-pe-attr="disabled:pending">
+                    <span
+                        class="spinner-border spinner-border-sm me-1"
+                        aria-hidden="true"
+                        data-pe-attr="hidden:spinnerHidden"></span>
+                    <span>
+                        <f:translate
+                            key="actions.delete"
+                            extensionName="academic_persons_edit" />
+                    </span>
+                </button>
+            </div>
+        </section>
+    </template>
+</html>

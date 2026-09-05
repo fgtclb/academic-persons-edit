@@ -1,0 +1,4 @@
+# Points the profile editing plugin at the template override of
+# `Tests/Functional/Plugins/Fixtures/Templates/`, which reads the `record` view
+# variable through `f:render.text`.
+plugin.tx_academicpersonsedit.view.templateRootPaths.100 = EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/Templates/

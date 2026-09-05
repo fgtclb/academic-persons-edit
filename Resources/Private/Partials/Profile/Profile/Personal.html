@@ -1,0 +1,38 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <section
+        aria-labelledby="profile-editing-{profile.uid}-personal-heading"
+        data-profile-section="{section.identifier}">
+        <h2
+            id="profile-editing-{profile.uid}-personal-heading"
+            class="h2 fw-normal mb-4">
+            <f:translate
+                key="profileEditing.section.personal"
+                extensionName="academic_persons_edit" />
+        </h2>
+        <form
+            id="profile-editing-{profile.uid}-personal-form"
+            class="academic-persons-profile-editing__form"
+            data-pe-fields-form>
+            <fieldset class="border-0 p-0 m-0">
+                <legend class="visually-hidden">
+                    <f:translate
+                        key="profileEditing.section.personal"
+                        extensionName="academic_persons_edit" />
+                </legend>
+                <div class="row g-3">
+                    <f:render
+                        partial="Profile/Profile/Fields"
+                        arguments="{
+                            profile: profile,
+                            items: section.items,
+                            fieldOptions: fieldOptions,
+                            sectionLabel: '{f:translate(key: \'profileEditing.section.personal\', extensionName: \'academic_persons_edit\')}'
+                        }" />
+                </div>
+            </fieldset>
+        </form>
+    </section>
+</html>

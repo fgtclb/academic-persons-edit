@@ -1,0 +1,8 @@
+# An installation that blanked both image upload validation settings.
+#
+# The server side has to fall back to the same defaults the file input advertises
+# rather than accepting anything - see ProfileController::configureImageFileUpload().
+plugin.tx_academicpersonsedit.settings.editForm.profileImage.validation {
+  maxFileSize =
+  allowedMimeTypes =
+}

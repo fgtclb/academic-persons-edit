@@ -1,0 +1,107 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <div
+        class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap gap-1 justify-content-center justify-content-md-end align-self-center ms-md-auto"
+        role="group"
+        aria-label="{f:translate(key: 'profileEditing.documents.actions', extensionName: 'academic_persons_edit')}"
+        data-pe-document-actions>
+        <f:if condition="{sortable}">
+            <button
+                type="button"
+                class="btn rounded-0 btn-sm btn-link text-body p-2 d-none d-md-inline-flex"
+                title="{f:translate(key: 'actions.dragSort', extensionName: 'academic_persons_edit')}"
+                aria-label="{f:translate(key: 'actions.dragSort', extensionName: 'academic_persons_edit')}"
+                draggable="true"
+                data-pe-document-drag>
+                <core:icon
+                    identifier="academic-persons-edit-sort-handle"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </button>
+        </f:if>
+        <f:for each="{actions}" as="action">
+            <f:switch expression="{action}">
+                <f:case value="view">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        aria-expanded="false"
+                        data-pe-label-collapsed="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        data-pe-label-expanded="{f:translate(key: 'actions.viewClose', extensionName: 'academic_persons_edit')}"
+                        data-pe-document-view>
+                        <span data-pe-view-icon="collapsed">
+                            <core:icon
+                                identifier="academic-persons-edit-view"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                        <span data-pe-view-icon="expanded" hidden="hidden">
+                            <core:icon
+                                identifier="academic-persons-edit-view-close"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                    </button>
+                </f:case>
+                <f:case value="down">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        title="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}"
+                        data-pe-document-sort="down">
+                        <core:icon
+                            identifier="academic-persons-edit-move-down"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                </f:case>
+                <f:case value="up">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        title="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}"
+                        data-pe-document-sort="up">
+                        <core:icon
+                            identifier="academic-persons-edit-move-up"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                </f:case>
+                <f:case value="delete">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        title="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+                        aria-expanded="false"
+                        data-pe-document-delete>
+                        <core:icon
+                            identifier="academic-persons-edit-delete"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                </f:case>
+                <f:case value="edit">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                        aria-expanded="false"
+                        data-pe-document-edit>
+                        <core:icon
+                            identifier="academic-persons-edit-edit"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                </f:case>
+            </f:switch>
+        </f:for>
+    </div>
+</html>

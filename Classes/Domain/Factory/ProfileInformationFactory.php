@@ -11,7 +11,7 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 
 /**
  * @todo Class naming (factory) and usage does not make much sense. Reconsider and adopt before making this API.
- * @internal to be used only in `EXT:academic_person_edit` and not part of public API. May change at any time.
+ * @internal to be used only in `EXT:academic_persons_edit` and not part of public API. May change at any time.
  */
 class ProfileInformationFactory
 {
@@ -104,8 +104,15 @@ class ProfileInformationFactory
     private function setYear(ValidationSet $validationSet, ProfileInformationModel $model, ProfileInformationFormData $form): ProfileInformationModel
     {
         if ($this->mayApplyProperty($validationSet, $form, 'year')) {
+            // The registered override *is* the submitted value, and `null` is the
+            // submitted "no year". Falling back to the form value for it would make
+            // an emptied year field restore what was stored.
             $override = $form->getPropertyOverride('year');
-            $model->setYear(is_int($override) ? $override : $form->getYear());
+            $model->setYear(match (true) {
+                is_int($override) => $override,
+                $override === null => null,
+                default => $form->getYear(),
+            });
         }
         return $model;
     }
@@ -114,7 +121,11 @@ class ProfileInformationFactory
     {
         if ($this->mayApplyProperty($validationSet, $form, 'yearStart')) {
             $override = $form->getPropertyOverride('yearStart');
-            $model->setYearStart(is_int($override) ? $override : $form->getYearStart());
+            $model->setYearStart(match (true) {
+                is_int($override) => $override,
+                $override === null => null,
+                default => $form->getYearStart(),
+            });
         }
         return $model;
     }
@@ -123,7 +134,11 @@ class ProfileInformationFactory
     {
         if ($this->mayApplyProperty($validationSet, $form, 'yearEnd')) {
             $override = $form->getPropertyOverride('yearEnd');
-            $model->setYearEnd(is_int($override) ? $override : $form->getYearEnd());
+            $model->setYearEnd(match (true) {
+                is_int($override) => $override,
+                $override === null => null,
+                default => $form->getYearEnd(),
+            });
         }
         return $model;
     }

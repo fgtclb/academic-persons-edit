@@ -17,15 +17,15 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `Controller\ProfileInformationController` instantiates this class through the
- * configurable `$profileInformationFormDataClassName`, not through a hard coded name, so
- * both static factories have to honour late static binding. It is the only form data
- * object with a second factory for the "new record" case and with nullable properties.
+ * Profile editing instantiates this class through the configurable
+ * `$profileInformationFormDataClassName`, not through a hard coded name, so both
+ * static factories have to honour late static binding. It is the only form data
+ * object with a second factory for the "new record" case and nullable properties.
  */
 final class ProfileInformationFormDataTest extends UnitTestCase
 {
     /**
-     * The `newAction()` case. The type is what decides which fields the template renders
+     * The new-record case. The type is what decides which fields the template renders
      * and under which type the record is stored, so it is the one value that must survive;
      * everything else has to arrive as its default so the form comes up empty.
      */
@@ -42,9 +42,9 @@ final class ProfileInformationFormDataTest extends UnitTestCase
     }
 
     /**
-     * `ProfileInformationController::newAction()` resolves an unknown type to an empty
-     * string rather than raising. The factory must not turn that into something else -
-     * the validator downstream is what rejects it.
+     * The request handling resolves an unknown type to an empty string rather than
+     * raising. The factory must not turn that into something else - the validator
+     * downstream is what rejects it.
      */
     #[Test]
     public function anUnresolvedTypeIsKeptAsAnEmptyString(): void
@@ -125,8 +125,8 @@ final class ProfileInformationFormDataTest extends UnitTestCase
     }
 
     /**
-     * Both factories produce display objects: nothing is bound to a request and nothing is
-     * overridden, so `ProfileInformationFactory` may not write any of it back.
+     * Both factories produce display objects without explicit property overrides, so
+     * `ProfileInformationFactory` may not write any of it back.
      */
     #[Test]
     public function neitherFactoryProducesAnApplicableProperty(): void
@@ -135,7 +135,6 @@ final class ProfileInformationFormDataTest extends UnitTestCase
             ProfileInformationFormData::createEmptyForType('vita'),
             ProfileInformationFormData::createFromProfileInformation(new ProfileInformation()),
         ] as $formData) {
-            $this->assertNull($formData->getArgumentName());
             $this->assertFalse($formData->shouldApplyProperty('type'));
             $this->assertFalse($formData->shouldApplyProperty('title'));
             $this->assertFalse($formData->shouldApplyProperty('year'));

@@ -24,19 +24,22 @@ The two exceptions the form data validators of this extension raise moved to
 :php:`@internal` classes only, and nothing in this set caught them from
 outside `EXT:academic_persons_edit`.
 
-The form partials under :file:`Resources/Private/Partials/Profile/Forms/` now
-declare the ``p`` ViewHelper namespace as
-``http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers``, because the
-``validationEnsure`` ViewHelper moved to `EXT:academic_base` as well. The five
-files are listed in :ref:`breaking-adapted-frontend-editing-fluid-files`,
-the page collecting every adapted Fluid file of this release.
+The ``validationEnsure`` ViewHelper moved to `EXT:academic_base` in the same
+step. No Fluid file of this extension declares the ``p`` namespace any more -
+the form partials that used it were removed with the editing rewrite
+(:ref:`breaking-replaced-profile-editing-plugin`), and the new editing view
+resolves the validation of a field from the settings graph in the controller
+instead of in the template.
 
 Impact
 ======
 
 Code catching one of the two exceptions by its old name no longer matches and
-has to import the `EXT:academic_base` name. A project overriding one of the
-form partials has to update the ``xmlns:p`` declaration, or the editing form
-no longer renders - see :ref:`breaking-adapted-frontend-editing-fluid-files`.
+has to import the `EXT:academic_base` name. A Fluid override still declaring
+``xmlns:p="http://typo3.org/ns/FGTCLB/AcademicPersons/ViewHelpers"`` fails to
+render, because Fluid resolves the ViewHelper class under the declared
+namespace and the old class no longer exists. In this extension that can only
+be an override of a file that no longer exists either - see
+:ref:`breaking-replaced-profile-editing-plugin`.
 
 .. index:: PHP-API, Fluid, ext:academic_persons_edit

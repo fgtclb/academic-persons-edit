@@ -1,0 +1,3 @@
+# A maximum file size the fixture image exceeds, so the size validator is observable
+# without shipping a multi megabyte fixture.
+plugin.tx_academicpersonsedit.settings.editForm.profileImage.validation.maxFileSize = 10B

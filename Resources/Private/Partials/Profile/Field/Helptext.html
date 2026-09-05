@@ -1,0 +1,25 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:if condition="{helptext}">
+        <button
+            type="button"
+            class="btn rounded-0 btn-link link-info p-0 ms-2 mb-1"
+            data-pe-helptext
+            data-pe-for="{elementId}"
+            data-bs-toggle="popover"
+            data-bs-trigger="focus"
+            data-bs-placement="right"
+            data-bs-custom-class="custom-popover"
+            data-bs-title="{f:translate(key: labelKey, extensionName: 'academic_persons_edit')}"
+            data-bs-content="{f:translate(key: helptext)}"
+            aria-label="{f:translate(key: helptext)}">
+            <core:icon
+                identifier="academic-persons-edit-help"
+                size="small"
+                alternativeMarkupIdentifier="inline" />
+        </button>
+    </f:if>
+</html>

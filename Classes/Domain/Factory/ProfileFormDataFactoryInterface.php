@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Domain\Factory;
 
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
-use FGTCLB\AcademicPersons\Controller\ProfileController;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersonsEdit\Controller\ProfileController;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 
 /**

@@ -10,31 +10,10 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 
 /**
  * @todo Class naming (factory) and usage does not make much sense. Reconsider and adopt before making this API.
- * @internal to be used only in `EXT:academic_person_edit` and not part of public API. May change at any time.
+ * @internal to be used only in `EXT:academic_persons_edit` and not part of public API. May change at any time.
  */
 class ProfileFactory
 {
-    public function createFromFormData(ValidationSet $validationSet, ProfileFormData $form): ProfileModel
-    {
-        $profile = new ProfileModel();
-        $profile = $this->setGender($validationSet, $profile, $form);
-        $profile = $this->setTitle($validationSet, $profile, $form);
-        $profile = $this->setFirstName($validationSet, $profile, $form);
-        $profile = $this->setMiddleName($validationSet, $profile, $form);
-        $profile = $this->setLastName($validationSet, $profile, $form);
-        $profile = $this->setWebsite($validationSet, $profile, $form);
-        $profile = $this->setWebsiteTitle($validationSet, $profile, $form);
-        $profile = $this->setPublicationsLink($validationSet, $profile, $form);
-        $profile = $this->setPublicationsLinkTitle($validationSet, $profile, $form);
-        $profile = $this->setTeachingArea($validationSet, $profile, $form);
-        $profile = $this->setCoreCompetences($validationSet, $profile, $form);
-        $profile = $this->setSupervisedThesis($validationSet, $profile, $form);
-        $profile = $this->setSupervisedDoctoralThesis($validationSet, $profile, $form);
-        $profile = $this->setMiscellaneous($validationSet, $profile, $form);
-        $profile = $this->setSkipSync($validationSet, $profile, $form);
-        return $profile;
-    }
-
     public function updateFromFormData(ValidationSet $validationSet, ProfileModel $profile, ProfileFormData $form): ProfileModel
     {
         $profile = $this->setGender($validationSet, $profile, $form);
@@ -57,8 +36,8 @@ class ProfileFactory
 
     /**
      * A value is applied to the domain model only when the property may be written
-     * (not readOnly / disabled by validation configuration) and has been sent within
-     * the current request or registered as override on the form data object.
+     * (not readOnly / disabled by validation configuration) and was explicitly
+     * registered as an override by the JSON request handler.
      */
     private function mayApplyProperty(ValidationSet $validationSet, ProfileFormData $form, string $propertyName): bool
     {
@@ -67,8 +46,8 @@ class ProfileFactory
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
             return false;
         }
-        // Only apply values sent within the current request or registered as override
-        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        // Only apply explicitly registered overrides. A PSR-14 listener may replace
+        // such an override before the transformation runs.
         return $form->shouldApplyProperty($propertyName);
     }
 

@@ -1,0 +1,20 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:render
+        partial="Profile/Documents/Header"
+        arguments="{items: items, rowFields: rowFields}" />
+    <div data-pe-document-items>
+        <f:for each="{items}" as="item" iteration="itemIteration">
+            <f:render
+                partial="Profile/Documents/ProfileInformationRow"
+                arguments="{item: item, itemIteration: itemIteration, rowFields: rowFields, actions: actions, sortable: sortable}" />
+        </f:for>
+    </div>
+    <div class="d-none" aria-hidden="true" data-pe-document-item-template>
+        <f:render
+            partial="Profile/Documents/ProfileInformationRow"
+            arguments="{template: true, rowFields: rowFields, actions: actions, sortable: sortable}" />
+    </div>
+</html>

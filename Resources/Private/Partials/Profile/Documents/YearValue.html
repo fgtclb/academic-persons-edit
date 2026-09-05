@@ -1,0 +1,19 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        One year cell of a compact timeline row. A four digit integer is printed
+        as it is stored, so there is nothing to format; `fallback` is the value
+        the row shows when the cell's own year is empty.
+    </f:comment>
+    <f:if condition="{value}">
+        <f:then>{value}</f:then>
+        <f:else>
+            <f:if condition="{fallback}">
+                <f:then>{fallback}</f:then>
+                <f:else>—</f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+</html>

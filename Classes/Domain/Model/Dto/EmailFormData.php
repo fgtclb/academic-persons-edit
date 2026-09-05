@@ -7,7 +7,7 @@ namespace FGTCLB\AcademicPersonsEdit\Domain\Model\Dto;
 use FGTCLB\AcademicPersons\Domain\Model\Email;
 
 /**
- * @internal to be used only in `EXT:academic_person_edit` and not part of public API. May change at any time.
+ * @internal to be used only in `EXT:academic_persons_edit` and not part of public API. May change at any time.
  */
 class EmailFormData extends AbstractFormData
 {

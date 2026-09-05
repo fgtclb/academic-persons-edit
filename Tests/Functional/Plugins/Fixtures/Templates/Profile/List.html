@@ -1,0 +1,17 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        Stands in for a project's own template override, and reads the one view
+        variable an override may read that Extbase does not provide by itself.
+
+        `f:render.text` refuses anything but a record object, which is exactly
+        how TYPO3 v14's header partial of EXT:fluid_styled_content reads the
+        header - so a controller that stops assigning `record` fails here, on
+        both core versions, instead of only in a v14 frontend.
+    </f:comment>
+    <div data-test-record-header>
+        <f:render.text record="{record}" field="header" />
+    </div>
+</html>

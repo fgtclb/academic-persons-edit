@@ -17,8 +17,6 @@ use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ProfileFactoryTest extends UnitTestCase
@@ -26,12 +24,11 @@ final class ProfileFactoryTest extends UnitTestCase
     /**
      * @param array<string, mixed> $sentProperties
      */
-    private function bindRequest(ProfileFormData $form, array $sentProperties): void
+    private function setOverrides(ProfileFormData $form, array $sentProperties): void
     {
-        $parameters = new ExtbaseRequestParameters();
-        $parameters->setArguments(['profileFormData' => $sentProperties]);
-        $form->setRequest((new ServerRequest())->withAttribute('extbase', $parameters));
-        $form->setArgumentName('profileFormData');
+        foreach ($sentProperties as $propertyName => $value) {
+            $form->setPropertyOverride($propertyName, $value);
+        }
     }
 
     private function createExistingProfile(): Profile
@@ -47,11 +44,11 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updateAppliesPropertySentInRequest(): void
+    public function updateAppliesOverriddenProperty(): void
     {
         $validationSet = new ValidationSet('profile', []);
         $form = new ProfileFormData(firstName: 'NewFirst');
-        $this->bindRequest($form, ['firstName' => 'NewFirst']);
+        $this->setOverrides($form, ['firstName' => 'NewFirst']);
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
 
@@ -59,26 +56,25 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updatePreservesPropertyNotSentInRequest(): void
+    public function updatePreservesPropertyWithoutOverride(): void
     {
         $validationSet = new ValidationSet('profile', []);
-        // Only firstName is sent, lastName defaults to '' on the form data object.
+        // Only firstName is overridden, lastName defaults to '' on the form data object.
         $form = new ProfileFormData(firstName: 'NewFirst');
-        $this->bindRequest($form, ['firstName' => 'NewFirst']);
+        $this->setOverrides($form, ['firstName' => 'NewFirst']);
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
 
-        // lastName was not part of the request and must not be overwritten with the empty default.
+        // lastName was not overridden and must not be overwritten with the empty default.
         $this->assertSame('OldLast', $profile->getLastName());
     }
 
     #[Test]
-    public function updateAppliesRegisteredOverrideEvenIfNotSentInRequest(): void
+    public function updateAppliesRegisteredOverride(): void
     {
         $validationSet = new ValidationSet('profile', []);
         $form = new ProfileFormData(firstName: 'NewFirst');
-        $this->bindRequest($form, ['firstName' => 'NewFirst']);
-        // Website was not sent, but an event registered an override value.
+        $this->setOverrides($form, ['firstName' => 'NewFirst']);
         $form->setPropertyOverride('website', 'OverrideWebsite');
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
@@ -87,11 +83,11 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updateAppliesBooleanOverrideEvenIfNotSentInRequest(): void
+    public function updateAppliesBooleanOverride(): void
     {
         $validationSet = new ValidationSet('profile', []);
         $form = new ProfileFormData(firstName: 'NewFirst');
-        $this->bindRequest($form, ['firstName' => 'NewFirst']);
+        $this->setOverrides($form, ['firstName' => 'NewFirst']);
         $form->setPropertyOverride('skipSync', true);
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
@@ -100,13 +96,13 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updateSkipsReadOnlyPropertyEvenIfSentInRequest(): void
+    public function updateSkipsReadOnlyPropertyEvenIfOverridden(): void
     {
         $validationSet = new ValidationSet('profile', [
             'gender' => new Validation('gender', 'gender', false, false, true, [], []),
         ]);
         $form = new ProfileFormData(gender: 'NewGender');
-        $this->bindRequest($form, ['gender' => 'NewGender']);
+        $this->setOverrides($form, ['gender' => 'NewGender']);
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
 
@@ -114,13 +110,13 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updateSkipsDisabledPropertyEvenIfSentInRequest(): void
+    public function updateSkipsDisabledPropertyEvenIfOverridden(): void
     {
         $validationSet = new ValidationSet('profile', [
             'title' => new Validation('title', 'title', false, true, false, [], []),
         ]);
         $form = new ProfileFormData(title: 'NewTitle');
-        $this->bindRequest($form, ['title' => 'NewTitle']);
+        $this->setOverrides($form, ['title' => 'NewTitle']);
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);
 
@@ -128,9 +124,9 @@ final class ProfileFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function updateWithoutRequestKeepsAllPersistedValues(): void
+    public function updateWithoutOverridesKeepsAllPersistedValues(): void
     {
-        // No request bound and no overrides: nothing may be applied, persisted data stays untouched.
+        // Without overrides nothing may be applied, persisted data stays untouched.
         $validationSet = new ValidationSet('profile', []);
         $form = new ProfileFormData(firstName: 'NewFirst', lastName: 'NewLast');
 

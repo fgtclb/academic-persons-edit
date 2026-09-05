@@ -1,0 +1,579 @@
+// The profile editing frontend (`Templates/Profile/Index.html`, the partials
+// below `Partials/Profile/` and the TypeScript modules below
+// `TypeScript/frontend/profile/`).
+//
+// Built by the repository's esbuild pipeline into
+// `Resources/Public/Css/frontend/profile-editing.css`, which is committed and
+// loaded by the template through the asset collector. Do not edit the CSS.
+//
+// The rules are deliberately Bootstrap flavoured: the plugin renders Bootstrap
+// utility classes and the site brings Bootstrap along. Everything here either
+// styles a state the JavaScript toggles (`is-dragging`, `is-drop-before`, the
+// enter and leave classes of the two editors) or corrects a theme rule that the
+// editor's sticky and overflowing layout collides with.
+
+// The custom elements of the editor. An unknown element is `display: inline` in
+// every browser, and each of these wraps block level content - the plugin root,
+// the document editor's collapse panel and a rich text field's textarea. Without
+// this rule they would be laid out as inline boxes, a flex or grid parent in the
+// site's theme would take the wrapper as its item instead of the container it
+// wraps, and the `grid-template-rows` the collapse animates would be applied
+// inside an inline box.
+academic-persons-edit-profile-editing,
+academic-persons-edit-document-editor,
+academic-persons-edit-rich-text {
+    display: block;
+}
+
+// "hidden" has to actually hide.
+//
+// The editor's elements toggle the `hidden` attribute on the regions they show
+// and hide - the image editor, the contact editors, a field message that has no
+// message, the form action bar of full form editing and the per-field action
+// groups it hides - rather than adding and removing them, and Bootstrap's own
+// `[hidden] { display: none !important }` is not enough for that: its display
+// utilities carry the same specificity, are `!important` as well and stand
+// later in the file, so a `hidden` `.d-flex` - which is what the image editor's
+// delete actions are - stays visible. The ancestor puts this above both of
+// them, and above the `display: grid` of the editor further down.
+.academic-persons-profile-editing [hidden] {
+    display: none !important;
+}
+
+body:has(.academic-persons-profile-editing) .section {
+    overflow: unset !important;
+}
+
+body:has(.academic-persons-profile-editing) .frame-space-after-none {
+    --frame-spacing: var(--frame-spacing-small);
+}
+
+body:has(.academic-persons-profile-editing) .sticky-top {
+    z-index: 900 !important;
+}
+
+.academic-persons-profile-editing .cursor-pointer {
+    cursor: pointer;
+}
+
+.academic-persons-profile-editing-list__image {
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+}
+
+.academic-persons-profile-editing .bg-body-tertiary {
+    --bs-tertiary-bg-rgb: 246, 248, 253;
+}
+
+// The cropper stage, and the widget CropperJS builds inside it.
+//
+// EXT:core ships CropperJS 1.6.1 and the image editor imports it from there
+// rather than carrying a copy - see "docs/development/frontend-assets.md". What
+// core does not deliver to a frontend page is the library's stylesheet: those
+// rules exist only inside the backend's own bundle. The widget is a handful of
+// bare `<div>` and `<span>` elements that CropperJS positions by inline styles
+// alone, so without what follows it renders as an invisible stack and nothing
+// can be dragged.
+//
+// The rules are therefore written here rather than copied over: the positioning
+// the widget needs to work at all, the shade over what is cropped away, the
+// outline around what is kept, the thirds, and handles big enough to grab on a
+// touch screen. Every one of them is scoped to the stage, so a `cropper-` class
+// that another extension on the same page brought along is untouched, and the
+// colours are the theme's rather than the library's fixed blue.
+.academic-persons-profile-editing__image-cropper {
+    position: relative;
+    height: clamp(20rem, 60vh, 36rem);
+    overflow: hidden;
+    background: var(--bs-tertiary-bg);
+}
+
+// The chosen file before CropperJS takes it over. It is measured through the
+// stage - the library reads the offset size of the parent of the image it is
+// handed - so a photograph must not push the stage out of shape first.
+.academic-persons-profile-editing__image-cropper > img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+// The source image, once the widget has replaced it, and anything else the
+// library takes out of the flow.
+.academic-persons-profile-editing__image-cropper .cropper-hidden {
+    display: none !important;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-container {
+    position: relative;
+    direction: ltr;
+    font-size: 0;
+    line-height: 0;
+    touch-action: none;
+    user-select: none;
+}
+
+// The two copies of the image the widget draws - the dimmed one and the one
+// inside the view box - fill the box CropperJS positions them by. The theme's
+// image rules and the `max-width` above would otherwise shrink them out of
+// alignment with it, and the crop would no longer be what is shown.
+.academic-persons-profile-editing__image-cropper .cropper-container img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: none;
+    max-height: none;
+    image-orientation: 0deg;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-wrap-box,
+.academic-persons-profile-editing__image-cropper .cropper-canvas,
+.academic-persons-profile-editing__image-cropper .cropper-drag-box,
+.academic-persons-profile-editing__image-cropper .cropper-crop-box {
+    position: absolute;
+    inset: 0;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-wrap-box,
+.academic-persons-profile-editing__image-cropper .cropper-canvas {
+    overflow: hidden;
+}
+
+// The surface the pointer is caught on. It covers the stage and shows nothing,
+// so that a drag started anywhere draws a new crop.
+.academic-persons-profile-editing__image-cropper .cropper-drag-box {
+    background-color: var(--bs-body-bg);
+    opacity: 0;
+}
+
+// What is cropped away. CropperJS puts this class on the drag box above rather
+// than on an element of its own, so it has to stand after it.
+.academic-persons-profile-editing__image-cropper .cropper-modal {
+    background-color: var(--bs-emphasis-color);
+    opacity: 0.5;
+}
+
+// What is kept.
+.academic-persons-profile-editing__image-cropper .cropper-view-box {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: 1px solid var(--bs-primary);
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-face,
+.academic-persons-profile-editing__image-cropper .cropper-line,
+.academic-persons-profile-editing__image-cropper .cropper-point {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+// The crop box as a whole, which is what moves it.
+.academic-persons-profile-editing__image-cropper .cropper-face {
+    top: 0;
+    left: 0;
+    background-color: var(--bs-body-bg);
+    opacity: 0.1;
+}
+
+// The thirds, and the centre of the crop.
+.academic-persons-profile-editing__image-cropper .cropper-dashed {
+    display: block;
+    position: absolute;
+    border: 0 dashed var(--bs-body-bg);
+    opacity: 0.5;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-dashed.dashed-h {
+    top: 33.33333%;
+    left: 0;
+    width: 100%;
+    height: 33.33333%;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-dashed.dashed-v {
+    top: 0;
+    left: 33.33333%;
+    width: 33.33333%;
+    height: 100%;
+    border-right-width: 1px;
+    border-left-width: 1px;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-center {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    opacity: 0.75;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-center::before,
+.academic-persons-profile-editing__image-cropper .cropper-center::after {
+    content: "";
+    display: block;
+    position: absolute;
+    background-color: var(--bs-body-bg);
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-center::before {
+    top: 0;
+    left: -0.25rem;
+    width: 0.5rem;
+    height: 1px;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-center::after {
+    top: -0.25rem;
+    left: 0;
+    width: 1px;
+    height: 0.5rem;
+}
+
+// The four edges, each of which resizes in one direction.
+.academic-persons-profile-editing__image-cropper .cropper-line {
+    background-color: var(--bs-primary);
+    opacity: 0.1;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-line.line-n {
+    top: -0.1875rem;
+    left: 0;
+    height: 0.3125rem;
+    cursor: ns-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-line.line-s {
+    bottom: -0.1875rem;
+    left: 0;
+    height: 0.3125rem;
+    cursor: ns-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-line.line-e {
+    top: 0;
+    right: -0.1875rem;
+    width: 0.3125rem;
+    cursor: ew-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-line.line-w {
+    top: 0;
+    left: -0.1875rem;
+    width: 0.3125rem;
+    cursor: ew-resize;
+}
+
+// The eight handles. They are bigger than the library's own five pixels: this
+// is a public page and a finger has to hit them.
+.academic-persons-profile-editing__image-cropper .cropper-point {
+    width: 0.75rem;
+    height: 0.75rem;
+    margin: -0.375rem;
+    border: 1px solid var(--bs-body-bg);
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    opacity: 1;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-n {
+    top: 0;
+    left: 50%;
+    cursor: ns-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-s {
+    top: 100%;
+    left: 50%;
+    cursor: ns-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-e {
+    top: 50%;
+    left: 100%;
+    cursor: ew-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-w {
+    top: 50%;
+    left: 0;
+    cursor: ew-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-ne {
+    top: 0;
+    left: 100%;
+    cursor: nesw-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-nw {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-se {
+    top: 100%;
+    left: 100%;
+    cursor: nwse-resize;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-point.point-sw {
+    top: 100%;
+    left: 0;
+    cursor: nesw-resize;
+}
+
+// The two cursors CropperJS switches between: a crop is drawn on the stage and
+// the crop box itself is moved.
+.academic-persons-profile-editing__image-cropper .cropper-crop {
+    cursor: crosshair;
+}
+
+.academic-persons-profile-editing__image-cropper .cropper-move {
+    cursor: move;
+}
+
+.academic-persons-profile-editing__image-preview-column,
+.academic-persons-profile-editing__profile-fields-column {
+    min-width: 0;
+}
+
+.academic-persons-profile-editing__image-preview-column {
+    scroll-margin-top: 1.5rem;
+}
+
+[data-pe-image-editor-target] {
+    scroll-margin-top: 2rem;
+}
+
+.academic-persons-profile-editing.is-image-closing {
+    overflow-anchor: none;
+}
+
+.academic-persons-profile-editing__image-editor {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+}
+
+.academic-persons-profile-editing__image-editor-content {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.academic-persons-profile-editing-image-editor-enter-active,
+.academic-persons-profile-editing-image-editor-leave-active {
+    transition:
+        grid-template-rows 0.3s ease,
+        padding-block 0.3s ease,
+        margin-bottom 0.3s ease,
+        border-width 0.3s ease,
+        opacity 0.2s ease,
+        transform 0.3s ease;
+}
+
+.academic-persons-profile-editing-image-editor-enter-from,
+.academic-persons-profile-editing-image-editor-leave-to {
+    grid-template-rows: 0fr;
+    padding-block: 0 !important;
+    margin-bottom: 0 !important;
+    border-width: 0 !important;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .academic-persons-profile-editing-image-editor-enter-active,
+    .academic-persons-profile-editing-image-editor-leave-active,
+    .academic-persons-profile-editing-document-collapse-enter-active,
+    .academic-persons-profile-editing-document-collapse-leave-active {
+        transition: none;
+    }
+}
+
+.academic-persons-profile-editing__document-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+}
+
+.academic-persons-profile-editing__document-collapse-content {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.academic-persons-profile-editing-document-collapse-enter-active,
+.academic-persons-profile-editing-document-collapse-leave-active {
+    transition:
+        grid-template-rows 0.3s ease,
+        padding-block 0.3s ease,
+        margin-block 0.3s ease,
+        border-width 0.3s ease,
+        opacity 0.2s ease,
+        transform 0.3s ease;
+}
+
+.academic-persons-profile-editing-document-collapse-enter-from,
+.academic-persons-profile-editing-document-collapse-leave-to {
+    grid-template-rows: 0fr;
+    padding-block: 0 !important;
+    margin-block: 0 !important;
+    border-width: 0 !important;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+}
+
+.academic-persons-profile-editing [data-pe-document-drag] {
+    cursor: grab;
+}
+
+.academic-persons-profile-editing [data-pe-document-drag]:active {
+    cursor: grabbing;
+}
+
+.academic-persons-profile-editing [data-pe-document-items] {
+    position: relative;
+}
+
+.academic-persons-profile-editing [data-pe-document-items].is-drag-active {
+    outline: 2px dashed rgba(var(--bs-primary-rgb), 0.55);
+    outline-offset: 0.375rem;
+}
+
+// The action group of a row stays on the row.
+//
+// A `.row` wraps, and a grid column is a flex item whose automatic minimum size
+// is the widest word it holds - so one long lecture title used to push the
+// action group, six buttons wide, onto a line of its own below the text. The
+// markup answers the second half of that with `col-md-auto flex-shrink-0` on
+// the group and `text-break` on the text cells; the automatic minimum size is
+// the half Bootstrap has no utility for, and it is taken away here, on the
+// hooks the header, the rows and the contact rows already carry rather than on
+// a class a partial would have to spell.
+//
+// The group keeps its width regardless: `col-md-auto` is `flex: 0 0 auto`, so
+// a zero minimum lets the text columns give way and not the buttons.
+.academic-persons-profile-editing [data-pe-document-list-header] > *,
+.academic-persons-profile-editing [data-pe-document-item] > *,
+.academic-persons-profile-editing [data-pe-contract-contact-item] > * {
+    min-width: 0;
+}
+
+.academic-persons-profile-editing [data-pe-document-item] {
+    position: relative;
+    transition:
+        opacity 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.academic-persons-profile-editing [data-pe-document-item].is-dragging {
+    z-index: 2;
+    opacity: 0.62;
+    outline: 2px dashed var(--bs-primary);
+    outline-offset: -2px;
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--bs-body-color-rgb), 0.2);
+}
+
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before,
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after {
+    box-shadow: inset 0 0 0 2px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before::before,
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after::after,
+.academic-persons-profile-editing [data-pe-document-items].is-drop-at-end::after {
+    position: absolute;
+    z-index: 3;
+    right: 0.75rem;
+    left: 0.75rem;
+    height: 0.25rem;
+    border-radius: 999px;
+    background-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.2);
+    content: "";
+    pointer-events: none;
+}
+
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before::before {
+    top: -0.125rem;
+}
+
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after::after,
+.academic-persons-profile-editing [data-pe-document-items].is-drop-at-end::after {
+    bottom: -0.125rem;
+}
+
+.academic-persons-profile-editing [data-pe-document-drag][draggable="false"] {
+    display: none;
+}
+
+.academic-persons-profile-editing [data-pe-document-sort]:disabled {
+    opacity: 0.35;
+}
+
+.academic-persons-profile-editing [data-pe-document-form] p {
+    margin-bottom: 0;
+}
+
+.custom-popover {
+    border-radius: 0;
+}
+
+.custom-popover * {
+    border-radius: 0;
+}
+
+// The contacts of a contract.
+//
+// Their striping, their dimming and the compact checkbox of a document field
+// are declarations rather than class names an element writes: every class of
+// the editor is spelled in a Fluid partial, and a rule that keys on the hooks
+// the prototypes already carry keeps it that way. `:nth-child(odd)` is the
+// first row, the third, the fifth - what the list used to add
+// `bg-body-tertiary` to.
+.academic-persons-profile-editing [data-pe-contract-contact-item]:nth-child(odd) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+// The rows of a document section, striped the same way. They used to be striped
+// twice - by Fluid on the first render and by a `classList.toggle()` after every
+// create, delete and sort - which is one visual concern solved in two places and
+// the only class an element still wrote. The container holds nothing but rows,
+// so `:nth-child(odd)` is the same set the index arithmetic produced.
+.academic-persons-profile-editing [data-pe-document-items] > [data-pe-document-item]:nth-child(odd) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+// A hidden record stays in the editor, dimmed but legible: its values are
+// drawn in the secondary text colour rather than through `opacity`, so the
+// controls - which pin their colour with `.text-body` - the `Hidden` tag and
+// the focus ring keep their contrast (WCAG 1.4.3 and 1.4.11).
+.academic-persons-profile-editing [data-pe-contract-contact-hidden] {
+    color: var(--bs-secondary-color);
+}
+
+.academic-persons-profile-editing [data-pe-contract-contact-sort]:disabled {
+    opacity: 0.35;
+}
+
+.academic-persons-profile-editing [data-pe-compact] {
+    display: flex;
+    align-items: flex-end;
+}
+
+// A panel that is waiting for its request says so with the pointer as well as
+// with `aria-busy`, which is the one attribute the elements set for it.
+.academic-persons-profile-editing [data-pe-document-view-container][aria-busy="true"],
+.academic-persons-profile-editing [data-pe-contract-contact-editor][aria-busy="true"] {
+    cursor: wait;
+}

@@ -1,0 +1,129 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        Every shape the browser rendered editors draw, rendered once per page.
+
+        The document editor and the contact list cannot be server rendered as
+        finished markup: their fields, labels, options and display values come
+        from the "documentForm" and "contractContactForm" responses, and those
+        endpoints answer field descriptors, never HTML. So Fluid renders the
+        shapes and JavaScript fills them - "Resources/Private/TypeScript/
+        frontend/profile/prototypes.ts" clones a template and resolves exactly
+        four attributes:
+
+          data-pe-slot="key"             the node's text becomes the value
+          data-pe-attr="attribute:key"   those attributes take the value
+          data-pe-when="key"             the node is removed when it is falsy
+          data-pe-list="key"             where repeated clones go
+
+        A prototype contains no branching. The only decision this tree makes
+        is which prototype is emitted - the "prototype" flag of
+        Profile/Field/Control.html and the shape argument of
+        Profile/Field/PrototypeWrapper.html - and this file makes none at all.
+
+        A case that would need a fifth verb is a case that should have been
+        server rendered. Two of them came up while this was written and both
+        were answered here or in CSS rather than in TypeScript: a save button
+        that is red for a delete is two buttons and a "data-pe-when", and the
+        striping of the contact rows is a ":nth-child" rule of
+        "Resources/Private/Scss/frontend/profile-editing.scss".
+
+        No element and no filler writes markup: every tag, every class
+        attribute and every label of the two editors is authored here. What
+        JavaScript does spell are the *state* classes it toggles on markup that
+        already exists - "d-none", "is-invalid" and the rest - and a few
+        selectors; both are part of the override contract and are listed in
+        Documentation/ProfileEditing/Index.rst.
+
+        Overriding this partial changes the markup of both editors. What an
+        override cannot change is the order the elements insert things in and
+        which slot carries which value - those are TypeScript.
+    </f:comment>
+
+    <f:comment>The five controls, all from Profile/Field/Control.html.</f:comment>
+    <template data-pe-proto="control-input">
+        <f:render
+            partial="Profile/Field/Control"
+            arguments="{prototype: true, control: 'input'}" />
+    </template>
+    <template data-pe-proto="control-textarea">
+        <f:render
+            partial="Profile/Field/Control"
+            arguments="{prototype: true, control: 'textarea', rows: 6}" />
+    </template>
+    <template data-pe-proto="control-rich-text">
+        <academic-persons-edit-rich-text>
+            <f:render
+                partial="Profile/Field/Control"
+                arguments="{prototype: true, control: 'richText', rows: 6}" />
+        </academic-persons-edit-rich-text>
+    </template>
+    <template data-pe-proto="control-select">
+        <f:render
+            partial="Profile/Field/Control"
+            arguments="{prototype: true, control: 'select'}" />
+    </template>
+    <template data-pe-proto="control-checkbox">
+        <f:render
+            partial="Profile/Field/Control"
+            arguments="{prototype: true, control: 'checkbox'}" />
+    </template>
+    <template data-pe-proto="option">
+        <option data-pe-slot="label" data-pe-attr="value:value"></option>
+    </template>
+
+    <f:comment>
+        The three field rows, all from Profile/Field/PrototypeWrapper.html.
+    </f:comment>
+    <template data-pe-proto="field-default">
+        <f:render
+            partial="Profile/Field/PrototypeWrapper"
+            arguments="{columnClass: 'col-12 col-md-6'}" />
+    </template>
+    <template data-pe-proto="field-wide">
+        <f:render
+            partial="Profile/Field/PrototypeWrapper"
+            arguments="{columnClass: 'col-12'}" />
+    </template>
+    <template data-pe-proto="field-checkbox">
+        <f:render
+            partial="Profile/Field/PrototypeWrapper"
+            arguments="{columnClass: 'col-12', checkbox: true}" />
+    </template>
+    <template data-pe-proto="helptext-button">
+        <button
+            type="button"
+            class="btn rounded-0 btn-link link-info p-0 ms-2 mb-1"
+            data-pe-helptext
+            data-bs-toggle="popover"
+            data-bs-trigger="focus"
+            data-bs-placement="right"
+            data-bs-custom-class="custom-popover"
+            data-pe-attr="data-bs-title:title data-bs-content:content aria-label:ariaLabel">
+            <core:icon
+                identifier="academic-persons-edit-help"
+                size="small"
+                alternativeMarkupIdentifier="inline" />
+        </button>
+    </template>
+
+    <f:comment>One term and one description of a view mode.</f:comment>
+    <template data-pe-proto="display-row">
+        <dt class="col-sm-4" data-pe-slot="label"></dt>
+        <dd class="col-sm-8">
+            <div data-pe-when="richText" data-pe-list="richValue"></div>
+            <span data-pe-when="plain" data-pe-slot="value"></span>
+        </dd>
+    </template>
+
+
+    <f:comment>
+        The prototypes of the two editors, in the partials that own them.
+    </f:comment>
+    <f:render partial="Profile/Documents/Editor" />
+    <f:render partial="Profile/Documents/ContractContacts" />
+    <f:render partial="Profile/Documents/ContractContactEditor" />
+</html>

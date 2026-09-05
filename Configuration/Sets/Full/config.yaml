@@ -1,7 +1,7 @@
-# Aggregate set: everything this extension ships, in one dependency.
+# Aggregate set: the ProfileEditing component under the extension's stable set name.
 #
-# It carries no payload of its own - each component is delivered by the set that
-# owns it, and listing it here would parse the same files a second time.
+# It carries no TypoScript or page-TSconfig payload of its own. The ProfileEditing
+# component owns those files, and listing them here would parse them twice.
 #
 # Do not rename the set: it is the name this extension has always published, and
 # site configurations depend on it.

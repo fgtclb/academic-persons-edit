@@ -1,0 +1,83 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:for each="{items}" as="item" iteration="itemIteration">
+        <f:variable
+            name="rowClass"
+            value="{f:if(condition: itemIteration.isOdd, then: 'bg-body-tertiary')}" />
+        <f:switch expression="{item.kind}">
+            <f:case value="special">
+                <f:switch expression="{item.special.renderType}">
+                    <f:case value="title">
+                        <f:render
+                            partial="Profile/Field/Group"
+                            arguments="{
+                                profile: profile,
+                                identifier: item.special.identifier,
+                                labelKey: 'profile.name.label',
+                                fields: item.special.fields,
+                                displayFields: item.special.fields,
+                                fieldIds: item.special.fieldIdentifiers,
+                                displayFieldIds: item.special.displayFieldIdentifiers,
+                                displayMode: 'join',
+                                rowClass: rowClass,
+                                helptext: item.special.helptext
+                            }" />
+                    </f:case>
+                </f:switch>
+            </f:case>
+            <f:case value="field">
+                <f:variable
+                    name="options"
+                    value="{fieldOptions.{item.field.identifier}}" />
+                <f:switch expression="{item.field.renderType}">
+                    <f:case value="select">
+                        <f:render
+                            partial="Profile/Field/Select"
+                            arguments="{profile: profile, field: item.field, options: options, rowClass: rowClass}" />
+                    </f:case>
+                    <f:case value="checkbox">
+                        <f:render
+                            partial="Profile/Field/Checkbox"
+                            arguments="{profile: profile, field: item.field, rowClass: rowClass}" />
+                    </f:case>
+                    <f:case value="combinedLink">
+                        <f:render
+                            partial="Profile/Field/Group"
+                            arguments="{
+                                profile: profile,
+                                identifier: item.field.identifier,
+                                labelKey: item.field.labelKey,
+                                fields: item.field.groupFields,
+                                displayFields: item.field.groupDisplayFields,
+                                fieldIds: item.field.groupFieldIdentifiers,
+                                displayFieldIds: item.field.groupDisplayFieldIdentifiers,
+                                displayMode: 'first',
+                                rowClass: rowClass,
+                                helptext: item.field.helptext
+                            }" />
+                    </f:case>
+                    <f:case value="ckeditor">
+                        <f:render
+                            partial="Profile/Field/Editable"
+                            arguments="{profile: profile, field: item.field, textarea: true, richText: true, rows: 5, rowClass: rowClass}" />
+                    </f:case>
+                    <f:case value="textarea">
+                        <f:render
+                            partial="Profile/Field/Editable"
+                            arguments="{profile: profile, field: item.field, textarea: true, rows: 5, rowClass: rowClass}" />
+                    </f:case>
+                    <f:defaultCase>
+                        <f:render
+                            partial="Profile/Field/Editable"
+                            arguments="{profile: profile, field: item.field, rowClass: rowClass}" />
+                    </f:defaultCase>
+                </f:switch>
+            </f:case>
+        </f:switch>
+    </f:for>
+    <f:render
+        partial="Profile/Field/FormActions"
+        arguments="{sectionLabel: sectionLabel}" />
+</html>

@@ -1,0 +1,114 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The panel of one document or contract, as a prototype.
+
+        Since ACE-262 the document editor is not server rendered as finished
+        markup: its fields, labels, options and display values come from the
+        "documentForm" response, which answers field descriptors. So this
+        partial renders the *shape* into a <template data-pe-proto> and
+        "elements/document-editor.ts" clones and fills it whenever a section is
+        opened - which keeps this file the override point it has always been.
+        See Partials/Profile/Prototypes.html for the four verbs.
+    </f:comment>
+    <template data-pe-proto="document-panel">
+        <section
+            class="academic-persons-profile-editing__document-collapse border bg-body p-3 p-lg-4 my-3"
+            data-pe-document-view-container
+            data-pe-attr="aria-busy:busy data-pe-document-kind:kind">
+            <div
+                class="academic-persons-profile-editing__document-collapse-content">
+                <form data-pe-document-form>
+                    <div
+                        class="d-flex align-items-center justify-content-between gap-3 mb-4">
+                        <h2
+                            class="display-6 fw-normal mb-0"
+                            tabindex="-1"
+                            data-pe-document-heading
+                            data-pe-slot="heading"></h2>
+                        <button
+                            type="button"
+                            class="btn rounded-0 btn-outline-secondary btn-sm"
+                            data-pe-document-cancel
+                            data-pe-when="showClose"
+                            data-pe-attr="disabled:pending">
+                            <f:translate
+                                key="actions.cancel"
+                                extensionName="academic_persons_edit" />
+                        </button>
+                    </div>
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                        data-pe-attr="hidden:errorHidden"
+                        data-pe-slot="error"></div>
+                    <p
+                        class="mb-4"
+                        data-pe-when="isDelete"
+                        data-pe-slot="deleteConfirmation"></p>
+                    <dl class="row mb-0" data-pe-when="showDisplay">
+                        <template data-pe-list="displayRows"></template>
+                    </dl>
+                    <div class="mt-5" data-pe-when="showContacts">
+                        <template data-pe-list="contacts"></template>
+                    </div>
+                    <div
+                        class="row g-3"
+                        data-pe-document-fields
+                        data-pe-when="showFields">
+                        <template data-pe-list="fields"></template>
+                    </div>
+                    <div
+                        class="d-flex justify-content-end gap-2 mt-4"
+                        data-pe-when="showActions">
+                        <button
+                            type="button"
+                            class="btn rounded-0 btn-outline-secondary"
+                            data-pe-document-cancel
+                            data-pe-attr="disabled:pending">
+                            <f:translate
+                                key="actions.cancel"
+                                extensionName="academic_persons_edit" />
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn rounded-0 btn-primary"
+                            data-pe-document-save
+                            data-pe-when="isSave"
+                            data-pe-attr="disabled:pending">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                aria-hidden="true"
+                                data-pe-attr="hidden:spinnerHidden"></span>
+                            <span>
+                                <f:translate
+                                    key="actions.save"
+                                    extensionName="academic_persons_edit" />
+                            </span>
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn rounded-0 btn-danger"
+                            data-pe-document-save
+                            data-pe-when="isDelete"
+                            data-pe-attr="disabled:pending">
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                aria-hidden="true"
+                                data-pe-attr="hidden:spinnerHidden"></span>
+                            <span>
+                                <f:translate
+                                    key="actions.delete"
+                                    extensionName="academic_persons_edit" />
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </template>
+
+</html>

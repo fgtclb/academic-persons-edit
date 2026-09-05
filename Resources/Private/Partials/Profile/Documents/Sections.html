@@ -1,0 +1,78 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <div data-pe-document-sections>
+        <f:variable
+            name="defaultEmptyMessage"
+            value="{f:translate(
+                key: 'profileEditing.documents.empty',
+                extensionName: 'academic_persons_edit',
+            )}" />
+        <f:for each="{sections}" as="section">
+            <section
+                class="mt-5"
+                aria-labelledby="profile-editing-{profile.uid}-document-section-{section.identifier}-heading"
+                data-pe-document-section
+                data-section-key="{section.identifier}"
+                data-section-field-name="{section.fieldName}"
+                data-section-record-type="{section.type}"
+                data-section-readonly="{f:if(condition: section.readOnly, then: '1', else: '0')}"
+                data-section-sortable="{f:if(condition: section.sortable, then: '1', else: '0')}"
+                data-section-position="{section.position}"
+                data-section-kind="{section.kind}">
+                <div
+                    class="d-flex align-items-center justify-content-between gap-3 mb-3"
+                    data-pe-document-section-header>
+                    <h2
+                        id="profile-editing-{profile.uid}-document-section-{section.identifier}-heading"
+                        class="display-6 fw-normal text-start mb-0">
+                        <f:translate
+                            key="{section.label}"
+                            default="{section.identifier}" />
+                    </h2>
+                    <f:if condition="{section.canCreate}">
+                        <button
+                            type="button"
+                            class="btn rounded-0 btn-sm btn-link p-2"
+                            aria-expanded="false"
+                            data-pe-document-add>
+                            <core:icon
+                                identifier="academic-persons-edit-add"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                            <span class="visually-hidden">
+                                <f:translate
+                                    key="actions.add"
+                                    extensionName="academic_persons_edit" />
+                            </span>
+                        </button>
+                    </f:if>
+                </div>
+                <div data-pe-document-add-collapse-target></div>
+                <f:switch expression="{section.kind}">
+                    <f:case value="contract">
+                        <f:render
+                            partial="Profile/Documents/Contract"
+                            arguments="{items: section.items, rowFields: section.rowFields, actions: section.actions, sortable: section.sortable}" />
+                    </f:case>
+                    <f:case value="profileInformation">
+                        <f:render
+                            partial="Profile/Documents/ProfileInformation"
+                            arguments="{items: section.items, rowFields: section.rowFields, actions: section.actions, sortable: section.sortable}" />
+                    </f:case>
+                </f:switch>
+                <div
+                    class="bg-body-tertiary py-2 ps-3 small text-body-secondary {f:if(condition: '{section.items -> f:count()} > 0', then: 'd-none')}"
+                    role="status"
+                    data-pe-document-empty-state>
+                    <f:translate
+                        key="profileEditing.documents.empty.{section.identifier}"
+                        extensionName="academic_persons_edit"
+                        default="{defaultEmptyMessage}" />
+                </div>
+            </section>
+        </f:for>
+    </div>
+</html>

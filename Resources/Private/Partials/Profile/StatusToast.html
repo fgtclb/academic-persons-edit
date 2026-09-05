@@ -1,0 +1,45 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <!--
+        Two live regions rather than one: a failed request has to interrupt a
+        screen reader, a successful one must not. A region's politeness cannot be
+        changed reliably once it is in the accessibility tree, so the assertive
+        one exists from the start and the JavaScript picks the region by status.
+    -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div
+            data-pe-status-toast="status"
+            class="toast"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto status-title"></strong>
+                <button
+                    type="button"
+                    class="btn-close rounded-0"
+                    data-bs-dismiss="toast"
+                    aria-label="{f:translate(key: 'profileEditing.status.close', extensionName: 'academic_persons_edit')}"></button>
+            </div>
+            <div class="toast-body status-message"></div>
+        </div>
+        <div
+            data-pe-status-toast="alert"
+            class="toast"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto status-title"></strong>
+                <button
+                    type="button"
+                    class="btn-close rounded-0"
+                    data-bs-dismiss="toast"
+                    aria-label="{f:translate(key: 'profileEditing.status.close', extensionName: 'academic_persons_edit')}"></button>
+            </div>
+            <div class="toast-body status-message"></div>
+        </div>
+    </div>
+</html>

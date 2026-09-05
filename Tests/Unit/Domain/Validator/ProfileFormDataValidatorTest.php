@@ -24,49 +24,107 @@ use TYPO3\CMS\Extbase\Error\Result;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * Validates the argument of `ProfileController::updateAction()` against the
- * validation set `profile`. The profile form is the largest of the six and the one
- * an integrator is most likely to extend, so the resolvability of every property is
- * what matters here rather than a single required field.
+ * The profile validator selects submitted fields from all configured profile
+ * sections and ignores configured relation fields which are not part of its DTO.
  */
 final class ProfileFormDataValidatorTest extends UnitTestCase
 {
-    private const VALIDATION_SET = 'profile';
+    private const VALIDATION_SET = 'information';
 
     #[Test]
-    public function theValidationSetProfileIsProcessed(): void
+    public function aConfiguredProfileSectionIsProcessed(): void
     {
         $result = $this->validate(
-            ValidationSettings::forIdentifier(self::VALIDATION_SET, ['lastName' => [RecordingValidator::class]]),
-            new ProfileFormData(lastName: 'Doe')
+            ValidationSettings::forProfileSection(self::VALIDATION_SET, ['lastName' => [RecordingValidator::class]]),
+            new ProfileFormData(lastName: 'Doe'),
+            ['lastName'],
         );
-
         $this->assertSame(['string(Doe)'], $this->messagesFor($result, 'lastName'));
     }
 
     #[Test]
-    public function aValidationSetRegisteredUnderAnotherIdentifierIsIgnored(): void
+    public function aConfiguredRelationFieldThatIsNotPartOfTheProfileDtoIsIgnored(): void
     {
         $result = $this->validate(
-            ValidationSettings::forIdentifier('profiles', ['lastName' => [RecordingValidator::class]]),
+            ValidationSettings::forProfileSection('information', ['email' => [RecordingValidator::class]]),
             new ProfileFormData(lastName: 'Doe')
         );
-
         $this->assertFalse($result->hasErrors());
     }
 
+    #[Test]
+    public function everyConfiguredProfileSectionKeepsAndProcessesItsOwnValidationSet(): void
+    {
+        $information = ValidationSettings::forProfileSection(
+            'information',
+            ['gender' => [RecordingValidator::class]],
+        );
+        $aboutme = ValidationSettings::forProfileSection(
+            'aboutme',
+            ['miscellaneous' => [RecordingValidator::class]],
+        );
+        $settings = new AcademicPersonsSettings(
+            profileSections: array_replace($information->profileSections, $aboutme->profileSections),
+        );
+        $result = $this->validate(
+            $settings,
+            new ProfileFormData(gender: 'female', miscellaneous: 'About'),
+            ['gender', 'miscellaneous'],
+        );
+        $this->assertSame(['string(female)'], $this->messagesFor($result, 'gender'));
+        $this->assertSame(['string(About)'], $this->messagesFor($result, 'miscellaneous'));
+    }
+
+    #[Test]
+    public function aConfiguredPropertyMissingFromThePartialSubmissionIsIgnored(): void
+    {
+        $result = $this->validate(
+            ValidationSettings::forProfileSection(self::VALIDATION_SET, ['gender' => [RecordingValidator::class]]),
+            new ProfileFormData(gender: ''),
+        );
+        $this->assertFalse($result->hasErrors());
+    }
+
+    #[Test]
+    public function aRegisteredOverrideIsValidatedInsteadOfThePersistedValue(): void
+    {
+        $formData = new ProfileFormData(lastName: 'Persisted');
+        $formData->setPropertyOverride('lastName', 'Submitted');
+        $result = $this->validate(
+            ValidationSettings::forProfileSection(self::VALIDATION_SET, ['lastName' => [RecordingValidator::class]]),
+            $formData,
+        );
+        $this->assertSame(['string(Submitted)'], $this->messagesFor($result, 'lastName'));
+    }
+
+    #[Test]
+    public function configuredProfileRichTextCharacterLimitCountsVisibleTextWithoutMarkup(): void
+    {
+        $settings = ValidationSettings::forProfileSection(
+            'aboutme',
+            [],
+            characterLimits: ['miscellaneous' => 5],
+        );
+        $valid = new ProfileFormData(miscellaneous: 'Persisted');
+        $valid->setPropertyOverride('miscellaneous', '<p><strong>12345</strong></p>');
+        $this->assertSame([], $this->messagesFor($this->validate($settings, $valid), 'miscellaneous'));
+        $invalid = new ProfileFormData(miscellaneous: 'Persisted');
+        $invalid->setPropertyOverride('miscellaneous', '<p><strong>123456</strong></p>');
+        $this->assertSame(
+            ['The text must not exceed %d characters.'],
+            $this->messagesFor($this->validate($settings, $invalid), 'miscellaneous'),
+        );
+    }
+
     /**
-     * The shipped configuration names `firstName`, `middleName` and `lastName`; the
-     * remaining ones are what a project adds. All of them have to resolve off the
-     * DTO, because an unreadable property silently becomes `null` and would then be
-     * reported as empty on every submit.
+     * All direct profile properties used by the profile editor must resolve off the DTO.
      */
     #[Test]
     #[DataProvider('configuredProperties')]
     public function aConfiguredPropertyResolvesToTheSubmittedValue(string $property, string $expectedDescription): void
     {
         $result = $this->validate(
-            ValidationSettings::forIdentifier(self::VALIDATION_SET, [$property => [RecordingValidator::class]]),
+            ValidationSettings::forProfileSection(self::VALIDATION_SET, [$property => [RecordingValidator::class]]),
             new ProfileFormData(
                 title: 'Dr.',
                 firstName: 'Jane',
@@ -83,9 +141,9 @@ final class ProfileFormDataValidatorTest extends UnitTestCase
                 supervisedThesis: 'Thesis',
                 teachingArea: 'Optics',
                 skipSync: true
-            )
+            ),
+            [$property],
         );
-
         $this->assertSame([$expectedDescription], $this->messagesFor($result, $property));
     }
 
@@ -95,24 +153,61 @@ final class ProfileFormDataValidatorTest extends UnitTestCase
     public static function configuredProperties(): array
     {
         return [
-            // Named in the shipped Configuration/AcademicPersons/Settings.yaml.
+            // Named in the shipped academic-persons/Configuration/AcademicPersons/Settings.yaml.
+            'gender' => ['gender', 'string(female)'],
             'firstName' => ['firstName', 'string(Jane)'],
             'middleName' => ['middleName', 'string(M.)'],
             'lastName' => ['lastName', 'string(Doe)'],
-            // Readable, but not configured by default.
-            'title' => ['title', 'string(Dr.)'],
-            'gender' => ['gender', 'string(female)'],
             'publicationsLink' => ['publicationsLink', 'string(https://example.org/pub)'],
-            'publicationsLinkTitle' => ['publicationsLinkTitle', 'string(Publications)'],
             'website' => ['website', 'string(https://example.org)'],
-            'websiteTitle' => ['websiteTitle', 'string(Homepage)'],
             'coreCompetences' => ['coreCompetences', 'string(Physics)'],
             'miscellaneous' => ['miscellaneous', 'string(Misc)'],
             'supervisedDoctoralThesis' => ['supervisedDoctoralThesis', 'string(Doctoral)'],
             'supervisedThesis' => ['supervisedThesis', 'string(Thesis)'],
             'teachingArea' => ['teachingArea', 'string(Optics)'],
-            'skipSync' => ['skipSync', 'bool(true)'],
+            // Direct title and generated combined-link companion properties remain readable.
+            'title' => ['title', 'string(Dr.)'],
+            'publicationsLinkTitle' => ['publicationsLinkTitle', 'string(Publications)'],
+            'websiteTitle' => ['websiteTitle', 'string(Homepage)'],
         ];
+    }
+
+    #[Test]
+    public function aDirectSpecialPropertyIsValidatedFromItsOwnConfiguration(): void
+    {
+        $settings = ValidationSettings::forProfileSection(self::VALIDATION_SET, []);
+        $formData = new ProfileFormData(skipSync: false);
+        $formData->setPropertyOverride('skipSync', true);
+        // Replace the special validation with a recording validator while keeping
+        // it outside every regular profile section.
+        $special = $settings->getSpecialField('skipSync');
+        $this->assertNotNull($special);
+        $settings = new AcademicPersonsSettings(
+            profileSections: $settings->profileSections,
+            specialFields: [
+                'skipSync' => new \FGTCLB\AcademicPersons\Settings\SpecialField(
+                    identifier: 'skipSync',
+                    type: 'special',
+                    fieldType: 'check',
+                    renderType: 'checkbox',
+                    fieldIdentifiers: [],
+                    validation: new \FGTCLB\AcademicBase\Settings\Validation(
+                        identifier: 'skipSync',
+                        fieldName: 'skip_sync',
+                        required: false,
+                        disabled: false,
+                        readOnly: false,
+                        validatorClassNames: [RecordingValidator::class],
+                        tcaConfig: ['type' => 'check'],
+                        inputType: 'checkbox',
+                    ),
+                    position: 0,
+                ),
+            ],
+        );
+        $result = $this->validate($settings, $formData);
+        $result = $this->validate($settings, $formData);
+        $this->assertSame(['bool(true)'], $this->messagesFor($result, 'skipSync'));
     }
 
     /**
@@ -124,12 +219,10 @@ final class ProfileFormDataValidatorTest extends UnitTestCase
     public function anythingButProfileFormDataIsRejected(mixed $subject): void
     {
         $validator = new ProfileFormDataValidator();
-        $validator->injectAcademicPersonsSettings(ValidationSettings::forIdentifier(self::VALIDATION_SET, []));
-
+        $validator->injectAcademicPersonsSettings(ValidationSettings::forProfileSection(self::VALIDATION_SET, []));
         $this->expectException(UnsuitableValidatorException::class);
         $this->expectExceptionCode(1297418975);
         $this->expectExceptionMessage('Not a valid profile object.');
-
         $validator->validate($subject);
     }
 
@@ -145,8 +238,19 @@ final class ProfileFormDataValidatorTest extends UnitTestCase
         ];
     }
 
-    private function validate(AcademicPersonsSettings $settings, mixed $subject): Result
-    {
+    /**
+     * @param list<string> $submittedProperties
+     */
+    private function validate(
+        AcademicPersonsSettings $settings,
+        mixed $subject,
+        array $submittedProperties = [],
+    ): Result {
+        if ($subject instanceof ProfileFormData) {
+            foreach ($submittedProperties as $property) {
+                $subject->setPropertyOverride($property, $subject->_getProperty($property));
+            }
+        }
         $validator = new ProfileFormDataValidator();
         $validator->injectAcademicPersonsSettings($settings);
         return $validator->validate($subject);

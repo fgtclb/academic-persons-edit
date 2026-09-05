@@ -15,11 +15,7 @@ use FGTCLB\AcademicBase\Settings\Exception\UnsuitableValidatorException;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\AbstractFormDataValidator;
 
 /**
- * The minimal concrete validator, shaped exactly like the six shipped ones: a type
- * guard, then `processValidationSet()` with the set of its section - here a document
- * section resolved by identifier. `processValidationSet()` is public but writes into
- * `$this->result`, which only `AbstractValidator::validate()` initializes, so the
- * shared machinery can only be exercised through a subclass.
+ * Minimal concrete validator selecting the validation set of one profile section.
  */
 final class TestFormDataValidator extends AbstractFormDataValidator
 {
@@ -34,7 +30,7 @@ final class TestFormDataValidator extends AbstractFormDataValidator
         }
         $this->processValidationSet(
             $value,
-            $this->getAcademicPersonsSettings()->getDocumentValidationSet($this->sectionIdentifier),
+            $this->getAcademicPersonsSettings()->getProfileValidationSet($this->sectionIdentifier),
         );
     }
 }

@@ -1,5 +1,6 @@
 plugin.tx_academicpersonsedit {
   settings {
+    detailPid = {$plugin.tx_academicpersons.detailPid}
     editForm {
       profileImage {
         targetFolder = 1:/profile-images
@@ -21,9 +22,24 @@ plugin.tx_academicpersonsedit {
       20 = EXT:fluid_styled_content/Resources/Private/Partials/
       30 = {$plugin.tx_academicpersonsedit.view.partialRootPath}
     }
-    layoutRootPaths {
-      0 = EXT:academic_persons_edit/Resources/Private/Layouts/
-      1 = {$plugin.tx_academicpersonsedit.view.layoutRootPath}
+  }
+}
+
+academicPersonsProfileEditingAjax = PAGE
+academicPersonsProfileEditingAjax {
+  typeNum = 1733735
+
+  10 < tt_content.academicpersonsedit_profileediting.20
+
+  config {
+    disableAllHeaderCode = 1
+    admPanel = 0
+    debug = 0
+    disablePrefixComment = 1
+    no_cache = 1
+    additionalHeaders.10 {
+      header = Content-Type: application/json
+      replace = 1
     }
   }
 }

@@ -7,12 +7,8 @@
     date="2015-11-10T06:53:10Z"
     product-name="academic_persons_edit"
   >
-    <header/>
+    <header />
     <body>
-      <trans-unit id="back">
-        <source>back</source>
-      </trans-unit>
-
       <!-- Table headers -->
 
       <trans-unit id="list.profile.assigned">
@@ -21,20 +17,17 @@
       <trans-unit id="list.profile">
         <source>Profile</source>
       </trans-unit>
-      <trans-unit id="list.profileInformations.year">
-        <source>Year</source>
+      <trans-unit id="list.language">
+        <source>Language</source>
       </trans-unit>
-      <trans-unit id="list.profileInformations.title">
-        <source>Title</source>
+      <trans-unit id="list.language.all">
+        <source>All languages</source>
       </trans-unit>
-      <trans-unit id="list.contract.position">
-        <source>Position</source>
+      <trans-unit id="list.language.unknown">
+        <source>Language %d</source>
       </trans-unit>
       <trans-unit id="list.actions">
         <source>Actions</source>
-      </trans-unit>
-      <trans-unit id="list.hidden.badge">
-        <source>Hidden</source>
       </trans-unit>
 
       <!-- No items found messages -->
@@ -42,102 +35,13 @@
       <trans-unit id="list.noProfilesFound">
         <source>No profiles found.</source>
       </trans-unit>
-      <trans-unit id="list.noContractsFound">
-        <source>No contracts found.</source>
-      </trans-unit>
-      <trans-unit id="list.nolecturesFound">
-        <source>No lectures found.</source>
-      </trans-unit>
-      <trans-unit id="list.nomembershipsFound">
-        <source>No memberships found.</source>
-      </trans-unit>
-      <trans-unit id="list.nopressMediaFound">
-        <source>No press media found.</source>
-      </trans-unit>
-      <trans-unit id="list.nopublicationsFound">
-        <source>No publications found.</source>
-      </trans-unit>
-      <trans-unit id="list.noscientificResearchFound">
-        <source>No scientific research found.</source>
-      </trans-unit>
-      <trans-unit id="list.novitaFound">
-        <source>No vita found.</source>
-      </trans-unit>
-      <trans-unit id="list.noPhysicalAddressesFound">
-        <source>No physical addresses found.</source>
-      </trans-unit>
-      <trans-unit id="list.noEmailAddressesFound">
-        <source>No email addresses found.</source>
-      </trans-unit>
-      <trans-unit id="list.noPhoneNumbersFound">
-        <source>No phone numbers found.</source>
-      </trans-unit>
-      <trans-unit id="list.noTranslationFound">
-        <source>No translation found.</source>
+
+      <!-- Profile image -->
+      <trans-unit id="profile.image.placeholder.alt">
+        <source>No profile image available</source>
       </trans-unit>
 
-      <!-- Show profile headers -->
-
-      <trans-unit id="profile.image">
-        <source>Image</source>
-      </trans-unit>
-      <trans-unit id="profile.personal">
-        <source>Personal data</source>
-      </trans-unit>
-      <trans-unit id="profile.contracts">
-        <source>Contracts</source>
-      </trans-unit>
-      <trans-unit id="profile.cooperation">
-        <source>Cooperations</source>
-      </trans-unit>
-      <trans-unit id="profile.lectures">
-        <source>Lectures</source>
-      </trans-unit>
-      <trans-unit id="profile.memberships">
-        <source>Memberships</source>
-      </trans-unit>
-      <trans-unit id="profile.pressMedia">
-        <source>Press media</source>
-      </trans-unit>
-      <trans-unit id="profile.publications">
-        <source>Publications</source>
-      </trans-unit>
-      <trans-unit id="profile.scientificResearch">
-        <source>Scientific research</source>
-      </trans-unit>
-      <trans-unit id="profile.vita">
-        <source>Vita</source>
-      </trans-unit>
-
-      <!-- Show profile information headers-->
-
-      <trans-unit id="profile.profileInformations.cooperation">
-        <source>Cooperation</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.lectures">
-        <source>Lecture</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.memberships">
-        <source>Membership</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.pressMedia">
-        <source>Press media</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.publications">
-        <source>Publication</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.scientificResearch">
-        <source>Scientific research</source>
-      </trans-unit>
-      <trans-unit id="profile.profileInformations.vita">
-        <source>Vita</source>
-      </trans-unit>
-
-      <!-- Show contract headers -->
-
-      <trans-unit id="contract.data">
-        <source>Contract data</source>
-      </trans-unit>
+      <!-- Contract headers -->
       <trans-unit id="contract.physicalAddresses">
         <source>Physical addresses</source>
       </trans-unit>
@@ -156,12 +60,6 @@
       <trans-unit id="contract.emailAddress">
         <source>Email address</source>
       </trans-unit>
-      <trans-unit id="contract.emailAddresses.email">
-        <source>Email</source>
-      </trans-unit>
-      <trans-unit id="contract.emailAddresses.type">
-        <source>Type</source>
-      </trans-unit>
       <trans-unit id="contract.phoneNumber">
         <source>Phone number</source>
       </trans-unit>
@@ -174,83 +72,44 @@
       <trans-unit id="profile.title.label">
         <source>Title</source>
       </trans-unit>
-      <trans-unit id="profile.title.placeholder">
-        <source>Prof.</source>
-      </trans-unit>
       <trans-unit id="profile.name.label">
         <source>Name</source>
       </trans-unit>
       <trans-unit id="profile.firstName.label">
         <source>First name</source>
       </trans-unit>
-      <trans-unit id="profile.firstName.placeholder">
-        <source>John</source>
-      </trans-unit>
       <trans-unit id="profile.middleName.label">
         <source>Middle name</source>
-      </trans-unit>
-      <trans-unit id="profile.middleName.placeholder">
-        <source>Paul</source>
       </trans-unit>
       <trans-unit id="profile.lastName.label">
         <source>Last name</source>
       </trans-unit>
-      <trans-unit id="profile.lastName.placeholder">
-        <source>Doe</source>
-      </trans-unit>
       <trans-unit id="profile.website.label">
         <source>Website</source>
-      </trans-unit>
-      <trans-unit id="profile.website.placeholder">
-        <source>https://www.example.com</source>
       </trans-unit>
       <trans-unit id="profile.websiteTitle.label">
         <source>Website title</source>
       </trans-unit>
-      <trans-unit id="profile.websiteTitle.placeholder">
-        <source>My personal website</source>
-      </trans-unit>
       <trans-unit id="profile.publicationsLink.label">
         <source>Publications link</source>
-      </trans-unit>
-      <trans-unit id="profile.publicationsLink.placeholder">
-        <source>https://www.publications.com</source>
       </trans-unit>
       <trans-unit id="profile.publicationsLinkTitle.label">
         <source>Publications link title</source>
       </trans-unit>
-      <trans-unit id="profile.publicationsLinkTitle.placeholder">
-        <source>My publications</source>
-      </trans-unit>
       <trans-unit id="profile.teachingArea.label">
         <source>Teaching area</source>
-      </trans-unit>
-      <trans-unit id="profile.teachingArea.placeholder">
-        <source>e.g. Computer Science</source>
       </trans-unit>
       <trans-unit id="profile.coreCompetences.label">
         <source>Core competences</source>
       </trans-unit>
-      <trans-unit id="profile.coreCompetences.placeholder">
-        <source>e.g. Software Development, Data Science</source>
-      </trans-unit>
       <trans-unit id="profile.supervisedThesis.label">
         <source>Supervises thesis</source>
-      </trans-unit>
-      <trans-unit id="profile.supervisedThesis.placeholder">
-        <source>e.g. Bachelor, Master</source>
       </trans-unit>
       <trans-unit id="profile.supervisedDoctoralThesis.label">
         <source>Supervises doctoral thesis</source>
       </trans-unit>
-      <trans-unit id="profile.supervisedDoctoralThesis.placeholder">
-        <source>e.g. PhD, Doctorate</source>
-      </trans-unit>
       <trans-unit id="profile.miscellaneous.label">
         <source>Miscellaneous</source>
-      </trans-unit>
-      <trans-unit id="profile.miscellaneous.placeholder">
-        <source>e.g. Hobbies, Interests</source>
       </trans-unit>
       <trans-unit id="profile.skipSync.label">
         <source>Disable profile sync</source>
@@ -264,47 +123,26 @@
       <trans-unit id="profileInformation.title.label">
         <source>Title</source>
       </trans-unit>
-      <trans-unit id="profileInformation.title.placeholder">
-        <source>My title</source>
-      </trans-unit>
       <trans-unit id="profileInformation.link.label">
         <source>Link</source>
-      </trans-unit>
-      <trans-unit id="profileInformation.link.placeholder">
-        <source>https://www.example.com</source>
       </trans-unit>
       <trans-unit id="profileInformation.year.label">
         <source>Year</source>
       </trans-unit>
-      <trans-unit id="profileInformation.year.placeholder">
-        <source>e.g. 2025</source>
-      </trans-unit>
       <trans-unit id="profileInformation.yearStart.label">
         <source>Start year</source>
-      </trans-unit>
-      <trans-unit id="profileInformation.yearStart.placeholder">
-        <source>e.g. 2020</source>
       </trans-unit>
       <trans-unit id="profileInformation.yearEnd.label">
         <source>End year</source>
       </trans-unit>
-      <trans-unit id="profileInformation.yearEnd.placeholder">
-        <source>e.g. 2025</source>
-      </trans-unit>
       <trans-unit id="profileInformation.bodytext.label">
         <source>Text</source>
-      </trans-unit>
-      <trans-unit id="profileInformation.bodytext.placeholder">
-        <source>Enter text here...</source>
       </trans-unit>
 
       <!-- Contract fields -->
 
       <trans-unit id="contract.position.label">
         <source>Position</source>
-      </trans-unit>
-      <trans-unit id="contract.position.placeholder">
-        <source>e.g. Professor, Lecturer</source>
       </trans-unit>
       <trans-unit id="contract.organisationalUnit.label">
         <source>Organisational unit</source>
@@ -321,26 +159,14 @@
       <trans-unit id="contract.location.label">
         <source>Location</source>
       </trans-unit>
-      <trans-unit id="contract.location.placeholder">
-        <source>e.g. Main Campus</source>
-      </trans-unit>
       <trans-unit id="contract.room.label">
         <source>Room</source>
-      </trans-unit>
-      <trans-unit id="contract.room.placeholder">
-        <source>e.g. 101</source>
       </trans-unit>
       <trans-unit id="contract.officeHours.label">
         <source>Office hours</source>
       </trans-unit>
-      <trans-unit id="contract.officeHours.placeholder">
-        <source>e.g. Monday 10-12, Wednesday 14-16</source>
-      </trans-unit>
       <trans-unit id="contract.publish.label">
         <source>Publish</source>
-      </trans-unit>
-      <trans-unit id="contract.published.label">
-        <source>Published</source>
       </trans-unit>
 
       <!-- Physical address fields -->
@@ -348,44 +174,23 @@
       <trans-unit id="physicalAddress.street.label">
         <source>Street</source>
       </trans-unit>
-      <trans-unit id="physicalAddress.street.placeholder">
-        <source>Examplestreet</source>
-      </trans-unit>
       <trans-unit id="physicalAddress.streetNumber.label">
         <source>Street number</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.streetNumber.placeholder">
-        <source>123</source>
       </trans-unit>
       <trans-unit id="physicalAddress.additional.label">
         <source>Additional</source>
       </trans-unit>
-      <trans-unit id="physicalAddress.additional.placeholder">
-        <source>e.g. 2nd floor</source>
-      </trans-unit>
       <trans-unit id="physicalAddress.zip.label">
         <source>Zip</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.zip.placeholder">
-        <source>12345</source>
       </trans-unit>
       <trans-unit id="physicalAddress.city.label">
         <source>City</source>
       </trans-unit>
-      <trans-unit id="physicalAddress.city.placeholder">
-        <source>Example City</source>
-      </trans-unit>
       <trans-unit id="physicalAddress.state.label">
         <source>State</source>
       </trans-unit>
-      <trans-unit id="physicalAddress.state.placeholder">
-        <source>Example State</source>
-      </trans-unit>
       <trans-unit id="physicalAddress.country.label">
         <source>Country</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.country.placeholder">
-        <source>Exmplate Country</source>
       </trans-unit>
       <trans-unit id="physicalAddress.type.label">
         <source>Type</source>
@@ -396,23 +201,235 @@
       <trans-unit id="phoneNumber.phoneNumber.label">
         <source>Phone number</source>
       </trans-unit>
-      <trans-unit id="phoneNumber.phoneNumber.placeholder">
-        <source>+49 123 4567890</source>
-      </trans-unit>
       <trans-unit id="phoneNumber.type.label">
         <source>Type</source>
       </trans-unit>
 
       <!-- Email address fields -->
 
-      <trans-unit id="emailAddress.emailAddress.label">
+      <trans-unit id="emailAddress.email.label">
         <source>Email address</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.emailAddress.placeholder">
-        <source>example@domain.com</source>
       </trans-unit>
       <trans-unit id="emailAddress.type.label">
         <source>Type</source>
+      </trans-unit>
+
+      <!-- Profile editing -->
+      <trans-unit id="profileEditing.backToList">
+        <source>Back to profile overview</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.missingAjaxPageType">
+        <source>This profile cannot be saved: the website is missing the page type the profile editor writes through. Please report this to the administrators of this website.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.btnEditAll">
+        <source>Edit all</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.btnCloseAll">
+        <source>Close all</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.section.personal">
+        <source>Personal data</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.section.about">
+        <source>About me</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.start">
+        <source>Start</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.from">
+        <source>From</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.to">
+        <source>To</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.year">
+        <source>Year</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.title">
+        <source>Title</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.position">
+        <source>Position</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.actions">
+        <source>Entry actions</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.actionsHeading">
+        <source>Actions</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.delete.confirm">
+        <source>Do you really want to delete this entry? This action cannot be undone.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.saved">
+        <source>The entry has been saved.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.deleted">
+        <source>The entry has been deleted.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.sorted">
+        <source>The order has been updated.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.delete.confirm">
+        <source>Do you really want to delete this contact? This action cannot be undone.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.actions">
+        <source>Contact actions</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.hidden">
+        <source>Hidden</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.status.hidden">
+        <source>The contact is now hidden in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.status.visible">
+        <source>The contact is now visible in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.contractContacts.empty">
+        <source>No contact details have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty">
+        <source>No entries have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.contracts">
+        <source>No contracts have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.cooperation">
+        <source>No cooperation entries have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.lectures">
+        <source>No lectures have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.memberships">
+        <source>No memberships have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.pressMedia">
+        <source>No press releases have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.vita">
+        <source>No vita entries have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.publications">
+        <source>No publications have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.empty.scientificResearch">
+        <source>No scientific research entries have been added yet.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.visibility.private">
+        <source>Private</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.visibility.public">
+        <source>Public</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.field.empty">
+        <source>Not specified</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.field.required">
+        <source>Required</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.heading">
+        <source>Profile image</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.edit">
+        <source>Edit</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.saving">
+        <source>Saving changes…</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.success.message">
+        <source>The profile has been updated.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.error.message">
+        <source>The profile could not be updated. Please try again.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.info.message">
+        <source>No changes where made. Please check your changes.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.success.title">
+        <source>Success</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.error.title">
+        <source>Error</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.info.title">
+        <source>Info</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.warning.title">
+        <source>Warning</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.validation">
+        <source>Please check the highlighted fields.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.editorError">
+        <source>The rich text editor could not be loaded. Please reload the page and try again.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.unchanged">
+        <source>There are no changes to save.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.actions.clear">
+        <source>Delete content</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.actions.group">
+        <source>Field actions</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.actions.formGroup" resname="profileEditing.actions.formGroup">
+        <source>Form actions</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.apply" resname="profileEditing.form.apply">
+        <source>Apply</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.apply.title" resname="profileEditing.form.apply.title">
+        <source>Save every changed field of this profile</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.undo" resname="profileEditing.form.undo">
+        <source>Undo</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.undo.title" resname="profileEditing.form.undo.title">
+        <source>Restore every field to the saved value and continue editing</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.discard" resname="profileEditing.form.discard">
+        <source>Discard</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.form.discard.title" resname="profileEditing.form.discard.title">
+        <source>Restore every field to the saved value and close the form</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.formReverted" resname="profileEditing.status.formReverted">
+        <source>All fields were restored to the saved values.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.content.empty">
+        <source>No content</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.user_image_not_available">
+        <source>To edit userimage, please click here.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.editor.title">
+        <source>Edit profile image</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.close">
+        <source>Close notification</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.editor.hint.select">
+        <source>Select an image to preview it. The profile image changes only after you save.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.editor.hint.ratio">
+        <source>Required aspect ratio</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.editor.deleteHint">
+        <source>The profile image is removed permanently unless another record still uses the file.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.editor.deleteConfirm">
+        <source>Remove the profile image?</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.upload.label">
+        <source>Choose image</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.status.uploaded">
+        <source>The profile image has been saved.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.status.missing">
+        <source>No new profile image was received. Please select the image again.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.image.status.deleted">
+        <source>The profile image has been deleted.</source>
       </trans-unit>
 
       <!-- Action buttons -->
@@ -420,41 +437,8 @@
       <trans-unit id="actions.view">
         <source>View</source>
       </trans-unit>
-      <trans-unit id="actions.edit">
-        <source>Edit</source>
-      </trans-unit>
-      <trans-unit id="actions.add">
-        <source>Add</source>
-      </trans-unit>
-      <trans-unit id="actions.replace">
-        <source>Replace</source>
-      </trans-unit>
-      <trans-unit id="actions.sortUp">
-        <source>Move upwards</source>
-      </trans-unit>
-      <trans-unit id="actions.sortDown">
-        <source>Move downwards</source>
-      </trans-unit>
-      <trans-unit id="actions.setToTop">
-        <source>Move to the top</source>
-      </trans-unit>
-      <trans-unit id="actions.setToBottom">
-        <source>Move to the bottom</source>
-      </trans-unit>
-      <trans-unit id="actions.delete">
-        <source>Delete</source>
-      </trans-unit>
-      <trans-unit id="actions.cancel">
-        <source>Cancel</source>
-      </trans-unit>
-      <trans-unit id="actions.save">
-        <source>Save</source>
-      </trans-unit>
-      <trans-unit id="actions.saveAndExit">
-        <source>Save and exit</source>
-      </trans-unit>
-      <trans-unit id="actions.translate">
-        <source>Translate</source>
+      <trans-unit id="actions.viewClose">
+        <source>Close details</source>
       </trans-unit>
       <trans-unit id="actions.hide">
         <source>Hide in frontend</source>
@@ -462,222 +446,34 @@
       <trans-unit id="actions.show">
         <source>Show in frontend</source>
       </trans-unit>
-
-      <!-- Confirm deletion -->
-
-      <trans-unit id="contract.delete">
-        <source>Do you really want to delete this contract?</source>
+      <trans-unit id="actions.edit">
+        <source>Edit</source>
       </trans-unit>
-      <trans-unit id="publications.delete">
-        <source>Do you really want to delete this publication?</source>
+      <trans-unit id="actions.add">
+        <source>Add</source>
       </trans-unit>
-      <trans-unit id="cooperation.delete">
-        <source>Do you really want to delete this cooperation?</source>
+      <trans-unit id="actions.sortUp">
+        <source>Move upwards</source>
       </trans-unit>
-      <trans-unit id="memberships.delete">
-        <source>Do you really want to delete this membership?</source>
+      <trans-unit id="actions.sortDown">
+        <source>Move downwards</source>
       </trans-unit>
-      <trans-unit id="vita.delete">
-        <source>Do you really want to delete this vita?</source>
+      <trans-unit id="actions.dragSort">
+        <source>Drag to reorder</source>
       </trans-unit>
-      <trans-unit id="lectures.delete">
-        <source>Do you really want to delete this lecture?</source>
+      <trans-unit id="actions.delete">
+        <source>Delete</source>
       </trans-unit>
-      <trans-unit id="pressMedia.delete">
-        <source>Do you really want to delete this press media?</source>
+      <trans-unit id="actions.undo">
+        <source>Undo</source>
       </trans-unit>
-      <trans-unit id="scientificResearch.delete">
-        <source>Do you really want to delete this scientific research?</source>
+      <trans-unit id="actions.cancel">
+        <source>Cancel</source>
       </trans-unit>
-      <trans-unit id="physicalAddress.delete">
-        <source>Do you really want to delete this physical address?</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.delete">
-        <source>Do you really want to delete this email address?</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.delete">
-        <source>Do you really want to delete this phone number?</source>
+      <trans-unit id="actions.save">
+        <source>Save</source>
       </trans-unit>
 
-      <!-- Success messages -->
-
-      <trans-unit id="profile.update.success">
-        <source>Profile updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="contract.create.success">
-        <source>Contract created successfully.</source>
-      </trans-unit>
-      <trans-unit id="contract.update.success">
-        <source>Contract updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="contract.delete.success">
-        <source>Contract deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="contract.sort.success">
-        <source>Contract sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.create.success">
-        <source>Physical address created successfully.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.update.success">
-        <source>Physical address updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.delete.success">
-        <source>Physical address deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.sort.success">
-        <source>Physical address sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.toggleVisibility.hidden.success">
-        <source>Physical address is now hidden in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.toggleVisibility.visible.success">
-        <source>Physical address is now visible in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="physicalAddress.toggleVisibility.error.notFound">
-        <source>Physical address could not be found.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.create.success">
-        <source>Phone number created successfully.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.update.success">
-        <source>Phone number updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.delete.success">
-        <source>Phone number deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.sort.success">
-        <source>Phone number sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.toggleVisibility.hidden.success">
-        <source>Phone number is now hidden in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.toggleVisibility.visible.success">
-        <source>Phone number is now visible in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="phoneNumber.toggleVisibility.error.notFound">
-        <source>Phone number could not be found.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.create.success">
-        <source>Email address created successfully.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.update.success">
-        <source>Email address updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.delete.success">
-        <source>Email address deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.sort.success">
-        <source>Email address sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.toggleVisibility.hidden.success">
-        <source>Email address is now hidden in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.toggleVisibility.visible.success">
-        <source>Email address is now visible in the frontend.</source>
-      </trans-unit>
-      <trans-unit id="emailAddress.toggleVisibility.error.notFound">
-        <source>Email address could not be found.</source>
-      </trans-unit>
-      <trans-unit id="scientific_research.create.success">
-        <source>Scientific research created successfully.</source>
-      </trans-unit>
-      <trans-unit id="scientific_research.update.success">
-        <source>Scientific research updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="scientific_research.delete.success">
-        <source>Scientific research deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="scientific_research.sort.success">
-        <source>Scientific research sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="vita.create.success">
-        <source>Vita created successfully.</source>
-      </trans-unit>
-      <trans-unit id="vita.update.success">
-        <source>Vita updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="vita.delete.success">
-        <source>Vita deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="vita.sort.success">
-        <source>Vita sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="membership.create.success">
-        <source>Membership created successfully.</source>
-      </trans-unit>
-      <trans-unit id="membership.update.success">
-        <source>Membership updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="membership.delete.success">
-        <source>Membership deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="membership.sort.success">
-        <source>Membership sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="cooperation.create.success">
-        <source>Cooperation created successfully.</source>
-      </trans-unit>
-      <trans-unit id="cooperation.update.success">
-        <source>Cooperation updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="cooperation.delete.success">
-        <source>Cooperation deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="cooperation.sort.success">
-        <source>Cooperation sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="publication.create.success">
-        <source>Publication created successfully.</source>
-      </trans-unit>
-      <trans-unit id="publication.update.success">
-        <source>Publication updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="publication.delete.success">
-        <source>Publication deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="publication.sort.success">
-        <source>Publication sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="lecture.create.success">
-        <source>Lecture created successfully.</source>
-      </trans-unit>
-      <trans-unit id="lecture.update.success">
-        <source>Lecture updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="lecture.delete.success">
-        <source>Lecture deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="lecture.sort.success">
-        <source>Lecture sorted successfully.</source>
-      </trans-unit>
-      <trans-unit id="press_media.create.success">
-        <source>Press media created successfully.</source>
-      </trans-unit>
-      <trans-unit id="press_media.update.success">
-        <source>Press media updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="press_media.delete.success">
-        <source>Press media deleted successfully.</source>
-      </trans-unit>
-      <trans-unit id="press_media.sort.success">
-        <source>Press media sorted successfully.</source>
-      </trans-unit>
-
-      <!-- Error Messages -->
-
-      <trans-unit id="contractFormData.validTo.error.1307719788">
-        <source>"Valid to" must be a valid date. (Seperated by .)</source>
-      </trans-unit>
-      <trans-unit id="contractFormData.validFrom.error.1307719788">
-        <source>"Valid from" must be a valid date. (Seperated by .)</source>
-      </trans-unit>
-      <trans-unit id="profileInformationFormData.yearStart.error.1332933658">
-        <source>"Year start" must be a number.</source>
-      </trans-unit>
-      <trans-unit id="profileInformationFormData.yearEnd.error.1332933658">
-        <source>"Year end" must be a number.</source>
-      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -1,0 +1,57 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <article
+        class="row g-0 align-items-center border-bottom py-2 py-lg-3 ps-3"
+        data-pe-document-item
+        data-item-uid="{contract.uid}"
+        data-item-sorting="{contract.sorting}"
+        data-item-position="{itemIteration.index}">
+        <f:for each="{rowFields}" as="rowField">
+            <f:switch expression="{rowField}">
+                <f:case value="from">
+                    <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
+                        <div class="d-md-none fw-semibold mb-1">
+                            <f:translate key="profileEditing.documents.from" extensionName="academic_persons_edit" />
+                        </div>
+                        <div data-pe-document-value="validFrom">
+                            <f:if condition="{contract.validFrom}">
+                                <f:then><f:format.date date="{contract.validFrom}" pattern="MEDIUMDATE" /></f:then>
+                                <f:else>—</f:else>
+                            </f:if>
+                        </div>
+                    </div>
+                </f:case>
+                <f:case value="to">
+                    <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
+                        <div class="d-md-none fw-semibold mb-1">
+                            <f:translate key="profileEditing.documents.to" extensionName="academic_persons_edit" />
+                        </div>
+                        <div data-pe-document-value="validTo">
+                            <f:if condition="{contract.validTo}">
+                                <f:then><f:format.date date="{contract.validTo}" pattern="MEDIUMDATE" /></f:then>
+                                <f:else>—</f:else>
+                            </f:if>
+                        </div>
+                    </div>
+                </f:case>
+                <f:case value="position">
+                    <div class="col-12 col-md py-1 pe-md-3 text-break">
+                        <div class="d-md-none fw-semibold mb-1">
+                            <f:translate key="profileEditing.documents.position" extensionName="academic_persons_edit" />
+                        </div>
+                        <div data-pe-document-value="position">
+                            <f:if condition="{contract.position}">
+                                <f:then>{contract.position}</f:then>
+                                <f:else>—</f:else>
+                            </f:if>
+                        </div>
+                    </div>
+                </f:case>
+            </f:switch>
+        </f:for>
+        <f:render partial="Profile/Documents/Actions" arguments="{actions: actions, sortable: sortable}" />
+        <div class="col-12 pe-3" data-pe-document-item-collapse-target></div>
+    </article>
+</html>

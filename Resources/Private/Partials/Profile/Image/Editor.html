@@ -1,0 +1,168 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <!--
+        The profile image editor.
+
+        It is rendered where it is shown - inside the image editor target of
+        "Templates/Profile/Index.html" - and wrapped in the element that drives
+        it. The element renders nothing: the form below is an Extbase
+        "f:form", it carries the "__trustedProperties" signature the property
+        mapper validates the upload against, and nothing in a browser can
+        recompute that. See
+        "Resources/Private/TypeScript/frontend/profile/elements/image-editor.ts".
+
+        Every state the markup below has - what is hidden, what is disabled,
+        which preview is shown - is written by that element. The attributes here
+        are the state a page is delivered in: closed, idle, without an error.
+    -->
+    <academic-persons-edit-image-editor>
+        <section
+            id="profile-editing-{profile.uid}-image-view"
+            class="academic-persons-profile-editing__image-editor border p-3 p-lg-4 mb-5"
+            aria-busy="false"
+            hidden="hidden"
+            data-pe-image-view-container>
+            <div class="academic-persons-profile-editing__image-editor-content">
+                <f:form
+                    action="uploadImage"
+                    controller="Profile"
+                    pageType="1733735"
+                    name="profile"
+                    object="{profile}"
+                    enctype="multipart/form-data"
+                    class="academic-persons-profile-editing__image-form">
+                    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+                        <h2
+                            class="display-6 fw-normal mb-0"
+                            tabindex="-1"
+                            data-pe-image-editor-heading>
+                            <f:translate
+                                key="profileEditing.image.editor.title"
+                                extensionName="academic_persons_edit" />
+                        </h2>
+                        <div
+                            class="d-flex align-items-center gap-2"
+                            data-pe-image-delete-actions>
+                            <button
+                                class="btn rounded-0 btn-danger"
+                                type="button"
+                                data-pe-delete-image
+                                title="{f:translate(key: 'profileEditing.image.editor.deleteHint', extensionName: 'academic_persons_edit')}">
+                                <f:translate
+                                    key="actions.delete"
+                                    extensionName="academic_persons_edit" />
+                            </button>
+                            <span
+                                class="text-danger"
+                                hidden="hidden"
+                                data-pe-delete-image-confirm-question>
+                                <f:translate
+                                    key="profileEditing.image.editor.deleteConfirm"
+                                    extensionName="academic_persons_edit" />
+                            </span>
+                            <button
+                                class="btn rounded-0 btn-outline-secondary"
+                                type="button"
+                                hidden="hidden"
+                                data-pe-cancel-delete-image>
+                                <f:translate
+                                    key="actions.cancel"
+                                    extensionName="academic_persons_edit" />
+                            </button>
+                            <button
+                                class="btn rounded-0 btn-danger"
+                                type="button"
+                                hidden="hidden"
+                                data-pe-confirm-delete-image
+                                title="{f:translate(key: 'profileEditing.image.editor.deleteHint', extensionName: 'academic_persons_edit')}">
+                                <f:translate
+                                    key="actions.delete"
+                                    extensionName="academic_persons_edit" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <fieldset data-pe-image-fieldset>
+                        <div class="mb-3" data-pe-image-view-preview>
+                            <div
+                                class="academic-persons-profile-editing__image-cropper"
+                                hidden="hidden"
+                                data-pe-image-cropper-stage>
+                                <img alt="" data-pe-image-cropper-source />
+                            </div>
+                            <img
+                                class="img-fluid"
+                                alt=""
+                                hidden="hidden"
+                                data-pe-image-selected-preview />
+                        </div>
+                        <p class="text-body-secondary">
+                            <f:translate
+                                key="profileEditing.image.editor.hint.select"
+                                extensionName="academic_persons_edit" />
+                        </p>
+                        <f:if condition="{image.renderType} == 'cropper'">
+                            <p class="text-body-secondary">
+                                <f:translate
+                                    key="profileEditing.image.editor.hint.ratio"
+                                    extensionName="academic_persons_edit" />:
+                                <strong>{image.settings.ratio}</strong>
+                            </p>
+                        </f:if>
+                        <label
+                            class="form-label"
+                            for="profile-editing-{profile.uid}-image">
+                            <f:translate
+                                key="profileEditing.image.upload.label"
+                                extensionName="academic_persons_edit" />
+                        </label>
+                        <div>
+                            <f:form.upload
+                                property="image"
+                                id="profile-editing-{profile.uid}-image"
+                                class="form-control form-control-sm"
+                                accept="{imageAllowedMimeTypes}"
+                                aria-describedby="profile-editing-{profile.uid}-image-error"
+                                aria-invalid="false"
+                                required="true" />
+                        </div>
+                    </fieldset>
+
+                    <div
+                        id="profile-editing-{profile.uid}-image-error"
+                        class="alert alert-danger mt-3 mb-0"
+                        role="alert"
+                        hidden="hidden"
+                        data-pe-image-error></div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button
+                            class="btn rounded-0 btn-outline-secondary"
+                            type="button"
+                            data-pe-close-image-view>
+                            <f:translate
+                                key="actions.cancel"
+                                extensionName="academic_persons_edit" />
+                        </button>
+                        <button
+                            class="btn rounded-0 btn-primary"
+                            type="submit"
+                            disabled="disabled"
+                            data-pe-upload-image>
+                            <span
+                                class="spinner-border spinner-border-sm me-1"
+                                aria-hidden="true"
+                                hidden="hidden"
+                                data-pe-image-upload-spinner></span>
+                            <f:translate
+                                key="actions.save"
+                                extensionName="academic_persons_edit" />
+                        </button>
+                    </div>
+                </f:form>
+            </div>
+        </section>
+    </academic-persons-edit-image-editor>
+</html>

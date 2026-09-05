@@ -1,0 +1,54 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <div
+        class="btn-group btn-group-sm d-none flex-shrink-0 {f:if(condition: besideHeading, then: 'ms-auto', else: 'align-self-end')}"
+        data-pe-field-actions
+        data-pe-for="{elementId}"
+        role="group"
+        aria-label="{f:translate(key: 'profileEditing.actions.group', extensionName: 'academic_persons_edit')}">
+        <button
+            class="btn rounded-0 btn-outline-danger"
+            data-pe-dismiss
+            data-pe-for="{elementId}"
+            type="button"
+            title="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'academic_persons_edit')}">
+            <span aria-hidden="true" class="fs-5 lh-1">
+                <core:icon
+                    identifier="academic-persons-edit-clear"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </span>
+        </button>
+        <button
+            class="btn rounded-0 btn-outline-secondary"
+            data-pe-cancel
+            data-pe-for="{elementId}"
+            type="button"
+            title="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}">
+            <span aria-hidden="true" class="fs-5 lh-1">
+                <core:icon
+                    identifier="academic-persons-edit-undo"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </span>
+        </button>
+        <button
+            class="btn rounded-0 btn-success"
+            data-pe-save
+            data-pe-for="{elementId}"
+            type="button"
+            title="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}">
+            <span aria-hidden="true" class="fs-5 lh-1">
+                <core:icon
+                    identifier="academic-persons-edit-save"
+                    size="small"
+                    alternativeMarkupIdentifier="inline" />
+            </span>
+        </button>
+    </div>
+</html>

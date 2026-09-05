@@ -1,0 +1,99 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <header
+        class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4 mb-5 pt-5 mt-5"
+        data-pe-profile-header>
+        <f:if condition="{title}">
+            <h1
+                id="profile-editing-{profile.uid}-name-heading"
+                class="h2 fw-bolder mb-0"
+                data-pe-profile-name
+                data-pe-profile-name-field-ids="{title.fieldIdentifiers}">
+                <f:for
+                    each="{title.fields}"
+                    as="field"
+                    iteration="fieldIteration">
+                    {profile.{field.propertyName}}<f:if
+                        condition="!{fieldIteration.isLast}">
+                    </f:if>
+                </f:for>
+            </h1>
+        </f:if>
+        <div
+            class="d-flex flex-wrap justify-content-between justify-content-lg-end align-items-center gap-4 ms-lg-auto">
+            <f:if condition="{skipSync}">
+                <f:variable
+                    name="syncElementId"
+                    value="profile-editing-{profile.uid}-skipSync" />
+                <form
+                    class="academic-persons-profile-editing__sync-form flex-shrink-0"
+                    data-pe-sync-form>
+                    <div
+                        class="form-check form-switch form-check-lg mb-0 d-flex flex-row align-items-center">
+                        <f:comment>
+                            The one form control of the editor that is not
+                            rendered through Profile/Field/Control.html. It is
+                            not a profile field: it deliberately carries the
+                            "__sync-checkbox" class and not the "__field" one,
+                            because frontend/profile/fields.ts collects the
+                            latter and would then save and validate the switch
+                            as if it were a mapped property. It is spelled once,
+                            with the same "disabled" expression Control.html
+                            uses, so read-only and disabled cannot drift apart.
+                        </f:comment>
+                        <f:form.checkbox
+                            name="skipSync"
+                            id="{syncElementId}"
+                            class="form-check-input academic-persons-profile-editing__sync-checkbox"
+                            value="1"
+                            checked="{profile.skipSync}"
+                            aria-describedby="{syncElementId}-error"
+                            aria-invalid="false"
+                            disabled="{f:if(condition: '{skipSync.validation.disabled} || {skipSync.validation.readOnly}', then: 'disabled')}" />
+                        <label
+                            class="form-check-label ms-3 cursor-pointer"
+                            for="{syncElementId}"
+                            title="{f:translate(key: 'profile.skipSync.description', extensionName: 'academic_persons_edit')}">
+                            <f:translate
+                                key="profile.skipSync.label"
+                                extensionName="academic_persons_edit" />
+                        </label>
+                        <f:render
+                            partial="Profile/Field/Helptext"
+                            arguments="{
+                                helptext: skipSync.helptext,
+                                labelKey: 'profile.skipSync.label',
+                                elementId: syncElementId
+                            }" />
+                        <div
+                            id="{syncElementId}-error"
+                            class="invalid-feedback"
+                            role="alert"></div>
+                    </div>
+                </form>
+            </f:if>
+            <!--
+                No fields form, no toggle: the button would open nothing, and
+                the "aria-controls" it carries would be an empty IDREF list.
+            -->
+            <f:if condition="{fieldsFormIds}">
+                <button
+                    class="btn rounded-0 btn-outline-secondary btn-sm flex-shrink-0"
+                    type="button"
+                    data-academic-persons-profile-editing-edit-all-btn
+                    data-pe-edit-all-label="{f:translate(key: 'profileEditing.btnEditAll', extensionName: 'academic_persons_edit')}"
+                    data-pe-close-all-label="{f:translate(key: 'profileEditing.btnCloseAll', extensionName: 'academic_persons_edit')}"
+                    aria-controls="{fieldsFormIds}"
+                    aria-pressed="false">
+                    <span data-pe-edit-all-button-label>
+                        <f:translate
+                            key="profileEditing.btnEditAll"
+                            extensionName="academic_persons_edit" />
+                    </span>
+                </button>
+            </f:if>
+        </div>
+    </header>
+</html>

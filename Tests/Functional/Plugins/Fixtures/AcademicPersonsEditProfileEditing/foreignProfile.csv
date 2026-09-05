@@ -1,0 +1,18 @@
+"fe_users"
+,"uid","pid","username","password","deleted","disable","usergroup","tx_extbase_type","first_name","last_name","email"
+,2,100,"intruder","",0,0,"","Tx_Academicpersonsedit_Domain_Model_FrontendUser","Eve","Intruder","eve@example.com"
+"tx_academicpersons_domain_model_profile"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","first_name","last_name","slug","frontend_users","contracts","cooperation"
+,2,100,0,0,0,0,"Eve","Intruder","eve-intruder",1,1,1
+"tx_academicpersons_feuser_mm"
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,2,2,1,1
+"tx_academicpersons_domain_model_contract"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","publish","sorting","physical_addresses"
+,90,100,0,0,0,0,2,1914364800,"Foreign rectorate",1,10,1
+"tx_academicpersons_domain_model_profile_information"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","type","title","bodytext","link","year","year_start","year_end","sorting"
+,90,100,0,0,0,0,2,"cooperation","Foreign cooperation","","",\NULL,2025,2026,10
+"tx_academicpersons_domain_model_address"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","street","zip","city","country","type","sorting"
+,90,100,0,0,0,0,90,"Foreign street 1","12345","Foreign city","DE","business",10

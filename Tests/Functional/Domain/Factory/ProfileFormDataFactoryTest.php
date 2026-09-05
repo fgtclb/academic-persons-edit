@@ -53,7 +53,7 @@ final class ProfileFormDataFactoryTest extends AbstractFactoryTestCase
         $this->assertInstanceOf(Profile::class, $profile);
 
         $formData = $this->get(ProfileFormDataFactoryInterface::class)->createFromProfile(
-            new PluginControllerActionContext($this->createExtbaseRequest([]), []),
+            new PluginControllerActionContext($this->createExtbaseRequest(), []),
             $profile,
         );
 
@@ -75,11 +75,8 @@ final class ProfileFormDataFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * The object is built for rendering, not for writing: it never went through the property
-     * mapper, so it carries neither request nor argument name and `shouldApplyProperty()` is
-     * `false` for everything. Feeding it into `ProfileFactory` - the shortcut of "I already have
-     * a form data object" - therefore writes nothing at all, silently. Asserted with the data of
-     * a *different* profile so that a factory ignoring the guard would be visible in the record.
+     * The object is built for rendering, not for writing, and therefore carries no overrides.
+     * Feeding it into `ProfileFactory` must not write its display values back to another profile.
      */
     #[Test]
     public function producedFormDataCarriesNoRequestAndThereforeWritesNothing(): void
@@ -87,10 +84,9 @@ final class ProfileFormDataFactoryTest extends AbstractFactoryTestCase
         $otherProfile = $this->persistenceManager()->getObjectByIdentifier(2, Profile::class);
         $this->assertInstanceOf(Profile::class, $otherProfile);
         $formData = $this->get(ProfileFormDataFactoryInterface::class)->createFromProfile(
-            new PluginControllerActionContext($this->createExtbaseRequest([]), []),
+            new PluginControllerActionContext($this->createExtbaseRequest(), []),
             $otherProfile,
         );
-        $this->assertNull($formData->getArgumentName());
         $this->assertFalse($formData->shouldApplyProperty('firstName'));
 
         $profile = $this->persistenceManager()->getObjectByIdentifier(1, Profile::class);

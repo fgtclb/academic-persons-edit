@@ -1,0 +1,209 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The only place a form control of the profile editor is spelled.
+
+        It is rendered from three call sites: inline for the permanent profile
+        fields (Field/Editable.html, Field/Select.html, Field/Checkbox.html),
+        once per control type into Partials/Profile/Prototypes.html, and -
+        through those prototypes - for every field of a document editor and of
+        a contact editor. Before this partial existed in that role there were
+        three implementations of one control set and two of them had already
+        drifted; a functional test now asserts that a prototype control and the
+        live control of the same type carry the same tag, the same classes and
+        the same attributes.
+
+        Arguments:
+          control       "input", "textarea", "richText", "select" or "checkbox"
+          prototype     true while rendering into Prototypes.html
+          profile       the profile (live mode only)
+          field         the field definition (live mode only)
+          elementId     the id of the control (live mode only)
+          options       value => label map of a select (live mode only)
+          rows          rows of a textarea
+          autosave      render the autosave hook on a checkbox (live mode only)
+
+        The one branch on "prototype" is below and there is deliberately no
+        second one: in prototype mode the concrete id, name and value are empty
+        and the "data-pe-attr" bindings carry their slot names instead, which
+        the filler of frontend/profile/prototypes.ts resolves.
+    </f:comment>
+    <f:if condition="{prototype}">
+        <f:then>
+            <f:variable name="controlId" value="" />
+            <f:variable name="controlName" value="" />
+            <f:variable name="controlValue" value="" />
+            <f:variable name="controlDescribedBy" value="" />
+            <f:variable name="controlType" value="text" />
+            <f:variable name="controlAutocomplete" value="" />
+            <f:variable name="controlPlaceholder" value="" />
+            <f:variable name="controlRequired" value="" />
+            <f:variable name="controlReadOnly" value="" />
+            <f:variable name="controlDisabled" value="" />
+            <f:variable name="controlChecked" value="" />
+            <f:variable name="controlCharacterLimit" value="" />
+            <f:variable name="controlCheckedLabel" value="" />
+            <f:variable name="controlUncheckedLabel" value="" />
+            <f:variable name="controlAutosave" value="" />
+            <f:variable
+                name="inputBindings"
+                value="id:controlId name:name type:inputType value:value required:required readonly:readOnly disabled:disabled aria-describedby:describedBy aria-invalid:invalid autocomplete:autocomplete placeholder:placeholder min:min max:max step:step data-pe-document-field:documentField data-pe-contract-contact-field:contactField" />
+            <f:variable
+                name="textareaBindings"
+                value="id:controlId name:name required:required readonly:readOnly disabled:disabled aria-describedby:describedBy aria-invalid:invalid data-pe-document-field:documentField data-pe-contract-contact-field:contactField" />
+            <f:variable
+                name="richTextBindings"
+                value="id:controlId name:name required:required readonly:readOnly disabled:disabled aria-describedby:describedBy aria-invalid:invalid data-pe-character-limit:characterLimit data-pe-document-field:documentField data-pe-contract-contact-field:contactField" />
+            <f:variable name="selectListKey" value="options" />
+            <f:variable
+                name="selectBindings"
+                value="id:controlId name:name required:required disabled:disabled aria-describedby:describedBy aria-invalid:invalid data-pe-document-field:documentField data-pe-contract-contact-field:contactField" />
+            <f:variable
+                name="checkboxBindings"
+                value="id:controlId name:name checked:checked disabled:disabled aria-describedby:describedBy aria-invalid:invalid data-pe-autosave-on-change:autosave data-pe-checked-label:checkedLabel data-pe-unchecked-label:uncheckedLabel data-pe-document-field:documentField data-pe-contract-contact-field:contactField" />
+        </f:then>
+        <f:else>
+            <f:variable name="controlId" value="{elementId}" />
+            <f:variable name="controlName" value="{field.propertyName}" />
+            <f:variable
+                name="controlValue"
+                value="{profile.{field.propertyName}}" />
+            <f:variable name="controlDescribedBy" value="{elementId}-error" />
+            <f:comment>
+                A date is typed into a text control here as well. The field
+                type of the settings graph stays "date" - it is what the
+                endpoint validates and formats by - but the native
+                <input type="date"> is not used anywhere in this editor: it
+                follows the locale of the browser rather than the one of the
+                site, and its calendar is not the date picker this editor is
+                meant to get. No shipped profile field is a date; the mapping
+                is here so that one configured by an integrator renders the
+                same control as the two contract dates.
+            </f:comment>
+            <f:variable
+                name="controlType"
+                value="{f:if(condition: '{field.validation.inputType} == \'date\'', then: 'text', else: field.validation.inputType)}" />
+            <f:variable
+                name="controlAutocomplete"
+                value="{field.autocomplete}" />
+            <f:comment>
+                No permanent profile field declares a placeholder. The variable
+                exists so that the one control partial spells the attribute
+                once; an empty value takes it off the tag, the same way an
+                empty autocomplete does.
+            </f:comment>
+            <f:variable name="controlPlaceholder" value="" />
+            <f:variable
+                name="controlRequired"
+                value="{f:if(condition: field.validation.required, then: 'required')}" />
+            <f:variable
+                name="controlReadOnly"
+                value="{f:if(condition: field.validation.readOnly, then: 'readonly')}" />
+            <f:variable
+                name="controlDisabled"
+                value="{f:if(condition: '{field.validation.disabled} || {field.validation.readOnly}', then: 'disabled')}" />
+            <f:variable
+                name="controlChecked"
+                value="{f:if(condition: '{profile.{field.propertyName}}', then: 'checked')}" />
+            <f:variable
+                name="controlCharacterLimit"
+                value="{field.validation.characterLimit}" />
+            <f:variable
+                name="controlCheckedLabel"
+                value="{f:translate(key: 'profileEditing.visibility.public', extensionName: 'academic_persons_edit')}" />
+            <f:variable
+                name="controlUncheckedLabel"
+                value="{f:translate(key: 'profileEditing.visibility.private', extensionName: 'academic_persons_edit')}" />
+            <f:variable
+                name="controlAutosave"
+                value="{f:if(condition: '{autosave} && !{field.validation.disabled} && !{field.validation.readOnly}', then: 'true')}" />
+            <f:variable name="inputBindings" value="" />
+            <f:variable name="textareaBindings" value="" />
+            <f:variable name="richTextBindings" value="" />
+            <f:variable name="selectListKey" value="" />
+            <f:variable name="selectBindings" value="" />
+            <f:variable name="checkboxBindings" value="" />
+        </f:else>
+    </f:if>
+    <f:switch expression="{control}">
+        <f:case value="select">
+            <f:form.select
+                name="{controlName}"
+                id="{controlId}"
+                class="flex-grow-1 w-100 form-select form-select-sm academic-persons-profile-editing__field"
+                options="{options}"
+                value="{controlValue}"
+                prependOptionLabel="&#8212;"
+                prependOptionValue=""
+                aria-describedby="{controlDescribedBy}"
+                aria-invalid="false"
+                required="{controlRequired}"
+                disabled="{controlDisabled}"
+                data-pe-list="{selectListKey}"
+                data-pe-attr="{selectBindings}" />
+        </f:case>
+        <f:case value="checkbox">
+            <f:form.checkbox
+                name="{controlName}"
+                id="{controlId}"
+                class="form-check-input academic-persons-profile-editing__field"
+                value="1"
+                checked="{controlChecked}"
+                disabled="{controlDisabled}"
+                aria-describedby="{controlDescribedBy}"
+                aria-invalid="false"
+                data-pe-autosave-on-change="{controlAutosave}"
+                data-pe-checked-label="{controlCheckedLabel}"
+                data-pe-unchecked-label="{controlUncheckedLabel}"
+                data-pe-attr="{checkboxBindings}" />
+        </f:case>
+        <f:case value="richText">
+            <f:form.textarea
+                name="{controlName}"
+                id="{controlId}"
+                value="{controlValue}"
+                class="form-control form-control-sm academic-persons-profile-editing__field"
+                rows="{rows}"
+                disabled="{controlDisabled}"
+                required="{controlRequired}"
+                readonly="{controlReadOnly}"
+                aria-describedby="{controlDescribedBy}"
+                aria-invalid="false"
+                data-pe-rich-text="true"
+                data-pe-character-limit="{controlCharacterLimit}"
+                data-pe-attr="{richTextBindings}" />
+        </f:case>
+        <f:case value="textarea">
+            <f:form.textarea
+                name="{controlName}"
+                id="{controlId}"
+                value="{controlValue}"
+                class="form-control form-control-sm academic-persons-profile-editing__field"
+                rows="{rows}"
+                disabled="{controlDisabled}"
+                required="{controlRequired}"
+                readonly="{controlReadOnly}"
+                aria-describedby="{controlDescribedBy}"
+                aria-invalid="false"
+                data-pe-attr="{textareaBindings}" />
+        </f:case>
+        <f:defaultCase>
+            <f:form.textfield
+                name="{controlName}"
+                id="{controlId}"
+                value="{controlValue}"
+                type="{controlType}"
+                class="flex-grow-1 w-100 form-control form-control-sm academic-persons-profile-editing__field"
+                disabled="{controlDisabled}"
+                required="{controlRequired}"
+                readonly="{controlReadOnly}"
+                aria-describedby="{controlDescribedBy}"
+                aria-invalid="false"
+                autocomplete="{controlAutocomplete}"
+                placeholder="{controlPlaceholder}"
+                data-pe-attr="{inputBindings}" />
+        </f:defaultCase>
+    </f:switch>
+</html>

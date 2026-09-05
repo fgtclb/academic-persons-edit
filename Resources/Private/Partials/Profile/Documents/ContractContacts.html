@@ -1,0 +1,175 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The contacts of one contract, as prototypes: one section per kind, one
+        row per contact and one cell per summary column.
+
+        The list comes with the contract's own "documentForm" response, so the
+        markup is a shape here and "elements/contract-contacts.ts" fills it.
+        The editor a row opens is Profile/Documents/ContractContactEditor.html.
+    </f:comment>
+    <template data-pe-proto="contact-section">
+        <section
+            class="pt-4 mt-4"
+            data-pe-attr="data-pe-contract-contact-section:identifier">
+            <div
+                class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                <h3 class="h4 mb-0" data-pe-slot="label"></h3>
+                <button
+                    type="button"
+                    class="btn rounded-0 btn-sm btn-link p-2"
+                    data-pe-contract-contact-add
+                    data-pe-attr="aria-controls:editorId aria-expanded:addExpanded disabled:addDisabled">
+                    <core:icon
+                        identifier="academic-persons-edit-add"
+                        size="small"
+                        alternativeMarkupIdentifier="inline" />
+                    <span class="visually-hidden">
+                        <f:translate
+                            key="actions.add"
+                            extensionName="academic_persons_edit" />
+                    </span>
+                </button>
+            </div>
+            <div
+                class="mb-3"
+                data-pe-list="addEditor"
+                data-pe-attr="hidden:addEditorHidden"></div>
+            <div
+                class="border-top"
+                data-pe-list="rows"
+                data-pe-attr="hidden:rowsHidden"></div>
+            <p
+                class="bg-body-tertiary py-2 ps-3 small text-body-secondary"
+                role="status"
+                data-pe-attr="hidden:emptyHidden"
+                data-pe-slot="emptyMessage"></p>
+        </section>
+    </template>
+    <template data-pe-proto="contact-row">
+        <article
+            class="row g-0 align-items-center border-bottom py-2 ps-3"
+            data-pe-attr="data-pe-contract-contact-item:uid data-pe-contract-contact-hidden:hidden">
+            <template data-pe-list="summary"></template>
+            <div
+                class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto pe-2">
+                <span
+                    class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                    data-pe-when="hidden">
+                    <f:translate
+                        key="profileEditing.contractContacts.hidden"
+                        extensionName="academic_persons_edit" />
+                </span>
+                <div
+                    class="d-flex flex-nowrap align-items-center gap-1"
+                    role="group"
+                    aria-label="{f:translate(key: 'profileEditing.contractContacts.actions', extensionName: 'academic_persons_edit')}"
+                    data-pe-contract-contact-actions>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-hide
+                        title="{f:translate(key: 'actions.hide', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.hide', extensionName: 'academic_persons_edit')}"
+                        data-pe-label-visible="{f:translate(key: 'actions.hide', extensionName: 'academic_persons_edit')}"
+                        data-pe-label-hidden="{f:translate(key: 'actions.show', extensionName: 'academic_persons_edit')}">
+                        <span data-pe-visibility-icon="visible">
+                            <core:icon
+                                identifier="academic-persons-edit-visible"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                        <span data-pe-visibility-icon="hidden" hidden="hidden">
+                            <core:icon
+                                identifier="academic-persons-edit-hidden"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-view
+                        title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        data-pe-label-collapsed="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                        data-pe-label-expanded="{f:translate(key: 'actions.viewClose', extensionName: 'academic_persons_edit')}"
+                        data-pe-attr="aria-controls:editorId aria-expanded:viewExpanded">
+                        <span data-pe-view-icon="collapsed">
+                            <core:icon
+                                identifier="academic-persons-edit-view"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                        <span data-pe-view-icon="expanded" hidden="hidden">
+                            <core:icon
+                                identifier="academic-persons-edit-view-close"
+                                size="small"
+                                alternativeMarkupIdentifier="inline" />
+                        </span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-sort="down"
+                        title="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}">
+                        <core:icon
+                            identifier="academic-persons-edit-move-down"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-sort="up"
+                        title="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}">
+                        <core:icon
+                            identifier="academic-persons-edit-move-up"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-delete
+                        title="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+                        data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded">
+                        <core:icon
+                            identifier="academic-persons-edit-delete"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-contract-contact-edit
+                        title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                        aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                        data-pe-attr="aria-controls:editorId aria-expanded:editExpanded">
+                        <core:icon
+                            identifier="academic-persons-edit-edit"
+                            size="small"
+                            alternativeMarkupIdentifier="inline" />
+                    </button>
+                </div>
+            </div>
+            <div
+                class="col-12 mt-3"
+                data-pe-list="editor"
+                data-pe-attr="hidden:editorHidden"></div>
+        </article>
+    </template>
+    <template data-pe-proto="contact-summary-cell">
+        <div class="col-12 col-md py-1 pe-md-3 text-break">
+            <div class="d-md-none fw-semibold mb-1" data-pe-slot="label"></div>
+            <span data-pe-when="hasValue" data-pe-slot="value"></span>
+            <span data-pe-when="isEmpty">&#8212;</span>
+        </div>
+    </template>
+</html>

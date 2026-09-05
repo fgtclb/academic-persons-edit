@@ -11,4 +11,18 @@ page {
   20 = TEXT
   20.value < plugin.tx_academicpersonsedit.settings.editForm.profileImage.targetFolder
   20.wrap = <div id="setup">|</div>
+
+  # The detail page uid the profile list links to. It is assigned from the
+  # constant "plugin.tx_academicpersons.detailPid", which EXT:academic_persons
+  # defines - the component set ships the definition as well, so that a site
+  # including the editor alone substitutes it. The literal prefix keeps the
+  # object from rendering nothing when the value is the "0" default.
+  30 = COA
+  30 {
+    10 = TEXT
+    10.value = detailPid=
+    20 = TEXT
+    20.value < plugin.tx_academicpersonsedit.settings.detailPid
+    wrap = <div id="detailPid">|</div>
+  }
 }

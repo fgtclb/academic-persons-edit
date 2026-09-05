@@ -4,6 +4,11 @@
 Important: Repair wizard for profile image relations
 ====================================================
 
+..  seealso::
+    The `upgrade chapter of academic_persons
+    <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Upgrade/Index.html>`__
+    is the order in which the 3.0 changes have to be applied.
+
 Description
 ===========
 

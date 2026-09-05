@@ -8,22 +8,6 @@ General configuration
 **Extension configuration**
 There are some options for global extension configuration:
 
-..  confval:: profile.autoCreateProfiles
-
-    :type: boolean
-    :Default: false
-
-    If enabled, a new profile will be created when a frontend user without an
-assigned profile and that meets the criteria logs in.
-
-..  confval:: profile.createProfileForUserGroups
-
-    :type: string
-    :Default:
-
-    A comma-separated list of frontend group IDs. When a user without an assigned profile
-    logs in and is assigned to one of these groups, a new profile will be created.
-
 ..  confval:: profile.allowedLanguages
 
     :type: string
@@ -35,50 +19,52 @@ assigned profile and that meets the criteria logs in.
     The synchronisation into these languages runs after a profile is auto-created
     — on frontend user login or through the :bash:`academic:createprofiles`
     command of :guilabel:`EXT:academic_persons` — and after every change
-    persisted through the frontend editing plugins: the profile form as well as
-    the contract, address, email address, phone number and profile information
-    forms. Left empty, frontend edits do not touch translated profile records at
-    all.
+    persisted through ProfileEditing. Left empty, frontend edits do not touch
+    translated profile records at all.
 
 ..  _configuration-general-validations:
 
 Which fields can be edited
 ==========================
 
-Which profile fields the editing forms offer, which are mandatory and which are
-locked is **not** configured in this extension. It comes from the validation
-settings shipped by :guilabel:`academic_persons`, in
-:file:`Configuration/AcademicPersons/Settings.yaml`, which the editing forms
-read directly.
+Which profile fields belong to each visual section, how they are rendered,
+which are mandatory and which are locked is configured by
+:file:`EXT:academic_persons` in
+:file:`Configuration/AcademicPersons/Settings.yaml`. The
+single :yaml:`profile` map contains both the public layout and the editable
+field definitions. Structured records use the :yaml:`documentSections` map
+from the same file.
 
 Consequences worth knowing before reporting a problem:
 
-*   A field configured :yaml:`disabled` or :yaml:`readonly` is rendered locked,
-    and a value submitted for it anyway is discarded rather than stored. This is
-    deliberate and protects already stored data.
+*   A field configured :yaml:`disabled` or :yaml:`readonly` is rendered locked.
+    The ProfileEditing JSON endpoint rejects attempts to submit it.
 *   :guilabel:`First name`, :guilabel:`Middle name` and :guilabel:`Last name` are
     **locked by default**, because profile names are usually owned by the
     connected frontend user record and synchronised from elsewhere. They are
-    therefore not editable in the frontend form — and, since the same
-    configuration also drives the backend, not in the TYPO3 record editor
-    either.
-*   Because both editing contexts share one configuration, unlocking a field for
-    the frontend form also unlocks it in the backend.
+    therefore not editable in the frontend form - and not in the TYPO3 record
+    editor either: the same validation set is merged into the TCA of the
+    profile table through :php:`TcaValidationMerger`, where :yaml:`disabled`
+    becomes :php:`readOnly`. Unlocking a field for the frontend form unlocks it
+    in the backend as well.
+*   Document validators are selected by the section's stored record ``type``;
+    validators from sibling sections are never merged as a fallback.
+*   The normalized rules are applied to the frontend controls, server-side
+    Extbase validation and the corresponding backend TCA field state.
 
-See `Validation settings
-<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Validations/Index.html>`__
-in the :guilabel:`academic_persons` manual for the available flags, the shipped
-defaults and how to override them.
+See :ref:`configuration-editor-settings` for the schema, supported validator
+flags, document aliases, shipped defaults and override rules. The same
+:yaml:`profile` map also controls the public detail layout.
 
 ..  _configuration-general-webp:
 
 Image processing: WebP
 ======================
 
-The profile detail view of the profile editing plugin offers the profile image
-as `WebP`_ through the :html:`<picture>` candidates, with the :html:`<img>`
-fallback in the source format. TYPO3 has to be allowed to produce WebP,
-otherwise rendering a profile **that has an image** fails with:
+The ProfileEditing image editor offers the profile image as `WebP`_ through the
+:html:`<picture>` candidates, with the :html:`<img>` fallback in the source
+format. TYPO3 has to be allowed to produce WebP, otherwise rendering a profile
+**that has an image** fails with:
 
 ..  code-block:: text
 

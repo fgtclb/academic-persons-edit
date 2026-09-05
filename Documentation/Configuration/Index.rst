@@ -19,8 +19,8 @@ Pick one of them per site and stay with it — see
 What the sets contain
 =====================
 
-The extension ships one content element, so it ships one component set and one
-aggregate set that depends on it.
+The extension ships the ProfileEditing component and one aggregate set that
+keeps the stable extension-level set name.
 
 ..  list-table::
     :header-rows: 1
@@ -28,12 +28,11 @@ aggregate set that depends on it.
     *   -   Set
         -   Delivers
     *   -   `fgtclb/academic-persons-edit-profile-editing`
-        -   The :guilabel:`Profile editing` content element: its TypoScript
-            (`plugin.tx_academicpersonsedit`) and the page TSconfig that makes
-            the content element selectable in the backend.
+        -   The assigned-profile list, profile editor, AJAX page type and the
+            page TSconfig that offers ProfileEditing in the backend.
     *   -   `fgtclb/academic-persons-edit`
-        -   Everything above. This is the set to use unless you deliberately
-            want a subset.
+        -   ProfileEditing under the stable aggregate name. This is the normal
+            set to use.
 
 Both depend on `fgtclb/academic-base-ctype-group`, the set of
 :guilabel:`EXT:academic_base` that labels the content element group all academic
@@ -49,11 +48,10 @@ needed.
 The content element is hidden by default
 ========================================
 
-:guilabel:`EXT:academic_persons_edit` hides its content element for the whole
-installation and brings it back per component. Whichever of the two mechanisms
-below you use, it is what makes :guilabel:`Profile editing` selectable in the
-backend again — without one of them the content element is not offered, and
-existing records keep rendering.
+:guilabel:`EXT:academic_persons_edit` hides the editing content type for the
+whole installation and brings ProfileEditing back per component. Whichever of
+the two mechanisms below you use, ProfileEditing is the only profile-editing
+content element offered in the backend.
 
 ..  _site-set:
 
@@ -73,6 +71,13 @@ element:
 
 See also `TYPO3 Explained, Using a site set as dependency in a site
 <https://docs.typo3.org/permalink/t3coreapi:site-sets-usage>`__.
+
+The :guilabel:`View` action in the assigned-profile list uses the same public
+detail page as the Academic Persons list plugins. Configure
+``plugin.tx_academicpersons.detailPid`` in the Academic Persons site settings
+or TypoScript constants. ProfileEditing copies that value into its own Extbase
+settings and targets the ``academicpersons_detail`` content element; it does
+not require a second page setting in Academic Persons Edit.
 
 ..  _static-templates:
 
@@ -107,7 +112,7 @@ Edit the :sql:`sys_template` record of the site root and add the entry to
     *   -   Entry
         -   Delivers
     *   -   :guilabel:`Academic Persons Edit: Profile editing (academic_persons_edit)`
-        -   The TypoScript of the :guilabel:`Profile editing` content element.
+        -   The TypoScript and AJAX page type of ProfileEditing.
     *   -   :guilabel:`Academic Persons Edit: All components (academic_persons_edit)`
         -   Every component this extension ships, in one entry.
 
@@ -125,8 +130,7 @@ Edit the page record of the site root, tab :guilabel:`Resources`, field
     *   -   Entry
         -   Delivers
     *   -   :guilabel:`Academic Persons Edit: Profile editing (academic_persons_edit)`
-        -   Makes the :guilabel:`Profile editing` content element selectable,
-            and configures its entry in the new content element wizard.
+        -   Makes ProfileEditing selectable and configures its wizard entry.
     *   -   :guilabel:`Academic Persons Edit: All components (academic_persons_edit)`
         -   Every component this extension ships, in one entry.
 
@@ -153,3 +157,4 @@ one mechanism per site and the question does not arise.
    :titlesonly:
 
    General/Index
+   Settings/Index

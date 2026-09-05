@@ -1,0 +1,404 @@
+/* Generated from Resources/Private/Scss — do not edit. */
+/* packages/fgtclb/academic-persons-edit/Resources/Private/Scss/frontend/profile-editing.scss */
+academic-persons-edit-profile-editing,
+academic-persons-edit-document-editor,
+academic-persons-edit-rich-text {
+  display: block;
+}
+.academic-persons-profile-editing [hidden] {
+  display: none !important;
+}
+body:has(.academic-persons-profile-editing) .section {
+  overflow: unset !important;
+}
+body:has(.academic-persons-profile-editing) .frame-space-after-none {
+  --frame-spacing: var(--frame-spacing-small);
+}
+body:has(.academic-persons-profile-editing) .sticky-top {
+  z-index: 900 !important;
+}
+.academic-persons-profile-editing .cursor-pointer {
+  cursor: pointer;
+}
+.academic-persons-profile-editing-list__image {
+  width: 5rem;
+  height: 5rem;
+  object-fit: cover;
+}
+.academic-persons-profile-editing .bg-body-tertiary {
+  --bs-tertiary-bg-rgb:
+    246,
+    248,
+    253;
+}
+.academic-persons-profile-editing__image-cropper {
+  position: relative;
+  height: clamp(20rem, 60vh, 36rem);
+  overflow: hidden;
+  background: var(--bs-tertiary-bg);
+}
+.academic-persons-profile-editing__image-cropper > img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.academic-persons-profile-editing__image-cropper .cropper-hidden {
+  display: none !important;
+}
+.academic-persons-profile-editing__image-cropper .cropper-container {
+  position: relative;
+  direction: ltr;
+  font-size: 0;
+  line-height: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.academic-persons-profile-editing__image-cropper .cropper-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  max-height: none;
+  image-orientation: 0deg;
+}
+.academic-persons-profile-editing__image-cropper .cropper-wrap-box,
+.academic-persons-profile-editing__image-cropper .cropper-canvas,
+.academic-persons-profile-editing__image-cropper .cropper-drag-box,
+.academic-persons-profile-editing__image-cropper .cropper-crop-box {
+  position: absolute;
+  inset: 0;
+}
+.academic-persons-profile-editing__image-cropper .cropper-wrap-box,
+.academic-persons-profile-editing__image-cropper .cropper-canvas {
+  overflow: hidden;
+}
+.academic-persons-profile-editing__image-cropper .cropper-drag-box {
+  background-color: var(--bs-body-bg);
+  opacity: 0;
+}
+.academic-persons-profile-editing__image-cropper .cropper-modal {
+  background-color: var(--bs-emphasis-color);
+  opacity: 0.5;
+}
+.academic-persons-profile-editing__image-cropper .cropper-view-box {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: 1px solid var(--bs-primary);
+}
+.academic-persons-profile-editing__image-cropper .cropper-face,
+.academic-persons-profile-editing__image-cropper .cropper-line,
+.academic-persons-profile-editing__image-cropper .cropper-point {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.academic-persons-profile-editing__image-cropper .cropper-face {
+  top: 0;
+  left: 0;
+  background-color: var(--bs-body-bg);
+  opacity: 0.1;
+}
+.academic-persons-profile-editing__image-cropper .cropper-dashed {
+  display: block;
+  position: absolute;
+  border: 0 dashed var(--bs-body-bg);
+  opacity: 0.5;
+}
+.academic-persons-profile-editing__image-cropper .cropper-dashed.dashed-h {
+  top: 33.33333%;
+  left: 0;
+  width: 100%;
+  height: 33.33333%;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+.academic-persons-profile-editing__image-cropper .cropper-dashed.dashed-v {
+  top: 0;
+  left: 33.33333%;
+  width: 33.33333%;
+  height: 100%;
+  border-right-width: 1px;
+  border-left-width: 1px;
+}
+.academic-persons-profile-editing__image-cropper .cropper-center {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  opacity: 0.75;
+}
+.academic-persons-profile-editing__image-cropper .cropper-center::before,
+.academic-persons-profile-editing__image-cropper .cropper-center::after {
+  content: "";
+  display: block;
+  position: absolute;
+  background-color: var(--bs-body-bg);
+}
+.academic-persons-profile-editing__image-cropper .cropper-center::before {
+  top: 0;
+  left: -0.25rem;
+  width: 0.5rem;
+  height: 1px;
+}
+.academic-persons-profile-editing__image-cropper .cropper-center::after {
+  top: -0.25rem;
+  left: 0;
+  width: 1px;
+  height: 0.5rem;
+}
+.academic-persons-profile-editing__image-cropper .cropper-line {
+  background-color: var(--bs-primary);
+  opacity: 0.1;
+}
+.academic-persons-profile-editing__image-cropper .cropper-line.line-n {
+  top: -0.1875rem;
+  left: 0;
+  height: 0.3125rem;
+  cursor: ns-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-line.line-s {
+  bottom: -0.1875rem;
+  left: 0;
+  height: 0.3125rem;
+  cursor: ns-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-line.line-e {
+  top: 0;
+  right: -0.1875rem;
+  width: 0.3125rem;
+  cursor: ew-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-line.line-w {
+  top: 0;
+  left: -0.1875rem;
+  width: 0.3125rem;
+  cursor: ew-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: -0.375rem;
+  border: 1px solid var(--bs-body-bg);
+  border-radius: 50%;
+  background-color: var(--bs-primary);
+  opacity: 1;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-n {
+  top: 0;
+  left: 50%;
+  cursor: ns-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-s {
+  top: 100%;
+  left: 50%;
+  cursor: ns-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-e {
+  top: 50%;
+  left: 100%;
+  cursor: ew-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-w {
+  top: 50%;
+  left: 0;
+  cursor: ew-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-ne {
+  top: 0;
+  left: 100%;
+  cursor: nesw-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-se {
+  top: 100%;
+  left: 100%;
+  cursor: nwse-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-point.point-sw {
+  top: 100%;
+  left: 0;
+  cursor: nesw-resize;
+}
+.academic-persons-profile-editing__image-cropper .cropper-crop {
+  cursor: crosshair;
+}
+.academic-persons-profile-editing__image-cropper .cropper-move {
+  cursor: move;
+}
+.academic-persons-profile-editing__image-preview-column,
+.academic-persons-profile-editing__profile-fields-column {
+  min-width: 0;
+}
+.academic-persons-profile-editing__image-preview-column {
+  scroll-margin-top: 1.5rem;
+}
+[data-pe-image-editor-target] {
+  scroll-margin-top: 2rem;
+}
+.academic-persons-profile-editing.is-image-closing {
+  overflow-anchor: none;
+}
+.academic-persons-profile-editing__image-editor {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+.academic-persons-profile-editing__image-editor-content {
+  min-height: 0;
+  overflow: hidden;
+}
+.academic-persons-profile-editing-image-editor-enter-active,
+.academic-persons-profile-editing-image-editor-leave-active {
+  transition:
+    grid-template-rows 0.3s ease,
+    padding-block 0.3s ease,
+    margin-bottom 0.3s ease,
+    border-width 0.3s ease,
+    opacity 0.2s ease,
+    transform 0.3s ease;
+}
+.academic-persons-profile-editing-image-editor-enter-from,
+.academic-persons-profile-editing-image-editor-leave-to {
+  grid-template-rows: 0fr;
+  padding-block: 0 !important;
+  margin-bottom: 0 !important;
+  border-width: 0 !important;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+}
+@media (prefers-reduced-motion: reduce) {
+  .academic-persons-profile-editing-image-editor-enter-active,
+  .academic-persons-profile-editing-image-editor-leave-active,
+  .academic-persons-profile-editing-document-collapse-enter-active,
+  .academic-persons-profile-editing-document-collapse-leave-active {
+    transition: none;
+  }
+}
+.academic-persons-profile-editing__document-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+.academic-persons-profile-editing__document-collapse-content {
+  min-height: 0;
+  overflow: hidden;
+}
+.academic-persons-profile-editing-document-collapse-enter-active,
+.academic-persons-profile-editing-document-collapse-leave-active {
+  transition:
+    grid-template-rows 0.3s ease,
+    padding-block 0.3s ease,
+    margin-block 0.3s ease,
+    border-width 0.3s ease,
+    opacity 0.2s ease,
+    transform 0.3s ease;
+}
+.academic-persons-profile-editing-document-collapse-enter-from,
+.academic-persons-profile-editing-document-collapse-leave-to {
+  grid-template-rows: 0fr;
+  padding-block: 0 !important;
+  margin-block: 0 !important;
+  border-width: 0 !important;
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+.academic-persons-profile-editing [data-pe-document-drag] {
+  cursor: grab;
+}
+.academic-persons-profile-editing [data-pe-document-drag]:active {
+  cursor: grabbing;
+}
+.academic-persons-profile-editing [data-pe-document-items] {
+  position: relative;
+}
+.academic-persons-profile-editing [data-pe-document-items].is-drag-active {
+  outline: 2px dashed rgba(var(--bs-primary-rgb), 0.55);
+  outline-offset: 0.375rem;
+}
+.academic-persons-profile-editing [data-pe-document-list-header] > *,
+.academic-persons-profile-editing [data-pe-document-item] > *,
+.academic-persons-profile-editing [data-pe-contract-contact-item] > * {
+  min-width: 0;
+}
+.academic-persons-profile-editing [data-pe-document-item] {
+  position: relative;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+.academic-persons-profile-editing [data-pe-document-item].is-dragging {
+  z-index: 2;
+  opacity: 0.62;
+  outline: 2px dashed var(--bs-primary);
+  outline-offset: -2px;
+  box-shadow: 0 0.5rem 1.25rem rgba(var(--bs-body-color-rgb), 0.2);
+}
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before,
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after {
+  box-shadow: inset 0 0 0 2px rgba(var(--bs-primary-rgb), 0.2);
+}
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before::before,
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after::after,
+.academic-persons-profile-editing [data-pe-document-items].is-drop-at-end::after {
+  position: absolute;
+  z-index: 3;
+  right: 0.75rem;
+  left: 0.75rem;
+  height: 0.25rem;
+  border-radius: 999px;
+  background-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.2);
+  content: "";
+  pointer-events: none;
+}
+.academic-persons-profile-editing [data-pe-document-item].is-drop-before::before {
+  top: -0.125rem;
+}
+.academic-persons-profile-editing [data-pe-document-item].is-drop-after::after,
+.academic-persons-profile-editing [data-pe-document-items].is-drop-at-end::after {
+  bottom: -0.125rem;
+}
+.academic-persons-profile-editing [data-pe-document-drag][draggable=false] {
+  display: none;
+}
+.academic-persons-profile-editing [data-pe-document-sort]:disabled {
+  opacity: 0.35;
+}
+.academic-persons-profile-editing [data-pe-document-form] p {
+  margin-bottom: 0;
+}
+.custom-popover {
+  border-radius: 0;
+}
+.custom-popover * {
+  border-radius: 0;
+}
+.academic-persons-profile-editing [data-pe-contract-contact-item]:nth-child(odd) {
+  background-color: var(--bs-tertiary-bg);
+}
+.academic-persons-profile-editing [data-pe-document-items] > [data-pe-document-item]:nth-child(odd) {
+  background-color: var(--bs-tertiary-bg);
+}
+.academic-persons-profile-editing [data-pe-contract-contact-hidden] {
+  color: var(--bs-secondary-color);
+}
+.academic-persons-profile-editing [data-pe-contract-contact-sort]:disabled {
+  opacity: 0.35;
+}
+.academic-persons-profile-editing [data-pe-compact] {
+  display: flex;
+  align-items: flex-end;
+}
+.academic-persons-profile-editing [data-pe-document-view-container][aria-busy=true],
+.academic-persons-profile-editing [data-pe-contract-contact-editor][aria-busy=true] {
+  cursor: wait;
+}

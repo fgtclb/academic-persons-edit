@@ -1,0 +1,28 @@
+# The one site setting this component reads.
+#
+# `Configuration/TypoScript/ProfileEditing/setup.typoscript` assigns
+# `settings.detailPid` from `{$plugin.tx_academicpersons.detailPid}`, so the
+# profile list can link to the public detail page. The definition of that path
+# lives with the aggregate set of EXT:academic_persons, and a site that includes
+# the editing component alone does not depend on it - without the definition here
+# the constant is never substituted and the link is rendered with the literal
+# placeholder as its page uid.
+#
+# The default has to stay `0`, the value
+# `EXT:academic_persons/Configuration/Sets/Full/settings.definitions.yaml` and
+# `EXT:academic_persons/Configuration/TypoScript/Default/constants.typoscript`
+# declare: a site including both sets reads whichever definition is merged last,
+# and a differing default would silently reset what the integrator configured.
+categories:
+  academic:
+    label: 'Academic'
+  academic.persons:
+    label: 'Persons'
+    parent: academic
+
+settings:
+  plugin.tx_academicpersons.detailPid:
+    label: 'Detail page'
+    category: academic.persons
+    type: int
+    default: 0

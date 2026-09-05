@@ -1,0 +1,56 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:variable
+        name="elementId"
+        value="profile-editing-{profile.uid}-{field.identifier}" />
+    <div class="col-12">
+        <div class="rounded-1 p-3 p-lg-4 {rowClass}" data-pe-field-wrapper>
+            <f:render
+                partial="Profile/Field/Preview"
+                arguments="{profile: profile, field: field, elementId: elementId}" />
+            <div
+                id="{elementId}-editor"
+                class="d-none mt-3"
+                data-pe-field-editor
+                data-pe-for="{elementId}">
+                <div class="form-check form-switch">
+                    <div class="d-flex flex-row">
+                        <f:render
+                            partial="Profile/Field/Control"
+                            arguments="{
+                                profile: profile,
+                                field: field,
+                                elementId: elementId,
+                                control: 'checkbox',
+                                autosave: true
+                            }" />
+                        <label class="form-check-label ms-2" for="{elementId}">
+                            <f:translate
+                                key="profile.{field.identifier}.label"
+                                extensionName="academic_persons_edit" />
+                        </label>
+                        <f:render
+                            partial="Profile/Field/Helptext"
+                            arguments="{
+                                helptext: field.helptext,
+                                labelKey: field.labelKey,
+                                elementId: elementId
+                            }" />
+                        <f:if
+                            condition="!{field.validation.disabled} && !{field.validation.readOnly}">
+                            <f:render
+                                partial="Profile/Field/AutosaveUndo"
+                                arguments="{elementId: elementId}" />
+                        </f:if>
+                    </div>
+                    <div
+                        id="{elementId}-error"
+                        class="invalid-feedback"
+                        role="alert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

@@ -18,10 +18,10 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `Controller\PhysicalAddressController::editAction()` hands the result of
- * {@see AddressFormData::createFromAddress()} to the edit template. Everything the
- * template does not receive here renders as an empty input, and a save then writes
- * that empty value back through `Domain\Factory\AddressFactory`.
+ * Profile editing hands the result of {@see AddressFormData::createFromAddress()}
+ * to a document form. Everything the form does not receive here renders as an
+ * empty input, and a save could write that empty value back through
+ * `Domain\Factory\AddressFactory`.
  */
 final class AddressFormDataTest extends UnitTestCase
 {
@@ -108,7 +108,6 @@ final class AddressFormDataTest extends UnitTestCase
     {
         $formData = AddressFormData::createFromAddress($this->createPersistedAddress());
 
-        $this->assertNull($formData->getArgumentName());
         $this->assertFalse($formData->shouldApplyProperty('street'));
         $this->assertFalse($formData->shouldApplyProperty('city'));
         $this->assertFalse($formData->shouldApplyProperty('type'));

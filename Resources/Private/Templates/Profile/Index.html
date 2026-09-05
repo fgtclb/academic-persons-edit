@@ -1,0 +1,229 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:asset.module
+        identifier="@fgtclb/academic-persons-edit/frontend/profile.js" />
+    <f:asset.css
+        identifier="academic-persons-edit-profile-editing"
+        href="EXT:academic_persons_edit/Resources/Public/Css/frontend/profile-editing.css" />
+    <f:variable
+        name="updateUrl"
+        value="{f:uri.action(action: 'update', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="skipSyncUrl"
+        value="{f:uri.action(action: 'updateSkipSync', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="deleteImageUrl"
+        value="{f:uri.action(action: 'deleteImage', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="documentFormUrl"
+        value="{f:uri.action(action: 'documentForm', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="createDocumentUrl"
+        value="{f:uri.action(action: 'createDocument', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="updateDocumentUrl"
+        value="{f:uri.action(action: 'updateDocument', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="deleteDocumentUrl"
+        value="{f:uri.action(action: 'deleteDocument', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="sortDocumentUrl"
+        value="{f:uri.action(action: 'sortDocument', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="contractContactFormUrl"
+        value="{f:uri.action(action: 'contractContactForm', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="createContractContactUrl"
+        value="{f:uri.action(action: 'createContractContact', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="updateContractContactUrl"
+        value="{f:uri.action(action: 'updateContractContact', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="deleteContractContactUrl"
+        value="{f:uri.action(action: 'deleteContractContact', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="sortContractContactUrl"
+        value="{f:uri.action(action: 'sortContractContact', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="toggleContractContactVisibilityUrl"
+        value="{f:uri.action(action: 'toggleContractContactVisibility', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
+        name="placeholderImageUrl"
+        value="{f:uri.resource(path: 'Images/profile-placeholder.png')}" />
+
+    <f:link.action
+        action="list"
+        controller="Profile"
+        class="back-link d-inline-flex align-items-center gap-2 mb-4">
+        <core:icon
+            identifier="academic-persons-edit-back"
+            alternativeMarkupIdentifier="inline" />
+        <f:translate
+            key="profileEditing.backToList"
+            extensionName="academic_persons_edit" />
+    </f:link.action>
+
+    <f:if condition="{ajaxPageTypeConfigured}">
+        <f:else>
+            <f:comment>
+                The site does not render the page type the editor writes
+                through, so every save is answered with the site's error page
+                instead of JSON. The cause is named in the TYPO3 log; a visitor
+                gets told that saving is broken rather than finding out on the
+                first change.
+            </f:comment>
+            <div
+                class="alert alert-danger"
+                role="alert"
+                data-pe-missing-ajax-page-type>
+                <f:translate
+                    key="profileEditing.missingAjaxPageType"
+                    extensionName="academic_persons_edit" />
+            </div>
+        </f:else>
+    </f:if>
+
+    <!--
+        The element that owns this editor. It renders nothing: Fluid renders
+        the editor and the element takes the markup below it as its light DOM
+        children, reads the "data-*" contract of the root once and starts the
+        editing modules. See
+        "Resources/Private/TypeScript/frontend/profile/elements/root.ts".
+    -->
+    <academic-persons-edit-profile-editing>
+        <div
+            class="academic-persons-profile-editing container-fluid px-0"
+            data-academic-persons-profile-editing
+            data-update-url="{updateUrl}"
+            data-skip-sync-url="{skipSyncUrl}"
+            data-delete-image-url="{deleteImageUrl}"
+            data-document-form-url="{documentFormUrl}"
+            data-create-document-url="{createDocumentUrl}"
+            data-update-document-url="{updateDocumentUrl}"
+            data-delete-document-url="{deleteDocumentUrl}"
+            data-sort-document-url="{sortDocumentUrl}"
+            data-contract-contact-form-url="{contractContactFormUrl}"
+            data-create-contract-contact-url="{createContractContactUrl}"
+            data-update-contract-contact-url="{updateContractContactUrl}"
+            data-delete-contract-contact-url="{deleteContractContactUrl}"
+            data-sort-contract-contact-url="{sortContractContactUrl}"
+            data-toggle-contract-contact-visibility-url="{toggleContractContactVisibilityUrl}"
+            data-placeholder-image-url="{placeholderImageUrl}"
+            data-placeholder-image-alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'academic_persons_edit')}"
+            data-has-image="{f:if(condition: profile.image, then: '1', else: '0')}"
+            data-image-render-type="{specialFields.image.renderType}"
+            data-image-cropper-ratio="{specialFields.image.settings.ratio}"
+            data-profile-uid="{profile.uid}"
+            data-editor-language="{editorLanguage}"
+            data-message-saving="{f:translate(key: 'profileEditing.status.saving', extensionName: 'academic_persons_edit')}"
+            data-message-success-message="{f:translate(key: 'profileEditing.status.success.message', extensionName: 'academic_persons_edit')}"
+            data-message-error-message="{f:translate(key: 'profileEditing.status.error.message', extensionName: 'academic_persons_edit')}"
+            data-message-error-title="{f:translate(key: 'profileEditing.status.error.title', extensionName: 'academic_persons_edit')}"
+            data-message-success-title="{f:translate(key: 'profileEditing.status.success.title', extensionName: 'academic_persons_edit')}"
+            data-message-info-title="{f:translate(key: 'profileEditing.status.info.title', extensionName: 'academic_persons_edit')}"
+            data-message-info-message="{f:translate(key: 'profileEditing.status.info.message', extensionName: 'academic_persons_edit')}"
+            data-message-warning-title="{f:translate(key: 'profileEditing.status.warning.title', extensionName: 'academic_persons_edit')}"
+            data-message-validation="{f:translate(key: 'profileEditing.status.validation', extensionName: 'academic_persons_edit')}"
+            data-message-editor-error="{f:translate(key: 'profileEditing.status.editorError', extensionName: 'academic_persons_edit')}"
+            data-message-unchanged="{f:translate(key: 'profileEditing.status.unchanged', extensionName: 'academic_persons_edit')}"
+            data-message-image-uploaded="{f:translate(key: 'profileEditing.image.status.uploaded', extensionName: 'academic_persons_edit')}"
+            data-message-image-upload-missing="{f:translate(key: 'profileEditing.image.status.missing', extensionName: 'academic_persons_edit')}"
+            data-message-image-deleted="{f:translate(key: 'profileEditing.image.status.deleted', extensionName: 'academic_persons_edit')}"
+            data-message-document-saved="{f:translate(key: 'profileEditing.documents.status.saved', extensionName: 'academic_persons_edit')}"
+            data-message-document-deleted="{f:translate(key: 'profileEditing.documents.status.deleted', extensionName: 'academic_persons_edit')}"
+            data-message-document-sorted="{f:translate(key: 'profileEditing.documents.status.sorted', extensionName: 'academic_persons_edit')}"
+            data-message-document-delete-confirm="{f:translate(key: 'profileEditing.documents.delete.confirm', extensionName: 'academic_persons_edit')}"
+            data-message-contract-contact-delete-confirm="{f:translate(key: 'profileEditing.contractContacts.delete.confirm', extensionName: 'academic_persons_edit')}"
+            data-message-contract-contact-empty="{f:translate(key: 'profileEditing.contractContacts.empty', extensionName: 'academic_persons_edit')}"
+            data-message-contract-contact-hidden="{f:translate(key: 'profileEditing.contractContacts.status.hidden', extensionName: 'academic_persons_edit')}"
+            data-message-contract-contact-shown="{f:translate(key: 'profileEditing.contractContacts.status.visible', extensionName: 'academic_persons_edit')}"
+            data-label-document-add="{f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}"
+            data-label-document-view="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+            data-label-document-edit="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+            data-label-document-delete="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+            data-label-document-save="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}"
+            data-label-document-close="{f:translate(key: 'actions.cancel', extensionName: 'academic_persons_edit')}"
+            data-label-document-empty="{f:translate(key: 'profileEditing.field.empty', extensionName: 'academic_persons_edit')}">
+            <!--
+                The image editor is rendered here, where it is shown, rather
+                than somewhere else and moved: the container then contributes
+                the right height from the first paint, and the close path
+                measures exactly that height to restore the scroll position.
+            -->
+            <div
+                id="profile-editing-{profile.uid}-image-editor-target"
+                data-pe-image-editor-target>
+                <f:if condition="{specialFields.image.writable}">
+                    <f:render
+                        partial="Profile/Image/Editor"
+                        arguments="{profile: profile, image: specialFields.image, imageAllowedMimeTypes: imageAllowedMimeTypes}" />
+                </f:if>
+            </div>
+            <div>
+                <!--
+                    The forms full form editing governs, named so that the
+                    "edit all" toggle can point at them. A section the
+                    settings do not configure renders no form, so the list is
+                    built from the sections that are actually rendered rather
+                    than from both names unconditionally.
+                -->
+                <f:variable name="renderedFieldsFormIds"><f:if condition="{profileSections.information}">profile-editing-{profile.uid}-personal-form</f:if><f:if condition="{profileSections.aboutme}"> profile-editing-{profile.uid}-about-form</f:if></f:variable>
+                <f:variable
+                    name="fieldsFormIds"
+                    value="{renderedFieldsFormIds -> f:format.trim()}" />
+                <f:render
+                    partial="Profile/Header"
+                    arguments="{
+                        profile: profile,
+                        title: specialFields.title,
+                        skipSync: specialFields.skipSync,
+                        fieldsFormIds: fieldsFormIds
+                    }" />
+                <div class="container-fluid px-0">
+                    <div class="row gx-lg-5 gy-5 align-items-stretch">
+                        <div
+                            class="col-12 col-lg-4 academic-persons-profile-editing__image-preview-column"
+                            data-pe-image-preview-column>
+                            <div class="sticky-top" data-pe-sticky-image>
+                                <f:if condition="{specialFields.image}">
+                                    <f:render
+                                        partial="Profile/Image/Card"
+                                        arguments="{profile: profile, image: specialFields.image}" />
+                                </f:if>
+                            </div>
+                        </div>
+                        <div
+                            class="col-12 col-lg-8 academic-persons-profile-editing__profile-fields-column">
+                            <f:if condition="{profileSections.information}">
+                                <f:render
+                                    partial="Profile/Profile/Personal"
+                                    arguments="{profile: profile, section: profileSections.information, specialFields: specialFields, fieldOptions: profileFieldOptions}" />
+                            </f:if>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mt-5">
+                                <f:if condition="{profileSections.aboutme}">
+                                    <f:render
+                                        partial="Profile/Profile/About"
+                                        arguments="{profile: profile, section: profileSections.aboutme, fieldOptions: profileFieldOptions}" />
+                                </f:if>
+                                <f:render
+                                    partial="Profile/Documents/Sections"
+                                    arguments="{profile: profile, sections: documentSections}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <f:render partial="Profile/StatusToast" />
+            <f:render partial="Profile/ButtonTemplates" />
+            <f:render partial="Profile/Prototypes" />
+        </div>
+    </academic-persons-edit-profile-editing>
+</html>

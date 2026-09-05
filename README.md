@@ -11,6 +11,13 @@
 This extension extends the `academic_persons` extension by the option to edit profiles in the frontend.
 Profiles get connected with a frontend user and the frontend user is allow to edit its assigned profiles.
 
+The `Profile editing` content element renders the whole profile on one page and saves each change where
+it is made, through JSON endpoints of the same plugin. What it renders, which endpoints it uses, which
+icons it registers and what a route enhancer or a firewall has to let through is documented in
+[Documentation/ProfileEditing](./Documentation/ProfileEditing/Index.rst); the configuration of the fields
+and sections it shows is documented in
+[Documentation/Configuration/Settings](./Documentation/Configuration/Settings/Index.rst).
+
 > [!NOTE]
 > This extension is currently in beta state - please notice that there might be changes to the structure
 

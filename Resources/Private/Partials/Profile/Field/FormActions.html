@@ -1,0 +1,64 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <!--
+        The controls of full form editing, rendered once at the end of every
+        "data-pe-fields-form" and delivered hidden. "fields.ts" removes the
+        attribute while the whole form is open and hides the per-field groups
+        for as long as it is.
+
+        The three buttons stand in the order they are tabbed to from the last
+        field of the form: apply first, because it is what the visitor opened
+        the form for. They carry visible text rather than an icon - in this
+        state they are the primary action of the page, not a decoration beside
+        a value.
+
+        The group is named after the section it stands in where the caller
+        knows one, so that a page with two of these does not offer a visitor
+        navigating by group two entries of the same name.
+    -->
+    <f:variable
+        name="formActionsGroupLabel"
+        value="{f:translate(key: 'profileEditing.actions.formGroup', extensionName: 'academic_persons_edit')}" />
+    <f:if condition="{sectionLabel}">
+        <f:variable
+            name="formActionsGroupLabel"
+            value="{formActionsGroupLabel}: {sectionLabel}" />
+    </f:if>
+    <div
+        class="col-12 d-flex justify-content-end align-items-center gap-2 pt-3 border-top"
+        data-pe-form-actions
+        data-pe-form-reverted-message="{f:translate(key: 'profileEditing.status.formReverted', extensionName: 'academic_persons_edit')}"
+        role="group"
+        aria-label="{formActionsGroupLabel}"
+        hidden>
+        <button
+            class="btn rounded-0 btn-success"
+            data-pe-form-apply
+            type="button"
+            title="{f:translate(key: 'profileEditing.form.apply.title', extensionName: 'academic_persons_edit')}">
+            <f:translate
+                key="profileEditing.form.apply"
+                extensionName="academic_persons_edit" />
+        </button>
+        <button
+            class="btn rounded-0 btn-outline-secondary"
+            data-pe-form-undo
+            type="button"
+            title="{f:translate(key: 'profileEditing.form.undo.title', extensionName: 'academic_persons_edit')}">
+            <f:translate
+                key="profileEditing.form.undo"
+                extensionName="academic_persons_edit" />
+        </button>
+        <button
+            class="btn rounded-0 btn-outline-danger"
+            data-pe-form-discard
+            type="button"
+            title="{f:translate(key: 'profileEditing.form.discard.title', extensionName: 'academic_persons_edit')}">
+            <f:translate
+                key="profileEditing.form.discard"
+                extensionName="academic_persons_edit" />
+        </button>
+    </div>
+</html>
