@@ -715,3 +715,21 @@ $profile-editing-focus-scope:
 .academic-persons-profile-editing [data-pe-contract-contact-editor][aria-busy="true"] {
     cursor: wait;
 }
+
+// The dialog `editors.ts` shows before an editor with unsaved changes is
+// closed for another one (`Partials/Profile/UnsavedChanges.html`).
+//
+// A `<dialog>` brings its own box: a black border, padding, and a maximum
+// width of `calc(100% - 6px - 2em)` from the user agent. The partial takes the
+// first two away with Bootstrap utilities; the width is set here because the
+// utilities have no "at most 32rem, and never wider than the viewport". The
+// backdrop is the user agent's translucent black as well, only made explicit
+// so that a theme's `::backdrop` rule for its own dialogs does not reach in.
+.academic-persons-profile-editing__dialog {
+  width: min(100% - 2rem, 32rem);
+  max-width: none;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}

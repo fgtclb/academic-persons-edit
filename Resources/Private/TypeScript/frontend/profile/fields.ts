@@ -12,6 +12,11 @@ import {
   type EditingTarget,
 } from "@fgtclb/academic-persons-edit/frontend/profile/context.js";
 import {
+  registerOpenEditor,
+  withOtherEditorsClosed,
+  type OpenEditor,
+} from "@fgtclb/academic-persons-edit/frontend/profile/editors.js";
+import {
   ensureRichTextEditor,
   getPlainText,
   getRichTextEditorValue,
@@ -525,19 +530,25 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
    * one set of controls for all of them and none of the per-field ones.
    *
    * The state is exclusive with single-field editing rather than a variant of
-   * it. Entering closes whatever one field was open, hides every per-field and
-   * per-group action group and shows the bar `Field/FormActions.html` renders
-   * at the end of each form; leaving does the reverse. Nothing is removed from
-   * the document for it, because single-field editing has to work again the
-   * moment the form is closed.
+   * it. Entering discards whatever one field or group was open, hides every
+   * per-field and per-group action group and shows the bar
+   * `Field/FormActions.html` renders at the end of each form; leaving does the
+   * reverse. Nothing is removed from the document for it, because single-field
+   * editing has to work again the moment the form is closed.
    */
   let formEditingActive = false;
   /**
    * Set before the first `await` of an apply, which `aria-busy` is not: the
-   * root is marked busy inside `saveFields()`, several microtasks after the
+   * root is marked busy inside `performSave()`, several microtasks after the
    * click, so a second press in the same turn would reach the endpoint.
    */
   let formRequestPending = false;
+  /**
+   * The same marker for a save that is not an apply, and the reason it is a
+   * counter rather than a flag: an autosaving checkbox writes on change,
+   * without a button being pressed, so two saves can be on their way at once.
+   */
+  let saveRequestsPending = 0;
   const formActionBars = Array.from(
     root.querySelectorAll<HTMLElement>(formActionsSelector),
   );
@@ -608,7 +619,120 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     clearValidationErrors(fieldsToReset);
   };
 
-  const saveFields = async (fieldsToSave: EditableField[]): Promise<boolean> => {
+  /**
+   * Puts fields back to what is stored, and says whether that threw anything
+   * away.
+   *
+   * The rich text baselines are corrected first, for the reason `revertForm()`
+   * corrects them before it reverts: the rendered source and the value the
+   * editor hands back differ for the same content, so writing the raw baseline
+   * into a live editor puts the un-normalised source in it and the next save
+   * posts it as a change nobody made. Discarding writes the baseline into a
+   * live editor exactly as undo does, and since opening any other editor now
+   * discards, it does so routinely.
+   *
+   * The same correction is what makes the answer trustworthy: without it every
+   * rich text field would compare as changed and every discard would announce
+   * that something was thrown away.
+   */
+  const discardFields = (fieldsToDiscard: EditableField[]): boolean => {
+    normalizeRichTextBaselines(fieldsToDiscard);
+    const discarded = fieldsToDiscard.some(
+      (field): boolean => persistedValues.get(field) !== getFieldValue(field),
+    );
+    resetFields(fieldsToDiscard);
+    return discarded;
+  };
+
+  /**
+   * Back to what is stored, for one field: the undo beside it, and the way
+   * opening any other editor closes the one that was open.
+   */
+  const discardField = (field: EditableField, focus = true): boolean => {
+    const discarded = discardFields([field]);
+    toggleEditField(context, field.id, false, focus);
+    return discarded;
+  };
+
+  /**
+   * The same for a group. Its preview is rendered again because it is computed
+   * from the controls, and those have just been put back.
+   */
+  const discardFieldGroup = (group: HTMLElement, focus = true): boolean => {
+    const discarded = discardFields(getGroupFields(context, group));
+    renderFieldGroupPreview(context, group);
+    toggleEditGroup(context, group, false, focus);
+    return discarded;
+  };
+
+  /**
+   * Closes the single-field and group editors that are open and throws away
+   * what was typed in them, so that at most one of them is ever open.
+   *
+   * Which ones are open is read off the DOM - the `d-none` that
+   * `toggleEditField()` and `toggleEditGroup()` write on the editor element -
+   * rather than kept in a variable of its own. Openness already has one source
+   * of truth, and it is written from more places than the two pencils:
+   * `closeFields()`, `performSave()` and `leaveFormEditing()` all close editors
+   * without one being pressed. A second copy would have to be corrected in
+   * each of them and would be wrong the first time one was missed.
+   *
+   * The editor passed as `keepOpen` is left alone. Pressing the same pencil
+   * twice must not throw away what has been typed since the first press, and
+   * for a field inside a group that editor is the group's, not the field's.
+   *
+   * The focus is deliberately not moved: the caret goes to the editor that is
+   * being opened, never back to the activate button of the one being closed.
+   *
+   * Reading openness off the DOM has one condition: this must never run while
+   * full form editing is active, where every editor is open and the whole
+   * profile would be thrown away. The condition is not checked here, it is
+   * checked by the three call sites - `openEditorAllowed()` for the two
+   * pencils and `enterFormEditing()`, which runs before the state is entered -
+   * because a pencil pressed while the form is open has to do nothing at all,
+   * not merely skip the discard.
+   */
+  const discardOpenEditors = (keepOpen: HTMLElement | null = null): void => {
+    let discarded = false;
+    root
+      .querySelectorAll<HTMLElement>(fieldGroupSelector)
+      .forEach((group): void => {
+        const editor = group.querySelector<HTMLElement>(groupEditorSelector);
+        if (
+          editor === null ||
+          editor === keepOpen ||
+          editor.classList.contains("d-none")
+        ) {
+          return;
+        }
+        discarded = discardFieldGroup(group, false) || discarded;
+      });
+    editableFields()
+      .filter((field): boolean => field.closest(fieldGroupSelector) === null)
+      .forEach((field): void => {
+        const editor = getFieldEditElement(field);
+        // A field with no editor element around it is handed itself back, and
+        // is not something that can be open.
+        if (
+          editor === field ||
+          editor === keepOpen ||
+          editor.classList.contains("d-none")
+        ) {
+          return;
+        }
+        discarded = discardField(field, false) || discarded;
+      });
+    if (discarded) {
+      // Only when a value was really thrown away, and deliberately only here:
+      // the undo beside a field is a discard the visitor asked for and keeps
+      // its silence, while this one happens because they opened something
+      // else. The row collapsing is the only other sign of it, and that is no
+      // sign at all for a visitor who cannot see it.
+      showStatus(context, "info", context.messages.discarded ?? null);
+    }
+  };
+
+  const performSave = async (fieldsToSave: EditableField[]): Promise<boolean> => {
     if (root.getAttribute("aria-busy") === "true") {
       return false;
     }
@@ -712,6 +836,26 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     }
   };
 
+  /**
+   * Saving, with the "a request is on its way" marker set before the call
+   * returns to the handler that made it.
+   *
+   * `aria-busy` is not that marker: `performSave()` sets it several microtasks
+   * in, after the rich text editors have been awaited, and only for a save
+   * that actually reaches the endpoint. A pencil pressed in between would
+   * otherwise discard a field whose response is about to write both its value
+   * and its baseline back. The counter is incremented here rather than inside
+   * `performSave()` so that no call site can forget it.
+   */
+  const saveFields = async (fieldsToSave: EditableField[]): Promise<boolean> => {
+    saveRequestsPending += 1;
+    try {
+      return await performSave(fieldsToSave);
+    } finally {
+      saveRequestsPending -= 1;
+    }
+  };
+
   const renderEveryPreview = (): void => {
     root
       .querySelectorAll<HTMLElement>(fieldGroupSelector)
@@ -736,11 +880,23 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
   };
 
   const enterFormEditing = (): void => {
-    // A field that is already open is not closed first: every editable field
-    // opens anyway, and the state it is left in - editor shown, per-field group
-    // hidden - is the same one it would be reopened into. What does change is
-    // the caret, which goes to the first field of the form rather than staying
-    // where the visitor happened to be.
+    // Whatever editor is open - one field or group of this form, a document
+    // row, a contact - is closed first, and the visitor is asked when it holds
+    // changes; a refused save or a "cancel" opens nothing. What that leaves
+    // behind is the state the form opens from: a field is either stored or
+    // thrown away, never applied later as a change the visitor made in a state
+    // they had already left. The caret then goes to the first field of the
+    // form rather than staying where the visitor happened to be.
+    withOtherEditorsClosed(context, null, (): void => {
+      if (formEditingActive || !openEditorAllowed()) {
+        return;
+      }
+      openForm();
+    });
+  };
+
+  const openForm = (): void => {
+    discardOpenEditors();
     setFormEditingState(true);
     root
       .querySelectorAll<HTMLElement>(fieldGroupSelector)
@@ -791,23 +947,89 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
   };
 
   /**
-   * Whether a transition may run at all.
+   * Says why nothing happened.
    *
-   * Undo, discard and the toggle stay pressable while an apply is on its way to
-   * the server, and reverting under it is not a cosmetic race: the request is
-   * already being persisted, and the response handler would then write the
-   * reverted values into `persistedValues` for every property the endpoint does
-   * not echo. The baseline would say "unchanged" for a value the database does
-   * not hold, so the next apply would not resend it - the discarded value would
-   * stay stored, with nothing on screen saying so. The request is therefore
-   * allowed to finish and the transition is refused, rather than the request
-   * being abandoned: nothing here can un-persist it.
+   * A control that is refused while a request is on its way has to say so:
+   * without a word it is a control that does nothing, which is what a broken
+   * control looks like. `aria-busy` is not that word - it is written inside
+   * `performSave()`, several microtasks in and only for a save that reaches
+   * the endpoint, so the refusal starts before it is set, and it asks a screen
+   * reader to keep quiet rather than telling anyone anything. The region is
+   * the polite one: the visitor is not being interrupted, they are being asked
+   * to wait.
    */
-  const formTransitionAllowed = (): boolean => !formRequestPending;
+  const announceRequestPending = (): void => {
+    showStatus(context, "info", context.messages.saveInProgress ?? null);
+  };
 
-  const applyForm = async (): Promise<void> => {
+  /**
+   * Whether a transition of the whole form may run at all, and the refusal
+   * when it may not.
+   *
+   * Undo, discard, the toggle and `Escape` stay pressable while an apply is on
+   * its way to the server, and reverting under it is not a cosmetic race: the
+   * request is already being persisted, and the response handler would then
+   * write the reverted values into `persistedValues` for every property the
+   * endpoint does not echo. `updateAction()` echoes every property it is sent,
+   * so today that leaves a flicker rather than a wrong baseline - the values
+   * move and are moved back. The refusal is what keeps it a flicker if an
+   * endpoint ever stops echoing: the baseline would then say "unchanged" for a
+   * value the database does not hold and the next apply would not resend it.
+   *
+   * The request is allowed to finish rather than being abandoned, because
+   * nothing here can un-persist it.
+   */
+  const formTransitionAllowed = (): boolean => {
+    if (formRequestPending) {
+      announceRequestPending();
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * The same question for a control beside a single field - its undo, its
+   * clear, and the pencil that opens it, which now discards the editor that is
+   * open. A single-field save is a request nothing can un-persist either, and
+   * its response writes the value and the baseline back for the field it
+   * saved.
+   *
+   * The price of waiting for the answer is that a request which is accepted
+   * and never answered leaves these controls refusing for as long as the page
+   * is open. `requestJson()` has no timeout, and giving it one is a change to
+   * the request layer rather than to this module.
+   */
+  const singleFieldTransitionAllowed = (): boolean => {
+    if (formRequestPending || saveRequestsPending > 0) {
+      announceRequestPending();
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * Whether a pencil may open the editor it belongs to, which asks one thing
+   * more.
+   *
+   * While the whole form is open every editable field is already open, so
+   * there is nothing left for a pencil to open - and the discard it runs first
+   * reads openness off the DOM, which in that state means every editor of the
+   * profile. A pencil pressed there therefore does nothing at all, and does it
+   * silently: nothing is on its way, the visitor is not waiting for anything,
+   * and the form's own bar is the way out. What keeps that pencil out of reach
+   * in the shipped markup is the `d-none` of the preview it sits in, which is
+   * a Bootstrap class in an overridable partial and not a rule of this module.
+   */
+  const openEditorAllowed = (): boolean =>
+    !formEditingActive && singleFieldTransitionAllowed();
+
+  const applyForm = async (): Promise<boolean> => {
     if (formRequestPending || root.getAttribute("aria-busy") === "true") {
-      return;
+      // Apply pressed twice, or pressed while a single field is being saved.
+      // `aria-busy` is the second half of that question because a save which
+      // is not an apply sets nothing else.
+      announceRequestPending();
+      return false;
     }
     formRequestPending = true;
     try {
@@ -818,9 +1040,79 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
       if (applied) {
         leaveFormEditing();
       }
+      return applied;
     } finally {
       formRequestPending = false;
     }
+  };
+
+  /**
+   * The fields whose editor is open: every editable one while the form is
+   * open, otherwise the one field or group that is - read off the DOM, for the
+   * reason `discardOpenEditors()` reads it there.
+   */
+  const openEditorFields = (): EditableField[] =>
+    editableFields().filter((field): boolean => {
+      if (formEditingActive) {
+        return true;
+      }
+      const editor = getFieldEditElement(field);
+      return editor !== field && !editor.classList.contains("d-none");
+    });
+
+  /**
+   * What the profile fields are to every other editor of the page.
+   *
+   * One handle for the single field, the group and the whole form, because
+   * they are one state to the outside: something of the profile form is open,
+   * and it holds changes or does not. A save stores exactly what the open
+   * editor's own save button would - the one field, the group, or the form -
+   * and closes it on success; a discard is the open editor's own undo, which
+   * announces what it threw away.
+   */
+  const fieldsEditor: OpenEditor = {
+    isOpen: (): boolean => formEditingActive || openEditorFields().length > 0,
+    isBusy: (): boolean => formRequestPending || saveRequestsPending > 0,
+    isDirty: (): boolean => {
+      const open = openEditorFields();
+      normalizeRichTextBaselines(open);
+      return open.some(
+        (field): boolean => persistedValues.get(field) !== getFieldValue(field),
+      );
+    },
+    save: (): Promise<boolean> =>
+      formEditingActive ? applyForm() : saveFields(openEditorFields()),
+    discard: (): void => {
+      if (formEditingActive) {
+        discardForm();
+      } else {
+        discardOpenEditors();
+      }
+    },
+  };
+  registerOpenEditor(context, fieldsEditor);
+
+  /**
+   * Opens one field or group editor once every other editor is out of the way.
+   *
+   * The pencil of an editor that is already open is not a transition: the
+   * profile fields keep what has been typed and only the editors of the other
+   * modules are closed. Any other pencil closes this module's open editor as
+   * well, and asks about it like about any other.
+   */
+  const openFieldEditor = (
+    editor: HTMLElement | null,
+    open: () => void,
+  ): void => {
+    const alreadyOpen =
+      editor !== null && !editor.classList.contains("d-none") && !formEditingActive;
+    withOtherEditorsClosed(context, alreadyOpen ? fieldsEditor : null, (): void => {
+      if (!openEditorAllowed()) {
+        return;
+      }
+      discardOpenEditors(editor);
+      open();
+    });
   };
 
   root.addEventListener("click", (event): void => {
@@ -835,15 +1127,19 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     if (button.matches(groupEditButtonSelector)) {
       event.preventDefault();
       const group = button.closest<HTMLElement>(fieldGroupSelector);
-      if (group !== null) {
-        toggleEditGroup(context, group, true);
+      if (group === null || !openEditorAllowed()) {
+        return;
       }
+      void openFieldEditor(
+        group.querySelector<HTMLElement>(groupEditorSelector),
+        (): void => toggleEditGroup(context, group, true),
+      );
       return;
     }
     if (button.matches("[data-pe-group-dismiss]")) {
       event.preventDefault();
       const group = button.closest<HTMLElement>(fieldGroupSelector);
-      if (group !== null) {
+      if (group !== null && singleFieldTransitionAllowed()) {
         const groupFields = getGroupFields(context, group).filter(
           (field): boolean => !field.disabled && !isFieldReadOnly(field),
         );
@@ -856,11 +1152,8 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     if (button.matches("[data-pe-group-cancel]")) {
       event.preventDefault();
       const group = button.closest<HTMLElement>(fieldGroupSelector);
-      if (group !== null) {
-        const groupFields = getGroupFields(context, group);
-        resetFields(groupFields);
-        renderFieldGroupPreview(context, group);
-        toggleEditGroup(context, group, false);
+      if (group !== null && singleFieldTransitionAllowed()) {
+        discardFieldGroup(group);
       }
       return;
     }
@@ -903,13 +1196,14 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
       // The toggle is the way in and one of the two ways out. Closing the form
       // is discarding it: a value left in a control the visitor cannot see any
       // more would contradict the preview beside it and would be sent by the
-      // next apply without ever having been looked at again.
-      if (!formTransitionAllowed()) {
-        return;
-      }
+      // next apply without ever having been looked at again. The way in
+      // discards as well - the one field that was open - which is why it asks
+      // the wider question.
       if (formEditingActive) {
-        discardForm();
-      } else {
+        if (formTransitionAllowed()) {
+          discardForm();
+        }
+      } else if (openEditorAllowed()) {
         enterFormEditing();
       }
       return;
@@ -917,15 +1211,23 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     if (button.matches(editButtonSelector)) {
       event.preventDefault();
       const fieldId = hooks(button).peFor;
-      if (fieldId !== undefined) {
-        toggleEditField(context, fieldId, true);
+      if (fieldId === undefined || !openEditorAllowed()) {
+        return;
       }
+      const field = getFieldById(context, fieldId);
+      void openFieldEditor(
+        field === null ? null : getFieldEditElement(field),
+        (): void => toggleEditField(context, fieldId, true),
+      );
       return;
     }
     if (button.matches("[data-pe-dismiss]")) {
       event.preventDefault();
+      // Clear and undo wait for the same answer the pencil waits for. Both
+      // move the control the response is about to write into, so pressed under
+      // a save they are taken back a moment later with nothing saying so.
       const field = getFieldById(context, hooks(button).peFor);
-      if (field !== null) {
+      if (field !== null && singleFieldTransitionAllowed()) {
         setFieldValue(field, "");
         clearValidationErrors([field]);
         toggleEditField(context, field.id, true);
@@ -935,10 +1237,8 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     if (button.matches("[data-pe-cancel]")) {
       event.preventDefault();
       const field = getFieldById(context, hooks(button).peFor);
-      if (field !== null) {
-        setFieldValue(field, persistedValues.get(field) ?? "");
-        clearValidationErrors([field]);
-        toggleEditField(context, field.id, false);
+      if (field !== null && singleFieldTransitionAllowed()) {
+        discardField(field);
       }
       return;
     }
@@ -980,7 +1280,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     // `data-pe-fields-form`, they keep their own handling of both keys, and
     // full form editing does not touch them.
     form.addEventListener("keydown", (event): void => {
-      if (!formEditingActive || !formTransitionAllowed()) {
+      if (!formEditingActive) {
         return;
       }
       const target = event.target;
@@ -992,11 +1292,17 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
           return;
         }
         event.preventDefault();
-        discardForm();
+        // The refusal is asked for inside the branch of the key, not before
+        // it: `formTransitionAllowed()` announces, and asked one line higher
+        // it would announce for every key pressed in the form.
+        if (formTransitionAllowed()) {
+          discardForm();
+        }
         return;
       }
       if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
+        // `applyForm()` refuses and announces for itself.
         void applyForm();
       }
     });

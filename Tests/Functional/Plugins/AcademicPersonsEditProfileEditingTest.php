@@ -282,7 +282,11 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             $this->translate('profileEditing.image.editor.deleteConfirm'),
             trim($container->textContent),
         );
-        $this->assertSame(0, $this->nodeCount($xpath, '//dialog'));
+        // The one <dialog> of the page is the unsaved-changes template of
+        // Partials/Profile/UnsavedChanges.html, which is not the image
+        // editor's and is asserted by name; the image editor itself has none.
+        $this->assertSame(0, $this->nodeCount($xpath, '//dialog[not(@data-pe-unsaved-changes)]'));
+        $this->assertSame(1, $this->nodeCount($xpath, '//template[@data-pe-dialog="unsaved-changes"]/dialog[@data-pe-unsaved-changes]'));
         $this->assertSame(0, $this->nodeCount($xpath, '//*[@data-add-label or @data-replace-label]'));
         // Extbase validation results are not rendered into the editor: the
         // upload answers with JSON and the element writes the message.
@@ -2355,7 +2359,10 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertStringNotContainsString('data-pe-image-modal', $content);
         $this->assertStringNotContainsString('data-pe-document-modal', $content);
         $this->assertStringNotContainsString('data-bs-toggle="modal"', $content);
-        $this->assertStringNotContainsString('<dialog', $content);
+        // One <dialog>, and it is the unsaved-changes template rather than a
+        // dialog of the image editor.
+        $this->assertSame(1, substr_count($content, '<dialog'));
+        $this->assertStringContainsString('data-pe-unsaved-changes', $content);
         $this->assertMatchesRegularExpression(
             '@<form\b(?=[^>]*enctype="multipart/form-data")[^>]*>@s',
             $content,

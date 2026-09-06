@@ -31,7 +31,9 @@ together (the name parts, a link and its title) is edited and saved as one.
 
 An unsaved field can be restored to the value that is stored, and a checkbox
 saves on change and reverts itself when the request fails, so what is on screen
-is what is in the database.
+is what is in the database. Only one field or group is open at a time: opening
+another one discards the one that is open, so no value is ever left behind in a
+control the visitor cannot see.
 
 :guilabel:`Edit all` opens every field of the page at once and gives the form
 its own controls; see
@@ -121,6 +123,13 @@ Every control has an accessible name, the fold-out regions carry
 ``aria-describedby``/``aria-invalid``, a failed request is announced through an
 assertive live region and a successful one through a polite one, and closing an
 editor returns the focus to the control that opened it.
+
+That last one has one deliberate exception. An editor that is closed because
+another one is being opened does *not* hand the focus back to its own pencil -
+the caret belongs in the editor the visitor has just opened, and moving it
+twice would take it out of there again. The rule is therefore that a close the
+visitor asked for returns the focus, and a close that happens on the way to
+somewhere else leaves it where it is going.
 
 Bundled libraries
 -----------------

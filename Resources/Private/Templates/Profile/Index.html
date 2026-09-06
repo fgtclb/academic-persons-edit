@@ -129,6 +129,8 @@
             data-message-validation="{f:translate(key: 'profileEditing.status.validation', extensionName: 'academic_persons_edit')}"
             data-message-editor-error="{f:translate(key: 'profileEditing.status.editorError', extensionName: 'academic_persons_edit')}"
             data-message-unchanged="{f:translate(key: 'profileEditing.status.unchanged', extensionName: 'academic_persons_edit')}"
+            data-message-save-in-progress="{f:translate(key: 'profileEditing.status.saveInProgress', extensionName: 'academic_persons_edit')}"
+            data-message-discarded="{f:translate(key: 'profileEditing.status.discarded', extensionName: 'academic_persons_edit')}"
             data-message-image-uploaded="{f:translate(key: 'profileEditing.image.status.uploaded', extensionName: 'academic_persons_edit')}"
             data-message-image-upload-missing="{f:translate(key: 'profileEditing.image.status.missing', extensionName: 'academic_persons_edit')}"
             data-message-image-deleted="{f:translate(key: 'profileEditing.image.status.deleted', extensionName: 'academic_persons_edit')}"
@@ -223,6 +225,9 @@
             <f:render partial="Profile/StatusToast" />
             <f:render partial="Profile/ButtonTemplates" />
             <f:render partial="Profile/Prototypes" />
+            <f:render
+                partial="Profile/UnsavedChanges"
+                arguments="{profile: profile}" />
         </div>
     </academic-persons-edit-profile-editing>
 </html>

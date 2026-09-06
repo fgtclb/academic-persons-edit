@@ -153,8 +153,8 @@ take the colour of the control they sit in - see
 Removed labels
 --------------
 
-:file:`Resources/Private/Language/locallang.xlf` goes from 208 to 143
-trans-units: **144 are removed and 79 are new**. 64 survive, all of them
+:file:`Resources/Private/Language/locallang.xlf` goes from 208 to 145
+trans-units: **144 are removed and 81 are new**. 64 survive, all of them
 byte-identical. The
 German :file:`de.locallang.xlf` follows one to one. That is not a list worth
 printing - the authoritative one is the diff of the file for this release -

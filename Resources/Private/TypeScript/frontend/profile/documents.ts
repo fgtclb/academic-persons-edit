@@ -13,6 +13,11 @@ import {
   type EditingTarget,
 } from "@fgtclb/academic-persons-edit/frontend/profile/context.js";
 import {
+  askUnsavedChanges,
+  closeOtherEditors,
+  registerOpenEditor,
+} from "@fgtclb/academic-persons-edit/frontend/profile/editors.js";
+import {
   documentEditorClosedEvent,
   documentEditorCloseEvent,
   documentEditorInputEvent,
@@ -93,6 +98,8 @@ interface ContractContactState {
   error: string;
   errors: Record<string, string>;
   fields: DocumentField[];
+  /** The values the editor opened with, or last saved: what "changed" is measured against. */
+  initialValues: Record<string, DocumentValue>;
   mode: DocumentMode;
   open: boolean;
   pending: boolean;
@@ -109,6 +116,8 @@ interface DocumentState {
   error: string;
   errors: Record<string, string>;
   fields: DocumentField[];
+  /** The values the editor opened with, or last saved: what "changed" is measured against. */
+  initialValues: Record<string, DocumentValue>;
   kind: "document" | "contract";
   mode: DocumentMode;
   open: boolean;
@@ -133,7 +142,8 @@ export interface DocumentEditingController {
   openDocument(mode: string, event: Event): Promise<void>;
   closeDocument(): void;
   finishDocumentClose(element: Element, restoreState?: boolean): void;
-  submitDocument(): Promise<void>;
+  /** Resolves `true` once the record is stored. */
+  submitDocument(): Promise<boolean>;
   openContractContact(
     mode: string,
     section: string,
@@ -141,7 +151,8 @@ export interface DocumentEditingController {
     record?: number,
   ): Promise<void>;
   closeContractContact(): void;
-  submitContractContact(): Promise<void>;
+  /** Resolves `true` once the contact is stored. */
+  submitContractContact(): Promise<boolean>;
   sortContractContact(direction: string, section: string, record: number): Promise<void>;
   sortDocument(direction: string, event: Event): Promise<void>;
   toggleContractContactVisibility(section: string, record: number): Promise<void>;
@@ -727,6 +738,7 @@ export const createDocumentEditing = (
     error: "",
     errors: {},
     fields: [],
+    initialValues: {},
     kind: "document",
     mode: "view",
     open: false,
@@ -742,6 +754,7 @@ export const createDocumentEditing = (
     error: "",
     errors: {},
     fields: [],
+    initialValues: {},
     mode: "view",
     open: false,
     pending: false,
@@ -852,6 +865,12 @@ export const createDocumentEditing = (
         view.querySelectorAll<HTMLTextAreaElement>("textarea[data-pe-rich-text]"),
       ).map((field) => ensureRichTextEditor(context, field)),
     );
+    // The baseline is taken once the rich text editors are up, and from them:
+    // CKEditor normalises what it is given, so the value it hands back for
+    // untouched content differs from the value the server answered with, and
+    // a baseline taken from the response would call every rich text field
+    // changed. `fields.ts` corrects its baselines for the same reason.
+    documentState.initialValues = collectDocumentValues();
     if (documentState.mode === "add" || documentState.mode === "edit") {
       const firstField = view.querySelector<
         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -936,6 +955,15 @@ export const createDocumentEditing = (
     if (modeValue !== "add" && record === null) {
       return;
     }
+    // Whatever editor is open - a row of this or of another section, a
+    // profile field, the whole form - is closed first, and the visitor is
+    // asked when it holds changes. `null` rather than this controller's own
+    // handle: the editor being replaced is this controller's as often as not,
+    // and its unsaved values are worth the same question as anybody else's.
+    const closed = closeOtherEditors(context, null);
+    if (closed === false || (closed !== true && !(await closed))) {
+      return;
+    }
     documentState.pending = true;
     documentState.error = "";
     documentState.errors = {};
@@ -971,6 +999,7 @@ export const createDocumentEditing = (
       documentState.values = Object.fromEntries(
         fields.map((field): [string, DocumentValue] => [field.name, field.value]),
       );
+      documentState.initialValues = { ...documentState.values };
       if (trigger !== null) {
         setExpanded(trigger, false);
       }
@@ -1067,13 +1096,36 @@ export const createDocumentEditing = (
     return values;
   };
 
-  const submitDocument = async (): Promise<void> => {
+  /**
+   * Whether two value maps say the same thing, compared as the request would
+   * send them: a checkbox's `false` and a missing key are the same absence.
+   */
+  const sameValues = (
+    left: Record<string, DocumentValue>,
+    right: Record<string, DocumentValue>,
+  ): boolean =>
+    [...new Set([...Object.keys(left), ...Object.keys(right)])].every(
+      (name): boolean =>
+        String(left[name] ?? "") === String(right[name] ?? ""),
+    );
+
+  const isDocumentDirty = (): boolean =>
+    documentState.open &&
+    (documentState.mode === "add" || documentState.mode === "edit") &&
+    !sameValues(collectDocumentValues(), documentState.initialValues);
+
+  const isContractContactDirty = (): boolean =>
+    contractContactState.open &&
+    (contractContactState.mode === "add" || contractContactState.mode === "edit") &&
+    !sameValues(contractContactState.values, contractContactState.initialValues);
+
+  const submitDocument = async (): Promise<boolean> => {
     if (documentState.pending || documentState.mode === "view" || activeSection === null) {
-      return;
+      return false;
     }
     const form = root.querySelector<HTMLFormElement>("[data-pe-document-form]");
     if (documentState.mode !== "delete" && form !== null && !form.reportValidity()) {
-      return;
+      return false;
     }
     const endpoint =
       documentState.mode === "add"
@@ -1085,8 +1137,9 @@ export const createDocumentEditing = (
     if (documentState.mode !== "add") {
       data.record = documentState.record;
     }
+    const submittedValues = collectDocumentValues();
     if (documentState.mode !== "delete") {
-      data.fields = collectDocumentValues();
+      data.fields = submittedValues;
     }
     documentState.pending = true;
     documentState.error = "";
@@ -1106,6 +1159,23 @@ export const createDocumentEditing = (
           updateDocumentRow(row, item);
         }
         refreshDocumentRows(activeSection);
+        // An edit stays open with what it just stored: the visitor is still
+        // in the record, and the next change starts from the values the
+        // database now holds rather than from a closed panel. The heading
+        // follows the title the row shows. Only a create and a delete close -
+        // there is no record left to stand in, respectively the record is now
+        // a row of the list and the panel that made it belongs to nothing.
+        documentState.initialValues = { ...submittedValues };
+        const storedTitle = String(item.display?.title ?? submittedValues.title ?? "").trim();
+        documentState.title = [
+          getModeLabel(context, documentState.mode),
+          storedTitle !== "" ? storedTitle : getSectionHeading(activeSection),
+        ]
+          .filter(Boolean)
+          .join(": ");
+        documentState.pending = false;
+        showStatus(context, "success", context.messages.documentSaved ?? null);
+        return true;
       } else if (documentState.mode === "delete") {
         rowPendingRemoval = activeSection.querySelector<HTMLElement>(
           `${itemSelector}[data-item-uid="${CSS.escape(String(documentState.record))}"]`,
@@ -1119,6 +1189,7 @@ export const createDocumentEditing = (
       documentState.pending = false;
       closeDocument();
       showStatus(context, "success", successMessage ?? null);
+      return true;
     } catch (error) {
       const result = (error as RequestError).result;
       documentState.error = result?.message ?? context.messages.errorMessage ?? "";
@@ -1128,6 +1199,7 @@ export const createDocumentEditing = (
           Array.isArray(messages) ? messages.map(String).join(" ") : String(messages),
         ]),
       );
+      return false;
     } finally {
       documentState.pending = false;
       renderDocumentEditor();
@@ -1206,6 +1278,16 @@ export const createDocumentEditing = (
       closeContractContact();
       return;
     }
+    // Another contact of the same contract replaces the one that is open in
+    // place - the editor is one property of the panel, not a second panel -
+    // so the question is asked here rather than through the registry, which
+    // knows the contract's panel and not the contact inside it.
+    if (isContractContactDirty()) {
+      const choice = await askUnsavedChanges(context);
+      if (choice === "cancel" || (choice === "save" && !(await submitContractContact()))) {
+        return;
+      }
+    }
     contractContactState.pending = true;
     contractContactState.error = "";
     contractContactState.errors = {};
@@ -1235,6 +1317,7 @@ export const createDocumentEditing = (
       contractContactState.values = Object.fromEntries(
         fields.map((field): [string, DocumentValue] => [field.name, field.value]),
       );
+      contractContactState.initialValues = { ...contractContactState.values };
       contractContactTrigger = button;
       contractContactState.open = true;
       // Before the render, and that is the whole reason the line is here: the
@@ -1281,13 +1364,13 @@ export const createDocumentEditing = (
     }
   };
 
-  const submitContractContact = async (): Promise<void> => {
+  const submitContractContact = async (): Promise<boolean> => {
     if (
       contractContactState.pending ||
       contractContactState.mode === "view" ||
       documentState.record === null
     ) {
-      return;
+      return false;
     }
     const form = root.querySelector<HTMLFormElement>("[data-pe-document-form]");
     if (
@@ -1295,7 +1378,7 @@ export const createDocumentEditing = (
       form !== null &&
       !form.reportValidity()
     ) {
-      return;
+      return false;
     }
     const endpoint =
       contractContactState.mode === "add"
@@ -1349,7 +1432,13 @@ export const createDocumentEditing = (
         },
       );
       contractContactState.pending = false;
-      contractContactState.open = false;
+      // An edit stays open with what it stored, exactly as a document's does;
+      // a create and a delete close.
+      if (mode === "edit") {
+        contractContactState.initialValues = { ...contractContactState.values };
+      } else {
+        contractContactState.open = false;
+      }
       renderDocumentEditor();
       showStatus(
         context,
@@ -1358,6 +1447,7 @@ export const createDocumentEditing = (
           ? context.messages.documentDeleted ?? null
           : context.messages.documentSaved ?? null,
       );
+      return true;
     } catch (error) {
       const result = (error as RequestError).result;
       contractContactState.error =
@@ -1372,6 +1462,7 @@ export const createDocumentEditing = (
           ],
         ),
       );
+      return false;
     } finally {
       contractContactState.pending = false;
       renderDocumentEditor();
@@ -1604,6 +1695,26 @@ export const createDocumentEditing = (
   // which is what freed the module of the `WeakMap`s that used to pair a root
   // element with the controller and the drag in progress belonging to it.
   initializeDocumentDragAndDrop(context);
+  // The panel and the contact editor inside it are one editor to everybody
+  // else: closing the panel closes both, and saving it stores the contact
+  // first - the form the visitor was last typing in - and the document after
+  // it, stopping at the first refusal so that its messages stay in view.
+  registerOpenEditor(context, {
+    isOpen: (): boolean => documentState.open,
+    isBusy: (): boolean => documentState.pending || contractContactState.pending,
+    isDirty: (): boolean => isDocumentDirty() || isContractContactDirty(),
+    save: async (): Promise<boolean> => {
+      if (isContractContactDirty() && !(await submitContractContact())) {
+        return false;
+      }
+      if (isDocumentDirty() && !(await submitDocument())) {
+        return false;
+      }
+      closeDocument();
+      return true;
+    },
+    discard: (): void => closeDocument(),
+  });
   root.addEventListener("click", onContractContactClick);
   // Both, because a select reports a "change" and a text field an "input", and
   // the contact forms carry either.

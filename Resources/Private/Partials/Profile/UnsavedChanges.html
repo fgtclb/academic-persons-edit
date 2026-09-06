@@ -1,0 +1,76 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The question asked before an editor with unsaved changes is closed for
+        another one, as a template.
+
+        "data-pe-dialog" rather than "data-pe-proto": the dialog is cloned
+        whole, with nothing to fill, so it is not one of the prototypes of
+        Profile/Prototypes.html and is not counted among them.
+
+        Only one editor of the profile is open at a time - a field, a group,
+        the whole form, a document row or a contact. Opening another one closes
+        the one that is open, and when that one holds changes
+        "Resources/Private/TypeScript/frontend/profile/editors.ts" clones this
+        dialog, shows it modally and reads the answer off the button that was
+        pressed: "save" stores the open editor first, "discard" throws the
+        changes away, "cancel" (and Escape) opens nothing. A native
+        window.confirm() would not do: it cannot carry three answers, cannot be
+        translated by this file and can be suppressed by the browser.
+
+        The three "data-pe-unsaved-choice" values and "data-pe-unsaved-changes"
+        are the contract; the tags, classes and labels are this file's.
+    </f:comment>
+    <template data-pe-dialog="unsaved-changes">
+        <dialog
+            class="academic-persons-profile-editing__dialog rounded-0 border-0 p-0 shadow"
+            data-pe-unsaved-changes
+            aria-labelledby="profile-editing-{profile.uid}-unsaved-changes-title"
+            aria-describedby="profile-editing-{profile.uid}-unsaved-changes-message">
+            <div class="p-4">
+                <h2
+                    id="profile-editing-{profile.uid}-unsaved-changes-title"
+                    class="h4 mb-3">
+                    <f:translate
+                        key="profileEditing.unsavedChanges.title"
+                        extensionName="academic_persons_edit" />
+                </h2>
+                <p
+                    id="profile-editing-{profile.uid}-unsaved-changes-message"
+                    class="mb-4">
+                    <f:translate
+                        key="profileEditing.unsavedChanges.message"
+                        extensionName="academic_persons_edit" />
+                </p>
+                <div class="d-flex flex-wrap justify-content-end gap-2">
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-outline-secondary"
+                        data-pe-unsaved-choice="cancel">
+                        <f:translate
+                            key="profileEditing.unsavedChanges.cancel"
+                            extensionName="academic_persons_edit" />
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-outline-danger"
+                        data-pe-unsaved-choice="discard">
+                        <f:translate
+                            key="profileEditing.unsavedChanges.discard"
+                            extensionName="academic_persons_edit" />
+                    </button>
+                    <button
+                        type="button"
+                        class="btn rounded-0 btn-primary"
+                        data-pe-unsaved-choice="save">
+                        <f:translate
+                            key="profileEditing.unsavedChanges.save"
+                            extensionName="academic_persons_edit" />
+                    </button>
+                </div>
+            </div>
+        </dialog>
+    </template>
+</html>

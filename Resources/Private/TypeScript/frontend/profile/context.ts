@@ -3,7 +3,7 @@
  * modules, read once.
  *
  * The template puts the whole configuration of an editor on its root element:
- * fourteen endpoint urls, seven state values, twenty-two translated messages
+ * fourteen endpoint urls, seven state values, twenty-four translated messages
  * and six labels. Until now every module read them straight off
  * `root.dataset` at the moment it needed one - the same forty-odd attributes,
  * re-read and re-coerced on every status message, every request and every
@@ -72,6 +72,7 @@ type ProfileEditingContract = {
   messageContractContactEmpty?: string;
   messageContractContactHidden?: string;
   messageContractContactShown?: string;
+  messageDiscarded?: string;
   messageDocumentDeleteConfirm?: string;
   messageDocumentDeleted?: string;
   messageDocumentSaved?: string;
@@ -84,6 +85,7 @@ type ProfileEditingContract = {
   messageImageUploaded?: string;
   messageInfoMessage?: string;
   messageInfoTitle?: string;
+  messageSaveInProgress?: string;
   messageSaving?: string;
   messageSuccessMessage?: string;
   messageSuccessTitle?: string;
@@ -140,12 +142,13 @@ export interface EditingImage {
   readonly renderType: string;
 }
 
-/** The twenty-two translated status messages, keyed by what they say. */
+/** The twenty-four translated status messages, keyed by what they say. */
 export interface EditingMessages {
   readonly contractContactDeleteConfirm: string | undefined;
   readonly contractContactEmpty: string | undefined;
   readonly contractContactHidden: string | undefined;
   readonly contractContactShown: string | undefined;
+  readonly discarded: string | undefined;
   readonly documentDeleteConfirm: string | undefined;
   readonly documentDeleted: string | undefined;
   readonly documentSaved: string | undefined;
@@ -158,6 +161,7 @@ export interface EditingMessages {
   readonly imageUploaded: string | undefined;
   readonly infoMessage: string | undefined;
   readonly infoTitle: string | undefined;
+  readonly saveInProgress: string | undefined;
   readonly saving: string | undefined;
   readonly successMessage: string | undefined;
   readonly successTitle: string | undefined;
@@ -253,6 +257,7 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
       contractContactEmpty: contract.messageContractContactEmpty,
       contractContactHidden: contract.messageContractContactHidden,
       contractContactShown: contract.messageContractContactShown,
+      discarded: contract.messageDiscarded,
       documentDeleteConfirm: contract.messageDocumentDeleteConfirm,
       documentDeleted: contract.messageDocumentDeleted,
       documentSaved: contract.messageDocumentSaved,
@@ -265,6 +270,7 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
       imageUploaded: contract.messageImageUploaded,
       infoMessage: contract.messageInfoMessage,
       infoTitle: contract.messageInfoTitle,
+      saveInProgress: contract.messageSaveInProgress,
       saving: contract.messageSaving,
       successMessage: contract.messageSuccessMessage,
       successTitle: contract.messageSuccessTitle,

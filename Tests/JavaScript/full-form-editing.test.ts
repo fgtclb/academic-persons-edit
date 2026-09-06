@@ -95,6 +95,18 @@ describe("editing the whole profile as one form", () => {
       `[data-pe-field-preview][data-pe-for="profile-editing-1-${identifier}"] [data-pe-field-preview-content]`,
       HTMLElement,
     );
+  const activate = (identifier: string): HTMLButtonElement =>
+    select(
+      root,
+      `[data-academic-persons-profile-editing-activate-btn][data-pe-for="profile-editing-1-${identifier}"]`,
+      HTMLButtonElement,
+    );
+  const save = (identifier: string): HTMLButtonElement =>
+    select(
+      root,
+      `[data-pe-save][data-pe-for="profile-editing-1-${identifier}"]`,
+      HTMLButtonElement,
+    );
   const bar = (): HTMLElement =>
     select(root, "[data-pe-form-actions]", HTMLElement);
   const barButton = (attribute: string): HTMLButtonElement =>
@@ -176,16 +188,25 @@ describe("editing the whole profile as one form", () => {
     assert.equal(document.activeElement, field("firstName"));
   });
 
-  it("takes over a single field that was already open", () => {
-    select(
-      root,
-      '[data-academic-persons-profile-editing-activate-btn][data-pe-for="profile-editing-1-lastName"]',
-      HTMLButtonElement,
-    ).click();
+  /**
+   * The field that was open stays open, because every editable field opens -
+   * but what was typed in it does not survive unasked. Entering asks about the
+   * single-field editor first, and a discard is exactly what its own undo
+   * would do, so the form starts from the stored profile rather than from a
+   * half typed value the visitor entered in a state they have just left.
+   */
+  it("asks about the changed single field that was open and discards it when told to", async () => {
+    activate("lastName").click();
+    field("lastName").value = "Byron";
     assert.equal(editor("lastName").classList.contains("d-none"), false);
 
     toggle().click();
+    assert.equal(bar().hidden, true);
+    assert.equal(field("lastName").value, "Byron");
+    select(root, '[data-pe-unsaved-choice="discard"]', HTMLButtonElement).click();
+    await settle(20);
 
+    assert.equal(field("lastName").value, "Lovelace");
     assert.equal(editor("lastName").classList.contains("d-none"), false);
     assert.equal(
       select(
@@ -654,6 +675,83 @@ describe("editing the whole profile as one form", () => {
 
     assert.equal(fetch.calls.length, 1);
     assert.equal(bar().hidden, true);
+  });
+
+  /**
+   * A pencil pressed while the whole form is open does nothing at all.
+   *
+   * It cannot open anything - every editable field is already open - and the
+   * discard it runs first reads openness off the DOM, which in this state
+   * means every editor of the profile: it would throw the whole typed form
+   * away and leave the bar standing over fields that had been reverted. What
+   * keeps that pencil out of reach in the shipped markup is the `d-none` of
+   * the preview it sits in, and that is a Bootstrap class in an overridable
+   * partial, not a rule of the module. The way out of the form is the form's
+   * own bar.
+   */
+  it("does nothing when a pencil is pressed while the form is open", () => {
+    toggle().click();
+    field("firstName").value = "Augusta";
+    field("lastName").value = "Byron";
+    announcements = [];
+
+    activate("firstName").click();
+
+    assert.equal(field("firstName").value, "Augusta");
+    assert.equal(field("lastName").value, "Byron");
+    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(bar().hidden, false);
+    assert.equal(toggle().getAttribute("aria-pressed"), "true");
+    // Nothing was thrown away, so nothing is announced - and nothing waits for
+    // a server either, so the visitor is not asked to wait.
+    assert.deepEqual(announcements, []);
+  });
+
+  it("keeps the form applying everything after a pencil was pressed in it", async () => {
+    fetch.respond({ success: true, data: {} });
+    toggle().click();
+    field("firstName").value = "Augusta";
+    select(root, "[data-pe-group-edit]", HTMLButtonElement).click();
+    field("linkTitle").value = "Notes";
+
+    barButton("data-pe-form-apply").click();
+    await settle(20);
+
+    assert.deepEqual(fetch.calls[0]?.body, {
+      profile: 1,
+      data: { firstName: "Augusta", linkTitle: "Notes" },
+    });
+  });
+
+  /**
+   * Entering the form discards the field that is open, and a single-field save
+   * is a request nothing can un-persist either: its response is about to write
+   * the stored value and the baseline back for the field it saved. The toggle
+   * therefore does nothing at all until it has.
+   */
+  it("refuses to enter the form while a single field is on its way", async () => {
+    const pending = fetch.respondLater();
+    activate("lastName").click();
+    field("lastName").value = "Byron";
+    save("lastName").click();
+    await settle(20);
+
+    toggle().click();
+
+    assert.equal(bar().hidden, true);
+    assert.equal(toggle().getAttribute("aria-pressed"), "false");
+    assert.equal(editor("firstName").classList.contains("d-none"), true);
+    assert.equal(field("lastName").value, "Byron");
+
+    pending.settle({ success: true, data: { lastName: "Byron" } });
+    await settle(20);
+
+    assert.equal(fetch.calls.length, 1);
+    assert.deepEqual(fetch.calls[0]?.body, {
+      profile: 1,
+      data: { lastName: "Byron" },
+    });
   });
 
   /**

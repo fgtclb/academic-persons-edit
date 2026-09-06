@@ -79,6 +79,7 @@ describe("the profile editing contract", () => {
           contractContactEmpty: messages.contractContactEmpty,
           contractContactHidden: messages.contractContactHidden,
           contractContactShown: messages.contractContactShown,
+          discarded: messages.discarded,
           documentDeleteConfirm: messages.documentDeleteConfirm,
           documentDeleted: messages.documentDeleted,
           documentSaved: messages.documentSaved,
@@ -91,6 +92,7 @@ describe("the profile editing contract", () => {
           imageUploaded: messages.imageUploaded,
           infoMessage: messages.infoMessage,
           infoTitle: messages.infoTitle,
+          saveInProgress: messages.saveInProgress,
           saving: messages.saving,
           successMessage: messages.successMessage,
           successTitle: messages.successTitle,
@@ -195,7 +197,7 @@ describe("the profile editing contract", () => {
     it("reports every message and label as absent", () => {
       assert.deepEqual(
         Object.values({ ...context.messages }),
-        new Array(22).fill(undefined),
+        new Array(24).fill(undefined),
       );
       assert.deepEqual(
         Object.values({ ...context.labels }),

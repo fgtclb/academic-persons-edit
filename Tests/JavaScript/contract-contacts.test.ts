@@ -257,6 +257,9 @@ describe("the contacts of a contract", () => {
       items().map((item): unknown => (item.display as Record<string, unknown>).city),
       ["London", "Torino"],
     );
+    // An edit stays open with what it stored, exactly as a document's does.
+    assert.equal(controller.contractContact.open, true);
+    assert.deepEqual(controller.contractContact.initialValues, { city: "Torino" });
   });
 
   it("deletes a contact, sends no values and drops it from the list", async () => {

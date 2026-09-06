@@ -9,6 +9,10 @@ import {
   toEditingContext
 } from "@fgtclb/academic-persons-edit/frontend/profile/context.js";
 import {
+  registerOpenEditor,
+  withOtherEditorsClosed
+} from "@fgtclb/academic-persons-edit/frontend/profile/editors.js";
+import {
   ensureRichTextEditor,
   getPlainText,
   getRichTextEditorValue,
@@ -364,6 +368,7 @@ const initializeFieldEditing = (editingTarget) => {
   const normalizedRichTextBaselines = /* @__PURE__ */ new WeakSet();
   let formEditingActive = false;
   let formRequestPending = false;
+  let saveRequestsPending = 0;
   const formActionBars = Array.from(
     root.querySelectorAll(formActionsSelector)
   );
@@ -398,7 +403,46 @@ const initializeFieldEditing = (editingTarget) => {
     });
     clearValidationErrors(fieldsToReset);
   };
-  const saveFields = async (fieldsToSave) => {
+  const discardFields = (fieldsToDiscard) => {
+    normalizeRichTextBaselines(fieldsToDiscard);
+    const discarded = fieldsToDiscard.some(
+      (field) => persistedValues.get(field) !== getFieldValue(field)
+    );
+    resetFields(fieldsToDiscard);
+    return discarded;
+  };
+  const discardField = (field, focus = true) => {
+    const discarded = discardFields([field]);
+    toggleEditField(context, field.id, false, focus);
+    return discarded;
+  };
+  const discardFieldGroup = (group, focus = true) => {
+    const discarded = discardFields(getGroupFields(context, group));
+    renderFieldGroupPreview(context, group);
+    toggleEditGroup(context, group, false, focus);
+    return discarded;
+  };
+  const discardOpenEditors = (keepOpen = null) => {
+    let discarded = false;
+    root.querySelectorAll(fieldGroupSelector).forEach((group) => {
+      const editor = group.querySelector(groupEditorSelector);
+      if (editor === null || editor === keepOpen || editor.classList.contains("d-none")) {
+        return;
+      }
+      discarded = discardFieldGroup(group, false) || discarded;
+    });
+    editableFields().filter((field) => field.closest(fieldGroupSelector) === null).forEach((field) => {
+      const editor = getFieldEditElement(field);
+      if (editor === field || editor === keepOpen || editor.classList.contains("d-none")) {
+        return;
+      }
+      discarded = discardField(field, false) || discarded;
+    });
+    if (discarded) {
+      showStatus(context, "info", context.messages.discarded ?? null);
+    }
+  };
+  const performSave = async (fieldsToSave) => {
     if (root.getAttribute("aria-busy") === "true") {
       return false;
     }
@@ -490,6 +534,14 @@ const initializeFieldEditing = (editingTarget) => {
       root.setAttribute("aria-busy", "false");
     }
   };
+  const saveFields = async (fieldsToSave) => {
+    saveRequestsPending += 1;
+    try {
+      return await performSave(fieldsToSave);
+    } finally {
+      saveRequestsPending -= 1;
+    }
+  };
   const renderEveryPreview = () => {
     root.querySelectorAll(fieldGroupSelector).forEach((group) => renderFieldGroupPreview(context, group));
     fields.filter((field) => field.closest(fieldGroupSelector) === null).forEach(
@@ -508,6 +560,15 @@ const initializeFieldEditing = (editingTarget) => {
     setEditAllButtonState(context, active);
   };
   const enterFormEditing = () => {
+    withOtherEditorsClosed(context, null, () => {
+      if (formEditingActive || !openEditorAllowed()) {
+        return;
+      }
+      openForm();
+    });
+  };
+  const openForm = () => {
+    discardOpenEditors();
     setFormEditingState(true);
     root.querySelectorAll(fieldGroupSelector).forEach((group) => {
       toggleEditGroup(context, group, true, false);
@@ -538,10 +599,28 @@ const initializeFieldEditing = (editingTarget) => {
     revertForm();
     leaveFormEditing();
   };
-  const formTransitionAllowed = () => !formRequestPending;
+  const announceRequestPending = () => {
+    showStatus(context, "info", context.messages.saveInProgress ?? null);
+  };
+  const formTransitionAllowed = () => {
+    if (formRequestPending) {
+      announceRequestPending();
+      return false;
+    }
+    return true;
+  };
+  const singleFieldTransitionAllowed = () => {
+    if (formRequestPending || saveRequestsPending > 0) {
+      announceRequestPending();
+      return false;
+    }
+    return true;
+  };
+  const openEditorAllowed = () => !formEditingActive && singleFieldTransitionAllowed();
   const applyForm = async () => {
     if (formRequestPending || root.getAttribute("aria-busy") === "true") {
-      return;
+      announceRequestPending();
+      return false;
     }
     formRequestPending = true;
     try {
@@ -549,9 +628,47 @@ const initializeFieldEditing = (editingTarget) => {
       if (applied) {
         leaveFormEditing();
       }
+      return applied;
     } finally {
       formRequestPending = false;
     }
+  };
+  const openEditorFields = () => editableFields().filter((field) => {
+    if (formEditingActive) {
+      return true;
+    }
+    const editor = getFieldEditElement(field);
+    return editor !== field && !editor.classList.contains("d-none");
+  });
+  const fieldsEditor = {
+    isOpen: () => formEditingActive || openEditorFields().length > 0,
+    isBusy: () => formRequestPending || saveRequestsPending > 0,
+    isDirty: () => {
+      const open = openEditorFields();
+      normalizeRichTextBaselines(open);
+      return open.some(
+        (field) => persistedValues.get(field) !== getFieldValue(field)
+      );
+    },
+    save: () => formEditingActive ? applyForm() : saveFields(openEditorFields()),
+    discard: () => {
+      if (formEditingActive) {
+        discardForm();
+      } else {
+        discardOpenEditors();
+      }
+    }
+  };
+  registerOpenEditor(context, fieldsEditor);
+  const openFieldEditor = (editor, open) => {
+    const alreadyOpen = editor !== null && !editor.classList.contains("d-none") && !formEditingActive;
+    withOtherEditorsClosed(context, alreadyOpen ? fieldsEditor : null, () => {
+      if (!openEditorAllowed()) {
+        return;
+      }
+      discardOpenEditors(editor);
+      open();
+    });
   };
   root.addEventListener("click", (event) => {
     const target = event.target;
@@ -565,15 +682,19 @@ const initializeFieldEditing = (editingTarget) => {
     if (button.matches(groupEditButtonSelector)) {
       event.preventDefault();
       const group = button.closest(fieldGroupSelector);
-      if (group !== null) {
-        toggleEditGroup(context, group, true);
+      if (group === null || !openEditorAllowed()) {
+        return;
       }
+      void openFieldEditor(
+        group.querySelector(groupEditorSelector),
+        () => toggleEditGroup(context, group, true)
+      );
       return;
     }
     if (button.matches("[data-pe-group-dismiss]")) {
       event.preventDefault();
       const group = button.closest(fieldGroupSelector);
-      if (group !== null) {
+      if (group !== null && singleFieldTransitionAllowed()) {
         const groupFields = getGroupFields(context, group).filter(
           (field) => !field.disabled && !isFieldReadOnly(field)
         );
@@ -586,11 +707,8 @@ const initializeFieldEditing = (editingTarget) => {
     if (button.matches("[data-pe-group-cancel]")) {
       event.preventDefault();
       const group = button.closest(fieldGroupSelector);
-      if (group !== null) {
-        const groupFields = getGroupFields(context, group);
-        resetFields(groupFields);
-        renderFieldGroupPreview(context, group);
-        toggleEditGroup(context, group, false);
+      if (group !== null && singleFieldTransitionAllowed()) {
+        discardFieldGroup(group);
       }
       return;
     }
@@ -629,12 +747,11 @@ const initializeFieldEditing = (editingTarget) => {
     }
     if (button.matches(editAllButtonSelector)) {
       event.preventDefault();
-      if (!formTransitionAllowed()) {
-        return;
-      }
       if (formEditingActive) {
-        discardForm();
-      } else {
+        if (formTransitionAllowed()) {
+          discardForm();
+        }
+      } else if (openEditorAllowed()) {
         enterFormEditing();
       }
       return;
@@ -642,15 +759,20 @@ const initializeFieldEditing = (editingTarget) => {
     if (button.matches(editButtonSelector)) {
       event.preventDefault();
       const fieldId = hooks(button).peFor;
-      if (fieldId !== void 0) {
-        toggleEditField(context, fieldId, true);
+      if (fieldId === void 0 || !openEditorAllowed()) {
+        return;
       }
+      const field = getFieldById(context, fieldId);
+      void openFieldEditor(
+        field === null ? null : getFieldEditElement(field),
+        () => toggleEditField(context, fieldId, true)
+      );
       return;
     }
     if (button.matches("[data-pe-dismiss]")) {
       event.preventDefault();
       const field = getFieldById(context, hooks(button).peFor);
-      if (field !== null) {
+      if (field !== null && singleFieldTransitionAllowed()) {
         setFieldValue(field, "");
         clearValidationErrors([field]);
         toggleEditField(context, field.id, true);
@@ -660,10 +782,8 @@ const initializeFieldEditing = (editingTarget) => {
     if (button.matches("[data-pe-cancel]")) {
       event.preventDefault();
       const field = getFieldById(context, hooks(button).peFor);
-      if (field !== null) {
-        setFieldValue(field, persistedValues.get(field) ?? "");
-        clearValidationErrors([field]);
-        toggleEditField(context, field.id, false);
+      if (field !== null && singleFieldTransitionAllowed()) {
+        discardField(field);
       }
       return;
     }
@@ -692,7 +812,7 @@ const initializeFieldEditing = (editingTarget) => {
   });
   forms.forEach((form) => {
     form.addEventListener("keydown", (event) => {
-      if (!formEditingActive || !formTransitionAllowed()) {
+      if (!formEditingActive) {
         return;
       }
       const target = event.target;
@@ -701,7 +821,9 @@ const initializeFieldEditing = (editingTarget) => {
           return;
         }
         event.preventDefault();
-        discardForm();
+        if (formTransitionAllowed()) {
+          discardForm();
+        }
         return;
       }
       if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {

@@ -475,6 +475,14 @@
         <source>There are no changes to save.</source>
         <target>Es sind keine Änderungen zu speichern.</target>
       </trans-unit>
+      <trans-unit id="profileEditing.status.saveInProgress" resname="profileEditing.status.saveInProgress">
+        <source>Please wait until the change has been saved.</source>
+        <target>Bitte warten Sie, bis die Änderung gespeichert ist.</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.discarded" resname="profileEditing.status.discarded">
+        <source>Unsaved changes were discarded.</source>
+        <target>Nicht gespeicherte Änderungen wurden verworfen.</target>
+      </trans-unit>
       <trans-unit id="profileEditing.actions.clear">
         <source>Delete content</source>
         <target>Inhalt löschen</target>
@@ -619,6 +627,26 @@
         <target>Speichern</target>
       </trans-unit>
 
+      <trans-unit id="profileEditing.unsavedChanges.title">
+        <source>Unsaved changes</source>
+        <target>Ungespeicherte Änderungen</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.message">
+        <source>The editor that is open has changes that are not saved yet. Save them, discard them, or keep editing?</source>
+        <target>Der geöffnete Editor enthält Änderungen, die noch nicht gespeichert sind. Speichern, verwerfen oder weiter bearbeiten?</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.save">
+        <source>Save and continue</source>
+        <target>Speichern und fortfahren</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.discard">
+        <source>Discard changes</source>
+        <target>Änderungen verwerfen</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.cancel">
+        <source>Keep editing</source>
+        <target>Weiter bearbeiten</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

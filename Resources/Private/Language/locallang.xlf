@@ -365,6 +365,12 @@
       <trans-unit id="profileEditing.status.unchanged">
         <source>There are no changes to save.</source>
       </trans-unit>
+      <trans-unit id="profileEditing.status.saveInProgress" resname="profileEditing.status.saveInProgress">
+        <source>Please wait until the change has been saved.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.status.discarded" resname="profileEditing.status.discarded">
+        <source>Unsaved changes were discarded.</source>
+      </trans-unit>
       <trans-unit id="profileEditing.actions.clear">
         <source>Delete content</source>
       </trans-unit>
@@ -474,6 +480,21 @@
         <source>Save</source>
       </trans-unit>
 
+      <trans-unit id="profileEditing.unsavedChanges.title">
+        <source>Unsaved changes</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.message">
+        <source>The editor that is open has changes that are not saved yet. Save them, discard them, or keep editing?</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.save">
+        <source>Save and continue</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.discard">
+        <source>Discard changes</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.unsavedChanges.cancel">
+        <source>Keep editing</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

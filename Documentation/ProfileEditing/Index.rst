@@ -242,7 +242,10 @@ recompose the same name after a successful update without reloading the page.
 Profile values are rendered as readable text rows with alternating
 ``bg-body-tertiary`` surfaces. The only read-mode action is a borderless pencil
 button with an accessible label. Name components and the URL/title pair of
-each link share one preview row and open as one editing group.
+each link share one preview row and open as one editing group. Only one field
+or group is ever open: a second pencil, and :guilabel:`Edit all`, discard the
+one that is open before they open theirs
+(:ref:`profile-editing-full-form`).
 The special name editor retains the established responsive grid (academic
 title / first name at ``4 / 8`` and middle / last name at ``6 / 6``) without
 putting layout metadata into YAML.
@@ -277,7 +280,8 @@ The shared
 :file:`Resources/Private/Partials/Profile/Field/Editable.html` partial
 composes three focused, reusable partials:
 
-*   :file:`Field/Preview.html` renders the text preview and pencil trigger,
+*   :file:`Field/Preview.html` renders the text preview and pencil trigger —
+    the trigger that opens this field and closes whichever other one is open,
 *   :file:`Field/Control.html` renders either ``f:form.textfield`` or
     ``f:form.textarea``, including the CKEditor hook, and
 *   :file:`Field/Actions.html` renders delete, cancel and save.
@@ -337,6 +341,29 @@ closes it, save posts what changed. This is the mode described everywhere else
 on this page, and the editors of the document and contract panels behave the
 same way.
 
+Only one editor is open at a time — one field or group, the whole form, one
+document row or one contact of a contract. Opening another one, and entering
+full form editing, closes the one that is open first. An editor that still
+holds the values it was opened with closes silently, exactly as its own
+:guilabel:`Undo` or :guilabel:`Cancel` would close it. An editor with changes
+does not: the view asks, in a dialog of its own rather than a browser prompt,
+whether to :guilabel:`Save and continue`, to :guilabel:`Discard changes` or to
+:guilabel:`Keep editing`. Saving stores exactly what the open editor's own
+save would store and then opens the other editor; a save the server refuses
+keeps the visitor in the refused editor with its messages, and opens nothing.
+Discarding puts the editor back to the stored values and announces it in the
+polite live region: *Unsaved changes were discarded.* Keeping — and
+:kbd:`Escape` in the dialog — opens nothing at all. Pressing the pencil of the
+field or group that is already open changes nothing and keeps what has been
+typed.
+
+The dialog is the ``unsaved-changes`` template of
+:file:`Partials/Profile/UnsavedChanges.html`, a ``<dialog>`` element the view
+clones and shows modally; its labels are the extension's own and are
+overridable with the partial. A site that drops the template leaves the visitor
+in the editor that is open: nothing is thrown away because a template is
+missing.
+
 **Full form.** :guilabel:`Edit all` opens every editable field of the profile
 at once. While it is open, every per-field and per-group button group is hidden
 — including the undo beside an autosaving checkbox — and one bar governs the
@@ -372,6 +399,23 @@ While an apply is on its way to the server, :guilabel:`Undo`,
 request cannot be taken back, and reverting under it would leave the stored
 profile and the editor's own baseline disagreeing without anything on screen
 saying so.
+
+The same holds for a save beside a *single* field: because opening an editor
+now discards one, a pencil, :guilabel:`Edit all` and the
+:guilabel:`Delete content` and :guilabel:`Undo` beside a field or group do nothing at all while such a save is
+on its way — not even open the editor that was asked for. All of them work
+again as soon as the answer has been written back, and while they do not, they
+say so in the polite live region: *Please wait until the change has been
+saved.*
+
+A request that the server accepts and never answers therefore leaves the
+editors of that profile refusing until the page is reloaded. The frontend
+deliberately sets no timeout on its requests, so nothing here decides on the
+visitor's behalf that a slow save has failed.
+
+A pencil pressed while :guilabel:`Edit all` is open does nothing at all, and
+says nothing: every field is already open, and the form's own bar is the way
+out of the mode.
 
 A checkbox that saves on change does not save while the form is open — it is
 applied with everything else. Without that it would reach the database while the
@@ -644,8 +688,16 @@ keeping the static structure in Fluid and mapping validation errors directly
 back to the returned field names.
 
 Exactly one document collapse is open at a time, while the complete profile
-view remains visible. Activating the same add or view trigger a second time
-closes its collapse with the same cleanup as :guilabel:`Cancel`. The element is
+view remains visible — and it counts as *the* open editor of the profile, so a
+pencil of another row, of another section, of a profile field or
+:guilabel:`Edit all` closes it first and asks about unsaved changes exactly
+as described for the profile fields above. Activating the same add or view
+trigger a second time closes its collapse with the same cleanup as
+:guilabel:`Cancel`. Saving an *edit* keeps the collapse open with what it
+stored, so the next change starts from the stored record; creating and
+deleting close it. The contact editor inside a contract behaves the same way:
+switching to another contact of the contract asks about a changed one, and a
+saved edit stays open. The element is
 created where it is shown and is never moved: moving it would disconnect it,
 and a disconnect destroys the CKEditor instances below it. The collapse target
 keeps the unique ID the controller assigns it when it is first opened, now
@@ -1373,11 +1425,12 @@ which slot carries which value.
           sending another request. Select fields use the regular clear, undo
           and save action group.
     *   - ``data-academic-persons-profile-editing-edit-all-btn``
-        - Enters and leaves full form editing: it opens every editable field
-          and grouped row at once, hides the per-field action groups and shows
-          the form bars. Pressed again it discards the form, exactly as
-          :guilabel:`Discard` does. It carries ``aria-pressed`` and names the
-          field forms it controls in ``aria-controls``.
+        - Enters and leaves full form editing: it discards the single field or
+          group that is open, opens every editable field and grouped row at
+          once, hides the per-field action groups and shows the form bars.
+          Pressed again it discards the form, exactly as :guilabel:`Discard`
+          does. It carries ``aria-pressed`` and names the field forms it
+          controls in ``aria-controls``.
     *   - ``data-pe-edit-all-label``, ``data-pe-close-all-label`` and
           ``data-pe-edit-all-button-label``
         - Localized labels and replaceable label container for the edit-all

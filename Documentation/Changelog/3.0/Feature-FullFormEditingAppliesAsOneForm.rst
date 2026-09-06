@@ -26,10 +26,20 @@ autosaving checkbox with them.
 *   :guilabel:`Discard` restores every field and closes the form. Closing the
     form with :guilabel:`Edit all` does the same thing.
 
+Entering the form discards the single field or group that was open. Its
+control goes back to the stored value and any message beside it is cleared,
+exactly as its own :guilabel:`Undo` would leave it, so the form starts from the
+stored profile rather than from a value the visitor typed in a state they have
+just left.
+
 While an apply is on its way to the server none of the three, and neither
 :guilabel:`Edit all` nor :kbd:`Escape`, does anything: the request cannot be
 taken back, and reverting under it would leave the stored profile and the
-editor's baseline disagreeing silently.
+editor's baseline disagreeing silently. Because entering the form discards, the
+same applies while a *single* field is being saved: :guilabel:`Edit all` and
+every pencil do nothing until the answer has been written back, and say so in
+the polite live region rather than merely not reacting - see
+:ref:`important-profile-editing-asks-about-unsaved-changes`.
 
 A refusal reverts nothing. Every entered value stays where it was entered, the
 refused fields are marked and described by their own message, the caret goes to
@@ -70,9 +80,16 @@ This is a feature rather than a breaking change: the whole profile editing view
 is new in 3.0.0 (:ref:`breaking-replaced-profile-editing-plugin`) and no
 release ever shipped :guilabel:`Edit all` with per-field controls.
 
-Single-field editing is unchanged - the pencil, the three buttons beside a
-field, the field groups, and the editors of every document and contract panel
-all behave exactly as before.
+Single-field editing keeps its controls - the pencil, the three buttons beside
+a field and the field groups act exactly as they did, and the editors of every
+document and contract panel are not touched at all. What changed is that only
+one field or group is open at a time: opening *another* field or group, with a
+pencil or with :guilabel:`Edit all`, discards the editor that was open before
+it. Pressing the pencil of the field that is already open is not that - its own
+editor is left alone and what has been typed into it survives. An unsaved value
+left behind in another row is lost, rather than being posted later from a
+control the visitor can no longer see. A pencil pressed while the form is open
+does nothing at all - every field is already open, and the bar is the way out.
 
 An override of :file:`Partials/Profile/Profile/Fields.html` has to render
 :file:`Profile/Field/FormActions` at its end, or the profile offers no way to

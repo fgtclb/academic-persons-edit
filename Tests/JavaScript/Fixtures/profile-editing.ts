@@ -78,6 +78,11 @@ export const messages = {
   validation: "Please check the highlighted fields.",
   editorError: "The editor could not be started.",
   unchanged: "Nothing was changed.",
+  saveInProgress: "Please wait until the change has been saved.",
+  discarded: "Unsaved changes were discarded.",
+  unsavedChangesTitle: "Unsaved changes",
+  unsavedChangesMessage:
+    "The editor that is open has changes that are not saved yet. Save them, discard them, or keep editing?",
   imageUploaded: "The image was uploaded.",
   imageUploadMissing: "The upload returned no image.",
   imageDeleted: "The image was deleted.",
@@ -87,11 +92,11 @@ export const messages = {
   documentDeleteConfirm: "Delete this entry?",
   contractContactDeleteConfirm: "Delete this contact?",
   contractContactEmpty: "No contacts yet.",
+  contractContactHidden: "The contact is now hidden in the frontend.",
+  contractContactShown: "The contact is now visible in the frontend.",
   placeholderAlt: "No profile image",
   empty: "Not specified",
   formReverted: "All fields were restored to the saved values.",
-  contractContactHidden: "The contact is now hidden in the frontend.",
-  contractContactShown: "The contact is now visible in the frontend.",
 } as const;
 
 /**
@@ -107,13 +112,13 @@ export const labels = {
   add: "Add",
   view: "View",
   viewClose: "Close details",
-  edit: "Edit",
-  delete: "Delete",
-  save: "Save",
   hide: "Hide in frontend",
   show: "Show in frontend",
   hidden: "Hidden",
   contactActions: "Contact actions",
+  edit: "Edit",
+  delete: "Delete",
+  save: "Save",
   close: "Cancel",
   sortUp: "Move up",
   sortDown: "Move down",
@@ -160,10 +165,10 @@ export const profileEditingRoot = ({
   data-update-contract-contact-url="${endpoints.updateContractContact}"
   data-delete-contract-contact-url="${endpoints.deleteContractContact}"
   data-sort-contract-contact-url="${endpoints.sortContractContact}"
+  data-toggle-contract-contact-visibility-url="${endpoints.toggleContractContactVisibility}"
   data-placeholder-image-url="${placeholderImageUrl}"
   data-placeholder-image-alt="${messages.placeholderAlt}"
   data-has-image="${hasImage ? "1" : "0"}"
-  data-toggle-contract-contact-visibility-url="${endpoints.toggleContractContactVisibility}"
   data-image-render-type="${imageRenderType}"
   data-image-cropper-ratio="${imageCropperRatio}"
   data-profile-uid="${profileUid}"
@@ -179,6 +184,8 @@ export const profileEditingRoot = ({
   data-message-validation="${messages.validation}"
   data-message-editor-error="${messages.editorError}"
   data-message-unchanged="${messages.unchanged}"
+  data-message-save-in-progress="${messages.saveInProgress}"
+  data-message-discarded="${messages.discarded}"
   data-message-image-uploaded="${messages.imageUploaded}"
   data-message-image-upload-missing="${messages.imageUploadMissing}"
   data-message-image-deleted="${messages.imageDeleted}"
@@ -188,17 +195,18 @@ export const profileEditingRoot = ({
   data-message-document-delete-confirm="${messages.documentDeleteConfirm}"
   data-message-contract-contact-delete-confirm="${messages.contractContactDeleteConfirm}"
   data-message-contract-contact-empty="${messages.contractContactEmpty}"
+  data-message-contract-contact-hidden="${messages.contractContactHidden}"
+  data-message-contract-contact-shown="${messages.contractContactShown}"
   data-label-document-add="${labels.add}"
   data-label-document-view="${labels.view}"
   data-label-document-edit="${labels.edit}"
-  data-message-contract-contact-hidden="${messages.contractContactHidden}"
-  data-message-contract-contact-shown="${messages.contractContactShown}"
   data-label-document-delete="${labels.delete}"
   data-label-document-save="${labels.save}"
   data-label-document-empty="${messages.empty}">
   <div id="profile-editing-${profileUid}-image-editor-target" data-pe-image-editor-target>${target}</div>
   ${content}
   ${prototypes()}
+  ${unsavedChangesDialog()}
   ${statusToast()}
 </div>`;
 
@@ -384,6 +392,24 @@ export const prototypes = (): string => `
  * `showStatus()` picks between, the assertive one for a failure and the polite
  * one for everything else.
  */
+/**
+ * `Partials/Profile/UnsavedChanges.html` - the dialog `editors.ts` clones when
+ * the editor being closed holds changes.
+ */
+export const unsavedChangesDialog = (profileUid = 1): string => `
+<template data-pe-dialog="unsaved-changes">
+  <dialog class="academic-persons-profile-editing__dialog" data-pe-unsaved-changes
+    aria-labelledby="profile-editing-${profileUid}-unsaved-changes-title">
+    <div>
+      <h2 id="profile-editing-${profileUid}-unsaved-changes-title">${messages.unsavedChangesTitle}</h2>
+      <p>${messages.unsavedChangesMessage}</p>
+      <button type="button" data-pe-unsaved-choice="cancel">Keep editing</button>
+      <button type="button" data-pe-unsaved-choice="discard">Discard changes</button>
+      <button type="button" data-pe-unsaved-choice="save">Save and continue</button>
+    </div>
+  </dialog>
+</template>`;
+
 export const statusToast = (): string => `
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div data-pe-status-toast="status" class="toast" role="status" aria-live="polite" aria-atomic="true">

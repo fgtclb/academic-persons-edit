@@ -12,6 +12,11 @@ import {
   toEditingContext
 } from "@fgtclb/academic-persons-edit/frontend/profile/context.js";
 import {
+  askUnsavedChanges,
+  closeOtherEditors,
+  registerOpenEditor
+} from "@fgtclb/academic-persons-edit/frontend/profile/editors.js";
+import {
   documentEditorClosedEvent,
   documentEditorCloseEvent,
   documentEditorInputEvent,
@@ -451,6 +456,7 @@ const createDocumentEditing = (editingTarget) => {
     error: "",
     errors: {},
     fields: [],
+    initialValues: {},
     kind: "document",
     mode: "view",
     open: false,
@@ -466,6 +472,7 @@ const createDocumentEditing = (editingTarget) => {
     error: "",
     errors: {},
     fields: [],
+    initialValues: {},
     mode: "view",
     open: false,
     pending: false,
@@ -541,6 +548,7 @@ const createDocumentEditing = (editingTarget) => {
         view.querySelectorAll("textarea[data-pe-rich-text]")
       ).map((field) => ensureRichTextEditor(context, field))
     );
+    documentState.initialValues = collectDocumentValues();
     if (documentState.mode === "add" || documentState.mode === "edit") {
       const firstField = view.querySelector("[data-pe-document-field]:not([disabled])");
       if (firstField instanceof HTMLTextAreaElement && firstField.matches("[data-pe-rich-text]")) {
@@ -597,6 +605,10 @@ const createDocumentEditing = (editingTarget) => {
     if (modeValue !== "add" && record === null) {
       return;
     }
+    const closed = closeOtherEditors(context, null);
+    if (closed === false || closed !== true && !await closed) {
+      return;
+    }
     documentState.pending = true;
     documentState.error = "";
     documentState.errors = {};
@@ -624,6 +636,7 @@ const createDocumentEditing = (editingTarget) => {
       documentState.values = Object.fromEntries(
         fields.map((field) => [field.name, field.value])
       );
+      documentState.initialValues = { ...documentState.values };
       if (trigger !== null) {
         setExpanded(trigger, false);
       }
@@ -692,21 +705,28 @@ const createDocumentEditing = (editingTarget) => {
     });
     return values;
   };
+  const sameValues = (left, right) => [.../* @__PURE__ */ new Set([...Object.keys(left), ...Object.keys(right)])].every(
+    (name) => String(left[name] ?? "") === String(right[name] ?? "")
+  );
+  const isDocumentDirty = () => documentState.open && (documentState.mode === "add" || documentState.mode === "edit") && !sameValues(collectDocumentValues(), documentState.initialValues);
+  const isContractContactDirty = () => contractContactState.open && (contractContactState.mode === "add" || contractContactState.mode === "edit") && !sameValues(contractContactState.values, contractContactState.initialValues);
   const submitDocument = async () => {
+    var _a;
     if (documentState.pending || documentState.mode === "view" || activeSection === null) {
-      return;
+      return false;
     }
     const form = root.querySelector("[data-pe-document-form]");
     if (documentState.mode !== "delete" && form !== null && !form.reportValidity()) {
-      return;
+      return false;
     }
     const endpoint = documentState.mode === "add" ? context.urls.createDocument : documentState.mode === "edit" ? context.urls.updateDocument : context.urls.deleteDocument;
     const data = { section: documentState.section };
     if (documentState.mode !== "add") {
       data.record = documentState.record;
     }
+    const submittedValues = collectDocumentValues();
     if (documentState.mode !== "delete") {
-      data.fields = collectDocumentValues();
+      data.fields = submittedValues;
     }
     documentState.pending = true;
     documentState.error = "";
@@ -726,6 +746,15 @@ const createDocumentEditing = (editingTarget) => {
           updateDocumentRow(row, item);
         }
         refreshDocumentRows(activeSection);
+        documentState.initialValues = { ...submittedValues };
+        const storedTitle = String(((_a = item.display) == null ? void 0 : _a.title) ?? submittedValues.title ?? "").trim();
+        documentState.title = [
+          getModeLabel(context, documentState.mode),
+          storedTitle !== "" ? storedTitle : getSectionHeading(activeSection)
+        ].filter(Boolean).join(": ");
+        documentState.pending = false;
+        showStatus(context, "success", context.messages.documentSaved ?? null);
+        return true;
       } else if (documentState.mode === "delete") {
         rowPendingRemoval = activeSection.querySelector(
           `${itemSelector}[data-item-uid="${CSS.escape(String(documentState.record))}"]`
@@ -736,6 +765,7 @@ const createDocumentEditing = (editingTarget) => {
       documentState.pending = false;
       closeDocument();
       showStatus(context, "success", successMessage ?? null);
+      return true;
     } catch (error) {
       const result = error.result;
       documentState.error = (result == null ? void 0 : result.message) ?? context.messages.errorMessage ?? "";
@@ -745,6 +775,7 @@ const createDocumentEditing = (editingTarget) => {
           Array.isArray(messages) ? messages.map(String).join(" ") : String(messages)
         ])
       );
+      return false;
     } finally {
       documentState.pending = false;
       renderDocumentEditor();
@@ -791,6 +822,12 @@ const createDocumentEditing = (editingTarget) => {
       closeContractContact();
       return;
     }
+    if (isContractContactDirty()) {
+      const choice = await askUnsavedChanges(context);
+      if (choice === "cancel" || choice === "save" && !await submitContractContact()) {
+        return;
+      }
+    }
     contractContactState.pending = true;
     contractContactState.error = "";
     contractContactState.errors = {};
@@ -817,6 +854,7 @@ const createDocumentEditing = (editingTarget) => {
       contractContactState.values = Object.fromEntries(
         fields.map((field) => [field.name, field.value])
       );
+      contractContactState.initialValues = { ...contractContactState.values };
       contractContactTrigger = button;
       contractContactState.open = true;
       contractContactState.pending = false;
@@ -855,11 +893,11 @@ const createDocumentEditing = (editingTarget) => {
   };
   const submitContractContact = async () => {
     if (contractContactState.pending || contractContactState.mode === "view" || documentState.record === null) {
-      return;
+      return false;
     }
     const form = root.querySelector("[data-pe-document-form]");
     if (contractContactState.mode !== "delete" && form !== null && !form.reportValidity()) {
-      return;
+      return false;
     }
     const endpoint = contractContactState.mode === "add" ? context.urls.createContractContact : contractContactState.mode === "edit" ? context.urls.updateContractContact : context.urls.deleteContractContact;
     const data = {
@@ -903,13 +941,18 @@ const createDocumentEditing = (editingTarget) => {
         }
       );
       contractContactState.pending = false;
-      contractContactState.open = false;
+      if (mode === "edit") {
+        contractContactState.initialValues = { ...contractContactState.values };
+      } else {
+        contractContactState.open = false;
+      }
       renderDocumentEditor();
       showStatus(
         context,
         "success",
         contractContactState.mode === "delete" ? context.messages.documentDeleted ?? null : context.messages.documentSaved ?? null
       );
+      return true;
     } catch (error) {
       const result = error.result;
       contractContactState.error = (result == null ? void 0 : result.message) ?? context.messages.errorMessage ?? "";
@@ -921,6 +964,7 @@ const createDocumentEditing = (editingTarget) => {
           ]
         )
       );
+      return false;
     } finally {
       contractContactState.pending = false;
       renderDocumentEditor();
@@ -1078,6 +1122,22 @@ const createDocumentEditing = (editingTarget) => {
     contractContactState.values = { ...contractContactState.values, [name]: value };
   };
   initializeDocumentDragAndDrop(context);
+  registerOpenEditor(context, {
+    isOpen: () => documentState.open,
+    isBusy: () => documentState.pending || contractContactState.pending,
+    isDirty: () => isDocumentDirty() || isContractContactDirty(),
+    save: async () => {
+      if (isContractContactDirty() && !await submitContractContact()) {
+        return false;
+      }
+      if (isDocumentDirty() && !await submitDocument()) {
+        return false;
+      }
+      closeDocument();
+      return true;
+    },
+    discard: () => closeDocument()
+  });
   root.addEventListener("click", onContractContactClick);
   root.addEventListener("input", onContractContactInput);
   root.addEventListener("change", onContractContactInput);

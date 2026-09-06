@@ -467,6 +467,16 @@ describe("saving a document", () => {
       select(root, '[data-item-uid="7"] [data-pe-document-title]', HTMLElement).textContent,
       "Paper 7, revised",
     );
+    // The edit stays open with what it stored: the visitor is still in the
+    // record, the next change starts from the stored values, and the heading
+    // follows the title the row now shows.
+    assert.equal(controller.document.open, true);
+    assert.deepEqual(controller.document.initialValues, { title: "Paper 7, revised" });
+    assert.equal(controller.document.title, `${labels.edit}: Paper 7, revised`);
+    assert.equal(
+      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      messages.documentSaved,
+    );
   });
 
   /**
