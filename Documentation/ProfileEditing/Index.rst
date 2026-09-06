@@ -663,6 +663,15 @@ collection, alternating background, sort controls and empty placeholder without
 reloading the page. The drag handle is hidden below Bootstrap's ``md``
 breakpoint; the explicit up/down controls remain available on mobile.
 
+The action group is drawn in one line and is never pushed below the values of
+its row. From the ``md`` breakpoint up it stands at the right edge of the row
+(``col-md-auto flex-shrink-0 ms-md-auto``) and the value columns give way to
+it: the date columns are ``col-md-2``, the title or position column takes what
+is left, and a long word breaks (``text-break``) instead of claiming the width
+of the buttons. Below ``md`` the group drops onto a full-width line of its own
+below the values and is centred there. The list header carries the same column
+widths, so it stays above the values it names.
+
 The add, view, edit and delete workflows share one inline collapse. Its field
 schema and current values are loaded through ``documentFormAction()``. Contract
 fields include the current organisational-unit, function-type and location
@@ -713,6 +722,34 @@ dynamic editor headings and expanded controls expose their relationships via
 dialogs and deliberately do not trap focus.
 When the view enters delete mode, its submit control is rendered with
 ``btn-danger``. Every other mode renders it with ``btn-primary``.
+
+An open editor carries its controls in one action bar below the form:
+:guilabel:`Cancel`, and the submit control in every mode but the read view. The
+panel header carries the heading alone. A read view has no form and therefore
+offers no control of its own - the row action that opened it closes it again
+and reports which state it is in through ``aria-expanded``.
+
+That row action also *looks* like the way out while the panel stands: the eye
+is swapped for a crossed-out eye and its label changes from :guilabel:`View` to
+:guilabel:`Close details`. Both icons and both strings are rendered by Fluid
+into the button - the second icon carries the ``hidden`` attribute - so an
+override reaches them the way it reaches every other label of the editor. The
+browser only flips ``hidden`` and rewrites ``aria-label`` and ``title``.
+
+With a keyboard that action is reached by tabbing backwards out of the panel.
+The panel is rendered directly after the action group of the row it belongs to,
+so :kbd:`Shift` + :kbd:`Tab` passes the actions of that row and arrives at the
+control that opened it. No key closes a panel from the inside: the editor of a
+single profile field is the only place :kbd:`Escape` is bound, and a document
+or contact panel is not a modal dialog, does not trap focus and leaves the page
+below it reachable.
+
+An override of :file:`Documents/Editor.html` or
+:file:`Documents/ContractContactEditor.html` that still renders the removed
+header control keeps working. Its condition ``data-pe-when="showClose"`` is no
+longer filled, an unfilled condition counts as not met, and the control is
+removed with it - such an override renders the panel without the second
+:guilabel:`Cancel` rather than failing to render it at all.
 
 ``createDocumentAction()``, ``updateDocumentAction()``,
 ``deleteDocumentAction()`` and ``sortDocumentAction()`` complete the document
@@ -1146,7 +1183,7 @@ Two vocabularies carry the rest, and both are unchanged in meaning by the move
 to custom elements. The plugin root of :file:`Templates/Profile/Index.html`
 carries the configuration of *this* profile — fourteen endpoint URLs, the
 profile uid and the editor language, five image settings, twenty-two messages
-and seven labels. It is read **once**, when the element above it starts the editor,
+and six labels. It is read **once**, when the element above it starts the editor,
 and an attribute changed afterwards is not seen. Every control below the root
 carries a ``data-pe-*`` hook, including the controls an element clones out of a
 prototype: those carry the same hooks the removed partials did.
@@ -1668,5 +1705,8 @@ overrides address.
     *   - ``academic-persons-edit-view``
         - :file:`view.svg`
         - Open a row read-only, or the public profile
+    *   - ``academic-persons-edit-view-close``
+        - :file:`view-close.svg`
+        - Close the read view a row action opened
 
 ..  index:: AJAX, CKEditor, Fluid, Frontend, JavaScript, JSON, Profile image, Rich text, NotScanned

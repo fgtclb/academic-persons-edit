@@ -195,7 +195,6 @@ export const profileEditingRoot = ({
   data-message-contract-contact-shown="${messages.contractContactShown}"
   data-label-document-delete="${labels.delete}"
   data-label-document-save="${labels.save}"
-  data-label-document-close="${labels.close}"
   data-label-document-empty="${messages.empty}">
   <div id="profile-editing-${profileUid}-image-editor-target" data-pe-image-editor-target>${target}</div>
   ${content}
@@ -320,10 +319,7 @@ export const prototypes = (): string => `
   data-pe-attr="aria-busy:busy data-pe-document-kind:kind">
   <div class="academic-persons-profile-editing__document-collapse-content">
     <form data-pe-document-form>
-      <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-        <h2 class="display-6 fw-normal mb-0" tabindex="-1" data-pe-document-heading data-pe-slot="heading"></h2>
-        <button type="button" class="btn rounded-0 btn-outline-secondary btn-sm" data-pe-document-cancel data-pe-when="showClose" data-pe-attr="disabled:pending">${labels.close}</button>
-      </div>
+      <h2 class="display-6 fw-normal mb-4" tabindex="-1" data-pe-document-heading data-pe-slot="heading"></h2>
       <div class="alert alert-danger" role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
       <p class="mb-4" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
       <dl class="row mb-0" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>
@@ -371,10 +367,7 @@ export const prototypes = (): string => `
 <template data-pe-proto="contact-editor-panel"><section class="border bg-body-tertiary p-3 p-lg-4"
   data-pe-contract-contact-editor data-pe-contract-contact-form
   data-pe-attr="id:editorId aria-busy:busy">
-  <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-    <h4 class="h5 mb-0" tabindex="-1" data-pe-contract-contact-heading data-pe-slot="title"></h4>
-    <button type="button" class="btn rounded-0 btn-outline-secondary btn-sm" data-pe-contract-contact-cancel data-pe-when="showClose" data-pe-attr="disabled:pending">${labels.close}</button>
-  </div>
+  <h4 class="h5 mb-4" tabindex="-1" data-pe-contract-contact-heading data-pe-slot="title"></h4>
   <div class="alert alert-danger" role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
   <p class="mb-4" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
   <dl class="row mb-0" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>

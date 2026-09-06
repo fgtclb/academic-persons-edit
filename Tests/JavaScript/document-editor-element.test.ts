@@ -221,6 +221,23 @@ describe("the document editor element", () => {
       assert.equal(element.querySelector("[data-pe-document-fields]"), null);
       assert.equal(element.querySelector("button[type='submit']"), null);
     });
+
+    /**
+     * A read-only panel has no form, so it has nothing to cancel. The panel
+     * header carried a "Cancel" of its own until ACE-520, which in this mode
+     * was the only control there was and only closed the panel again - the
+     * same thing the row's own view toggle does, under a label promising that
+     * something would be discarded.
+     */
+    it("offers no control at all, because there is nothing to cancel", async () => {
+      const element = await mount({
+        mode: "view",
+        fields: [field({ displayValue: "Sample paper" })],
+      });
+
+      assert.deepEqual(selectAll(element, "button", HTMLButtonElement), []);
+      assert.equal(element.querySelector("[data-pe-document-cancel]"), null);
+    });
   });
 
   describe("in add and edit mode", () => {
@@ -422,9 +439,43 @@ describe("the document editor element", () => {
         selectAll(element, "button", HTMLButtonElement).map(
           (button): boolean => button.disabled,
         ),
-        [true, true, true],
+        [true, true],
       );
       assert.ok(element.querySelector(".spinner-border") !== null);
+    });
+
+    /**
+     * The counterpart of the view mode case above: the visitor is offered the
+     * cancel once, in the action bar below the form, and not a second time in
+     * the panel header where it did exactly the same thing.
+     */
+    it("offers the cancel exactly once, in the action bar", async () => {
+      const element = await mount({ mode: "edit", fields: [field()] });
+
+      const cancels = selectAll(
+        element,
+        "[data-pe-document-cancel]",
+        HTMLButtonElement,
+      );
+      const actions = select(element, '[data-pe-when="showActions"]', HTMLElement);
+      assert.equal(cancels.length, 1);
+      assert.equal(cancels[0]?.parentElement, actions);
+      assert.equal(
+        select(element, "[data-pe-document-save]", HTMLButtonElement).parentElement,
+        actions,
+      );
+      // Which container, and not merely "the same one as the submit": the two
+      // stood together in the header before, so a shared parent is exactly what
+      // the removed markup had. The bar is the last thing in the form, below
+      // the fields, and the heading is not in it.
+      assert.equal(
+        select(element, "[data-pe-document-form]", HTMLElement).lastElementChild,
+        actions,
+      );
+      assert.equal(
+        actions.contains(select(element, "[data-pe-document-heading]", HTMLElement)),
+        false,
+      );
     });
 
     it("shows the message of the request and the message of each refused field", async () => {
@@ -489,8 +540,7 @@ describe("the document editor element", () => {
 
       assert.equal(select(element, "p", HTMLElement).textContent?.trim(), "Delete this entry?");
       const buttons = selectAll(element, "button", HTMLButtonElement);
-      // No cancel in the header: the footer carries both, and a delete has no
-      // form to abandon.
+      // The action bar carries both, and it is the only place a control lives.
       assert.equal(buttons.length, 2);
       assert.equal(buttons[1]?.type, "submit");
       assert.ok(buttons[1]?.classList.contains("btn-danger"));
@@ -507,7 +557,7 @@ describe("the document editor element", () => {
         closes += 1;
       });
 
-      selectAll(element, "button", HTMLButtonElement)[0]?.click();
+      select(element, "[data-pe-document-cancel]", HTMLButtonElement).click();
 
       assert.equal(closes, 1);
     });

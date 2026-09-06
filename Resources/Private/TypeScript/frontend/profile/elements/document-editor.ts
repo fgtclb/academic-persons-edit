@@ -394,7 +394,6 @@ export class ProfileDocumentEditorElement extends ProfileEditingElement<ProfileD
       kind: this.kind,
       pending: this.pending ? true : undefined,
       showActions: this.mode !== "view",
-      showClose: this.mode !== "delete",
       showContacts,
       showDisplay: this.mode === "view",
       showFields: editing,

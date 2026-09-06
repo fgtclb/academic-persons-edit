@@ -106,7 +106,6 @@ describe("the profile editing contract", () => {
         { ...context.labels },
         {
           documentAdd: labels.add,
-          documentClose: labels.close,
           documentDelete: labels.delete,
           documentEdit: labels.edit,
           documentEmpty: messages.empty,
@@ -131,7 +130,6 @@ describe("the profile editing contract", () => {
     it("keeps the labels a value is composed from, and only those", () => {
       assert.deepEqual(Object.keys(context.labels).sort(), [
         "documentAdd",
-        "documentClose",
         "documentDelete",
         "documentEdit",
         "documentEmpty",
@@ -201,7 +199,7 @@ describe("the profile editing contract", () => {
       );
       assert.deepEqual(
         Object.values({ ...context.labels }),
-        new Array(7).fill(undefined),
+        new Array(6).fill(undefined),
       );
     });
 

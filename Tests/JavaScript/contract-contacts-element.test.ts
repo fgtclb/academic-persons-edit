@@ -308,6 +308,33 @@ describe("the contract contacts element", () => {
       );
     });
 
+    /**
+     * The eye is drawn twice - Fluid renders the open and the closed glyph,
+     * one of them `hidden`, and so is the visibility toggle - so the icon
+     * inventory above carries nine entries for seven controls. Which of the
+     * two is showing is the element's answer,
+     * and on a row that has nothing open it is the one that says "show".
+     */
+    it("hides the closing eye of a row that has nothing open", async () => {
+      const element = await mount({ sections: addresses(contact(21, "London")) });
+
+      const view = select(
+        element,
+        "[data-pe-contract-contact-view]",
+        HTMLButtonElement,
+      );
+      assert.equal(view.getAttribute("aria-expanded"), "false");
+      assert.equal(
+        select(view, '[data-pe-view-icon="collapsed"]', HTMLElement).hidden,
+        false,
+      );
+      assert.equal(
+        select(view, '[data-pe-view-icon="expanded"]', HTMLElement).hidden,
+        true,
+      );
+      assert.equal(view.getAttribute("aria-label"), labels.view);
+    });
+
     it("labels every control from the editing contract", async () => {
       const element = await mount({ sections: addresses(contact(21, "London")) });
 
@@ -510,7 +537,7 @@ describe("the contract contacts element", () => {
         selectAll(editor, "button", HTMLButtonElement).map(
           (button): boolean => button.disabled,
         ),
-        [true, true, true],
+        [true, true],
       );
       assert.ok(editor.querySelector(".spinner-border") !== null);
     });
@@ -541,6 +568,66 @@ describe("the contract contacts element", () => {
       assert.equal(element.querySelector("[data-pe-contract-contact-save]"), null);
     });
 
+    /**
+     * A read-only panel has no form, so it has nothing to cancel. The panel
+     * header carried a "Cancel" of its own until ACE-520, which in this mode
+     * was the only control there was and only closed the panel again - the
+     * same thing the row's own view toggle does, under a label promising that
+     * something would be discarded.
+     */
+    it("offers no control at all in view mode, because there is nothing to cancel", async () => {
+      const element = await mount({
+        sections: addresses(contact(21, "London")),
+        editor: openEditor({
+          mode: "view",
+          record: 21,
+          fields: [field({ displayValue: "London" })],
+        }),
+      });
+
+      const editor = select(element, "[data-pe-contract-contact-editor]", HTMLElement);
+      assert.deepEqual(selectAll(editor, "button", HTMLButtonElement), []);
+      assert.equal(editor.querySelector("[data-pe-contract-contact-cancel]"), null);
+    });
+
+    /**
+     * The counterpart: the visitor is offered the cancel once, in the action
+     * bar below the form, and not a second time in the panel header where it
+     * did exactly the same thing.
+     */
+    it("offers the cancel exactly once, in the action bar", async () => {
+      const element = await mount({
+        sections: addresses(contact(21, "London")),
+        editor: openEditor({ mode: "edit", record: 21, fields: [field()] }),
+      });
+
+      const editor = select(element, "[data-pe-contract-contact-editor]", HTMLElement);
+      const cancels = selectAll(
+        editor,
+        "[data-pe-contract-contact-cancel]",
+        HTMLButtonElement,
+      );
+      const actions = select(editor, '[data-pe-when="showActions"]', HTMLElement);
+      assert.equal(cancels.length, 1);
+      assert.equal(cancels[0]?.parentElement, actions);
+      assert.equal(
+        select(editor, "[data-pe-contract-contact-save]", HTMLButtonElement)
+          .parentElement,
+        actions,
+      );
+      // Which container, and not merely "the same one as the submit": the two
+      // stood together in the header before, so a shared parent is exactly what
+      // the removed markup had. The bar is the last thing in the panel, below
+      // the fields, and the heading is not in it.
+      assert.equal(editor.lastElementChild, actions);
+      assert.equal(
+        actions.contains(
+          select(editor, "[data-pe-contract-contact-heading]", HTMLElement),
+        ),
+        false,
+      );
+    });
+
     it("asks the question and offers the destructive action in delete mode", async () => {
       const element = await mount({
         sections: addresses(contact(21, "London")),
@@ -558,8 +645,7 @@ describe("the contract contacts element", () => {
         select(editor, "p", HTMLElement).textContent?.trim(),
         messages.contractContactDeleteConfirm,
       );
-      // No cancel in the header: the footer carries both, and a deletion has no
-      // form to abandon.
+      // The action bar carries both, and it is the only place a control lives.
       assert.equal(selectAll(editor, "button", HTMLButtonElement).length, 2);
       const save = select(editor, "[data-pe-contract-contact-save]", HTMLButtonElement);
       assert.ok(save.classList.contains("btn-danger"));
@@ -803,6 +889,76 @@ describe("editing the contacts of a contract in the page", () => {
     assert.equal(select(editor, "dt", HTMLElement).textContent, "City");
     assert.equal(select(editor, "dd", HTMLElement).textContent?.trim(), "London");
     assert.equal(editor.querySelector("[data-pe-contract-contact-fields]"), null);
+  });
+
+  /**
+   * The one close path a read view has since ACE-520: the panel renders no
+   * control of its own, so the view control of the row carries both
+   * directions.
+   *
+   * It is worth a case of its own because this toggle is not the document
+   * one. The document list compares the *button* that is pressed with the
+   * button that opened the editor; this one compares the mode, the section and
+   * the record - by value, and against a record that
+   * `openContractContact()` takes from the response rather than from the row.
+   * A response that answers a different record therefore leaves a panel that
+   * cannot be closed at all, and the case that used to cover the toggle drives
+   * "add", where that record is `null` and the panel still had a cancel of its
+   * own in the action bar.
+   */
+  it("closes a read view again when the view control is pressed twice", async () => {
+    await openContract();
+    fetch.respond({
+      success: true,
+      record: 21,
+      title: "Address",
+      fields: [
+        { name: "city", label: "City", type: "text", value: "London", displayValue: "London" },
+      ],
+    });
+    const view =
+      '[data-pe-contract-contact-item="21"] [data-pe-contract-contact-view]';
+
+    await press(view);
+    assert.ok(root.querySelector("[data-pe-contract-contact-editor]") !== null);
+    assert.equal(
+      select(root, view, HTMLButtonElement).getAttribute("aria-expanded"),
+      "true",
+    );
+    // The row a re-render rebuilt says the same thing the button says: the eye
+    // that closes the panel, and the label that names the close.
+    const openView = select(root, view, HTMLButtonElement);
+    assert.equal(
+      select(openView, '[data-pe-view-icon="collapsed"]', HTMLElement).hidden,
+      true,
+    );
+    assert.equal(
+      select(openView, '[data-pe-view-icon="expanded"]', HTMLElement).hidden,
+      false,
+    );
+    assert.equal(openView.getAttribute("aria-label"), labels.viewClose);
+    assert.equal(openView.getAttribute("title"), labels.viewClose);
+
+    await press(view);
+
+    assert.equal(root.querySelector("[data-pe-contract-contact-editor]"), null);
+    assert.equal(controller.contractContact.open, false);
+    // The second press is a close, not a second open: nothing is asked of
+    // "contractContactForm" again, and the caret is back on the control that
+    // is now the only thing the visitor can reach the panel from.
+    assert.equal(fetch.calls.length, 2);
+    const toggle = select(root, view, HTMLButtonElement);
+    assert.equal(toggle.getAttribute("aria-expanded"), "false");
+    assert.equal(
+      select(toggle, '[data-pe-view-icon="collapsed"]', HTMLElement).hidden,
+      false,
+    );
+    assert.equal(
+      select(toggle, '[data-pe-view-icon="expanded"]', HTMLElement).hidden,
+      true,
+    );
+    assert.equal(toggle.getAttribute("aria-label"), labels.view);
+    assert.equal(document.activeElement, toggle);
   });
 
   it("closes the editor without a request when it is cancelled", async () => {

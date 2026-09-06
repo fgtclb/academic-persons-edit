@@ -356,7 +356,6 @@ class ProfileContractContactsElement extends ProfileEditingElement {
       isSave: editor.mode !== "delete",
       pending: editor.pending ? true : void 0,
       showActions: editor.mode !== "view",
-      showClose: editor.mode !== "delete",
       showDisplay: editor.mode === "view",
       showFields: editing,
       spinnerHidden: editor.pending ? void 0 : true,

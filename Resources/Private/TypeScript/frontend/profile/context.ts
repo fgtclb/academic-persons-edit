@@ -4,7 +4,7 @@
  *
  * The template puts the whole configuration of an editor on its root element:
  * fourteen endpoint urls, seven state values, twenty-two translated messages
- * and seven labels. Until now every module read them straight off
+ * and six labels. Until now every module read them straight off
  * `root.dataset` at the moment it needed one - the same forty-odd attributes,
  * re-read and re-coerced on every status message, every request and every
  * editor that opens.
@@ -63,7 +63,6 @@ type ProfileEditingContract = {
   imageCropperRatio?: string;
   imageRenderType?: string;
   labelDocumentAdd?: string;
-  labelDocumentClose?: string;
   labelDocumentDelete?: string;
   labelDocumentEdit?: string;
   labelDocumentEmpty?: string;
@@ -180,7 +179,6 @@ export interface EditingMessages {
  */
 export interface EditingLabels {
   readonly documentAdd: string | undefined;
-  readonly documentClose: string | undefined;
   readonly documentDelete: string | undefined;
   readonly documentEdit: string | undefined;
   readonly documentEmpty: string | undefined;
@@ -244,7 +242,6 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
     }),
     labels: Object.freeze({
       documentAdd: contract.labelDocumentAdd,
-      documentClose: contract.labelDocumentClose,
       documentDelete: contract.labelDocumentDelete,
       documentEdit: contract.labelDocumentEdit,
       documentEmpty: contract.labelDocumentEmpty,

@@ -255,7 +255,6 @@ class ProfileDocumentEditorElement extends ProfileEditingElement {
       kind: this.kind,
       pending: this.pending ? true : void 0,
       showActions: this.mode !== "view",
-      showClose: this.mode !== "delete",
       showContacts,
       showDisplay: this.mode === "view",
       showFields: editing,

@@ -19,7 +19,6 @@ const controlSlots = [
 ];
 const panelSlots = [
   "busy",
-  "showClose",
   "pending",
   "spinnerHidden",
   "errorHidden",

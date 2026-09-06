@@ -17,7 +17,6 @@ const readEditingContext = (root) => {
     }),
     labels: Object.freeze({
       documentAdd: contract.labelDocumentAdd,
-      documentClose: contract.labelDocumentClose,
       documentDelete: contract.labelDocumentDelete,
       documentEdit: contract.labelDocumentEdit,
       documentEmpty: contract.labelDocumentEmpty,

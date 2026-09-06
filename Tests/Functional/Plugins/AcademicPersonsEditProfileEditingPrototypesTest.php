@@ -58,7 +58,7 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
         $control = ['controlId', 'name', 'disabled', 'describedBy', 'invalid', 'documentField', 'contactField'];
         $field = ['columnClass', 'compact', 'controlId', 'label', 'errorHidden', 'errorId', 'error'];
         $panel = [
-            'busy', 'showClose', 'pending', 'spinnerHidden', 'errorHidden', 'error', 'isDelete',
+            'busy', 'pending', 'spinnerHidden', 'errorHidden', 'error', 'isDelete',
             'isSave', 'deleteConfirmation', 'showDisplay', 'showFields', 'showActions',
         ];
 

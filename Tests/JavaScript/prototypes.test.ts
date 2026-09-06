@@ -255,7 +255,6 @@ describe("the prototype filler", () => {
       heading: "View: Paper",
       isSave: true,
       showActions: false,
-      showClose: true,
       showDisplay: false,
       showFields: false,
       spinnerHidden: true,

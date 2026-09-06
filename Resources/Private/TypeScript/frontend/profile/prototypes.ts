@@ -67,7 +67,6 @@ const controlSlots = [
 /** What the document panel and the contact editor panel have in common. */
 const panelSlots = [
   "busy",
-  "showClose",
   "pending",
   "spinnerHidden",
   "errorHidden",
