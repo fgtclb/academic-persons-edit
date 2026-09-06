@@ -162,10 +162,51 @@ and form utilities; the Fluid templates contain no inline style declarations.
 build and holds only what Bootstrap cannot express: the ``display: block`` the
 custom elements need, a ``[hidden]`` rule that outranks Bootstrap's display
 utilities, three corrections to a surrounding theme (a ``.section`` overflow,
-one frame spacing variable, the stacking of the sticky card), the drag states
-of a sortable list and the enter/leave classes of the two editor transitions.
-All Bootstrap button controls of the shipped editor carry ``rounded-0`` so
-their corners remain square.
+one frame spacing variable, the stacking of the sticky card), the focus ring of
+the controls and buttons, the drag states of a sortable list and the enter/leave
+classes of the two editor transitions. All Bootstrap button controls of the
+shipped editor carry ``rounded-0`` so their corners remain square.
+
+The focus ring is the one appearance the view takes away from the surrounding
+theme rather than correcting. Bootstrap draws it with ``box-shadow``, several
+themes layer further opaque rings behind that one, and a translucent accent ring
+over an opaque black one reads as a hard dark rectangle around the focused
+control. A shadow is also the wrong mechanism twice over: it is painted outside
+the border box, so the ``overflow: hidden`` of the two collapse panels cut the
+ring off the fields and buttons inside them, and forced-colours mode drops
+shadows altogether while the rules that draw them also set ``outline: 0``, which
+leaves the appearance in that mode to the browser rather than to the site.
+
+The view therefore draws its own ring as a real ``outline`` on
+``:focus-visible`` — the pseudo-class the theme's own rules use, so the rule
+sits exactly where the defect is — sunk inside the border box with a negative ``outline-offset`` so that no
+ancestor can clip it, coloured with ``currentcolor`` so that it contrasts with
+whatever the control it sits on is filled with, and it rewrites ``box-shadow``
+in the same rule so no layered ring and no inset shadow survives underneath. It
+applies to every ``input``, ``select``, ``textarea`` and ``button`` the view
+renders — the five controls of :file:`Partials/Profile/Field/Control.html`, the
+image upload of :file:`Partials/Profile/Image/Editor.html`, the synchronisation
+switch of :file:`Partials/Profile/Header.html` and the buttons of every action
+group — because two focus appearances in one form would be worse than the one
+being replaced.
+
+``:focus-visible`` is not a synonym for keyboard focus. Measured in Chrome, a
+pointer click on a checkbox or on the synchronisation switch does not match it
+and those two keep Bootstrap's soft glow, while a pointer click on a text
+input or a select does match it and those take the inset ring. Most of what
+the view renders is in the second group, so the change is visible to a visitor
+using a mouse and not only to one using the keyboard. The colour is
+``currentcolor``, which is the colour a control draws its own text in — but
+not the colour of a checkbox tick or a switch knob, which Bootstrap paints as
+a background image with a hardcoded ``#ffffff``. On those two the ring takes
+the inherited body colour, ``#212121`` on the ``#577760`` of a checked control
+with the shipped theme, and measures 3.23:1: enough for WCAG 2.1 SC 1.4.11 and
+no more, so a site with a darker ``$primary`` has to check that pair. Plain links are not covered, no theme rule takes their focus
+ring away. CKEditor 5 is covered by halves: its editable region is a ``div``,
+so it is outside the rule and keeps the library's own focus styling, while the
+buttons of its toolbar are ``button`` elements below the plugin root and take
+this ring rather than the library's. That is the same answer as everywhere
+else - one focus appearance for everything the visitor can focus.
 
 Above the grid, the complete profile name and the synchronization/edit-all
 controls share one responsive header row. The controls wrap below the name on

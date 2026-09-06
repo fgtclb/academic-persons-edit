@@ -9,8 +9,10 @@
 // The rules are deliberately Bootstrap flavoured: the plugin renders Bootstrap
 // utility classes and the site brings Bootstrap along. Everything here either
 // styles a state the JavaScript toggles (`is-dragging`, `is-drop-before`, the
-// enter and leave classes of the two editors) or corrects a theme rule that the
-// editor's sticky and overflowing layout collides with.
+// enter and leave classes of the two editors), corrects a theme rule that the
+// editor's sticky and overflowing layout collides with, or takes one appearance
+// away from the theme because the theme cannot get it right for every site -
+// the focus ring of the controls and buttons is the only one of those.
 
 // The custom elements of the editor. An unknown element is `display: inline` in
 // every browser, and each of these wraps block level content - the plugin root,
@@ -50,6 +52,142 @@ body:has(.academic-persons-profile-editing) .frame-space-after-none {
 
 body:has(.academic-persons-profile-editing) .sticky-top {
     z-index: 900 !important;
+}
+
+// The focus appearance of the controls and the buttons the editor renders.
+//
+// Bootstrap draws a focused control's ring with `box-shadow`, and
+// `bk2k/bootstrap-package` layers two opaque rings behind that one. Its
+// `.form-check-input:focus-visible, .form-select:focus-visible,
+// .form-control:focus-visible, .form-group input[type=file]:focus-visible`
+// rule adds `0 0 0 2px #ffffff` and `0 0 0 4px #000000` behind Bootstrap's
+// translucent accent ring, and its `.btn:focus-visible` rule adds the same two
+// behind `--bs-btn-box-shadow`. Shadows paint in the order they are written,
+// so the black one covers all four pixels and the white one only the inner
+// two: the outer half of the ring reads as a hard black rectangle sitting
+// tight around the control. Measured on a file input inside a `.form-group`,
+// where that rule still reaches, the band is `#161e18` on the light body
+// background - the theme accent at 25% over opaque black.
+//
+// The theme has no `:focus` rule for a form control at all. What draws a
+// pointer click on a checkbox or a switch is Bootstrap's own
+// `.form-check-input:focus`, a soft `border-color` and a translucent glow that
+// never showed the black rectangle. The rule below therefore keys on
+// `:focus-visible`, the pseudo-class the two theme rules use: it is where the
+// defect is, and it is what Bootstrap does for buttons.
+//
+// `:focus-visible` is not keyboard focus. Measured in Chrome, a pointer click
+// on a checkbox or a switch does not match it - those two keep the soft glow -
+// while a pointer click on a text input or a select does. Most of what this
+// view renders is in the second group, so this rule changes the appearance of
+// a plain mouse click too, not only of a keyboard tab.
+//
+// A `box-shadow` is also the wrong mechanism for the job, twice over.
+//
+// It is clipped. `__document-collapse-content` and `__image-editor-content`
+// carry `overflow: hidden` for the grid-rows collapse, the `.row` inside them
+// pulls itself out by `margin: -1rem -0.5rem 0` and every `.row > *` puts the
+// gutter back as padding, so a full width control lands with its left and its
+// right border edge exactly on the clipping rectangle. Anything painted
+// outside the border box there - a `box-shadow`, or an `outline` with a
+// positive `outline-offset` - is cut away on those two sides, and on all four
+// when the field is the only row. Measured before this rule was written to
+// draw inside the box: the left and right bands of a document panel field, of
+// a document panel button and of the image editor's file input carried no ring
+// pixel at all, only Bootstrap's `#abbbb0` border at about 2:1 on white - and
+// `image.ts` focuses that file input on every open of the image editor.
+//
+// And forced colours drops shadows entirely, while every rule that draws a
+// ring this way also sets `outline: 0`. What a high contrast user saw was
+// therefore not the editor's indicator but whatever the browser put in its
+// place, and browsers differ: Chromium re-instates its own default focus ring
+// there and ignores the author's `outline: 0`, so the appearance was not gone
+// but was not the site's either. An `outline` is kept and recoloured by every
+// engine.
+//
+// So the ring is a real `outline`, which forced colours keeps and recolours,
+// it is drawn *inside* the border box with a negative `outline-offset` so that
+// no ancestor can clip it, and `box-shadow: none` in the same declaration
+// takes the layered rings, the theme's inset shadow and Bootstrap's own glow
+// off in one go.
+//
+// The offset is two pixels deeper than the ring is wide, which leaves the
+// control's own outer two pixels showing. Flush with the border box the ring
+// would be correct and would still look wrong on a filled button: the white
+// `currentcolor` of a focused `.btn-success` sat directly against the white
+// page and the button read as two pixels smaller rather than as focused.
+// Sunk by those two pixels the silhouette stays, and so does the red border of
+// a control the editor has marked `is-invalid`.
+//
+// The colour is `currentcolor`. It is the one value that contrasts with the
+// control it sits on by construction, whatever the site's palette and whatever
+// the colour mode: it is the colour the control draws its own text or its own
+// tick in, so a value that were too close to the control's background would
+// make the control unreadable first. A Bootstrap custom property would not do
+// that - `--bs-primary-text-emphasis` is dark by design and measures 1.6:1 on
+// the green of a focused `.btn-success` - and it is why there is no
+// `prefers-color-scheme` block here: that media query reports the operating
+// system setting, while Bootstrap's colour mode is the `data-bs-theme`
+// attribute, and the two disagree in two of their four combinations.
+//
+// The rule reaches `input`, `select`, `textarea` and `button` rather than a
+// list of Bootstrap classes. Those four are every control and every button the
+// templates render - the five controls of `Profile/Field/Control.html`, the
+// upload of `Profile/Image/Editor.html`, the switch of `Profile/Header.html`,
+// the `.btn` of every action group and the `.btn-close` of
+// `Profile/StatusToast.html` - and an element cannot be stripped of its tag
+// name the way an override can strip it of a class.
+// `AcademicPersonsEditProfileEditingFocusRingTest` asserts the other
+// direction, that the plugin renders no focusable widget outside those four
+// tags and that every one of them still carries the Bootstrap class that gives
+// it the border the inset ring sits on.
+//
+// The plugin root stands three times for specificity, not for scope. One is
+// not enough: at two class selectors and a pseudo-class the rule ties
+// `.form-control.is-invalid:focus` and loses outright to
+// `.form-group input[type=file]:focus-visible`, which is what the theme's
+// compat layer `@extend`s `.form-control` into and which measured (0,3,1)
+// against the rule's (0,3,0). Three puts it at (0,4,1), above every rule in
+// `bootstrap5-theme.css` that can match markup these templates produce. The
+// two it does not beat, `.form-group input.is-invalid[type=file]:focus` and
+// `.was-validated .form-group input[type=file]:invalid:focus`, both need a
+// wrapper the templates never render.
+//
+// Links are deliberately outside it. The back link of `Templates/Profile/
+// Index.html` is the only anchor the editor renders, no theme rule sets
+// `outline: 0` on it, it never showed the doubled ring, and an inset outline
+// on an inline-flex link would be drawn across its own text.
+//
+// CKEditor 5 is half inside it, and that is deliberate rather than an
+// oversight. `ClassicEditor.create()` puts its container, its toolbar and its
+// editable where the rich text textarea was, so all of it sits below the
+// plugin root. The editable is a `div` and is therefore outside the rule; it
+// keeps the library's own `--ck-color-focus-border`. The toolbar is made of
+// `button` elements and is inside it, so a toolbar button focused from the
+// keyboard takes this ring instead of the library's, and the `box-shadow`
+// reset takes the library's focus shadow off it. Excluding the subtree would
+// need `:not(.ck *)`, and a browser that does not parse a complex `:not()`
+// drops the whole rule and leaves the editor with no focus indicator at all -
+// a worse failure than one appearance too many. One appearance for everything
+// the visitor can focus is what this rule is for.
+$profile-editing-focus-scope:
+    ".academic-persons-profile-editing.academic-persons-profile-editing.academic-persons-profile-editing" +
+    " :is(input, select, textarea, button):focus-visible";
+
+#{$profile-editing-focus-scope} {
+    outline: 0.125rem solid currentcolor;
+    outline-offset: -0.25rem;
+    box-shadow: none;
+}
+
+// Forced colours keeps the outline and would recolour it to the forced text
+// colour on its own. Naming the system focus colour is one declaration and
+// gives the indicator the colour the platform uses for exactly this.
+@media (forced-colors: active) {
+
+    #{$profile-editing-focus-scope} {
+        outline-color: Highlight;
+    }
 }
 
 .academic-persons-profile-editing .cursor-pointer {
