@@ -103,23 +103,6 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
     }
 
     /**
-     * The label an assertion compares against, resolved the way the page does.
-     *
-     * Comparing rendered text against the translated label rather than against
-     * the key is what makes an assertion behavioural: a partial that stops
-     * rendering the label, or renders the key, fails.
-     */
-    private function translate(string $key): string
-    {
-        $label = $this->get(LanguageServiceFactory::class)->create('default')->sL(
-            'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang.xlf:' . $key,
-        );
-        $this->assertNotSame('', $label, sprintf('The label "%s" is not translated.', $key));
-
-        return $label;
-    }
-
-    /**
      * @return list<string>
      */
     private function renderedClassList(?\DOMNode $node): array
@@ -768,6 +751,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                     $this->assertInstanceOf(\DOMElement::class, $actionElement);
                     $actualActions[] = match (true) {
                         $actionElement->hasAttribute('data-pe-document-drag') => 'drag',
+                        $actionElement->hasAttribute('data-pe-document-hide') => 'hide',
                         $actionElement->hasAttribute('data-pe-document-view') => 'view',
                         $actionElement->hasAttribute('data-pe-document-sort') => $actionElement->getAttribute('data-pe-document-sort'),
                         $actionElement->hasAttribute('data-pe-document-delete') => 'delete',
@@ -835,12 +819,15 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             'academic-persons-edit-delete',
             'academic-persons-edit-edit',
             'academic-persons-edit-view-close',
+            'academic-persons-edit-visible',
+            'academic-persons-edit-hidden',
         ] as $iconIdentifier) {
             $this->assertStringContainsString($iconIdentifier, $actionsPartial);
         }
         $actionPositions = array_map(
             static fn(string $hook): int|false => strpos($actionsPartial, $hook),
             [
+                'data-pe-document-hide',
                 'data-pe-document-view',
                 'data-pe-document-sort="down"',
                 'data-pe-document-sort="up"',
@@ -863,13 +850,18 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         foreach ($contractItems as $contractItem) {
             $contractActions = $xpath->query('.//*[@data-pe-document-actions]/button', $contractItem);
             $this->assertNotFalse($contractActions);
-            $this->assertCount(6, $contractActions);
+            $this->assertCount(7, $contractActions);
             $this->assertTrue($contractActions->item(0)?->attributes?->getNamedItem('data-pe-document-drag') !== null);
-            $this->assertTrue($contractActions->item(1)?->attributes?->getNamedItem('data-pe-document-view') !== null);
-            $this->assertSame('down', $contractActions->item(2)?->attributes?->getNamedItem('data-pe-document-sort')?->nodeValue);
-            $this->assertSame('up', $contractActions->item(3)?->attributes?->getNamedItem('data-pe-document-sort')?->nodeValue);
-            $this->assertTrue($contractActions->item(4)?->attributes?->getNamedItem('data-pe-document-delete') !== null);
-            $this->assertTrue($contractActions->item(5)?->attributes?->getNamedItem('data-pe-document-edit') !== null);
+            $hide = $contractActions->item(1);
+            $this->assertInstanceOf(\DOMElement::class, $hide);
+            $this->assertTrue($hide->hasAttribute('data-pe-document-hide'));
+            $this->assertFalse($hide->hasAttribute('aria-pressed'));
+            $this->assertSame($this->translate('actions.hide'), $hide->getAttribute('aria-label'));
+            $this->assertTrue($contractActions->item(2)?->attributes?->getNamedItem('data-pe-document-view') !== null);
+            $this->assertSame('down', $contractActions->item(3)?->attributes?->getNamedItem('data-pe-document-sort')?->nodeValue);
+            $this->assertSame('up', $contractActions->item(4)?->attributes?->getNamedItem('data-pe-document-sort')?->nodeValue);
+            $this->assertTrue($contractActions->item(5)?->attributes?->getNamedItem('data-pe-document-delete') !== null);
+            $this->assertTrue($contractActions->item(6)?->attributes?->getNamedItem('data-pe-document-edit') !== null);
         }
         $this->assertSame('10', $contractItems->item(0)?->attributes?->getNamedItem('data-item-sorting')?->nodeValue);
         $emptyPressMedia = $xpath->query('//*[@data-section-key="pressMedia"]//*[@data-pe-document-empty-state]');
@@ -920,7 +912,9 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertNotFalse($actionGroups);
         $this->assertGreaterThan(0, $actionGroups->length, 'No document row renders an action group.');
         foreach ($actionGroups as $actionGroup) {
-            $classes = $this->renderedClassList($actionGroup);
+            // The cell of the row: it holds the "Hidden" tag and the group of
+            // controls, and it is what carries the column and the alignment.
+            $classes = $this->renderedClassList($actionGroup->parentNode);
             foreach ([
                 'col-12',
                 'col-md-auto',
@@ -941,6 +935,11 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             // pushed right from "md" up replaced.
             $this->assertNotContains('justify-content-end', $classes);
             $this->assertNotContains('ms-auto', $classes);
+            $this->assertSame(
+                ['d-flex', 'flex-nowrap', 'align-items-center', 'gap-1'],
+                $this->renderedClassList($actionGroup),
+                'The controls of a row are not drawn as one nowrap group.',
+            );
         }
 
         $lectureRows = $xpath->query(
@@ -2289,6 +2288,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 'updateDocument',
                 'deleteDocument',
                 'sortDocument',
+                'toggleDocumentVisibility',
                 'contractContactForm',
                 'createContractContact',
                 'updateContractContact',
@@ -2378,6 +2378,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertStringContainsString('[action]=updateDocument', $decodedContent);
         $this->assertStringContainsString('[action]=deleteDocument', $decodedContent);
         $this->assertStringContainsString('[action]=sortDocument', $decodedContent);
+        $this->assertStringContainsString('[action]=toggleDocumentVisibility', $decodedContent);
         $this->assertStringContainsString('[action]=contractContactForm', $decodedContent);
         $this->assertStringContainsString('[action]=createContractContact', $decodedContent);
         $this->assertStringContainsString('[action]=updateContractContact', $decodedContent);

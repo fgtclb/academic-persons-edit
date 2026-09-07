@@ -160,6 +160,7 @@ final class ProfileController extends ActionController
         'updateDocument',
         'deleteDocument',
         'sortDocument',
+        'toggleDocumentVisibility',
         'contractContactForm',
         'createContractContact',
         'updateContractContact',
@@ -939,6 +940,49 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * Shows or hides one contract or profile information record in the frontend.
+     *
+     * `hidden` is the TCA `enablecolumns.disabled` column of the two tables. The
+     * flag is sent explicitly rather than toggled, so a request that arrives
+     * twice stores the state the visitor saw. The `hide` action of the section
+     * governs it, configurable like every other action of the list.
+     */
+    public function toggleDocumentVisibilityAction(): ResponseInterface
+    {
+        try {
+            [$profile, $section, $data] = $this->getDocumentRequest();
+            $this->assertDocumentPayload($data, ['section', 'record', 'hidden'], ['section', 'record', 'hidden']);
+            $this->assertDocumentActionAllowed($section, 'hide');
+            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
+            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            if ($record === null) {
+                $this->throwJsonError('document_not_found', 404);
+            }
+            $hidden = $data['hidden'];
+            if (!is_bool($hidden)) {
+                $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
+            }
+            $record->setHidden($hidden);
+            if ($record instanceof Contract) {
+                $this->contractRepository->update($record);
+            } else {
+                $this->profileInformationRepository->update($record);
+            }
+            $this->persistAndDispatchProfileUpdate($profile);
+            return new JsonResponse([
+                'success' => true,
+                'profile' => $profile->getUid(),
+                'section' => $section->identifier,
+                'item' => $this->serializeDocumentItem($section, $record),
+            ]);
+        } catch (PropagateResponseException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $this->handleDocumentFailure('Changing the visibility of a structured document failed.', $exception);
+        }
+    }
+
+    /**
      * Deletes a single record from a structured document section.
      *
      * Validates the provided payload, ensures the section allows the delete
@@ -1221,7 +1265,8 @@ final class ProfileController extends ActionController
      * tables - the same flag the previous editor toggled for exactly these three
      * record kinds. It is an edit of the record as far as the allow-list of the
      * `contracts` section is concerned, so `edit` governs it; a contract or
-     * profile-information row never had the toggle and does not get one here.
+     * profile-information row has an action of its own for it, `hide`, in
+     * `toggleDocumentVisibilityAction()`.
      */
     public function toggleContractContactVisibilityAction(): ResponseInterface
     {
@@ -1589,14 +1634,18 @@ final class ProfileController extends ActionController
      */
     private function getDocumentRecords(Profile $profile, DocumentSection $section): array
     {
+        // Including the hidden ones: the editor is where a hidden record is shown
+        // again, so it must list what the public views leave out.
         if ($section->isContractSection()) {
             return array_values(array_filter(
-                $profile->getContracts()->toArray(),
+                $this->contractRepository->findByProfileIncludingHidden($profile)->toArray(),
                 static fn(mixed $record): bool => $record instanceof Contract,
             ));
         }
         return array_values(array_filter(
-            $this->profileInformationRepository->findByProfileAndType($profile, $section->type)->toArray(),
+            $this->profileInformationRepository
+                ->findByProfileAndTypeIncludingHidden($profile, $section->type)
+                ->toArray(),
             static fn(mixed $record): bool => $record instanceof ProfileInformation,
         ));
     }
@@ -2771,6 +2820,7 @@ final class ProfileController extends ActionController
         return [
             'uid' => (int)$record->getUid(),
             'sorting' => $record->getSorting(),
+            'hidden' => $record->getHidden(),
             'values' => $values,
             'display' => $display,
         ];

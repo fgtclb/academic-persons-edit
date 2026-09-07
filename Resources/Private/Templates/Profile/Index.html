@@ -33,6 +33,9 @@
         name="sortDocumentUrl"
         value="{f:uri.action(action: 'sortDocument', controller: 'Profile', pageType: 1733735, absolute: true)}" />
     <f:variable
+        name="toggleDocumentVisibilityUrl"
+        value="{f:uri.action(action: 'toggleDocumentVisibility', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
         name="contractContactFormUrl"
         value="{f:uri.action(action: 'contractContactForm', controller: 'Profile', pageType: 1733735, absolute: true)}" />
     <f:variable
@@ -105,6 +108,7 @@
             data-update-document-url="{updateDocumentUrl}"
             data-delete-document-url="{deleteDocumentUrl}"
             data-sort-document-url="{sortDocumentUrl}"
+            data-toggle-document-visibility-url="{toggleDocumentVisibilityUrl}"
             data-contract-contact-form-url="{contractContactFormUrl}"
             data-create-contract-contact-url="{createContractContactUrl}"
             data-update-contract-contact-url="{updateContractContactUrl}"
@@ -137,6 +141,8 @@
             data-message-document-saved="{f:translate(key: 'profileEditing.documents.status.saved', extensionName: 'academic_persons_edit')}"
             data-message-document-deleted="{f:translate(key: 'profileEditing.documents.status.deleted', extensionName: 'academic_persons_edit')}"
             data-message-document-sorted="{f:translate(key: 'profileEditing.documents.status.sorted', extensionName: 'academic_persons_edit')}"
+            data-message-document-hidden="{f:translate(key: 'profileEditing.documents.status.hidden', extensionName: 'academic_persons_edit')}"
+            data-message-document-shown="{f:translate(key: 'profileEditing.documents.status.visible', extensionName: 'academic_persons_edit')}"
             data-message-document-delete-confirm="{f:translate(key: 'profileEditing.documents.delete.confirm', extensionName: 'academic_persons_edit')}"
             data-message-contract-contact-delete-confirm="{f:translate(key: 'profileEditing.contractContacts.delete.confirm', extensionName: 'academic_persons_edit')}"
             data-message-contract-contact-empty="{f:translate(key: 'profileEditing.contractContacts.empty', extensionName: 'academic_persons_edit')}"

@@ -150,6 +150,37 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
         $this->assertTrue($body['success'] ?? false, (string)$response->getBody());
     }
 
+    /**
+     * The same allow-list governs the contract row itself: the fixture lists
+     * `view` alone, so the `hide` action of the section is refused at the
+     * endpoint exactly as a delete or an edit would be.
+     */
+    #[Test]
+    public function theHideActionOfTheSectionIsRefusedWhenItIsNotListed(): void
+    {
+        $this->setUpContractContactTestCase();
+
+        $response = $this->postJson($this->endpointUrls['toggleDocumentVisibility'], [
+            'profile' => self::PROFILE_ID,
+            'data' => ['section' => 'contracts', 'record' => self::CONTRACT_ID, 'hidden' => true],
+        ]);
+
+        $this->assertSame(
+            ['status' => 403, 'error' => 'document_action_not_allowed'],
+            $this->decodeError($response),
+        );
+        $this->assertSame(
+            0,
+            (int)$this->getConnectionPool()
+                ->getConnectionForTable('tx_academicpersons_domain_model_contract')
+                ->executeQuery(
+                    'SELECT hidden FROM tx_academicpersons_domain_model_contract WHERE uid = ?',
+                    [self::CONTRACT_ID],
+                )
+                ->fetchOne(),
+        );
+    }
+
     private function setUpContractContactTestCase(): void
     {
         $this->setUpProfileEditingTestCase();
@@ -171,6 +202,7 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
             'deleteContractContact' => 'data-delete-contract-contact-url',
             'sortContractContact' => 'data-sort-contract-contact-url',
             'toggleContractContactVisibility' => 'data-toggle-contract-contact-visibility-url',
+            'toggleDocumentVisibility' => 'data-toggle-document-visibility-url',
         ] as $action => $attribute) {
             $this->assertSame(
                 1,

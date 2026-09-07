@@ -5,6 +5,7 @@ import {
   requestJson,
   setDisabled,
   setExpanded,
+  setHiddenState,
   showStatus,
 } from "@fgtclb/academic-persons-edit/frontend/profile/common.js";
 import {
@@ -70,6 +71,7 @@ export interface DocumentField {
 
 interface DocumentItem {
   display?: Record<string, unknown>;
+  hidden?: boolean;
   sorting?: number;
   uid?: number;
   values?: Record<string, unknown>;
@@ -156,6 +158,7 @@ export interface DocumentEditingController {
   sortContractContact(direction: string, section: string, record: number): Promise<void>;
   sortDocument(direction: string, event: Event): Promise<void>;
   toggleContractContactVisibility(section: string, record: number): Promise<void>;
+  toggleDocumentVisibility(event: Event): Promise<void>;
 }
 
 interface DragState {
@@ -407,9 +410,32 @@ const renderDocumentTitle = (
   container.replaceChildren(span);
 };
 
+/**
+ * Writes the visibility of a record onto its row: the attribute the stylesheet
+ * dims the row by, the badge Fluid rendered for it, and the switch of the
+ * action group - the one writer of all three, for a server rendered row and a
+ * cloned one alike.
+ */
+const updateDocumentRowVisibility = (row: HTMLElement, hidden: boolean): void => {
+  if (hidden) {
+    row.dataset.itemHidden = "1";
+  } else {
+    delete row.dataset.itemHidden;
+  }
+  const badge = row.querySelector<HTMLElement>("[data-pe-document-hidden-badge]");
+  if (badge !== null) {
+    badge.hidden = !hidden;
+  }
+  const toggle = row.querySelector<HTMLElement>("[data-pe-document-hide]");
+  if (toggle !== null) {
+    setHiddenState(toggle, hidden);
+  }
+};
+
 const updateDocumentRow = (row: HTMLElement, item: DocumentItem): void => {
   row.dataset.itemUid = String(item.uid ?? "");
   row.dataset.itemSorting = String(item.sorting ?? "");
+  updateDocumentRowVisibility(row, item.hidden === true);
   row.querySelectorAll<HTMLElement>("[data-pe-document-value]").forEach(
     (element): void => {
       const name = hooks(element).peDocumentValue ?? "";
@@ -1243,6 +1269,57 @@ export const createDocumentEditing = (
     }
   };
 
+  /**
+   * Hides a record in the frontend, or shows it again.
+   *
+   * The target state is sent, not a "flip", so that a press that arrives
+   * twice stores what the visitor saw; the row is then written from what the
+   * server answers. The button stays where it is - the row is not rebuilt -
+   * so the caret does not move.
+   */
+  const toggleDocumentVisibility = async (event: Event): Promise<void> => {
+    const button = event.currentTarget instanceof HTMLButtonElement
+      ? event.currentTarget
+      : event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>("button")
+        : null;
+    const section = button?.closest<HTMLElement>(sectionSelector);
+    const row = button?.closest<HTMLElement>(itemSelector);
+    const record = button === null ? null : getRecordFromButton(button);
+    if (
+      button === null ||
+      section === null ||
+      section === undefined ||
+      row === null ||
+      row === undefined ||
+      record === null
+    ) {
+      return;
+    }
+    const hidden = row.dataset.itemHidden !== "1";
+    setSectionPending(section, true);
+    try {
+      const response = await requestDocument(context, context.urls.toggleDocumentVisibility, {
+        section: section.dataset.sectionKey,
+        record,
+        hidden,
+      });
+      const item = response.item as DocumentItem | undefined;
+      updateDocumentRowVisibility(row, item === undefined ? hidden : item.hidden === true);
+      showStatus(
+        context,
+        "success",
+        (hidden ? context.messages.documentHidden : context.messages.documentShown) ?? null,
+      );
+    } catch (error) {
+      showStatus(context, "danger", (error as RequestError).result?.message ?? null);
+    } finally {
+      setSectionPending(section, false);
+      refreshDocumentRows(section);
+      button.focus({ preventScroll: true });
+    }
+  };
+
   const openContractContact = async (
     modeValue: string,
     section: string,
@@ -1724,7 +1801,7 @@ export const createDocumentEditing = (
     const target = event.target instanceof Element ? event.target : null;
     const button = target?.closest<HTMLButtonElement>(
       "[data-pe-document-add], [data-pe-document-view], [data-pe-document-edit], " +
-        "[data-pe-document-delete], [data-pe-document-sort]",
+        "[data-pe-document-delete], [data-pe-document-sort], [data-pe-document-hide]",
     );
     if (button === null || button === undefined || button.disabled) {
       return;
@@ -1732,6 +1809,10 @@ export const createDocumentEditing = (
     const direction = hooks(button).peDocumentSort;
     if (direction !== undefined) {
       void sortDocument(direction, event);
+      return;
+    }
+    if (button.matches("[data-pe-document-hide]")) {
+      void toggleDocumentVisibility(event);
       return;
     }
     const mode = button.matches("[data-pe-document-add]")
@@ -1757,6 +1838,7 @@ export const createDocumentEditing = (
     sortContractContact,
     sortDocument,
     toggleContractContactVisibility,
+    toggleDocumentVisibility,
   };
 };
 

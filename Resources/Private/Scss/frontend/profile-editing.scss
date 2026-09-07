@@ -696,7 +696,8 @@ $profile-editing-focus-scope:
 // drawn in the secondary text colour rather than through `opacity`, so the
 // controls - which pin their colour with `.text-body` - the `Hidden` tag and
 // the focus ring keep their contrast (WCAG 1.4.3 and 1.4.11).
-.academic-persons-profile-editing [data-pe-contract-contact-hidden] {
+.academic-persons-profile-editing [data-pe-contract-contact-hidden],
+.academic-persons-profile-editing [data-pe-document-item][data-item-hidden] {
     color: var(--bs-secondary-color);
 }
 

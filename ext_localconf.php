@@ -25,6 +25,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         'updateDocument',
         'deleteDocument',
         'sortDocument',
+        'toggleDocumentVisibility',
         'contractContactForm',
         'createContractContact',
         'updateContractContact',

@@ -9,11 +9,14 @@ use FGTCLB\AcademicBase\Settings\ValidationSet;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
+use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
+use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersons\Settings\ContractField;
 use FGTCLB\AcademicPersons\Settings\DocumentSection;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ProfileDocumentSectionProviderTest extends UnitTestCase
@@ -23,7 +26,6 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
     {
         $profile = new Profile();
         $vita = new ProfileInformation();
-        $profile->getVita()->attach($vita);
         $settings = new AcademicPersonsSettings(
             documentSections: [
                 'career' => new DocumentSection(
@@ -39,7 +41,7 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
                 ),
             ],
         );
-        $sections = (new ProfileDocumentSectionProvider($settings))->getSections($profile);
+        $sections = $this->createProvider($settings, [], ['curriculum_vitae' => [$vita]])->getSections($profile);
         $this->assertSame([$vita], $sections[0]['items']);
     }
 
@@ -67,7 +69,7 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
         $settings = new AcademicPersonsSettings(
             documentSections: ['cooperation' => $section],
         );
-        $subject = new ProfileDocumentSectionProvider($settings);
+        $subject = $this->createProvider($settings);
         $this->assertSame('help-title', $subject->getFieldHelptext($section, 'title'));
         $this->assertSame('help-from', $subject->getFieldHelptext($section, 'yearStart'));
         $this->assertSame('help-to', $subject->getFieldHelptext($section, 'yearEnd'));
@@ -95,9 +97,38 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
                 'position' => $this->contractField('position', 'help-position', 1),
             ],
         );
-        $subject = new ProfileDocumentSectionProvider($settings);
+        $subject = $this->createProvider($settings);
         $this->assertSame('help-valid-from', $subject->getFieldHelptext($section, 'validFrom'));
         $this->assertSame('help-position', $subject->getFieldHelptext($section, 'position'));
+    }
+
+    /**
+     * The provider over stubbed repositories. The items of a section come
+     * through the "including hidden" queries and no longer through the
+     * relations of the profile, so a test hands the records to the
+     * repositories rather than attaching them to the profile.
+     *
+     * @param list<Contract> $contracts
+     * @param array<string, list<ProfileInformation>> $informationByType
+     */
+    private function createProvider(
+        AcademicPersonsSettings $settings,
+        array $contracts = [],
+        array $informationByType = [],
+    ): ProfileDocumentSectionProvider {
+        $contractResult = $this->createMock(QueryResultInterface::class);
+        $contractResult->method('toArray')->willReturn($contracts);
+        $contractRepository = $this->createMock(ContractRepository::class);
+        $contractRepository->method('findByProfileIncludingHidden')->willReturn($contractResult);
+        $informationRepository = $this->createMock(ProfileInformationRepository::class);
+        $informationRepository
+            ->method('findByProfileAndTypeIncludingHidden')
+            ->willReturnCallback(function (Profile $profile, string $type) use ($informationByType): QueryResultInterface {
+                $result = $this->createMock(QueryResultInterface::class);
+                $result->method('toArray')->willReturn($informationByType[$type] ?? []);
+                return $result;
+            });
+        return new ProfileDocumentSectionProvider($settings, $contractRepository, $informationRepository);
     }
 
     private function contractField(string $identifier, string $helptext, int $position): ContractField
@@ -131,10 +162,6 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
         $vita = new ProfileInformation();
         $lecture = new ProfileInformation();
         $cooperation = new ProfileInformation();
-        $profile->getContracts()->attach($contract);
-        $profile->getVita()->attach($vita);
-        $profile->getLectures()->attach($lecture);
-        $profile->getCooperation()->attach($cooperation);
         $settings = new AcademicPersonsSettings(
             documentSections: [
                 'contracts' => new DocumentSection(
@@ -184,7 +211,11 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
             ],
             raw: [],
         );
-        $sections = (new ProfileDocumentSectionProvider($settings))->getSections($profile);
+        $sections = $this->createProvider(
+            $settings,
+            [$contract],
+            ['curriculum_vitae' => [$vita], 'lecture' => [$lecture], 'cooperation' => [$cooperation]],
+        )->getSections($profile);
         $this->assertSame(
             ['contracts', 'vita', 'lectures', 'cooperation'],
             array_column($sections, 'identifier'),

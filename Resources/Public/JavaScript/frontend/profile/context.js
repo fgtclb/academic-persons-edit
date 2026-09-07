@@ -31,7 +31,9 @@ const readEditingContext = (root) => {
       discarded: contract.messageDiscarded,
       documentDeleteConfirm: contract.messageDocumentDeleteConfirm,
       documentDeleted: contract.messageDocumentDeleted,
+      documentHidden: contract.messageDocumentHidden,
       documentSaved: contract.messageDocumentSaved,
+      documentShown: contract.messageDocumentShown,
       documentSorted: contract.messageDocumentSorted,
       editorError: contract.messageEditorError,
       errorMessage: contract.messageErrorMessage,
@@ -64,6 +66,7 @@ const readEditingContext = (root) => {
       sortContractContact: contract.sortContractContactUrl,
       sortDocument: contract.sortDocumentUrl,
       toggleContractContactVisibility: contract.toggleContractContactVisibilityUrl,
+      toggleDocumentVisibility: contract.toggleDocumentVisibilityUrl,
       update: contract.updateUrl,
       updateContractContact: contract.updateContractContactUrl,
       updateDocument: contract.updateDocumentUrl

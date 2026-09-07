@@ -43,7 +43,7 @@ the plugin registers, and its action list is new:
           ``create``, ``edit``, ``update``, ``confirmDelete``, ``delete``,
           ``sort`` and partly ``toggleVisibility``
         - The ``documentForm``/``createDocument``/``updateDocument``/
-          ``deleteDocument``/``sortDocument`` and
+          ``deleteDocument``/``sortDocument``/``toggleDocumentVisibility`` and
           ``contractContactForm``/``createContractContact``/
           ``updateContractContact``/``deleteContractContact``/
           ``sortContractContact``/``toggleContractContactVisibility``

@@ -425,6 +425,8 @@ final class ProfileControllerTest extends UnitTestCase
             new ProfileSectionProvider($academicPersonsSettings),
             new ProfileDocumentSectionProvider(
                 $academicPersonsSettings,
+                $this->createStub(ContractRepository::class),
+                $this->createStub(ProfileInformationRepository::class),
             ),
             $this->createStub(ContractFactory::class),
             $this->createStub(ContractRepository::class),

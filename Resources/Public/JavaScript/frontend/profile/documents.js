@@ -6,6 +6,7 @@ import {
   requestJson,
   setDisabled,
   setExpanded,
+  setHiddenState,
   showStatus
 } from "@fgtclb/academic-persons-edit/frontend/profile/common.js";
 import {
@@ -201,10 +202,26 @@ const renderDocumentTitle = (container, title, link) => {
   span.textContent = normalizedTitle;
   container.replaceChildren(span);
 };
+const updateDocumentRowVisibility = (row, hidden) => {
+  if (hidden) {
+    row.dataset.itemHidden = "1";
+  } else {
+    delete row.dataset.itemHidden;
+  }
+  const badge = row.querySelector("[data-pe-document-hidden-badge]");
+  if (badge !== null) {
+    badge.hidden = !hidden;
+  }
+  const toggle = row.querySelector("[data-pe-document-hide]");
+  if (toggle !== null) {
+    setHiddenState(toggle, hidden);
+  }
+};
 const updateDocumentRow = (row, item) => {
   var _a, _b;
   row.dataset.itemUid = String(item.uid ?? "");
   row.dataset.itemSorting = String(item.sorting ?? "");
+  updateDocumentRowVisibility(row, item.hidden === true);
   row.querySelectorAll("[data-pe-document-value]").forEach(
     (element) => {
       const name = hooks(element).peDocumentValue ?? "";
@@ -808,6 +825,38 @@ const createDocumentEditing = (editingTarget) => {
       refreshDocumentRows(section);
     }
   };
+  const toggleDocumentVisibility = async (event) => {
+    var _a;
+    const button = event.currentTarget instanceof HTMLButtonElement ? event.currentTarget : event.target instanceof Element ? event.target.closest("button") : null;
+    const section = button == null ? void 0 : button.closest(sectionSelector);
+    const row = button == null ? void 0 : button.closest(itemSelector);
+    const record = button === null ? null : getRecordFromButton(button);
+    if (button === null || section === null || section === void 0 || row === null || row === void 0 || record === null) {
+      return;
+    }
+    const hidden = row.dataset.itemHidden !== "1";
+    setSectionPending(section, true);
+    try {
+      const response = await requestDocument(context, context.urls.toggleDocumentVisibility, {
+        section: section.dataset.sectionKey,
+        record,
+        hidden
+      });
+      const item = response.item;
+      updateDocumentRowVisibility(row, item === void 0 ? hidden : item.hidden === true);
+      showStatus(
+        context,
+        "success",
+        (hidden ? context.messages.documentHidden : context.messages.documentShown) ?? null
+      );
+    } catch (error) {
+      showStatus(context, "danger", ((_a = error.result) == null ? void 0 : _a.message) ?? null);
+    } finally {
+      setSectionPending(section, false);
+      refreshDocumentRows(section);
+      button.focus({ preventScroll: true });
+    }
+  };
   const openContractContact = async (modeValue, section, event, record = 0) => {
     var _a;
     if (!isDocumentMode(modeValue) || documentState.record === null || contractContactState.pending) {
@@ -1144,7 +1193,7 @@ const createDocumentEditing = (editingTarget) => {
   root.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
     const button = target == null ? void 0 : target.closest(
-      "[data-pe-document-add], [data-pe-document-view], [data-pe-document-edit], [data-pe-document-delete], [data-pe-document-sort]"
+      "[data-pe-document-add], [data-pe-document-view], [data-pe-document-edit], [data-pe-document-delete], [data-pe-document-sort], [data-pe-document-hide]"
     );
     if (button === null || button === void 0 || button.disabled) {
       return;
@@ -1152,6 +1201,10 @@ const createDocumentEditing = (editingTarget) => {
     const direction = hooks(button).peDocumentSort;
     if (direction !== void 0) {
       void sortDocument(direction, event);
+      return;
+    }
+    if (button.matches("[data-pe-document-hide]")) {
+      void toggleDocumentVisibility(event);
       return;
     }
     const mode = button.matches("[data-pe-document-add]") ? "add" : button.matches("[data-pe-document-view]") ? "view" : button.matches("[data-pe-document-edit]") ? "edit" : "delete";
@@ -1169,7 +1222,8 @@ const createDocumentEditing = (editingTarget) => {
     submitContractContact,
     sortContractContact,
     sortDocument,
-    toggleContractContactVisibility
+    toggleContractContactVisibility,
+    toggleDocumentVisibility
   };
 };
 const initializeDocumentSections = (editingTarget) => {

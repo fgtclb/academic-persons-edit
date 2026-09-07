@@ -743,8 +743,18 @@ respectively ``academic-persons-edit-hidden``) shows the state; it carries no
 the opposite of what a pressed button does. A hidden row is drawn in the
 secondary text colour, its controls at full contrast, and carries a
 :guilabel:`Hidden` tag in front of its action group. The toggle follows the
-``edit`` entry of the ``contracts`` allow-list; contracts and profile
-information rows never had the toggle and do not get one.
+``edit`` entry of the ``contracts`` allow-list.
+
+Contracts and profile information rows have the same toggle as the ``hide``
+entry of their section's ``actions`` list - configurable like every other
+action, listed first in the shipped settings, and withdrawn by ``readonly``
+with the others. It flips the record's own ``hidden`` column through the
+``toggleDocumentVisibility`` endpoint, which is sent the target state and
+answers the serialised record; the row is written from that answer
+(``data-item-hidden``, the :guilabel:`Hidden` tag, the label and the glyph of
+the toggle) without being rebuilt, so the caret stays on the button. A hidden
+record stays in the editor - it is the one place it can be shown again - while
+the public views keep reading the relations, which respect the enable fields.
 
 Every writable section heading has an :guilabel:`Add` action. Record controls
 are rendered in the exact order of the configured ``actions`` list. The first
@@ -1274,8 +1284,8 @@ shadow boundary because there is none:
 
 Two vocabularies carry the rest, and both are unchanged in meaning by the move
 to custom elements. The plugin root of :file:`Templates/Profile/Index.html`
-carries the configuration of *this* profile — fourteen endpoint URLs, the
-profile uid and the editor language, five image settings, twenty-two messages
+carries the configuration of *this* profile — fifteen endpoint URLs, the
+profile uid and the editor language, five image settings, twenty-six messages
 and six labels. It is read **once**, when the element above it starts the editor,
 and an attribute changed afterwards is not seen. Every control below the root
 carries a ``data-pe-*`` hook, including the controls an element clones out of a
@@ -1314,9 +1324,9 @@ which slot carries which value.
     *   - ``data-delete-image-url``
         - Image deletion endpoint.
     *   - ``data-document-form-url``, ``data-create-document-url``,
-          ``data-update-document-url``, ``data-delete-document-url`` and
-          ``data-sort-document-url``
-        - The five document endpoints.
+          ``data-update-document-url``, ``data-delete-document-url``,
+          ``data-sort-document-url`` and ``data-toggle-document-visibility-url``
+        - The six document endpoints.
     *   - ``data-contract-contact-form-url``,
           ``data-create-contract-contact-url``,
           ``data-update-contract-contact-url``,
@@ -1371,9 +1381,11 @@ which slot carries which value.
           created: below a section heading for an addition, inside an individual
           record row for everything else. The document controller assigns a
           unique ID when a target is first opened, for ``aria-controls``.
-    *   - ``data-item-uid``, ``data-item-sorting`` and ``data-item-position``
-        - Persisted record identity, domain sorting value and current zero-based
-          presentation position.
+    *   - ``data-item-uid``, ``data-item-sorting``, ``data-item-position`` and
+          ``data-item-hidden``
+        - Persisted record identity, domain sorting value, current zero-based
+          presentation position, and - present only on a hidden record - the
+          styling anchor of the dimmed row.
     *   - ``data-pe-document-empty-state``
         - Localized placeholder rendered when a structured collection is empty.
     *   - ``data-pe-document-add``, ``data-pe-document-view``,
@@ -1381,6 +1393,11 @@ which slot carries which value.
         - Section creation and in-place row actions.
     *   - ``data-pe-document-sort``
         - Up/down row action persisted through the shared sort endpoint.
+    *   - ``data-pe-document-hide`` and ``data-pe-document-hidden-badge``
+        - The visibility toggle of a row (its label names the press, its
+          glyph shows the state) and the :guilabel:`Hidden` tag in front of
+          its action group, both written from the answer of the visibility
+          endpoint.
     *   - ``data-pe-document-view-container``, ``data-pe-document-form``,
           ``data-pe-document-heading``, ``data-pe-document-fields`` and
           ``data-pe-document-field``
@@ -1722,7 +1739,7 @@ Three things in a project's infrastructure have to know about that number:
 The request header the endpoints require
 ========================================
 
-Every writing endpoint - the fourteen JSON actions and the image upload -
+Every writing endpoint - the fifteen JSON actions and the image upload -
 requires the request header ``X-Requested-With: XMLHttpRequest``. A request
 without it is answered with ``400`` and the error code ``invalid_request``.
 

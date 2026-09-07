@@ -15,9 +15,10 @@ use FGTCLB\AcademicBase\Settings\Validation;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
+use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
+use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersons\Settings\DocumentSection;
-use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * Builds the editor view model in the exact order of documentSections.
@@ -34,6 +35,8 @@ final readonly class ProfileDocumentSectionProvider
 
     public function __construct(
         private AcademicPersonsSettings $academicPersonsSettings,
+        private ContractRepository $contractRepository,
+        private ProfileInformationRepository $profileInformationRepository,
     ) {}
 
     /**
@@ -84,8 +87,11 @@ final readonly class ProfileDocumentSectionProvider
      */
     private function getContractItems(Profile $profile): array
     {
+        // Through the repository rather than the relation: the editor lists the
+        // hidden records too, so that they can be shown again, while the public
+        // views keep reading the relation, which respects the enable fields.
         return array_values(array_filter(
-            $profile->getContracts()->toArray(),
+            $this->contractRepository->findByProfileIncludingHidden($profile)->toArray(),
             static fn(mixed $item): bool => $item instanceof Contract,
         ));
     }
@@ -95,16 +101,13 @@ final readonly class ProfileDocumentSectionProvider
      */
     private function getProfileInformationItems(Profile $profile, DocumentSection $section): array
     {
-        $getter = 'get' . str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $section->fieldName)));
-        if (!is_callable([$profile, $getter])) {
-            return [];
-        }
-        $items = $profile->{$getter}();
-        if (!$items instanceof ObjectStorage) {
-            return [];
-        }
+        // The same reason as for the contracts, and the section's `type` is the
+        // one thing the query needs - the relation getter the field name used to
+        // be turned into is not consulted any more.
         return array_values(array_filter(
-            $items->toArray(),
+            $this->profileInformationRepository
+                ->findByProfileAndTypeIncludingHidden($profile, $section->type)
+                ->toArray(),
             static fn(mixed $item): bool => $item instanceof ProfileInformation,
         ));
     }

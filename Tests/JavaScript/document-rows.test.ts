@@ -15,6 +15,7 @@ import {
   documentRow,
   documentSection,
   endpoints,
+  labels,
   messages,
   profileEditingRoot,
   select,
@@ -438,5 +439,131 @@ describe("sorting a document list by dragging", () => {
       .dispatchEvent(createDragEvent("dragover", { clientY: 5 }));
 
     assert.equal(row(1).classList.contains("is-drop-before"), false);
+  });
+});
+
+describe("hiding a record of a document list", () => {
+  let fetch: FetchDouble;
+  let root: HTMLElement;
+
+  const render = ({ hidden = false }: { hidden?: boolean } = {}): HTMLElement => {
+    const body = resetBody(
+      profileEditingRoot({
+        content: documentSection({
+          identifier: "publications",
+          rows: [
+            documentRow({
+              uid: 1,
+              sorting: 10,
+              position: 0,
+              title: "Paper 1",
+              actions: ["hide", "view", "down", "up", "delete", "edit"],
+              hidden,
+            }),
+            documentRow({
+              uid: 2,
+              sorting: 20,
+              position: 1,
+              title: "Paper 2",
+              actions: ["hide", "view", "down", "up", "delete", "edit"],
+            }),
+          ].join(""),
+        }),
+      }),
+    );
+    const rendered = select(body, "[data-academic-persons-profile-editing]", HTMLElement);
+    createDocumentEditing(rendered);
+    initializeDocumentSections(rendered);
+
+    return rendered;
+  };
+
+  const row = (uid: number): HTMLElement =>
+    select(root, `[data-item-uid="${uid}"]`, HTMLElement);
+  const toggle = (uid: number): HTMLButtonElement =>
+    select(root, `[data-item-uid="${uid}"] [data-pe-document-hide]`, HTMLButtonElement);
+  const badge = (uid: number): HTMLElement =>
+    select(root, `[data-item-uid="${uid}"] [data-pe-document-hidden-badge]`, HTMLElement);
+  const statusText = (region: "status" | "alert"): string =>
+    select(root, `[data-pe-status-toast="${region}"] .status-message`, HTMLElement)
+      .textContent ?? "";
+
+  beforeEach(() => {
+    fetch = installFetch();
+  });
+
+  /**
+   * The target state is sent, not a "flip": a press that arrives twice
+   * stores what the visitor saw. The row is written from the answer - the
+   * attribute the stylesheet dims by, the tag, and the label and glyph of
+   * the toggle - and the button stays under the caret, because the row is
+   * not rebuilt.
+   */
+  it("asks the server to hide the record and writes the answer onto the row", async () => {
+    root = render();
+    fetch.respond({
+      success: true,
+      item: { uid: 1, sorting: 10, hidden: true, display: { title: "Paper 1" }, values: {} },
+    });
+
+    toggle(1).click();
+    await settle(20);
+
+    const call = fetch.calls[0];
+    assert.equal(call?.url, endpoints.toggleDocumentVisibility);
+    assert.deepEqual(call?.body, {
+      profile: 1,
+      data: { section: "publications", record: 1, hidden: true },
+    });
+    assert.equal(row(1).dataset.itemHidden, "1");
+    assert.equal(badge(1).hidden, false);
+    assert.equal(toggle(1).hasAttribute("aria-pressed"), false);
+    assert.equal(toggle(1).getAttribute("aria-label"), labels.show);
+    assert.equal(
+      select(toggle(1), '[data-pe-visibility-icon="visible"]', HTMLElement).hidden,
+      true,
+    );
+    assert.equal(
+      select(toggle(1), '[data-pe-visibility-icon="hidden"]', HTMLElement).hidden,
+      false,
+    );
+    assert.equal(row(2).dataset.itemHidden, undefined);
+    assert.equal(statusText("status"), messages.documentHidden);
+    assert.equal(document.activeElement, toggle(1));
+  });
+
+  it("shows a hidden record again and says so", async () => {
+    root = render({ hidden: true });
+    assert.equal(toggle(1).getAttribute("aria-label"), labels.show);
+    fetch.respond({
+      success: true,
+      item: { uid: 1, sorting: 10, hidden: false, display: { title: "Paper 1" }, values: {} },
+    });
+
+    toggle(1).click();
+    await settle(20);
+
+    assert.deepEqual(fetch.calls[0]?.body, {
+      profile: 1,
+      data: { section: "publications", record: 1, hidden: false },
+    });
+    assert.equal(row(1).dataset.itemHidden, undefined);
+    assert.equal(badge(1).hidden, true);
+    assert.equal(toggle(1).hasAttribute("aria-pressed"), false);
+    assert.equal(toggle(1).getAttribute("aria-label"), labels.hide);
+    assert.equal(statusText("status"), messages.documentShown);
+  });
+
+  it("leaves the row alone when the change is refused", async () => {
+    root = render();
+    fetch.respondWithError({ success: false, message: "Not allowed." }, 403);
+
+    toggle(1).click();
+    await settle(20);
+
+    assert.equal(row(1).dataset.itemHidden, undefined);
+    assert.equal(badge(1).hidden, true);
+    assert.equal(toggle(1).getAttribute("aria-label"), labels.hide);
+    assert.equal(statusText("alert"), "Not allowed.");
   });
 });

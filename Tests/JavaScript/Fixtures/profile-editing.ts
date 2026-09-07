@@ -46,6 +46,7 @@ export const endpoints = {
   updateDocument: "https://example.test/profile/update-document",
   deleteDocument: "https://example.test/profile/delete-document",
   sortDocument: "https://example.test/profile/sort-document",
+  toggleDocumentVisibility: "https://example.test/profile/toggle-document-visibility",
   contractContactForm: "https://example.test/profile/contract-contact-form",
   createContractContact: "https://example.test/profile/create-contract-contact",
   updateContractContact: "https://example.test/profile/update-contract-contact",
@@ -89,6 +90,8 @@ export const messages = {
   documentSaved: "The entry was saved.",
   documentDeleted: "The entry was deleted.",
   documentSorted: "The order was saved.",
+  documentHidden: "The entry is now hidden in the frontend.",
+  documentShown: "The entry is now visible in the frontend.",
   documentDeleteConfirm: "Delete this entry?",
   contractContactDeleteConfirm: "Delete this contact?",
   contractContactEmpty: "No contacts yet.",
@@ -160,6 +163,7 @@ export const profileEditingRoot = ({
   data-update-document-url="${endpoints.updateDocument}"
   data-delete-document-url="${endpoints.deleteDocument}"
   data-sort-document-url="${endpoints.sortDocument}"
+  data-toggle-document-visibility-url="${endpoints.toggleDocumentVisibility}"
   data-contract-contact-form-url="${endpoints.contractContactForm}"
   data-create-contract-contact-url="${endpoints.createContractContact}"
   data-update-contract-contact-url="${endpoints.updateContractContact}"
@@ -192,6 +196,8 @@ export const profileEditingRoot = ({
   data-message-document-saved="${messages.documentSaved}"
   data-message-document-deleted="${messages.documentDeleted}"
   data-message-document-sorted="${messages.documentSorted}"
+  data-message-document-hidden="${messages.documentHidden}"
+  data-message-document-shown="${messages.documentShown}"
   data-message-document-delete-confirm="${messages.documentDeleteConfirm}"
   data-message-contract-contact-delete-confirm="${messages.contractContactDeleteConfirm}"
   data-message-contract-contact-empty="${messages.contractContactEmpty}"
@@ -749,6 +755,7 @@ interface DocumentRowOptions {
   bodytext?: string;
   actions?: string[];
   sortable?: boolean;
+  hidden?: boolean;
 }
 
 /**
@@ -766,9 +773,10 @@ export const documentRow = ({
   bodytext = "",
   actions = ["view", "down", "up", "delete", "edit"],
   sortable = true,
+  hidden = false,
 }: DocumentRowOptions): string => `
 <article class="row g-0 align-items-center border-bottom py-2" data-pe-document-item
-  data-item-uid="${uid}" data-item-sorting="${sorting}" data-item-position="${position}">
+  data-item-uid="${uid}" data-item-sorting="${sorting}" data-item-position="${position}"${hidden ? ' data-item-hidden="1"' : ""}>
   <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
     <div data-pe-document-value="yearStart">${yearStart}</div>
   </div>
@@ -778,13 +786,18 @@ export const documentRow = ({
   <div class="col-12 py-1 pe-md-3 text-break">
     <div class="${bodytext === "" ? "d-none" : ""}" data-pe-document-value="bodytext">${bodytext}</div>
   </div>
-  ${documentActions(actions, sortable)}
+  ${documentActions(actions, sortable, hidden)}
   <div class="col-12 pe-3" data-pe-document-item-collapse-target></div>
 </article>`;
 
 /** `Partials/Profile/Documents/Actions.html:85-181`. */
-export const documentActions = (actions: string[], sortable: boolean): string => {
+export const documentActions = (
+  actions: string[],
+  sortable: boolean,
+  hidden = false,
+): string => {
   const buttons: Record<string, string> = {
+    hide: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-document-hide title="${hidden ? labels.show : labels.hide}" aria-label="${hidden ? labels.show : labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"${hidden ? ' hidden="hidden"' : ""}></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden"${hidden ? "" : ' hidden="hidden"'}></span></button>`,
     view: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="${labels.view}" aria-label="${labels.view}" aria-expanded="false" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-document-view><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>`,
     down: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Move down" aria-label="Move down" data-pe-document-sort="down"></button>`,
     up: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Move up" aria-label="Move up" data-pe-document-sort="up"></button>`,
@@ -793,10 +806,12 @@ export const documentActions = (actions: string[], sortable: boolean): string =>
   };
 
   return `
-  <div class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap gap-1 justify-content-center justify-content-md-end ms-md-auto" role="group"
-    aria-label="Actions" data-pe-document-actions>
+  <div class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto">
+    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-document-hidden-badge${hidden ? "" : ' hidden="hidden"'}>${labels.hidden}</span>
+    <div class="d-flex flex-nowrap align-items-center gap-1" role="group" aria-label="Actions" data-pe-document-actions>
     ${sortable ? `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2 d-none d-md-inline-flex" title="Sort" aria-label="Sort" draggable="true" data-pe-document-drag></button>` : ""}
     ${actions.map((action): string => buttons[action] ?? "").join("")}
+    </div>
   </div>`;
 };
 

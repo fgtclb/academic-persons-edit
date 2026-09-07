@@ -64,6 +64,7 @@ describe("the profile editing contract", () => {
           sortContractContact: endpoints.sortContractContact,
           sortDocument: endpoints.sortDocument,
           toggleContractContactVisibility: endpoints.toggleContractContactVisibility,
+          toggleDocumentVisibility: endpoints.toggleDocumentVisibility,
           update: endpoints.update,
           updateContractContact: endpoints.updateContractContact,
           updateDocument: endpoints.updateDocument,
@@ -82,7 +83,9 @@ describe("the profile editing contract", () => {
           discarded: messages.discarded,
           documentDeleteConfirm: messages.documentDeleteConfirm,
           documentDeleted: messages.documentDeleted,
+          documentHidden: messages.documentHidden,
           documentSaved: messages.documentSaved,
+          documentShown: messages.documentShown,
           documentSorted: messages.documentSorted,
           editorError: messages.editorError,
           errorMessage: messages.errorMessage,
@@ -190,14 +193,14 @@ describe("the profile editing contract", () => {
     it("reports every endpoint as unconfigured rather than as an empty url", () => {
       assert.deepEqual(
         Object.values({ ...context.urls }),
-        new Array(14).fill(undefined),
+        new Array(15).fill(undefined),
       );
     });
 
     it("reports every message and label as absent", () => {
       assert.deepEqual(
         Object.values({ ...context.messages }),
-        new Array(24).fill(undefined),
+        new Array(26).fill(undefined),
       );
       assert.deepEqual(
         Object.values({ ...context.labels }),

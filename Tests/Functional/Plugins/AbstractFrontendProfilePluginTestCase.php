@@ -9,6 +9,7 @@ use FGTCLB\TestingHelper\FunctionalTestCase\FrontendPluginRenderingTrait;
 use Psr\Http\Message\ResponseInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Session\UserSessionManager;
@@ -459,6 +460,23 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
      * @param string $string recive the string to clear
      * @return string returns the cleared string
      */
+    /**
+     * The label an assertion compares against, resolved the way the page does.
+     *
+     * Comparing rendered text against the translated label rather than against
+     * the key is what makes an assertion behavioural: a partial that stops
+     * rendering the label, or renders the key, fails.
+     */
+    protected function translate(string $key): string
+    {
+        $label = $this->get(LanguageServiceFactory::class)->create('default')->sL(
+            'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang.xlf:' . $key,
+        );
+        $this->assertNotSame('', $label, sprintf('The label "%s" is not translated.', $key));
+
+        return $label;
+    }
+
     protected function clearHtmlString(string $string): string
     {
         $string = preg_replace('/>\s+/u', '>', $string) ?? $string;

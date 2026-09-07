@@ -367,6 +367,18 @@
         <source>The contact is now visible in the frontend.</source>
         <target>Der Kontakt ist im Frontend jetzt sichtbar.</target>
       </trans-unit>
+      <trans-unit id="profileEditing.documents.hidden">
+        <source>Hidden</source>
+        <target>Ausgeblendet</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.hidden">
+        <source>The entry is now hidden in the frontend.</source>
+        <target>Der Eintrag ist im Frontend jetzt ausgeblendet.</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.visible">
+        <source>The entry is now visible in the frontend.</source>
+        <target>Der Eintrag ist im Frontend jetzt sichtbar.</target>
+      </trans-unit>
       <trans-unit id="profileEditing.contractContacts.empty">
         <source>No contact details have been added yet.</source>
         <target>Es wurden noch keine Kontaktdaten hinterlegt.</target>

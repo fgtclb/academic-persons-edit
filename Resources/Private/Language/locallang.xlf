@@ -284,6 +284,15 @@
       <trans-unit id="profileEditing.contractContacts.status.visible">
         <source>The contact is now visible in the frontend.</source>
       </trans-unit>
+      <trans-unit id="profileEditing.documents.hidden">
+        <source>Hidden</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.hidden">
+        <source>The entry is now hidden in the frontend.</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.documents.status.visible">
+        <source>The entry is now visible in the frontend.</source>
+      </trans-unit>
       <trans-unit id="profileEditing.contractContacts.empty">
         <source>No contact details have been added yet.</source>
       </trans-unit>

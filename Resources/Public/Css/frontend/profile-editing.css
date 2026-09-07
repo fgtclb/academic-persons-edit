@@ -398,7 +398,8 @@ body:has(.academic-persons-profile-editing) .sticky-top {
 .academic-persons-profile-editing [data-pe-document-items] > [data-pe-document-item]:nth-child(odd) {
   background-color: var(--bs-tertiary-bg);
 }
-.academic-persons-profile-editing [data-pe-contract-contact-hidden] {
+.academic-persons-profile-editing [data-pe-contract-contact-hidden],
+.academic-persons-profile-editing [data-pe-document-item][data-item-hidden] {
   color: var(--bs-secondary-color);
 }
 .academic-persons-profile-editing [data-pe-contract-contact-sort]:disabled {

@@ -7,7 +7,8 @@
         data-pe-document-item
         data-item-uid="{contract.uid}"
         data-item-sorting="{contract.sorting}"
-        data-item-position="{itemIteration.index}">
+        data-item-position="{itemIteration.index}"
+        {f:if(condition: contract.hidden, then: 'data-item-hidden="1"')}>
         <f:for each="{rowFields}" as="rowField">
             <f:switch expression="{rowField}">
                 <f:case value="from">
@@ -51,7 +52,7 @@
                 </f:case>
             </f:switch>
         </f:for>
-        <f:render partial="Profile/Documents/Actions" arguments="{actions: actions, sortable: sortable}" />
+        <f:render partial="Profile/Documents/Actions" arguments="{actions: actions, sortable: sortable, hidden: contract.hidden}" />
         <div class="col-12 pe-3" data-pe-document-item-collapse-target></div>
     </article>
 </html>

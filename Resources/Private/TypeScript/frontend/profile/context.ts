@@ -3,7 +3,7 @@
  * modules, read once.
  *
  * The template puts the whole configuration of an editor on its root element:
- * fourteen endpoint urls, seven state values, twenty-four translated messages
+ * fifteen endpoint urls, seven state values, twenty-six translated messages
  * and six labels. Until now every module read them straight off
  * `root.dataset` at the moment it needed one - the same forty-odd attributes,
  * re-read and re-coerced on every status message, every request and every
@@ -75,7 +75,9 @@ type ProfileEditingContract = {
   messageDiscarded?: string;
   messageDocumentDeleteConfirm?: string;
   messageDocumentDeleted?: string;
+  messageDocumentHidden?: string;
   messageDocumentSaved?: string;
+  messageDocumentShown?: string;
   messageDocumentSorted?: string;
   messageEditorError?: string;
   messageErrorMessage?: string;
@@ -99,6 +101,7 @@ type ProfileEditingContract = {
   sortContractContactUrl?: string;
   sortDocumentUrl?: string;
   toggleContractContactVisibilityUrl?: string;
+  toggleDocumentVisibilityUrl?: string;
   updateContractContactUrl?: string;
   updateDocumentUrl?: string;
   updateUrl?: string;
@@ -117,6 +120,7 @@ export interface EditingUrls {
   readonly sortDocument: string | undefined;
   readonly skipSync: string | undefined;
   readonly toggleContractContactVisibility: string | undefined;
+  readonly toggleDocumentVisibility: string | undefined;
   readonly update: string | undefined;
   readonly updateContractContact: string | undefined;
   readonly updateDocument: string | undefined;
@@ -142,7 +146,7 @@ export interface EditingImage {
   readonly renderType: string;
 }
 
-/** The twenty-four translated status messages, keyed by what they say. */
+/** The twenty-six translated status messages, keyed by what they say. */
 export interface EditingMessages {
   readonly contractContactDeleteConfirm: string | undefined;
   readonly contractContactEmpty: string | undefined;
@@ -151,7 +155,9 @@ export interface EditingMessages {
   readonly discarded: string | undefined;
   readonly documentDeleteConfirm: string | undefined;
   readonly documentDeleted: string | undefined;
+  readonly documentHidden: string | undefined;
   readonly documentSaved: string | undefined;
+  readonly documentShown: string | undefined;
   readonly documentSorted: string | undefined;
   readonly editorError: string | undefined;
   readonly errorMessage: string | undefined;
@@ -260,7 +266,9 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
       discarded: contract.messageDiscarded,
       documentDeleteConfirm: contract.messageDocumentDeleteConfirm,
       documentDeleted: contract.messageDocumentDeleted,
+      documentHidden: contract.messageDocumentHidden,
       documentSaved: contract.messageDocumentSaved,
+      documentShown: contract.messageDocumentShown,
       documentSorted: contract.messageDocumentSorted,
       editorError: contract.messageEditorError,
       errorMessage: contract.messageErrorMessage,
@@ -293,6 +301,7 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
       sortContractContact: contract.sortContractContactUrl,
       sortDocument: contract.sortDocumentUrl,
       toggleContractContactVisibility: contract.toggleContractContactVisibilityUrl,
+      toggleDocumentVisibility: contract.toggleDocumentVisibilityUrl,
       update: contract.updateUrl,
       updateContractContact: contract.updateContractContactUrl,
       updateDocument: contract.updateDocumentUrl,

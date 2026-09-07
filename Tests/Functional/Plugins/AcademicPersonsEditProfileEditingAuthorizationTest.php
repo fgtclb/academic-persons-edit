@@ -70,6 +70,7 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
             'updateDocument' => 'data-update-document-url',
             'deleteDocument' => 'data-delete-document-url',
             'sortDocument' => 'data-sort-document-url',
+            'toggleDocumentVisibility' => 'data-toggle-document-visibility-url',
             'contractContactForm' => 'data-contract-contact-form-url',
             'createContractContact' => 'data-create-contract-contact-url',
             'updateContractContact' => 'data-update-contract-contact-url',
@@ -142,6 +143,10 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
         yield 'document form' => ['documentForm', ['section' => 'cooperation', 'mode' => 'add']];
         yield 'document create' => ['createDocument', ['section' => 'cooperation', 'fields' => ['title' => 'x']]];
         yield 'document sort' => ['sortDocument', ['section' => 'cooperation', 'record' => 1, 'direction' => 'up']];
+        yield 'document visibility' => [
+            'toggleDocumentVisibility',
+            ['section' => 'cooperation', 'record' => 1, 'hidden' => true],
+        ];
         yield 'contact form' => [
             'contractContactForm',
             ['contract' => 1, 'section' => 'physicalAddresses', 'mode' => 'add'],
