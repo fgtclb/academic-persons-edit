@@ -313,7 +313,7 @@ export const prototypes = (): string => `
 <template data-pe-proto="control-select"><select name="" aria-invalid="false"
   class="flex-grow-1 w-100 form-select form-select-sm academic-persons-profile-editing__field"
   data-pe-list="options"
-  data-pe-attr="${controlAttributes.select}"><option value="">&#8212;</option></select></template>
+  data-pe-attr="${controlAttributes.select}"><option value=""></option></select></template>
 <template data-pe-proto="control-checkbox"><input type="checkbox" name="" value="1" aria-invalid="false"
   class="form-check-input academic-persons-profile-editing__field"
   data-pe-attr="${controlAttributes.checkbox}" /></template>
@@ -376,7 +376,7 @@ export const prototypes = (): string => `
 <template data-pe-proto="contact-summary-cell"><div class="col-12 col-md py-1 pe-md-3 text-break">
   <div class="d-md-none fw-semibold mb-1" data-pe-slot="label"></div>
   <span data-pe-when="hasValue" data-pe-slot="value"></span>
-  <span data-pe-when="isEmpty">&#8212;</span>
+  <span data-pe-when="isEmpty">—</span>
 </div></template>
 <template data-pe-proto="contact-editor-panel"><section class="border bg-body-tertiary p-3 p-lg-4"
   data-pe-contract-contact-editor data-pe-contract-contact-form

@@ -606,6 +606,101 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertStringContainsString('Back to profile overview', $content);
     }
 
+    /**
+     * The option a select opens on stands for "nothing chosen yet" and is
+     * deliberately unlabelled. It is still rendered: `hasArgument()` asks
+     * whether `prependOptionLabel` was given, not whether it is empty, so the
+     * empty string prepends an unlabelled `<option value="">` - and that empty
+     * value is what makes constraint validation refuse a required select while
+     * it is untouched. A label written into that argument would be escaped
+     * rather than rendered, which is what the character reference in it used to
+     * demonstrate.
+     *
+     * `DOMDocument` has no `<template>` semantics, so the prototype select is
+     * matched next to the live ones and is covered by the same expectation.
+     */
+    #[Test]
+    public function theEmptyOptionOfASelectCarriesNoVisibleLabel(): void
+    {
+        $this->setUpProfileEditingTestCase();
+        $xpath = $this->xpathOf($this->renderProfileEditingPage());
+        $selects = $xpath->query(
+            '//select[contains(concat(" ", normalize-space(@class), " "), '
+            . '" academic-persons-profile-editing__field ")]',
+        );
+        $this->assertNotFalse($selects);
+        $rendered = [];
+        foreach ($selects as $select) {
+            $this->assertInstanceOf(\DOMElement::class, $select);
+            $identifier = $this->describeSelect($xpath, $select);
+            $rendered[] = $identifier;
+            $options = $xpath->query('.//option', $select);
+            $this->assertNotFalse($options);
+            $placeholder = $options->item(0);
+            $this->assertInstanceOf(
+                \DOMElement::class,
+                $placeholder,
+                sprintf('Select "%s" renders no option at all.', $identifier),
+            );
+            $this->assertSame(
+                '',
+                $placeholder->getAttribute('value'),
+                sprintf('Select "%s" does not open on an empty value.', $identifier),
+            );
+            $this->assertSame(
+                '',
+                $placeholder->textContent,
+                sprintf('Select "%s" labels its empty option.', $identifier),
+            );
+        }
+        $this->assertSame(
+            [
+                'profile-editing-' . self::PROFILE_ID . '-gender',
+                'prototype:control-select',
+            ],
+            $rendered,
+            'The page renders a different set of select controls.',
+        );
+        $fixture = file_get_contents(__DIR__ . '/../../JavaScript/Fixtures/profile-editing.ts');
+        $this->assertIsString($fixture);
+        $this->assertStringContainsString(
+            '<option value=""></option>',
+            $fixture,
+            'The JavaScript fixture does not transcribe the unlabelled option.',
+        );
+    }
+
+    /**
+     * Fluid hands a ViewHelper argument over as an ordinary string and does not
+     * decode a character reference in it, so one written there is escaped by
+     * the ViewHelper and the reader is shown the reference. In element content
+     * the same spelling is decoded by the browser and works, which is why the
+     * rule is written over the sources rather than over one rendered page: a
+     * character is spelled as itself everywhere, and a reference nowhere.
+     */
+    #[Test]
+    public function noProfileEditingTemplateSpellsACharacterReference(): void
+    {
+        preg_match_all(
+            '@&\#[0-9]+;|&\#x[0-9a-fA-F]+;@',
+            $this->getProfileEditingFluidSources(),
+            $matches,
+        );
+        $this->assertSame([], $matches[0]);
+    }
+
+    private function describeSelect(\DOMXPath $xpath, \DOMElement $select): string
+    {
+        $identifier = $select->getAttribute('id');
+        if ($identifier !== '') {
+            return $identifier;
+        }
+        $prototypes = $xpath->query('ancestor::template[@data-pe-proto]', $select);
+        $prototype = $prototypes === false ? null : $prototypes->item(0);
+
+        return 'prototype:' . ($prototype instanceof \DOMElement ? $prototype->getAttribute('data-pe-proto') : '?');
+    }
+
     #[Test]
     public function editableSelectControlsUseExplicitFieldActions(): void
     {
