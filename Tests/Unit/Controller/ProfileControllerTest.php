@@ -44,6 +44,7 @@ use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Stream;
@@ -405,6 +406,8 @@ final class ProfileControllerTest extends UnitTestCase
                 new NullLogger(),
                 $tcaSchemaFactory,
                 $this->createStub(MetaDataRepository::class),
+                $resourceFactory,
+                new NoopEventDispatcher(),
             ),
             new ProfileUpdateRequestService(
                 new Context(),

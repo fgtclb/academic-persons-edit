@@ -2982,8 +2982,8 @@ final class ProfileController extends ActionController
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'hasImage' => true,
-                'imageAlternative' => $imageMetadata['alternative'],
-                'imageTitle' => $imageMetadata['title'],
+                'imageAlternative' => $imageMetadata['alternative'] ?? '',
+                'imageTitle' => $imageMetadata['title'] ?? '',
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
@@ -3096,7 +3096,7 @@ final class ProfileController extends ActionController
     /**
      * Persists the uploaded profile image and updates the associated metadata.
      *
-     * @return array{alternative: string, title: string} The updated metadata for the uploaded profile image.
+     * @return array<string, string> The metadata written for the uploaded profile image.
      */
     private function persistUploadedProfileImage(Profile $profile): array
     {
@@ -3121,11 +3121,15 @@ final class ProfileController extends ActionController
             $this->profileImageMetadataService->initializeFileMetadata(
                 $uploadedImageFile,
                 $persistedProfileUid,
+                $this->request,
             );
             if (!$profile->getIsTranslation()) {
                 $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent($profile));
             }
-            $imageMetadata = $this->profileImageMetadataService->updateForProfileUid($persistedProfileUid);
+            $imageMetadata = $this->profileImageMetadataService->updateForProfileUid(
+                $persistedProfileUid,
+                $this->request,
+            );
             if ($imageMetadata === null) {
                 throw new \UnexpectedValueException('The uploaded profile image is unavailable.');
             }
