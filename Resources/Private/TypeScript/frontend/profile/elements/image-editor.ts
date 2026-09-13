@@ -158,10 +158,11 @@ export class ProfileImageEditorElement extends ProfileEditingElement {
    * The contract of `Templates/Profile/Index.html`.
    *
    * Assigned by whoever creates the element, and otherwise resolved from the
-   * `<academic-persons-edit-profile-editing>` above it on connection - the
-   * markup of this element is rendered by Fluid, so there is no creating caller
-   * to assign it. Either way the element never reads the root's attributes
-   * itself: the contract is read once, by the owner, and handed down.
+   * `<academic-persons-edit-profile-editing>` above it once its markup has been
+   * parsed - the markup of this element is rendered by Fluid, so there is no
+   * creating caller to assign it. Either way the element never reads the
+   * root's attributes itself: the contract is read once, by the owner, and
+   * handed down.
    */
   get context(): EditingContext | null {
     return this.#context;
@@ -171,13 +172,21 @@ export class ProfileImageEditorElement extends ProfileEditingElement {
     this.#context = context;
   }
 
-  /** The image editing this element drives, or `null` until it is connected. */
+  /** The image editing this element drives, or `null` until it has started. */
   get controller(): ImageEditingController | null {
     return this.#controller;
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
+    // Fluid renders this element, so the parser may connect it before its
+    // form exists - and before the owner above it has read its contract.
+    this.whenParsed((): void => {
+      this.#start();
+    });
+  }
+
+  #start(): void {
     this.#context ??= ownerEditingContext(this);
     const context = this.#context;
     if (context === null) {
@@ -208,8 +217,8 @@ export class ProfileImageEditorElement extends ProfileEditingElement {
    * disabled, which preview is visible - plus the two column widths of
    * `Templates/Profile/Index.html`.
    *
-   * Called after every change the controller accepts, and once on connection so
-   * that the markup agrees with the state it was rendered before.
+   * Called after every change the controller accepts, and once when the element
+   * starts so that the markup agrees with the state it was rendered before.
    *
    * Named `applyState()` rather than `render()`: this element renders
    * nothing - it writes attributes, classes and the `hidden` flag onto markup
@@ -370,10 +379,10 @@ export class ProfileImageEditorElement extends ProfileEditingElement {
 /**
  * Defines the element, idempotently.
  *
- * Called by the entry point, after the root element. The order no longer
- * decides anything - it did while the root still mounted an application that
- * replaced the markup this element wraps - but it is the one the page starts
- * in: the owner, then what it owns.
+ * Called by the entry point, after the root element, and that order matters:
+ * this element takes its contract from the root, so the root has to have read
+ * it first - when both are upgraded, in the order they are defined, and at the
+ * end of a parse, in the order their listeners were added.
  */
 export const registerProfileImageEditorElement = (): void => {
   if (customElements.get(profileImageEditorElementName) !== undefined) {

@@ -90,7 +90,7 @@ describe("the rich text field element", () => {
     root = select(body, "[data-academic-persons-profile-editing]", HTMLElement);
     host = select(root, "#host", HTMLElement);
     context = readEditingContext(root);
-    // What "<academic-persons-edit-profile-editing>" does on connection. The
+    // What "<academic-persons-edit-profile-editing>" does when it starts. The
     // root element is not registered in this file: the subject is the rich
     // text element, and its owner is only the address of the context.
     (

@@ -21,15 +21,15 @@ import {
  * be undefined once it is defined. Nothing before the first test may register
  * it, so nothing does.
  *
- * The order that really happens is the first one. `<f:asset.module>` renders
- * `type="module"`, the document is parsed before the entry point runs, and both
- * elements are already in it when they are defined.
+ * The first one is what a page produces when the document has been parsed
+ * before the entry point runs: both elements are already in it when they are
+ * defined. `<f:asset.module>` renders `<script type="module" async>`, so the
+ * entry point may also run while the document is still being parsed; that
+ * order is `profile-editing-element-parsing.test.ts`.
  *
  * Both elements are registered here, in the order the entry point registers
- * them. That order used to be a decision - the root mounted an application that
- * replaced the markup this element wraps, so an element upgraded before the
- * mount was upgraded on a copy about to be thrown away - and it stopped being
- * one when the runtime left. It is kept as the order the page really starts in.
+ * them: the root first. This element takes its contract from the root, so the
+ * root has to be upgraded - and have read it - before this element is.
  */
 describe("upgrading the image editor element", () => {
   const editorMarkup = (profileUid = 1): string =>

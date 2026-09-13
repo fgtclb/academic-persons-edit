@@ -42,7 +42,7 @@ class ProfileEditingRootElement extends ProfileEditingElement {
   };
   /**
    * The contract of `Templates/Profile/Index.html`, read once when the element
-   * first connected, and `null` for an element that carries no editor root.
+   * started, and `null` for an element that carries no editor root.
    */
   get context() {
     return this.#context;
@@ -50,6 +50,11 @@ class ProfileEditingRootElement extends ProfileEditingElement {
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener(profileEditingStatusEvent, this.#handleStatus);
+    this.whenParsed(() => {
+      this.#start();
+    });
+  }
+  #start() {
     if (this.#context !== null) {
       return;
     }

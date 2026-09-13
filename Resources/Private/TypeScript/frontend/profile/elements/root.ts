@@ -39,14 +39,16 @@
  * editor and the contact list - declare them as accessor pairs whose setter
  * ends in `requestUpdate()`.
  *
- * ## It starts the editor on connection
+ * ## It starts the editor once its markup is parsed
  *
- * `connectedCallback()` builds the controllers and runs the four initialisers,
- * in that order and in one pass. Connection is the earliest point at which the
- * markup below this element is complete, and nothing rewrites it afterwards -
- * Fluid renders it and the elements below only control it - so the references
- * a controller takes here are the ones the visitor sees for the life of the
- * page.
+ * The element builds the controllers and runs the four initialisers, in that
+ * order and in one pass, as soon as the markup below it is complete: on
+ * connection when the document has been parsed already, and on
+ * `DOMContentLoaded` when the parser connected the element at its start tag -
+ * see `whenParsed()` of `elements/base.ts` for why that happens. Nothing
+ * rewrites the markup afterwards - Fluid renders it and the elements below only
+ * control it - so the references a controller takes then are the ones the
+ * visitor sees for the life of the page.
  */
 import { ProfileEditingElement } from "@fgtclb/academic-persons-edit/frontend/profile/elements/base.js";
 import {
@@ -139,7 +141,7 @@ export class ProfileEditingRootElement extends ProfileEditingElement {
 
   /**
    * The contract of `Templates/Profile/Index.html`, read once when the element
-   * first connected, and `null` for an element that carries no editor root.
+   * started, and `null` for an element that carries no editor root.
    */
   get context(): EditingContext | null {
     return this.#context;
@@ -151,13 +153,20 @@ export class ProfileEditingRootElement extends ProfileEditingElement {
     // off again: an element that is moved in the document keeps its editor but
     // has to keep its listener too.
     this.addEventListener(profileEditingStatusEvent, this.#handleStatus);
+    this.whenParsed((): void => {
+      this.#start();
+    });
+  }
+
+  #start(): void {
     if (this.#context !== null) {
       return;
     }
     const root = this.querySelector<HTMLElement>(rootSelector);
     if (root === null) {
-      // Not an error and not remembered: the element is empty until Fluid's
-      // markup is below it, and a later connection reads it then.
+      // Not an error and not remembered: an element that is still empty once
+      // its own markup has been parsed carries no editor yet, and a later
+      // connection reads the root that was put below it.
       return;
     }
     this.#context = readEditingContext(root);

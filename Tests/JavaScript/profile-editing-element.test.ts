@@ -72,9 +72,9 @@ describe("the profile editing element", () => {
 
   /**
    * The markup is inserted in a second step, after the page header has been
-   * given a height. The element starts the editor the moment it is connected,
-   * and the sticky column is measured from a header that a browser has laid out
-   * long before the deferred module runs - a fixture that measures afterwards
+   * given a height. The element starts the editor once its markup is parsed -
+   * here the moment it is connected - and the sticky column is measured from a
+   * header a browser has laid out by then; a fixture that measures afterwards
    * would measure jsdom's zero.
    */
   const render = (markup: string): ProfileEditingRootElement => {

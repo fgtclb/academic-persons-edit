@@ -76,10 +76,11 @@ class ProfileImageEditorElement extends ProfileEditingElement {
    * The contract of `Templates/Profile/Index.html`.
    *
    * Assigned by whoever creates the element, and otherwise resolved from the
-   * `<academic-persons-edit-profile-editing>` above it on connection - the
-   * markup of this element is rendered by Fluid, so there is no creating caller
-   * to assign it. Either way the element never reads the root's attributes
-   * itself: the contract is read once, by the owner, and handed down.
+   * `<academic-persons-edit-profile-editing>` above it once its markup has been
+   * parsed - the markup of this element is rendered by Fluid, so there is no
+   * creating caller to assign it. Either way the element never reads the
+   * root's attributes itself: the contract is read once, by the owner, and
+   * handed down.
    */
   get context() {
     return this.#context;
@@ -87,12 +88,17 @@ class ProfileImageEditorElement extends ProfileEditingElement {
   set context(context) {
     this.#context = context;
   }
-  /** The image editing this element drives, or `null` until it is connected. */
+  /** The image editing this element drives, or `null` until it has started. */
   get controller() {
     return this.#controller;
   }
   connectedCallback() {
     super.connectedCallback();
+    this.whenParsed(() => {
+      this.#start();
+    });
+  }
+  #start() {
     this.#context ??= ownerEditingContext(this);
     const context = this.#context;
     if (context === null) {
@@ -118,8 +124,8 @@ class ProfileImageEditorElement extends ProfileEditingElement {
    * disabled, which preview is visible - plus the two column widths of
    * `Templates/Profile/Index.html`.
    *
-   * Called after every change the controller accepts, and once on connection so
-   * that the markup agrees with the state it was rendered before.
+   * Called after every change the controller accepts, and once when the element
+   * starts so that the markup agrees with the state it was rendered before.
    *
    * Named `applyState()` rather than `render()`: this element renders
    * nothing - it writes attributes, classes and the `hidden` flag onto markup

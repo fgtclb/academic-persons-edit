@@ -1057,7 +1057,7 @@ export const selectAll = <T extends Element>(
 
 /**
  * The whole page one editor stands on: the owner element, the root below it,
- * and the contract the owner read on connection.
+ * and the contract the owner read when it started.
  *
  * Every element of the editor resolves its editing context by walking up to
  * `<academic-persons-edit-profile-editing>` and reading its `context`

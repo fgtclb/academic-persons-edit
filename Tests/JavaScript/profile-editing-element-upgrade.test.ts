@@ -11,16 +11,19 @@ import { profileEditingElement, select } from "./Fixtures/profile-editing.ts";
 /**
  * Both orders in which a custom element and its markup can meet.
  *
- * `<f:asset.module>` renders `type="module"`, which is deferred: the document
- * is parsed first and the editor's markup is therefore always in the document
- * before this module is evaluated. That is the order the editor really starts
- * in, and it is the one an element that only listened for its own construction
- * would silently miss - the registry upgrades what is already there, and it
- * does so synchronously inside `customElements.define()`.
+ * The first is the one where the document has been parsed before this module
+ * is evaluated, so the editor's markup is already there. It is the one an
+ * element that only listened for its own construction would silently miss -
+ * the registry upgrades what is already there, and it does so synchronously
+ * inside `customElements.define()`.
  *
  * The other order is the one a test file naturally has, and the one a page that
  * renders an editor over ajax has: the element is defined and the markup
  * arrives afterwards.
+ *
+ * `<f:asset.module>` renders `<script type="module" async>`, which is not
+ * deferred: the module may also run while the document is still being parsed.
+ * That third order is `profile-editing-element-parsing.test.ts`.
  *
  * A file of its own, and not a case in
  * `profile-editing-element.test.ts`: an element cannot be undefined once it is
@@ -35,10 +38,10 @@ import { profileEditingElement, select } from "./Fixtures/profile-editing.ts";
  * streaming parser does. So the children of the element exist by the time its
  * constructor runs here, and reading the editor root in the constructor instead
  * of in `connectedCallback()` keeps this file green while it would find nothing
- * in a browser. That the root is read on connection is a requirement of the
- * custom element specification - a constructor must not inspect its children -
- * and not something a jsdom test discriminates. Do not move it on the strength
- * of a green run.
+ * in a browser. That the root is never read in the constructor is a
+ * requirement of the custom element specification - a constructor must not
+ * inspect its children - and not something a jsdom test discriminates. Do not
+ * move it on the strength of a green run.
  */
 describe("upgrading the profile editing element", () => {
   it("starts an editor that was in the document before the module loaded", () => {

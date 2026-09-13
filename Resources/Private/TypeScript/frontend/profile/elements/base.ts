@@ -20,12 +20,13 @@
  * an assignment schedules one update, several assignments in the same turn
  * become one, `updated()` learns which properties changed, and
  * `updateComplete` settles after it ran: `false` when a callback scheduled the
- * next update, and rejected when one threw. 136 lines of code in this file,
+ * next update, and rejected when one threw. 159 lines of code in this file,
  * all of them readable, and nothing in the element trees below can reach the
  * markup.
  *
- * Three of the five elements use none of it and extend this class for the two
- * lifecycle callbacks alone. The document editor is the one that needs all of
+ * Three of the five elements use none of it and extend this class for the
+ * lifecycle callbacks, two of them - the root and the image editor - also for
+ * `whenParsed()`. The document editor is the one that needs all of
  * it: a keystroke assigns `values`, a refusal assigns `errors`, a request
  * assigns `pending`, and none of those may rebuild the panel, because
  * rebuilding it replaces every control the visitor is typing in and every live
@@ -125,6 +126,7 @@ export abstract class ProfileEditingElement<TSelf = unknown> extends HTMLElement
   #enabled = false;
   #hasUpdated = false;
   #pending = false;
+  #parsed: (() => void) | null = null;
 
   constructor() {
     super();
@@ -174,6 +176,52 @@ export abstract class ProfileEditingElement<TSelf = unknown> extends HTMLElement
   disconnectedCallback(): void {
     // Nothing of its own. Declared so that every element can call it from its
     // own override without having to know which of them the base implements.
+  }
+
+  /**
+   * Runs `start` once the markup below this element has been parsed: right
+   * away when the document is no longer loading, on `DOMContentLoaded`
+   * otherwise.
+   *
+   * TYPO3 renders `<f:asset.module>` as `<script type="module" async>`, so the
+   * entry point may run while the parser is still in the middle of the page.
+   * An element the parser reaches after that is constructed and connected at
+   * its start tag, before any of its children exist - connection is then the
+   * one moment its markup is certainly *not* complete, and an element that
+   * gave up on it would never be asked again (ACE-647). The two elements
+   * Fluid renders into the document, the root and the image editor, therefore
+   * start through this rather than straight from `connectedCallback()`.
+   *
+   * The listener is added once, however often the element is connected while
+   * the document loads; the `start` of the latest connection is the one that
+   * runs, and not at all for an element that has left the document by then.
+   * Listeners run in the order they were added and the parser connects an
+   * owner before anything below it, so the root has read its contract by the
+   * time the image editor inside it asks for it. An element the registry
+   * upgrades adds its listener when it is upgraded instead, which is why the
+   * entry point defines the root before the image editor.
+   */
+  protected whenParsed(start: () => void): void {
+    const ownerDocument = this.ownerDocument;
+    if (ownerDocument.readyState !== "loading") {
+      this.#parsed = null;
+      start();
+      return;
+    }
+    if (this.#parsed === null) {
+      ownerDocument.addEventListener(
+        "DOMContentLoaded",
+        (): void => {
+          const parsed = this.#parsed;
+          this.#parsed = null;
+          if (parsed !== null && this.isConnected) {
+            parsed();
+          }
+        },
+        { once: true },
+      );
+    }
+    this.#parsed = start;
   }
 
   /**

@@ -32,6 +32,7 @@ class ProfileEditingElement extends HTMLElement {
   #enabled = false;
   #hasUpdated = false;
   #pending = false;
+  #parsed = null;
   constructor() {
     super();
     this.#adopted = takeInstanceProperties(this);
@@ -71,6 +72,51 @@ class ProfileEditingElement extends HTMLElement {
     }
   }
   disconnectedCallback() {
+  }
+  /**
+   * Runs `start` once the markup below this element has been parsed: right
+   * away when the document is no longer loading, on `DOMContentLoaded`
+   * otherwise.
+   *
+   * TYPO3 renders `<f:asset.module>` as `<script type="module" async>`, so the
+   * entry point may run while the parser is still in the middle of the page.
+   * An element the parser reaches after that is constructed and connected at
+   * its start tag, before any of its children exist - connection is then the
+   * one moment its markup is certainly *not* complete, and an element that
+   * gave up on it would never be asked again (ACE-647). The two elements
+   * Fluid renders into the document, the root and the image editor, therefore
+   * start through this rather than straight from `connectedCallback()`.
+   *
+   * The listener is added once, however often the element is connected while
+   * the document loads; the `start` of the latest connection is the one that
+   * runs, and not at all for an element that has left the document by then.
+   * Listeners run in the order they were added and the parser connects an
+   * owner before anything below it, so the root has read its contract by the
+   * time the image editor inside it asks for it. An element the registry
+   * upgrades adds its listener when it is upgraded instead, which is why the
+   * entry point defines the root before the image editor.
+   */
+  whenParsed(start) {
+    const ownerDocument = this.ownerDocument;
+    if (ownerDocument.readyState !== "loading") {
+      this.#parsed = null;
+      start();
+      return;
+    }
+    if (this.#parsed === null) {
+      ownerDocument.addEventListener(
+        "DOMContentLoaded",
+        () => {
+          const parsed = this.#parsed;
+          this.#parsed = null;
+          if (parsed !== null && this.isConnected) {
+            parsed();
+          }
+        },
+        { once: true }
+      );
+    }
+    this.#parsed = start;
   }
   /**
    * Overridden by an element whose `updateComplete` has to cover more than its

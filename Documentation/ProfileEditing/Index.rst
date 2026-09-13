@@ -27,9 +27,10 @@ behavior. The entry point is maintained as TypeScript in
 frontend build generates
 :file:`Resources/Public/JavaScript/frontend/profile.js`; it defines those
 elements and does nothing else. Every editor on the page is an
-``<academic-persons-edit-profile-editing>`` element that starts itself when the
-browser upgrades it, so a second plugin on the page — or one that is loaded
-into the page later — needs no start-up scan and cannot be started twice.
+``<academic-persons-edit-profile-editing>`` element that starts itself once the
+browser has upgraded it and parsed its markup, so a second plugin on the page —
+or one that is loaded into the page later — needs no start-up scan and cannot
+be started twice.
 
 Typed feature modules below
 :file:`Resources/Private/TypeScript/frontend/profile/` separately own common

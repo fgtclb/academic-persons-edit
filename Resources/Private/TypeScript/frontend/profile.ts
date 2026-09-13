@@ -8,11 +8,12 @@
  * `[data-academic-persons-profile-editing]` and the `WeakSet` of roots that had
  * already been mounted.
  *
- * `<f:asset.module>` renders `type="module"`, so this file is evaluated after
- * the document has been parsed and the elements are upgraded rather than
- * constructed. Neither order matters to the element: a custom element is
- * upgraded whether it was already in the document when it was defined or is
- * inserted afterwards.
+ * `<f:asset.module>` renders `<script type="module" async>`, so this file may
+ * be evaluated before the document has been parsed as well as after it. After
+ * it, the elements are upgraded; before it, the parser constructs them at
+ * their start tags, before their children exist. The elements that Fluid
+ * renders wait for their markup in either case - see `whenParsed()` of
+ * `profile/elements/base.ts` (ACE-647).
  */
 import { registerProfileEditingElement } from "@fgtclb/academic-persons-edit/frontend/profile/elements/root.js";
 import { registerProfileContractContactsElement } from "@fgtclb/academic-persons-edit/frontend/profile/elements/contract-contacts.js";
@@ -20,9 +21,11 @@ import { registerProfileDocumentEditorElement } from "@fgtclb/academic-persons-e
 import { registerProfileImageEditorElement } from "@fgtclb/academic-persons-edit/frontend/profile/elements/image-editor.js";
 import { registerProfileRichTextElement } from "@fgtclb/academic-persons-edit/frontend/profile/elements/rich-text.js";
 
-// The root first. The order decides nothing - every element is upgraded
-// whenever the registry sees it - but it is the order the page starts in and it
-// reads that way: the owner, then what it owns.
+// The root first, and the order matters: the image editor takes its contract
+// from the root. An upgrade starts the elements in the order they are defined
+// here, the end of a parse in the order their listeners were added - which for
+// elements already parsed when this module runs is that order again. The
+// owner, then what it owns.
 registerProfileEditingElement();
 registerProfileImageEditorElement();
 // The document editor, the rich text field it renders and the contract
