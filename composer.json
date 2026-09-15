@@ -1,6 +1,6 @@
 {
     "name": "fgtclb/academic-persons-edit",
-    "description": "Adds the option to assign frontend users to academic persons and allow editing the profiles in frontend.",
+    "description": "FGTCLB: Academic Persons Edit - Provides the option to assign frontend users to academic persons and allow editing the profiles in frontend.",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
     "authors": [
