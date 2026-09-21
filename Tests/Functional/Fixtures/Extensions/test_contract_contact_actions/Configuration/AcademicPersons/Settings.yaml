@@ -4,46 +4,12 @@
 # the only listed action, so no row may be edited, deleted or moved - and
 # `readonly` stays false, so a Contract itself can still be created.
 #
-# The `contracts` map is replaced as a whole, top-level merge, so it repeats
-# every key the section needs. The field lists are the minimum the Contract
-# editor and the three contact editors need to resolve at all; the actions are
-# what this fixture exists for.
+# The settings files merge recursively, so this names the one list it changes.
+# `actions` is a list and is replaced as a whole; the label, the fields and the
+# three contact sections of the shipped `contracts` map stay untouched, which
+# is why the create of `theListedActionIsStillCarriedOut()` posts every field
+# academic_persons requires of a physical address - a required field added
+# upstream has to be added to that payload with it.
 contracts:
-  label: 'Contracts'
-  type: contracts
-  fieldName: contracts
-  rowFields:
-    - position
   actions:
     - view
-  fields:
-    position:
-      fieldType: input
-      renderType: text
-      validators:
-        - required
-  contactSections:
-    physicalAddresses:
-      fields:
-        street:
-          fieldType: input
-          renderType: text
-          validators:
-            - required
-    emailAddresses:
-      fields:
-        emailAddress:
-          propertyName: email
-          fieldName: email
-          fieldType: input
-          renderType: email
-          validators:
-            - required
-            - email
-    phoneNumbers:
-      fields:
-        phoneNumber:
-          fieldType: input
-          renderType: phone
-          validators:
-            - required

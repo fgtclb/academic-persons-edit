@@ -141,7 +141,13 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
             'data' => [
                 'contract' => self::CONTRACT_ID,
                 'section' => 'physicalAddresses',
-                'fields' => ['street' => 'Added anyway'],
+                'fields' => [
+                    'street' => 'Added anyway',
+                    'streetNumber' => '12a',
+                    'zip' => '41061',
+                    'city' => 'Acme City',
+                    'country' => 'DE',
+                ],
             ],
         ]);
 

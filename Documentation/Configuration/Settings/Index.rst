@@ -34,10 +34,14 @@ Loading and overrides
 =====================
 
 The central factory reads the same relative path from every active package and
-merges maps at the top level. A site package can therefore override the shared
+merges the maps recursively. A site package can therefore override the shared
 configuration by providing
-:file:`Configuration/AcademicPersons/Settings.yaml`. Replacing one of the four
-maps replaces that complete map; repeat every entry which must remain.
+:file:`Configuration/AcademicPersons/Settings.yaml` that names the keys it
+changes and nothing else. A list - a :yaml:`validators` list, a
+:yaml:`structure` column - is replaced as a whole, and :yaml:`~` removes a key;
+an entry left out is kept as shipped. The `overriding the file
+<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Sections/Index.html#configuration-sections-override>`__
+section of :guilabel:`academic_persons` has the complete rules.
 
 Flush TYPO3 caches after a change so the unified typed settings graph and its
 cache entry are rebuilt.
