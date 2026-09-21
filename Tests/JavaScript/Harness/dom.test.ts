@@ -153,6 +153,87 @@ describe("what jsdom does not provide", () => {
     assert.equal(other.getAttribute("data-test-scrolled-into-view"), "start");
   });
 
+  it("opens and closes a dialog through the attribute jsdom reflects", () => {
+    const body = resetBody('<dialog id="d"><button>Close</button></dialog>');
+    const dialog = body.querySelector<HTMLDialogElement>("#d");
+    assert.ok(dialog !== null);
+
+    assert.equal(dialog.open, false);
+
+    dialog.showModal();
+
+    // "open" is jsdom's own reflection of the attribute the model sets, so a
+    // module reading it reads what a browser would.
+    assert.equal(dialog.open, true);
+    assert.equal(dialog.hasAttribute("open"), true);
+    // Which of the two ways it was opened, which nothing else can observe.
+    assert.equal(dialog.getAttribute("data-test-dialog"), "modal");
+    // The opening moves the focus into the dialog, as a browser does, so a
+    // module that takes it somewhere else is visible here.
+    assert.equal(document.activeElement, dialog.querySelector("button"));
+
+    let closed = 0;
+    dialog.addEventListener("close", () => {
+      closed += 1;
+    });
+    dialog.close("done");
+
+    assert.equal(dialog.open, false);
+    assert.equal(dialog.getAttribute("data-test-dialog"), null);
+    assert.equal(dialog.returnValue, "done");
+    assert.equal(closed, 1);
+
+    // A dialog that is already closed fires nothing, exactly as in a browser.
+    dialog.close();
+
+    assert.equal(closed, 1);
+  });
+
+  it("reports the non-modal open of a dialog as such", () => {
+    const body = resetBody("<dialog><p>Note</p></dialog>");
+    const dialog = body.querySelector<HTMLDialogElement>("dialog");
+    assert.ok(dialog !== null);
+
+    dialog.show();
+
+    assert.equal(dialog.open, true);
+    assert.equal(dialog.getAttribute("data-test-dialog"), "open");
+  });
+
+  it("refuses to open a shown dialog as a modal, and ignores a repeat", () => {
+    const body = resetBody("<dialog><p>Note</p></dialog>");
+    const dialog = body.querySelector<HTMLDialogElement>("dialog");
+    assert.ok(dialog !== null);
+
+    dialog.show();
+
+    // The one mistake a module can make by accident: a dialog that is already
+    // open without a backdrop does not gain one, it throws.
+    assert.throws(() => dialog.showModal(), /already open/);
+    // The same call twice is not a mistake and does nothing.
+    dialog.show();
+    assert.equal(dialog.getAttribute("data-test-dialog"), "open");
+  });
+
+  it("skips a disabled control when it moves the focus into a dialog", () => {
+    const body = resetBody(
+      '<dialog id="d"><button disabled>No</button><button id="yes">Yes</button></dialog>',
+    );
+    const dialog = body.querySelector<HTMLDialogElement>("#d");
+    assert.ok(dialog !== null);
+
+    dialog.showModal();
+
+    assert.equal(document.activeElement, body.querySelector("#yes"));
+  });
+
+  it("refuses to open a detached dialog as a modal", () => {
+    const dialog = document.createElement("dialog");
+
+    assert.throws(() => dialog.showModal(), /not in a document/);
+    assert.equal(dialog.open, false);
+  });
+
   it("registers an object url until it is revoked", () => {
     const url = URL.createObjectURL(new Blob(["x"], { type: "image/png" }));
 

@@ -102,8 +102,12 @@ export const registerOpenEditor = (
  * Whether a dialog element can really be modal here.
  *
  * `showModal()` is what makes the rest of the page inert and hands the focus
- * back on close. A DOM without it - jsdom's, at the time of writing - gets the
- * `open` attribute instead, which renders the same markup without the backdrop.
+ * back on close. A DOM without it gets the `open` attribute instead, which
+ * renders the same markup without the backdrop.
+ *
+ * The `testJs` harness models `showModal()` since ACE-704, so the tests take
+ * the same branch a browser does and this one is no longer exercised by them.
+ * It is kept for a DOM that really has no `<dialog>` support.
  */
 const isModalCapable = (
   dialog: HTMLDialogElement,
