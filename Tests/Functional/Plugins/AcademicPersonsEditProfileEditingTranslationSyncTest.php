@@ -6,6 +6,7 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
+use TESTS\TestProfileUpdateRecorder\EventListener\RecordProfileUpdateListener;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
@@ -36,6 +37,18 @@ final class AcademicPersonsEditProfileEditingTranslationSyncTest extends Abstrac
         'EN' => ['id' => 0, 'title' => 'English', 'locale' => 'en_US.UTF8', 'iso' => 'en', 'hrefLang' => 'en-US', 'direction' => ''],
         'DE' => ['id' => 1, 'title' => 'Deutsch', 'locale' => 'de_DE.UTF8', 'iso' => 'de', 'hrefLang' => 'de-DE', 'direction' => ''],
     ];
+
+    protected function setUp(): void
+    {
+        $this->addTestExtensionsToLoad('tests/test-profile-update-recorder');
+        parent::setUp();
+    }
+
+    protected function tearDown(): void
+    {
+        RecordProfileUpdateListener::$announcements = [];
+        parent::tearDown();
+    }
 
     /**
      * Allows translating profiles into site language 1 - the gate the listener reads
@@ -189,6 +202,31 @@ final class AcademicPersonsEditProfileEditingTranslationSyncTest extends Abstrac
         $this->assertSame(1, (int)$rows[1]['sys_language_uid']);
         $this->assertSame(self::PROFILE_ID, (int)$rows[1]['l10n_parent']);
         $this->assertSame([], $this->getActiveProfileImageReferences(), 'No language keeps a reference to the removed image.');
+    }
+
+    /**
+     * The removal writes the profile row through the DataHandler and the
+     * synchronisation writes it again; both runs are marked as internal, so the one
+     * announcement is the controller's own.
+     */
+    #[Test]
+    public function imageRemovalIsAnnouncedOnceAsAFrontendEdit(): void
+    {
+        $this->setUpTranslationSyncTestCase();
+        $this->seedProfileImage();
+        $deleteImageUrl = $this->extractDataUrl($this->renderProfileEditingPage(), 'data-delete-image-url');
+        RecordProfileUpdateListener::$announcements = [];
+
+        $response = $this->postJson($deleteImageUrl, [
+            'profile' => self::PROFILE_ID,
+            'data' => [],
+        ]);
+
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertSame(
+            [[self::PROFILE_ID, 'acme', 'frontend-editing']],
+            RecordProfileUpdateListener::$announcements,
+        );
     }
 
     #[Test]

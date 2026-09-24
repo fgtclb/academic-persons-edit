@@ -18,9 +18,18 @@ There are some options for global extension configuration:
 
     The synchronisation into these languages runs after a profile is auto-created
     — on frontend user login or through the :bash:`academic:createprofiles`
-    command of :guilabel:`EXT:academic_persons` — and after every change
-    persisted through ProfileEditing. Left empty, frontend edits do not touch
-    translated profile records at all.
+    command of :guilabel:`EXT:academic_persons` — after it is updated by
+    :bash:`academic:updateprofiles`, after every change persisted through
+    ProfileEditing, and after a backend save or a DataHandler based import of
+    the default-language profile. Left empty, none of them touches translated
+    profile records at all.
+
+    The profile slug is regenerated from the name after each of these, made
+    unique in the profile's folder, except after a backend save: there the
+    editor keeps the slug of the backend form. An import counts as a backend
+    save unless it marks its DataHandler run as an import. A slug the name
+    still yields is kept - the plain one even when another profile of the
+    folder shares it, a suffixed one while it is unique.
 
 ..  _configuration-general-validations:
 

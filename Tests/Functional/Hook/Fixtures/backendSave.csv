@@ -1,0 +1,16 @@
+"pages",,,,,,,,
+,"uid","pid","title","slug","doktype",,,
+,1,0,"Root","/",1,,,
+,2,1,"Storage","/storage",254,,,
+"be_users",,,,,,,,
+,"uid","pid","username","password","admin",,,
+,1,0,"admin","$1$tCrlLajZ$C0sikFQQ3SWaFAZ1Me0Z/1",1,,,
+"tx_academicpersons_domain_model_profile",,,,,,,,,
+,"uid","pid","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","slug","hidden"
+,1,2,0,0,0,"Scrooge","Duck","uncle-scrooge",0
+,2,2,0,0,0,"John","Doe","john-doe",0
+,3,2,0,0,0,"Gyro","Gearloose","gyro-gearloose",1
+,4,2,0,0,0,"John","Doe","john-doe",0
+,5,2,0,0,0,"John","Doe","john-doe-2",0
+,6,2,0,0,0,"Jane","Roe","jane-roe-1",0
+,7,2,0,0,0,"Jane","Roe","jane-roe-1",0

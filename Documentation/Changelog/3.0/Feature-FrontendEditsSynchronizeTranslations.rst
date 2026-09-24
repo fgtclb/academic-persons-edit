@@ -41,8 +41,10 @@ Affected Installations
 ======================
 
 Every installation using the frontend editing plugins of
-`EXT:academic_persons_edit`. Behaviour beyond the editing flow is unchanged:
-profile auto-creation dispatched the event before and still does, and project
-side dispatches from own DataHandler hooks are not affected.
+`EXT:academic_persons_edit`. Profile auto-creation dispatched the event before
+and still does. Backend saves announce themselves since a later 3.0 change, see
+:ref:`important-translations-follow-backend-saves`: a project DataHandler hook
+that dispatches the event as well announces every backend save a second time
+and has to be removed.
 
 .. index:: Frontend, Database, ext:academic_persons_edit

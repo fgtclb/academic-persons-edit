@@ -9,6 +9,7 @@ use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
+use TESTS\TestProfileUpdateRecorder\EventListener\RecordProfileUpdateListener;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\UploadedFile;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -28,6 +29,18 @@ final class AcademicPersonsEditProfileEditingImageTranslationTest extends Abstra
         'EN' => ['id' => 0, 'title' => 'English', 'locale' => 'en_US.UTF8', 'iso' => 'en', 'hrefLang' => 'en-US', 'direction' => ''],
         'DE' => ['id' => 1, 'title' => 'Deutsch', 'locale' => 'de_DE.UTF8', 'iso' => 'de', 'hrefLang' => 'de-DE', 'direction' => ''],
     ];
+
+    protected function setUp(): void
+    {
+        $this->addTestExtensionsToLoad('tests/test-profile-update-recorder');
+        parent::setUp();
+    }
+
+    protected function tearDown(): void
+    {
+        RecordProfileUpdateListener::$announcements = [];
+        parent::tearDown();
+    }
 
     protected function frontendPluginTestConfiguration(array $additionalConfiguration = []): array
     {
@@ -319,6 +332,26 @@ final class AcademicPersonsEditProfileEditingImageTranslationTest extends Abstra
         $this->assertSame($references[0]['uid_local'], $references[1]['uid_local']);
         $this->assertFileReferenceIndexMatches($references);
         $this->assertCount(1, $this->getStoredFiles());
+    }
+
+    /**
+     * The upload writes the profile row through the DataHandler, and announces the
+     * update itself afterwards. The write is marked as internal, so it is not
+     * announced a second time as a backend save.
+     */
+    #[Test]
+    public function anUploadIsAnnouncedOnceAsAFrontendEdit(): void
+    {
+        $this->setUpTestCase();
+        RecordProfileUpdateListener::$announcements = [];
+
+        $response = $this->uploadImage();
+
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertSame(
+            [[self::PROFILE_ID, 'acme', 'frontend-editing']],
+            RecordProfileUpdateListener::$announcements,
+        );
     }
 
     /**

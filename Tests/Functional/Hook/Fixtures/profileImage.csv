@@ -1,0 +1,6 @@
+"sys_file",,,,,,,,,,,,,,,
+,"uid","pid","storage","type","mime_type","missing","extension","name","identifier","identifier_hash","folder_hash","sha1","size","creation_date","modification_date"
+,1,0,1,2,"image/png",0,"png","portrait.png","/images/portrait.png","d82b65d423fe4a234ed73529a68b8262c1f763dc","ca306f2df2823c083069873158fd3b91fd4ebe01","0f4c7ac72a6360b0be1b82c2a9bc5837fafddd6c",1024,1700000000,1700000000
+"sys_file_reference",,,,,,,,,,,,,,,
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign",,,,,,,,
+,1,2,1,1,"tx_academicpersons_domain_model_profile","image",1,,,,,,,,

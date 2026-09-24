@@ -33,6 +33,7 @@ use FGTCLB\AcademicPersons\Domain\Repository\PhoneNumberRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
+use FGTCLB\AcademicPersons\Event\ProfileUpdateOrigin;
 use FGTCLB\AcademicPersons\Service\DataHandlerExecutionContext;
 use FGTCLB\AcademicPersons\Service\ProfileImageMetadataService;
 use FGTCLB\AcademicPersons\Service\ProfileImageRelationWriter;
@@ -3124,7 +3125,7 @@ final class ProfileController extends ActionController
                 $this->request,
             );
             if (!$profile->getIsTranslation()) {
-                $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent($profile));
+                $this->dispatchProfileUpdate($profile);
             }
             $imageMetadata = $this->profileImageMetadataService->updateForProfileUid(
                 $persistedProfileUid,
@@ -3181,7 +3182,7 @@ final class ProfileController extends ActionController
         }
         $this->profileImageRelationWriter->deleteUnreferencedFiles($removedFileUids);
         if (!$profile->getIsTranslation()) {
-            $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent($profile));
+            $this->dispatchProfileUpdate($profile);
         }
         return true;
     }
@@ -3309,6 +3310,20 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * Announces a change of the editor, with the site of the request the change was
+     * made in.
+     */
+    private function dispatchProfileUpdate(Profile $profile): void
+    {
+        $site = $this->request->getAttribute('site');
+        $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent(
+            $profile,
+            $site instanceof Site ? $site : null,
+            ProfileUpdateOrigin::FrontendEditing,
+        ));
+    }
+
+    /**
      * Persists all pending changes before announcing the updated profile aggregate.
      */
     private function persistAndDispatchProfileUpdate(?Profile $profile): void
@@ -3317,7 +3332,7 @@ final class ProfileController extends ActionController
         if ($profile === null || $profile->getUid() === null || $profile->getIsTranslation()) {
             return;
         }
-        $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent($profile));
+        $this->dispatchProfileUpdate($profile);
     }
 
     /**

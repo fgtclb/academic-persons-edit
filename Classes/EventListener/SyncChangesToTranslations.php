@@ -6,6 +6,7 @@ namespace FGTCLB\AcademicPersonsEdit\EventListener;
 
 use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SynchronizerContext;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
+use FGTCLB\AcademicPersons\Event\ProfileUpdateOrigin;
 use FGTCLB\AcademicPersons\Service\RecordSynchronizerInterface;
 use FGTCLB\AcademicPersonsEdit\Profile\ProfileTranslator;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
@@ -15,12 +16,14 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
- * @todo This event reacts on an PSR-14 event dispatched in FE, BE and CLI(BE) context AND relies on a global
- *       request object ($GLOBALS['TYPO3_REQUEST']) providing attribute `site` and the expectation limits it
- *       to a frontend request. Overall this is a bad design and fails, because the PSR-14 event will also
- *       dispatched in CLI context (cli command) AND eventually in BE context when project using DataHandler
- *       hooks dispatching that event again. That means, the whole working chain with the event, this listener
- *       needs to be made context unaware and hard global expectations on request must fall.
+ * Synchronises the translations of an announced default-language profile.
+ *
+ * The site is the one the event carries. Only a dispatcher that passes none - the
+ * commands, and code written for an earlier version - leaves it to the lookup of
+ * this listener, which still prefers the site of the global request. A DataHandler
+ * save passes none only when the profile's page belongs to no site, and is not
+ * synchronised then: the site of a backend request is the one of the page selected
+ * in the page tree, not the profile's.
  */
 final class SyncChangesToTranslations
 {
@@ -45,8 +48,10 @@ final class SyncChangesToTranslations
             // Already n translation sync mode. Skip.
             return;
         }
-        // @todo Site should be part of the event, determine it dynamically for now.
-        $site = $this->getSite($profile->getPid());
+        $site = $event->getSite();
+        if ($site === null && !in_array($event->getOrigin(), [ProfileUpdateOrigin::Backend, ProfileUpdateOrigin::Import], true)) {
+            $site = $this->getSite($profile->getPid());
+        }
         if ($site === null) {
             // No site found, nothing to do.
             return;
@@ -63,9 +68,9 @@ final class SyncChangesToTranslations
     }
 
     /**
+     * The fallback for an event without a site.
+     *
      * @param int<0, max> $pid
-     * @todo The site object should be passed when dispatching {@see AfterProfileUpdateEvent} as part of the event,
-     *       so listener do not have the need to determine it on their own.
      */
     private function getSite(int $pid): ?Site
     {
