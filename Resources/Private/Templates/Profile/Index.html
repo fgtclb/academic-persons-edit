@@ -66,7 +66,7 @@
             alternativeMarkupIdentifier="inline" />
         <f:translate
             key="profileEditing.backToList"
-            extensionName="academic_persons_edit" />
+            extensionName="AcademicPersonsEdit" />
     </f:link.action>
 
     <f:if condition="{ajaxPageTypeConfigured}">
@@ -84,7 +84,7 @@
                 data-pe-missing-ajax-page-type>
                 <f:translate
                     key="profileEditing.missingAjaxPageType"
-                    extensionName="academic_persons_edit" />
+                    extensionName="AcademicPersonsEdit" />
             </div>
         </f:else>
     </f:if>
@@ -116,44 +116,44 @@
             data-sort-contract-contact-url="{sortContractContactUrl}"
             data-toggle-contract-contact-visibility-url="{toggleContractContactVisibilityUrl}"
             data-placeholder-image-url="{placeholderImageUrl}"
-            data-placeholder-image-alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'academic_persons_edit')}"
+            data-placeholder-image-alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'AcademicPersonsEdit')}"
             data-has-image="{f:if(condition: profile.image, then: '1', else: '0')}"
             data-image-render-type="{specialFields.image.renderType}"
             data-image-cropper-ratio="{specialFields.image.settings.ratio}"
             data-profile-uid="{profile.uid}"
             data-editor-language="{editorLanguage}"
-            data-message-saving="{f:translate(key: 'profileEditing.status.saving', extensionName: 'academic_persons_edit')}"
-            data-message-success-message="{f:translate(key: 'profileEditing.status.success.message', extensionName: 'academic_persons_edit')}"
-            data-message-error-message="{f:translate(key: 'profileEditing.status.error.message', extensionName: 'academic_persons_edit')}"
-            data-message-error-title="{f:translate(key: 'profileEditing.status.error.title', extensionName: 'academic_persons_edit')}"
-            data-message-success-title="{f:translate(key: 'profileEditing.status.success.title', extensionName: 'academic_persons_edit')}"
-            data-message-info-title="{f:translate(key: 'profileEditing.status.info.title', extensionName: 'academic_persons_edit')}"
-            data-message-info-message="{f:translate(key: 'profileEditing.status.info.message', extensionName: 'academic_persons_edit')}"
-            data-message-warning-title="{f:translate(key: 'profileEditing.status.warning.title', extensionName: 'academic_persons_edit')}"
-            data-message-validation="{f:translate(key: 'profileEditing.status.validation', extensionName: 'academic_persons_edit')}"
-            data-message-editor-error="{f:translate(key: 'profileEditing.status.editorError', extensionName: 'academic_persons_edit')}"
-            data-message-unchanged="{f:translate(key: 'profileEditing.status.unchanged', extensionName: 'academic_persons_edit')}"
-            data-message-save-in-progress="{f:translate(key: 'profileEditing.status.saveInProgress', extensionName: 'academic_persons_edit')}"
-            data-message-discarded="{f:translate(key: 'profileEditing.status.discarded', extensionName: 'academic_persons_edit')}"
-            data-message-image-uploaded="{f:translate(key: 'profileEditing.image.status.uploaded', extensionName: 'academic_persons_edit')}"
-            data-message-image-upload-missing="{f:translate(key: 'profileEditing.image.status.missing', extensionName: 'academic_persons_edit')}"
-            data-message-image-deleted="{f:translate(key: 'profileEditing.image.status.deleted', extensionName: 'academic_persons_edit')}"
-            data-message-document-saved="{f:translate(key: 'profileEditing.documents.status.saved', extensionName: 'academic_persons_edit')}"
-            data-message-document-deleted="{f:translate(key: 'profileEditing.documents.status.deleted', extensionName: 'academic_persons_edit')}"
-            data-message-document-sorted="{f:translate(key: 'profileEditing.documents.status.sorted', extensionName: 'academic_persons_edit')}"
-            data-message-document-hidden="{f:translate(key: 'profileEditing.documents.status.hidden', extensionName: 'academic_persons_edit')}"
-            data-message-document-shown="{f:translate(key: 'profileEditing.documents.status.visible', extensionName: 'academic_persons_edit')}"
-            data-message-document-delete-confirm="{f:translate(key: 'profileEditing.documents.delete.confirm', extensionName: 'academic_persons_edit')}"
-            data-message-contract-contact-delete-confirm="{f:translate(key: 'profileEditing.contractContacts.delete.confirm', extensionName: 'academic_persons_edit')}"
-            data-message-contract-contact-empty="{f:translate(key: 'profileEditing.contractContacts.empty', extensionName: 'academic_persons_edit')}"
-            data-message-contract-contact-hidden="{f:translate(key: 'profileEditing.contractContacts.status.hidden', extensionName: 'academic_persons_edit')}"
-            data-message-contract-contact-shown="{f:translate(key: 'profileEditing.contractContacts.status.visible', extensionName: 'academic_persons_edit')}"
-            data-label-document-add="{f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}"
-            data-label-document-view="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
-            data-label-document-edit="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-            data-label-document-delete="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
-            data-label-document-save="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}"
-            data-label-document-empty="{f:translate(key: 'profileEditing.field.empty', extensionName: 'academic_persons_edit')}">
+            data-message-saving="{f:translate(key: 'profileEditing.status.saving', extensionName: 'AcademicPersonsEdit')}"
+            data-message-success-message="{f:translate(key: 'profileEditing.status.success.message', extensionName: 'AcademicPersonsEdit')}"
+            data-message-error-message="{f:translate(key: 'profileEditing.status.error.message', extensionName: 'AcademicPersonsEdit')}"
+            data-message-error-title="{f:translate(key: 'profileEditing.status.error.title', extensionName: 'AcademicPersonsEdit')}"
+            data-message-success-title="{f:translate(key: 'profileEditing.status.success.title', extensionName: 'AcademicPersonsEdit')}"
+            data-message-info-title="{f:translate(key: 'profileEditing.status.info.title', extensionName: 'AcademicPersonsEdit')}"
+            data-message-info-message="{f:translate(key: 'profileEditing.status.info.message', extensionName: 'AcademicPersonsEdit')}"
+            data-message-warning-title="{f:translate(key: 'profileEditing.status.warning.title', extensionName: 'AcademicPersonsEdit')}"
+            data-message-validation="{f:translate(key: 'profileEditing.status.validation', extensionName: 'AcademicPersonsEdit')}"
+            data-message-editor-error="{f:translate(key: 'profileEditing.status.editorError', extensionName: 'AcademicPersonsEdit')}"
+            data-message-unchanged="{f:translate(key: 'profileEditing.status.unchanged', extensionName: 'AcademicPersonsEdit')}"
+            data-message-save-in-progress="{f:translate(key: 'profileEditing.status.saveInProgress', extensionName: 'AcademicPersonsEdit')}"
+            data-message-discarded="{f:translate(key: 'profileEditing.status.discarded', extensionName: 'AcademicPersonsEdit')}"
+            data-message-image-uploaded="{f:translate(key: 'profileEditing.image.status.uploaded', extensionName: 'AcademicPersonsEdit')}"
+            data-message-image-upload-missing="{f:translate(key: 'profileEditing.image.status.missing', extensionName: 'AcademicPersonsEdit')}"
+            data-message-image-deleted="{f:translate(key: 'profileEditing.image.status.deleted', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-saved="{f:translate(key: 'profileEditing.documents.status.saved', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-deleted="{f:translate(key: 'profileEditing.documents.status.deleted', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-sorted="{f:translate(key: 'profileEditing.documents.status.sorted', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-hidden="{f:translate(key: 'profileEditing.documents.status.hidden', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-shown="{f:translate(key: 'profileEditing.documents.status.visible', extensionName: 'AcademicPersonsEdit')}"
+            data-message-document-delete-confirm="{f:translate(key: 'profileEditing.documents.delete.confirm', extensionName: 'AcademicPersonsEdit')}"
+            data-message-contract-contact-delete-confirm="{f:translate(key: 'profileEditing.contractContacts.delete.confirm', extensionName: 'AcademicPersonsEdit')}"
+            data-message-contract-contact-empty="{f:translate(key: 'profileEditing.contractContacts.empty', extensionName: 'AcademicPersonsEdit')}"
+            data-message-contract-contact-hidden="{f:translate(key: 'profileEditing.contractContacts.status.hidden', extensionName: 'AcademicPersonsEdit')}"
+            data-message-contract-contact-shown="{f:translate(key: 'profileEditing.contractContacts.status.visible', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-add="{f:translate(key: 'actions.add', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-view="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-edit="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-delete="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-save="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}"
+            data-label-document-empty="{f:translate(key: 'profileEditing.field.empty', extensionName: 'AcademicPersonsEdit')}">
             <!--
                 The image editor is rendered here, where it is shown, rather
                 than somewhere else and moved: the container then contributes

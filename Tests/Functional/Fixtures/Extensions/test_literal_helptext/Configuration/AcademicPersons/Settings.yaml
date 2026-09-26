@@ -1,0 +1,13 @@
+# A site package that gives two fields of the contracts section a help text of
+# its own as literal text rather than as a label reference: the room of a
+# contract, and the street number of a physical address. The settings files
+# merge recursively, so only these two help texts change.
+contracts:
+  fields:
+    room:
+      helptext: 'Ask the front desk for the room number.'
+  contactSections:
+    physicalAddresses:
+      fields:
+        streetNumber:
+          helptext: 'Leave it empty if the building has no number.'

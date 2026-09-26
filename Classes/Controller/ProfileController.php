@@ -73,6 +73,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\DateFormatter;
 use TYPO3\CMS\Core\Localization\Locale;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -192,6 +193,13 @@ final class ProfileController extends ActionController
      * `fgtclb/academic-persons-edit-profile-editing` or by the static template.
      */
     private const AJAX_PAGE_TYPE = 1733735;
+
+    /**
+     * The extension name the labels of the editor are translated with. UpperCamelCase, so
+     * that TYPO3 reads a site's `_LOCAL_LANG` from `plugin.tx_academicpersonsedit` on every
+     * core version.
+     */
+    private const EXTENSION_NAME = 'AcademicPersonsEdit';
 
     /**
      * The bounds of the three timeline year fields. They are the `range` of
@@ -405,7 +413,7 @@ final class ProfileController extends ActionController
             'profile' => $profile,
             'profileSections' => $this->profileSectionProvider->getSections(),
             'specialFields' => $this->profileSectionProvider->getSpecialFields(),
-            'profileFieldOptions' => $this->profileFieldOptionsService->getOptionsByField(),
+            'profileFieldOptions' => $this->profileFieldOptionsService->getOptionsByField($this->request),
             'documentSections' => $this->profileDocumentSectionProvider->getSections($profile),
             'imageAllowedMimeTypes' => $this->resolveImageAllowedMimeTypes(),
             'editorLanguage' => $this->resolveEditorLanguage(),
@@ -544,15 +552,13 @@ final class ProfileController extends ActionController
             }
             $languageUid = $profile->getLanguageUid();
             if ($languageUid === -1) {
-                $language = LocalizationUtility::translate(
+                $language = $this->translate(
                     'list.language.all',
-                    'academic_persons_edit',
                 ) ?? 'All languages';
             } else {
                 $language = $languageLabels[$languageUid]
-                    ?? LocalizationUtility::translate(
+                    ?? $this->translate(
                         'list.language.unknown',
-                        'academic_persons_edit',
                         [$languageUid],
                     )
                     ?? sprintf('Language %d', $languageUid);
@@ -1706,7 +1712,28 @@ final class ProfileController extends ActionController
 
     private function translateContractContactLabel(string $key): string
     {
-        return LocalizationUtility::translate($key, 'academic_persons_edit') ?? $key;
+        return $this->translate($key) ?? $key;
+    }
+
+    /**
+     * Translates a label for this plugin, so that a site's `_LOCAL_LANG` override of the
+     * extension and of the plugin both reach it.
+     *
+     * TYPO3 v14 reads the override of the plugin only from the Extbase request it is handed;
+     * without one, only the override of the extension applies. TYPO3 v13 takes both from the
+     * configuration manager and has no parameter for the request. The argument list is
+     * spread so that one call fits both signatures.
+     *
+     * @todo Pass the request directly once TYPO3 v13 support is dropped.
+     * @param list<mixed>|null $arguments
+     */
+    private function translate(string $key, ?array $arguments = null, string $extensionName = self::EXTENSION_NAME): ?string
+    {
+        $parameters = [$key, $extensionName, $arguments, null];
+        if ((new Typo3Version())->getMajorVersion() >= 14) {
+            $parameters[] = $this->request;
+        }
+        return LocalizationUtility::translate(...$parameters);
     }
 
     /**
@@ -1824,7 +1851,7 @@ final class ProfileController extends ActionController
         if ($field->helptext === '') {
             return '';
         }
-        return LocalizationUtility::translate($field->helptext) ?? $field->helptext;
+        return $this->translate($field->helptext) ?? $field->helptext;
     }
 
     /**
@@ -1836,7 +1863,7 @@ final class ProfileController extends ActionController
         foreach ($this->countryProvider->getAll() as $country) {
             $options[] = [
                 'value' => $country->getAlpha2IsoCode(),
-                'label' => LocalizationUtility::translate($country->getLocalizedNameLabel())
+                'label' => $this->translate($country->getLocalizedNameLabel())
                     ?? $country->getName(),
             ];
         }
@@ -1866,7 +1893,7 @@ final class ProfileController extends ActionController
             }
             $options[] = [
                 'value' => $value,
-                'label' => LocalizationUtility::translate($label, 'academic_persons') ?? $label,
+                'label' => $this->translate($label, null, 'AcademicPersons') ?? $label,
             ];
         }
         return $options;
@@ -1922,9 +1949,8 @@ final class ProfileController extends ActionController
         $summary = [];
         foreach ($fields as $name => $value) {
             $summary[] = [
-                'label' => LocalizationUtility::translate(
+                'label' => $this->translate(
                     $prefix . '.' . $name . '.label',
-                    'academic_persons_edit',
                 ) ?? $name,
                 'value' => $value,
             ];
@@ -2206,7 +2232,7 @@ final class ProfileController extends ActionController
             );
             $definition['helptext'] = $helptext === ''
                 ? ''
-                : (LocalizationUtility::translate($helptext) ?? $helptext);
+                : ($this->translate($helptext) ?? $helptext);
         }
         unset($definition);
         return $definitions;
@@ -2375,9 +2401,8 @@ final class ProfileController extends ActionController
     ): array {
         return [
             'name' => $name,
-            'label' => LocalizationUtility::translate(
+            'label' => $this->translate(
                 $translationPrefix . '.' . $name . '.label',
-                'academic_persons_edit',
             ) ?? $name,
             'type' => $type,
             'required' => false,
@@ -2525,9 +2550,8 @@ final class ProfileController extends ActionController
             return '';
         }
         if ($type === 'checkbox') {
-            return LocalizationUtility::translate(
+            return $this->translate(
                 $value ? 'profileEditing.visibility.public' : 'profileEditing.visibility.private',
-                'academic_persons_edit',
             ) ?? ($value ? 'Yes' : 'No');
         }
         return (string)$value;

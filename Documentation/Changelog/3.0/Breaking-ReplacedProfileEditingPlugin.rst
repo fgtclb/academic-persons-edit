@@ -182,7 +182,8 @@ but the shape of it is:
     section labels and the controls of full form editing
     (:ref:`feature-full-form-editing-applies-as-one-form`).
 
-All of them are overridable through :typoscript:`locallangXMLOverride`, so an
+All of them are overridable through :php:`locallangXMLOverride` on TYPO3 v13,
+:php:`resourceOverrides` on TYPO3 v14, or :typoscript:`_LOCAL_LANG`, so an
 installation that translated or reworded one of the 149 removed units loses
 that override silently: the key is simply not read any more. Compare the
 overrides against the shipped file after the update.

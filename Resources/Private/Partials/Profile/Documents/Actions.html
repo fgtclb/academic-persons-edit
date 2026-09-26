@@ -10,19 +10,19 @@
             {f:if(condition: hidden, else: 'hidden="hidden"')}>
             <f:translate
                 key="profileEditing.documents.hidden"
-                extensionName="academic_persons_edit" />
+                extensionName="AcademicPersonsEdit" />
         </span>
         <div
             class="d-flex flex-nowrap align-items-center gap-1"
             role="group"
-            aria-label="{f:translate(key: 'profileEditing.documents.actions', extensionName: 'academic_persons_edit')}"
+            aria-label="{f:translate(key: 'profileEditing.documents.actions', extensionName: 'AcademicPersonsEdit')}"
             data-pe-document-actions>
             <f:if condition="{sortable}">
                 <button
                     type="button"
                     class="btn rounded-0 btn-sm btn-link text-body p-2 d-none d-md-inline-flex"
-                    title="{f:translate(key: 'actions.dragSort', extensionName: 'academic_persons_edit')}"
-                    aria-label="{f:translate(key: 'actions.dragSort', extensionName: 'academic_persons_edit')}"
+                    title="{f:translate(key: 'actions.dragSort', extensionName: 'AcademicPersonsEdit')}"
+                    aria-label="{f:translate(key: 'actions.dragSort', extensionName: 'AcademicPersonsEdit')}"
                     draggable="true"
                     data-pe-document-drag>
                     <core:icon
@@ -38,10 +38,10 @@
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
                             data-pe-document-hide
-                            title="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'academic_persons_edit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'academic_persons_edit\')}')}"
-                            aria-label="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'academic_persons_edit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'academic_persons_edit\')}')}"
-                            data-pe-label-visible="{f:translate(key: 'actions.hide', extensionName: 'academic_persons_edit')}"
-                            data-pe-label-hidden="{f:translate(key: 'actions.show', extensionName: 'academic_persons_edit')}">
+                            title="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'AcademicPersonsEdit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'AcademicPersonsEdit\')}')}"
+                            aria-label="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'AcademicPersonsEdit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'AcademicPersonsEdit\')}')}"
+                            data-pe-label-visible="{f:translate(key: 'actions.hide', extensionName: 'AcademicPersonsEdit')}"
+                            data-pe-label-hidden="{f:translate(key: 'actions.show', extensionName: 'AcademicPersonsEdit')}">
                             <span data-pe-visibility-icon="visible" {f:if(condition: hidden, then: 'hidden="hidden"')}>
                                 <core:icon
                                     identifier="academic-persons-edit-visible"
@@ -60,11 +60,11 @@
                         <button
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
-                            title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                            title="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
-                            data-pe-label-collapsed="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
-                            data-pe-label-expanded="{f:translate(key: 'actions.viewClose', extensionName: 'academic_persons_edit')}"
+                            data-pe-label-collapsed="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
+                            data-pe-label-expanded="{f:translate(key: 'actions.viewClose', extensionName: 'AcademicPersonsEdit')}"
                             data-pe-document-view>
                             <span data-pe-view-icon="collapsed">
                                 <core:icon
@@ -84,8 +84,8 @@
                         <button
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
-                            title="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'academic_persons_edit')}"
+                            title="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
                             data-pe-document-sort="down">
                             <core:icon
                                 identifier="academic-persons-edit-move-down"
@@ -97,8 +97,8 @@
                         <button
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
-                            title="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'academic_persons_edit')}"
+                            title="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
                             data-pe-document-sort="up">
                             <core:icon
                                 identifier="academic-persons-edit-move-up"
@@ -110,8 +110,8 @@
                         <button
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
-                            title="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}"
+                            title="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
                             data-pe-document-delete>
                             <core:icon
@@ -124,8 +124,8 @@
                         <button
                             type="button"
                             class="btn rounded-0 btn-sm btn-link text-body p-2"
-                            title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                            title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
                             data-pe-document-edit>
                             <core:icon

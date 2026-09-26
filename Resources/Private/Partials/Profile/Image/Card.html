@@ -10,7 +10,7 @@
                 class="h2 fw-normal mb-4">
                 <f:translate
                     key="profileEditing.image.heading"
-                    extensionName="academic_persons_edit" />
+                    extensionName="AcademicPersonsEdit" />
             </h2>
             <div data-pe-image-preview>
                 <f:if condition="{profile.image}">
@@ -69,13 +69,13 @@
                         <figure class="mb-0">
                             <img
                                 src="{f:uri.resource(path: 'Images/profile-placeholder.png')}"
-                                alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'academic_persons_edit')}"
+                                alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'AcademicPersonsEdit')}"
                                 class="img-fluid w-100 object-fit-cover"
-                                title="{f:translate(key: 'profileEditing.user_image_not_available', extensionName: 'academic_persons_edit')}"
+                                title="{f:translate(key: 'profileEditing.user_image_not_available', extensionName: 'AcademicPersonsEdit')}"
                                 loading="lazy" />
                             <figcaption class="visually-hidden">
                                 {f:translate(key: 'profileEditing.user_image_not_available',
-                                extensionName: 'academic_persons_edit')}
+                                extensionName: 'AcademicPersonsEdit')}
                             </figcaption>
                         </figure>
                     </f:else>
@@ -88,15 +88,15 @@
                     data-pe-open-image-view
                     aria-expanded="false"
                     aria-controls="profile-editing-{profile.uid}-image-view"
-                    title="{f:translate(key: 'profileEditing.image.edit', extensionName: 'academic_persons_edit')}"
-                    aria-label="{f:translate(key: 'profileEditing.image.edit', extensionName: 'academic_persons_edit')}">
+                    title="{f:translate(key: 'profileEditing.image.edit', extensionName: 'AcademicPersonsEdit')}"
+                    aria-label="{f:translate(key: 'profileEditing.image.edit', extensionName: 'AcademicPersonsEdit')}">
                     <core:icon
                         identifier="academic-persons-edit-upload-image"
                         size="small"
                         alternativeMarkupIdentifier="inline" />
                     <span class="ms-2"
                         >{f:translate(key: 'profileEditing.image.edit',
-                        extensionName: 'academic_persons_edit')}</span
+                        extensionName: 'AcademicPersonsEdit')}</span
                     >
                 </button>
             </f:if>

@@ -8,14 +8,14 @@
         data-form-field-button-area
         data-pe-field-preview
         data-pe-for="{elementId}"
-        data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'academic_persons_edit')}">
+        data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'AcademicPersonsEdit')}">
         <div class="flex-grow-1 overflow-hidden">
             <div class="fw-semibold d-flex flex-row align-items-center">
                 <f:translate
                     key="profile.{field.identifier}.label"
-                    extensionName="academic_persons_edit" />
+                    extensionName="AcademicPersonsEdit" />
                 <f:if condition="{field.validation.required}">
-                    <abbr class="align-self-start" title="{f:translate(key: 'profileEditing.field.required', extensionName: 'academic_persons_edit')}">*</abbr>
+                    <abbr class="align-self-start" title="{f:translate(key: 'profileEditing.field.required', extensionName: 'AcademicPersonsEdit')}">*</abbr>
                 </f:if>
             </div>
             <f:if condition="{richText}">
@@ -25,7 +25,7 @@
                         data-pe-field-preview-content
                         data-pe-rich-text-preview
                         data-pe-for="{elementId}"
-                        data-empty-label="{f:translate(key: 'profileEditing.content.empty', extensionName: 'academic_persons_edit')}">
+                        data-empty-label="{f:translate(key: 'profileEditing.content.empty', extensionName: 'AcademicPersonsEdit')}">
                         <div data-pe-rich-text-preview-content>
                             <f:if condition="{profile.{field.propertyName}}">
                                 <f:then
@@ -36,7 +36,7 @@
                                     <span class="text-body-secondary">
                                         <f:translate
                                             key="profileEditing.content.empty"
-                                            extensionName="academic_persons_edit" />
+                                            extensionName="AcademicPersonsEdit" />
                                     </span>
                                 </f:else>
                             </f:if>
@@ -51,7 +51,7 @@
                                 <span class="text-body-secondary">
                                     <f:translate
                                         key="profileEditing.field.empty"
-                                        extensionName="academic_persons_edit" />
+                                        extensionName="AcademicPersonsEdit" />
                                 </span>
                             </f:else>
                         </f:if>
@@ -68,8 +68,8 @@
                 type="button"
                 aria-controls="{elementId}-editor"
                 aria-expanded="false"
-                title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}">
+                title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+                aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}">
                 <core:icon
                     identifier="academic-persons-edit-edit"
                     size="small"

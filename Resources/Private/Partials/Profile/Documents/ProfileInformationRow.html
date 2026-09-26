@@ -14,7 +14,7 @@
                 <f:case value="from">
                     <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
                         <div class="d-md-none fw-semibold mb-1">
-                            <f:translate key="profileEditing.documents.from" extensionName="academic_persons_edit" />
+                            <f:translate key="profileEditing.documents.from" extensionName="AcademicPersonsEdit" />
                         </div>
                         <div data-pe-document-value="yearStart">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.yearStart, fallback: item.year}" />
@@ -24,7 +24,7 @@
                 <f:case value="to">
                     <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
                         <div class="d-md-none fw-semibold mb-1">
-                            <f:translate key="profileEditing.documents.to" extensionName="academic_persons_edit" />
+                            <f:translate key="profileEditing.documents.to" extensionName="AcademicPersonsEdit" />
                         </div>
                         <div data-pe-document-value="yearEnd">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.yearEnd}" />
@@ -34,7 +34,7 @@
                 <f:case value="year">
                     <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
                         <div class="d-md-none fw-semibold mb-1">
-                            <f:translate key="profileEditing.documents.year" extensionName="academic_persons_edit" />
+                            <f:translate key="profileEditing.documents.year" extensionName="AcademicPersonsEdit" />
                         </div>
                         <div data-pe-document-value="year">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.year, fallback: item.yearStart}" />
@@ -44,7 +44,7 @@
                 <f:case value="title">
                     <div class="col-12 col-md py-1 pe-md-3 text-break">
                         <div class="d-md-none fw-semibold mb-1">
-                            <f:translate key="profileEditing.documents.title" extensionName="academic_persons_edit" />
+                            <f:translate key="profileEditing.documents.title" extensionName="AcademicPersonsEdit" />
                         </div>
                         <div data-pe-document-title>
                             <f:if condition="{item.link}">
@@ -59,7 +59,7 @@
                 <f:case value="description">
                     <div class="col-12 py-1 pe-md-3 text-break">
                         <div class="d-md-none fw-semibold mb-1">
-                            <f:translate key="profileInformation.bodytext.label" extensionName="academic_persons_edit" />
+                            <f:translate key="profileInformation.bodytext.label" extensionName="AcademicPersonsEdit" />
                         </div>
                         <div class="{f:if(condition: item.bodytext, else: 'd-none')}" data-pe-document-value="bodytext">
                             {item.bodytext -> f:format.html()}

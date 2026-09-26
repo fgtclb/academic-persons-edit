@@ -18,12 +18,12 @@
                     <div class="fw-semibold d-flex flex-row align-items-center">
                         <f:translate
                             key="{labelKey}"
-                            extensionName="academic_persons_edit" />
+                            extensionName="AcademicPersonsEdit" />
                     </div>
                     <div
                         class="text-break"
                         data-pe-group-preview-content
-                        data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'academic_persons_edit')}">
+                        data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'AcademicPersonsEdit')}">
                         <f:for
                             each="{displayFields}"
                             as="field"
@@ -40,8 +40,8 @@
                     type="button"
                     aria-controls="profile-editing-{profile.uid}-{identifier}-group-editor"
                     aria-expanded="false"
-                    title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}">
+                    title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}">
                     <core:icon
                         identifier="academic-persons-edit-edit"
                         size="small"
@@ -64,9 +64,9 @@
                                 <label class="form-label" for="{elementId}">
                                     <f:translate
                                         key="profile.{field.identifier}.label"
-                                        extensionName="academic_persons_edit" />
+                                        extensionName="AcademicPersonsEdit" />
                                     <f:if condition="{field.validation.required}"
-                                        ><abbr title="{f:translate(key: 'profileEditing.field.required', extensionName: 'academic_persons_edit')}">*</abbr></f:if
+                                        ><abbr title="{f:translate(key: 'profileEditing.field.required', extensionName: 'AcademicPersonsEdit')}">*</abbr></f:if
                                     >
                                 </label>
                                 <f:render
@@ -93,13 +93,13 @@
                     <div
                         class="btn-group btn-group-sm flex-shrink-0"
                         role="group"
-                        aria-label="{f:translate(key: 'profileEditing.actions.group', extensionName: 'academic_persons_edit')}">
+                        aria-label="{f:translate(key: 'profileEditing.actions.group', extensionName: 'AcademicPersonsEdit')}">
                         <button
                             class="btn rounded-0 btn-outline-danger"
                             data-pe-group-dismiss
                             type="button"
-                            title="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'academic_persons_edit')}">
+                            title="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}">
                             <span aria-hidden="true" class="fs-5 lh-1"
                                 ><core:icon
                                     identifier="academic-persons-edit-clear"
@@ -111,8 +111,8 @@
                             class="btn rounded-0 btn-outline-secondary"
                             data-pe-group-cancel
                             type="button"
-                            title="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.undo', extensionName: 'academic_persons_edit')}">
+                            title="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}">
                             <span aria-hidden="true" class="fs-5 lh-1"
                                 ><core:icon
                                     identifier="academic-persons-edit-undo"
@@ -124,8 +124,8 @@
                             class="btn rounded-0 btn-success"
                             data-pe-group-save
                             type="button"
-                            title="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}"
-                            aria-label="{f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}">
+                            title="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}"
+                            aria-label="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}">
                             <span aria-hidden="true" class="fs-5 lh-1"
                                 ><core:icon
                                     identifier="academic-persons-edit-save"

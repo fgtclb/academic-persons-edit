@@ -6,6 +6,8 @@ namespace FGTCLB\AcademicPersonsEdit\Service;
 
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersons\Settings\ProfileField;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -21,15 +23,17 @@ final readonly class ProfileFieldOptionsService
     ) {}
 
     /**
+     * @param RequestInterface|null $request the request of the plugin the options are
+     *     rendered by, so that its `_LOCAL_LANG` override reaches their labels on TYPO3 v14
      * @return array<string, array<string, string>>
      */
-    public function getOptionsByField(): array
+    public function getOptionsByField(?RequestInterface $request = null): array
     {
         $options = [];
         foreach ($this->academicPersonsSettings->profileSections as $section) {
             foreach ($section->fields as $field) {
                 if (strtolower($field->renderType) === 'select') {
-                    $options[$field->identifier] = $this->getOptions($field);
+                    $options[$field->identifier] = $this->getOptions($field, $request);
                 }
             }
         }
@@ -51,7 +55,7 @@ final readonly class ProfileFieldOptionsService
     /**
      * @return array<string, string>
      */
-    private function getOptions(ProfileField $field): array
+    private function getOptions(ProfileField $field, ?RequestInterface $request): array
     {
         $configuredItems = $GLOBALS['TCA'][self::TABLE]['columns'][$field->fieldName]['config']['items'] ?? [];
         if (!is_array($configuredItems)) {
@@ -68,11 +72,27 @@ final readonly class ProfileFieldOptionsService
             }
             $labelIdentifier = (string)($item['label'] ?? $item[0] ?? '');
             $translatedLabel = str_starts_with($labelIdentifier, 'LLL:')
-                ? LocalizationUtility::translate($labelIdentifier, 'academic_persons_edit')
+                ? $this->translate($labelIdentifier, $request)
                 : $labelIdentifier;
             $options[$value] = ($translatedLabel ?? $labelIdentifier) ?: $labelIdentifier;
         }
         return $options;
+    }
+
+    /**
+     * TYPO3 v14 reads the `_LOCAL_LANG` override of the plugin only from the Extbase request
+     * it is handed; TYPO3 v13 takes it from the configuration manager and has no parameter
+     * for the request. The argument list is spread so that one call fits both signatures.
+     *
+     * @todo Pass the request directly once TYPO3 v13 support is dropped.
+     */
+    private function translate(string $labelIdentifier, ?RequestInterface $request): ?string
+    {
+        $parameters = [$labelIdentifier, 'AcademicPersonsEdit', null, null];
+        if ($request !== null && (new Typo3Version())->getMajorVersion() >= 14) {
+            $parameters[] = $request;
+        }
+        return LocalizationUtility::translate(...$parameters);
     }
 
     /**

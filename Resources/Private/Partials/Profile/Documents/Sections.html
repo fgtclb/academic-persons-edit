@@ -8,7 +8,7 @@
             name="defaultEmptyMessage"
             value="{f:translate(
                 key: 'profileEditing.documents.empty',
-                extensionName: 'academic_persons_edit',
+                extensionName: 'AcademicPersonsEdit',
             )}" />
         <f:for each="{sections}" as="section">
             <section
@@ -30,7 +30,8 @@
                         class="display-6 fw-normal text-start mb-0">
                         <f:translate
                             key="{section.label}"
-                            default="{section.identifier}" />
+                            default="{section.identifier}"
+                            extensionName="AcademicPersonsEdit" />
                     </h2>
                     <f:if condition="{section.canCreate}">
                         <button
@@ -45,7 +46,7 @@
                             <span class="visually-hidden">
                                 <f:translate
                                     key="actions.add"
-                                    extensionName="academic_persons_edit" />
+                                    extensionName="AcademicPersonsEdit" />
                             </span>
                         </button>
                     </f:if>
@@ -69,7 +70,7 @@
                     data-pe-document-empty-state>
                     <f:translate
                         key="profileEditing.documents.empty.{section.identifier}"
-                        extensionName="academic_persons_edit"
+                        extensionName="AcademicPersonsEdit"
                         default="{defaultEmptyMessage}" />
                 </div>
             </section>

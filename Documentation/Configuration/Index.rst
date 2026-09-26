@@ -158,3 +158,4 @@ one mechanism per site and the question does not arise.
 
    General/Index
    Settings/Index
+   Labels/Index
