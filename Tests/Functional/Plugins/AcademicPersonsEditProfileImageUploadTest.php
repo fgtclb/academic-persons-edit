@@ -7,6 +7,7 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Http\UploadedFile;
 
 /**
@@ -27,6 +28,30 @@ use TYPO3\CMS\Core\Http\UploadedFile;
 #[Group('not-core-13')]
 final class AcademicPersonsEditProfileImageUploadTest extends AbstractFrontendProfilePluginTestCase
 {
+    /**
+     * The Extbase class schema cache stays in memory for this class. TYPO3 core writes it
+     * from the destructor of the reflection service, and when the garbage collector runs that
+     * destructor inside another serialize(), the outer payload - here the signed form state of
+     * the upload - gets back references it cannot be read back with. On TYPO3 v14 this class
+     * hit it whenever a certain set of test classes ran before it in the same process (the
+     * defect is recorded with ACE-725, the same workaround with ACE-729). An in-memory cache is
+     * never serialized.
+     */
+    protected function frontendPluginTestConfiguration(array $additionalConfiguration = []): array
+    {
+        return parent::frontendPluginTestConfiguration(array_replace_recursive([
+            'SYS' => [
+                'caching' => [
+                    'cacheConfigurations' => [
+                        'extbase' => [
+                            'backend' => TransientMemoryBackend::class,
+                        ],
+                    ],
+                ],
+            ],
+        ], $additionalConfiguration));
+    }
+
     /**
      * @param list<string> $additionalTypoScriptSetupFiles
      */
