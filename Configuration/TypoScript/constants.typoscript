@@ -1,0 +1,5 @@
+# Deprecated since 2.4, removed in 4.0.
+#
+# The constants of the static template path this extension offered up to
+# version 2.3, see "setup.typoscript" next to this file.
+@import 'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/constants.typoscript'
