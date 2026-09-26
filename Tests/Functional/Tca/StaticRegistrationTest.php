@@ -33,6 +33,11 @@ final class StaticRegistrationTest extends AbstractAcademicPersonsEditTestCase
             'EXT:academic_persons_edit/Configuration/TypoScript/Full',
             'Academic Persons Edit: All components (academic_persons_edit)',
         ];
+        // The path this extension registered up to version 2.3, kept as deprecated until 4.0.
+        yield 'path up to 2.3' => [
+            'EXT:academic_persons_edit/Configuration/TypoScript',
+            'Academic Persons Edit: Path up to 2.3 (deprecated, use All components) (academic_persons_edit)',
+        ];
     }
 
     #[Test]

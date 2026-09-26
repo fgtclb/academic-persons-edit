@@ -1,0 +1,8 @@
+# Deprecated since 2.4, removed in 4.0.
+#
+# The static template path this extension offered up to version 2.3. It is
+# stored in TypoScript records and imported by site packages, so it keeps
+# delivering what "All components" delivers, and nothing else. Select "Academic
+# Persons Edit: All components", or, on TYPO3 v13, depend on the site set
+# instead.
+@import 'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/setup.typoscript'

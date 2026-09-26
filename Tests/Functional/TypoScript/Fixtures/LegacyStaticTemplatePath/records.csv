@@ -1,0 +1,6 @@
+"pages",,,,,,
+,"uid","pid","doktype","slug","title","is_siteroot"
+,1,0,1,"/","Site Root",1
+"be_users",,,,,,
+,"uid","pid","username","admin",,
+,1,0,"admin",1,,
