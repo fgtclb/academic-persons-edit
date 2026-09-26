@@ -23,7 +23,7 @@
         <f:render
             partial="Profile/SectionHeader"
             arguments="{
-                header: '{f:translate(key: \'profile.profileInformations.{type}\', extensionName: \'academic_persons_edit\')}',
+                header: '{f:translate(key: \'profile.profileInformations.{type}\', extensionName: \'AcademicPersonsEdit\')}',
                 layout: '{data.header_layout}',
                 subheader: '{data.subheader}',
                 detail: 'true',
@@ -49,7 +49,7 @@
                             <th>
                                 {f:translate(
                                     key: 'profileInformation.{field}.label',
-                                    extensionName: 'academic_persons_edit'
+                                    extensionName: 'AcademicPersonsEdit'
                                 )}:
                             </th>
                             <td>{profileInformation.{field} -> f:format.html()}</td>
@@ -60,7 +60,7 @@
                             <th>
                                 {f:translate(
                                     key: 'profileInformation.{field}.label',
-                                    extensionName: 'academic_persons_edit'
+                                    extensionName: 'AcademicPersonsEdit'
                                 )}:
                             </th>
                             <td>{profileInformation.{field}}</td>
@@ -72,7 +72,7 @@
 
         <div class="btn-wrapper right text-end">
             <f:link.action action="edit" arguments="{profileInformation: profileInformation}" class="btn btn-primary">
-                {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+                {f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}
 
                 <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
             </f:link.action>

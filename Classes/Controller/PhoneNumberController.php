@@ -271,7 +271,7 @@ final class PhoneNumberController extends AbstractActionController
             $returnItems[] = [
                 'label' => ($this->localizationUtility->translate(
                     $labelIdentifier,
-                    'persons_edit',
+                    'AcademicPersonsEdit',
                 ) ?? $labelIdentifier) ?: $labelIdentifier,
                 'value' => $itemValue,
             ];

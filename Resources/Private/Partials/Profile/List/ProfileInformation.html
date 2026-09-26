@@ -11,10 +11,10 @@
             <thead>
                 <tr>
                     <th class="desktop">
-                        {f:translate(key: 'list.profileInformations.year', extensionName: 'academic_persons_edit')}
+                        {f:translate(key: 'list.profileInformations.year', extensionName: 'AcademicPersonsEdit')}
                     </th>
-                    <th>{f:translate(key: 'list.profileInformations.title', extensionName: 'academic_persons_edit')}</th>
-                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}</th>
+                    <th>{f:translate(key: 'list.profileInformations.title', extensionName: 'AcademicPersonsEdit')}</th>
+                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'AcademicPersonsEdit')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,7 +24,7 @@
                             <f:if condition="{profileInformation.yearStart} || {profileInformation.yearEnd}">
                                 <f:then>
                                     <f:if condition="!{profileInformation.yearEnd} && {profileInformation.yearStart}">
-                                        {f:translate(key: 'detail.since', extensionName: 'academic_persons')}
+                                        {f:translate(key: 'detail.since', extensionName: 'AcademicPersons')}
                                     </f:if>
 
                                     {f:if(condition: '{profileInformation.yearStart}', then: '{profileInformation.yearStart}')}
@@ -34,7 +34,7 @@
                                     </f:if>
 
                                     <f:if condition="!{profileInformation.yearStart} && {profileInformation.yearEnd}">
-                                        {f:translate(key: 'detail.till', extensionName: 'academic_persons')}
+                                        {f:translate(key: 'detail.till', extensionName: 'AcademicPersons')}
                                     </f:if>
 
                                     {f:if(condition: '{profileInformation.yearEnd}', then: '{profileInformation.yearEnd}')}
@@ -54,8 +54,8 @@
                                     action="show"
                                     arguments="{profileInformation: profileInformation}"
                                     class="btn btn-outline-primary"
-                                    aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
-                                    title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                    aria-label="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
+                                    title="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                                 >
                                     <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
                                 </f:link.action>
@@ -65,8 +65,8 @@
                                     action="edit"
                                     arguments="{profileInformation: profileInformation}"
                                     class="btn btn-primary"
-                                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                                    title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                    aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+                                    title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                                 >
                                     <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
                                 </f:link.action>
@@ -80,11 +80,11 @@
                                             class="btn btn-outline-secondary sort-top desktop"
                                             aria-label="{f:translate(
                                                 key: 'actions.setToTop',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             title="{f:translate(
                                                 key: 'actions.setToTop',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                         >
                                             <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
@@ -106,11 +106,11 @@
                                             class="btn btn-outline-secondary sort-up desktop"
                                             aria-label="{f:translate(
                                                 key: 'actions.sortUp',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             title="{f:translate(
                                                 key: 'actions.sortUp',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                         >
                                             <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
@@ -132,11 +132,11 @@
                                             class="btn btn-outline-secondary sort-down desktop"
                                             aria-label="{f:translate(
                                                 key: 'actions.sortDown',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             title="{f:translate(
                                                 key: 'actions.sortDown',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                         >
                                             <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
@@ -157,11 +157,11 @@
                                             class="btn btn-outline-secondary sort-bottom desktop"
                                             aria-label="{f:translate(
                                                 key: 'actions.setToBottom',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             title="{f:translate(
                                                 key: 'actions.setToBottom',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                         >
                                             <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
@@ -178,11 +178,11 @@
                                     class="btn btn-danger"
                                     aria-label="{f:translate(
                                         key: 'actions.delete',
-                                        extensionName: 'academic_persons_edit'
+                                        extensionName: 'AcademicPersonsEdit'
                                     )}"
                                     title="{f:translate(
                                         key: 'actions.delete',
-                                        extensionName: 'academic_persons_edit'
+                                        extensionName: 'AcademicPersonsEdit'
                                     )}"
                                     onclick="document.getElementById('delete-{type}-{profileInformation.uid}').showModal()"
                                 >
@@ -208,7 +208,7 @@
         </table>
     </f:then>
     <f:else>
-        <p>{f:translate(key: 'list.no{type}Found', extensionName: 'academic_persons_edit')}</p>
+        <p>{f:translate(key: 'list.no{type}Found', extensionName: 'AcademicPersonsEdit')}</p>
     </f:else>
 </f:if>
 

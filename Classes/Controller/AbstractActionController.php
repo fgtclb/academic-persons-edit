@@ -176,7 +176,7 @@ abstract class AbstractActionController extends ActionController
     public function addTranslatedSuccessMessage(string $key): void
     {
         $this->addFlashMessage(
-            $this->localizationUtility->translate($key, 'academic_persons_edit') ?? $key,
+            $this->localizationUtility->translate($key, 'AcademicPersonsEdit') ?? $key,
             '',
             ContextualFeedbackSeverity::OK,
             true
@@ -191,7 +191,7 @@ abstract class AbstractActionController extends ActionController
     public function addTranslatedErrorMessage(string $key): void
     {
         $this->addFlashMessage(
-            $this->localizationUtility->translate($key, 'academic_persons_edit') ?? $key,
+            $this->localizationUtility->translate($key, 'AcademicPersonsEdit') ?? $key,
             '',
             ContextualFeedbackSeverity::ERROR,
             true

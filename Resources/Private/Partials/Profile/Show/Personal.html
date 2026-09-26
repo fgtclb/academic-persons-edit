@@ -7,7 +7,7 @@
 <f:render
     partial="Profile/SectionHeader"
     arguments="{
-        header: '{f:translate(key: \'profile.personal\', extensionName: \'academic_persons_edit\')}',
+        header: '{f:translate(key: \'profile.personal\', extensionName: \'AcademicPersonsEdit\')}',
         layout: '{data.header_layout}',
         subheader: '{data.subheader}',
         detail: 'true',
@@ -16,7 +16,7 @@
 
 <ul class="personal-data">
     <li>
-        <b>{f:translate(key: 'profile.gender.label', extensionName: 'academic_persons_edit')}:</b>
+        <b>{f:translate(key: 'profile.gender.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
         <f:if condition="{profile.gender}">
             <span>{profile.gender}</span>
@@ -24,13 +24,13 @@
     </li>
 
     <li>
-        <b>{f:translate(key: 'profile.name.label', extensionName: 'academic_persons_edit')}:</b>
+        <b>{f:translate(key: 'profile.name.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
         <span>{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}</span>
     </li>
 
     <li>
-        <b>{f:translate(key: 'profile.publicationsLink.label', extensionName: 'academic_persons_edit')}:</b>
+        <b>{f:translate(key: 'profile.publicationsLink.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
         <f:if condition="{profile.publicationsLink}">
             <a href="{profile.publicationsLink}" target="_blank">
@@ -44,7 +44,7 @@
     </li>
 
     <li>
-        <b>{f:translate(key: 'profile.website.label', extensionName: 'academic_persons_edit')}:</b>
+        <b>{f:translate(key: 'profile.website.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
         <f:if condition="{profile.website}">
             <a href="{profile.website}" target="_blank">
@@ -68,7 +68,7 @@
         as="textarea"
     >
         <li class="textarea">
-            <b>{f:translate(key: 'profile.{textarea}.label', extensionName: 'academic_persons_edit')}:</b>
+            <b>{f:translate(key: 'profile.{textarea}.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
             <f:if condition="{profile.{textarea}}">
                 <span>
@@ -81,7 +81,7 @@
 
 <div class="btn-wrapper right text-end">
     <f:link.action action="edit" arguments="{profile: profile}" class="btn btn-primary">
-        {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+        {f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}
 
         <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
     </f:link.action>

@@ -12,7 +12,7 @@
         <f:render
             partial="Profile/Header"
             arguments="{
-                header: '{f:translate(key: \'list.profile.assigned\', extensionName: \'academic_persons_edit\')}',
+                header: '{f:translate(key: \'list.profile.assigned\', extensionName: \'AcademicPersonsEdit\')}',
                 layout: '{data.header_layout}',
                 subheader: '{data.subheader}',
                 detail: 'true',
@@ -26,10 +26,10 @@
                     <thead>
                         <tr>
                             <th class="single-column">
-                                {f:translate(key: 'list.profile', extensionName: 'academic_persons_edit')}
+                                {f:translate(key: 'list.profile', extensionName: 'AcademicPersonsEdit')}
                             </th>
                             <th class="actions text-end">
-                                {f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}
+                                {f:translate(key: 'list.actions', extensionName: 'AcademicPersonsEdit')}
                             </th>
                         </tr>
                     </thead>
@@ -42,7 +42,7 @@
                                     <div class="actions">
                                         <f:link.action action="show" arguments="{profile: profile}" class="btn btn-outline-primary">
                                             <span class="desktop">
-                                                {f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}
+                                                {f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}
                                             </span>
 
                                             <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
@@ -50,7 +50,7 @@
 
                                         <f:link.action action="edit" arguments="{profile: profile}" class="btn btn-primary">
                                             <span class="desktop">
-                                                {f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}
+                                                {f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}
                                             </span>
 
                                             <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
@@ -63,7 +63,7 @@
                 </table>
             </f:then>
             <f:else>
-                <p>{f:translate(key: 'list.noProfilesFound', extensionName: 'academic_persons_edit')}</p>
+                <p>{f:translate(key: 'list.noProfilesFound', extensionName: 'AcademicPersonsEdit')}</p>
             </f:else>
         </f:if>
     </div>

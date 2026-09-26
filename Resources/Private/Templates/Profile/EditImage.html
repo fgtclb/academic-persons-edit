@@ -20,7 +20,7 @@
     <f:render
         partial="Profile/SectionHeader"
         arguments="{
-            header: '{f:translate(key: \'profile.image\', extensionName: \'academic_persons_edit\')}',
+            header: '{f:translate(key: \'profile.image\', extensionName: \'AcademicPersonsEdit\')}',
             layout: '{data.header_layout}',
             subheader: '{data.subheader}',
             detail: 'true',
@@ -59,13 +59,13 @@
         </f:if>
 
         <a href="{cancelUrl}" class="btn btn-danger">
-            {f:translate(key: 'actions.cancel', extensionName: 'academic_persons_edit')}
+            {f:translate(key: 'actions.cancel', extensionName: 'AcademicPersonsEdit')}
 
             <core:icon identifier="academic-persons-edit-cancel" alternativeMarkupIdentifier="inline"/>
         </a>
 
         <f:form.button name="submit" value="save-and-edit" class="btn btn-outline-primary">
-            {f:translate(key: 'actions.save', extensionName: 'academic_persons_edit')}
+            {f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}
 
             <core:icon identifier="academic-persons-edit-save" alternativeMarkupIdentifier="inline"/>
         </f:form.button>

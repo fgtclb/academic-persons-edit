@@ -25,7 +25,7 @@
                 <f:render
                     partial="Profile/SectionHeader"
                     arguments="{
-                        header: '{f:translate(key: \'profile.image\', extensionName: \'academic_persons_edit\')}',
+                        header: '{f:translate(key: \'profile.image\', extensionName: \'AcademicPersonsEdit\')}',
                         layout: '{data.header_layout}',
                         subheader: '{data.subheader}',
                         detail: 'true',
@@ -40,14 +40,14 @@
                 <f:if condition="{profile.image}">
                     <f:then>
                         <f:link.action action="removeImage" arguments="{profile: profile}" class="btn btn-danger">
-                            {f:translate(key: 'actions.delete', extensionName: 'academic_persons_edit')}
+                            {f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}
 
                             <core:icon identifier="academic-persons-edit-delete" alternativeMarkupIdentifier="inline"/>
                         </f:link.action>
                     </f:then>
                     <f:else>
                         <f:link.action action="editImage" arguments="{profile: profile}" class="btn btn-primary">
-                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+                            {f:translate(key: 'actions.add', extensionName: 'AcademicPersonsEdit')}
 
                             <core:icon identifier="academic-persons-edit-add-image" alternativeMarkupIdentifier="inline"/>
                         </f:link.action>
@@ -77,7 +77,7 @@
                             element: {
                                 form: 'profile',
                                 identifier: 'skipSync',
-                                help: '{f:translate(key: \'profile.skipSync.description\', extensionName: \'academic_persons_edit\')}',
+                                help: '{f:translate(key: \'profile.skipSync.description\', extensionName: \'AcademicPersonsEdit\')}',
                                 onChange: 'this.form.submit()',
                             }
                         }"
@@ -92,7 +92,7 @@
                     <f:render
                         partial="Profile/SectionHeader"
                         arguments="{
-                            header: '{f:translate(key: \'profile.contracts\', extensionName: \'academic_persons_edit\')}',
+                            header: '{f:translate(key: \'profile.contracts\', extensionName: \'AcademicPersonsEdit\')}',
                             layout: '{data.header_layout}',
                             subheader: '{data.subheader}',
                             detail: 'true',
@@ -107,7 +107,7 @@
                             arguments="{profile: profile}"
                             class="btn"
                         >
-                            {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+                            {f:translate(key: 'actions.add', extensionName: 'AcademicPersonsEdit')}
 
                             <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
                         </f:link.action>
@@ -144,7 +144,7 @@
                             arguments="{
                                 header: '{f:translate(
                                     key: \'profile.{type}\',
-                                    extensionName: \'academic_persons_edit\'
+                                    extensionName: \'AcademicPersonsEdit\'
                                 )}',
                                 layout: '{data.header_layout}',
                                 subheader: '{data.subheader}',
@@ -160,7 +160,7 @@
                                 arguments="{profile: profile, type: type}"
                                 class="btn"
                             >
-                                {f:translate(key: 'actions.add', extensionName: 'academic_persons_edit')}
+                                {f:translate(key: 'actions.add', extensionName: 'AcademicPersonsEdit')}
 
                                 <core:icon identifier="academic-persons-edit-add-item" alternativeMarkupIdentifier="inline" />
                             </f:link.action>

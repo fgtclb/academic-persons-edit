@@ -14,7 +14,7 @@
                             {f:translate(
                                 key: 'form.{elementId}.error.{error.code}',
                                 default: propertyName,
-                                extensionName: 'academic_persons_edit'
+                                extensionName: 'AcademicPersonsEdit'
                             )}
                         </li>
                     </f:for>
@@ -23,7 +23,7 @@
         </f:if>
 
         <label class="form-label" for="{elementId}">
-            {f:translate(key:'{elementId}.label', extensionName: 'academic_persons_edit')}
+            {f:translate(key:'{elementId}.label', extensionName: 'AcademicPersonsEdit')}
             {f:if(condition: validation.required, then: '<abbr title="required">*</abbr>')}
         </label>
 

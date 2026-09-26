@@ -68,7 +68,7 @@
                 </f:form>
             </f:then>
             <f:else>
-                <p>{f:translate(key: 'list.noTranslationFound',extensionName: 'academic_persons_edit')}</p>
+                <p>{f:translate(key: 'list.noTranslationFound',extensionName: 'AcademicPersonsEdit')}</p>
 
                 <f:if condition="{translationAllowed}">
                     <f:link.action
@@ -76,7 +76,7 @@
                         arguments="{profileUid: profile.uid, languageUid: currentLanguageUid}"
                         class="btn btn-primary"
                     >
-                        {f:translate(key: 'actions.translate', extensionName: 'academic_persons_edit')}
+                        {f:translate(key: 'actions.translate', extensionName: 'AcademicPersonsEdit')}
                     </f:link.action>
                 </f:if>
             </f:else>

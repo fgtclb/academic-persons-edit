@@ -285,7 +285,7 @@ final class ProfileController extends AbstractActionController
             $items[] = [
                 'label' => ($this->localizationUtility->translate(
                     $labelIdentifier,
-                    'persons_edit',
+                    'AcademicPersonsEdit',
                 ) ?? $labelIdentifier) ?: $labelIdentifier,
                 'labelTranslationIdentifier' => $labelIdentifier,
                 'value' => $itemValue,

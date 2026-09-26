@@ -10,14 +10,14 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>{f:translate(key: 'physicalAddress.street.label', extensionName: 'academic_persons_edit')}</th>
+                    <th>{f:translate(key: 'physicalAddress.street.label', extensionName: 'AcademicPersonsEdit')}</th>
                     <th class="desktop">
-                        {f:translate(key: 'physicalAddress.city.label', extensionName: 'academic_persons_edit')}
+                        {f:translate(key: 'physicalAddress.city.label', extensionName: 'AcademicPersonsEdit')}
                     </th>
                     <th class="desktop">
-                        {f:translate(key: 'physicalAddress.country.label', extensionName: 'academic_persons_edit')}
+                        {f:translate(key: 'physicalAddress.country.label', extensionName: 'AcademicPersonsEdit')}
                     </th>
-                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'academic_persons_edit')}</th>
+                    <th class="actions text-end">{f:translate(key: 'list.actions', extensionName: 'AcademicPersonsEdit')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +28,7 @@
 
                             <f:if condition="{physicalAddress.hidden}">
                                 <span class="badge bg-secondary record-hidden-badge">
-                                    {f:translate(key: 'list.hidden.badge', extensionName: 'academic_persons_edit')}
+                                    {f:translate(key: 'list.hidden.badge', extensionName: 'AcademicPersonsEdit')}
                                 </span>
                             </f:if>
                         </td>
@@ -49,11 +49,11 @@
                                                 class="btn btn-outline-secondary toggle-visibility show"
                                                 aria-label="{f:translate(
                                                     key: 'actions.show',
-                                                    extensionName: 'academic_persons_edit'
+                                                    extensionName: 'AcademicPersonsEdit'
                                                 )}"
                                                 title="{f:translate(
                                                     key: 'actions.show',
-                                                    extensionName: 'academic_persons_edit'
+                                                    extensionName: 'AcademicPersonsEdit'
                                                 )}"
                                             >
                                                 <core:icon identifier="actions-edit-unhide" alternativeMarkupIdentifier="inline"/>
@@ -65,11 +65,11 @@
                                                 class="btn btn-outline-secondary toggle-visibility hide"
                                                 aria-label="{f:translate(
                                                     key: 'actions.hide',
-                                                    extensionName: 'academic_persons_edit'
+                                                    extensionName: 'AcademicPersonsEdit'
                                                 )}"
                                                 title="{f:translate(
                                                     key: 'actions.hide',
-                                                    extensionName: 'academic_persons_edit'
+                                                    extensionName: 'AcademicPersonsEdit'
                                                 )}"
                                             >
                                                 <core:icon identifier="actions-edit-hide" alternativeMarkupIdentifier="inline"/>
@@ -85,8 +85,8 @@
                                             action="show"
                                             arguments="{physicalAddress: physicalAddress}"
                                             class="btn btn-outline-primary"
-                                            aria-label="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
-                                            title="{f:translate(key: 'actions.view', extensionName: 'academic_persons_edit')}"
+                                            aria-label="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
+                                            title="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                                         >
                                             <core:icon identifier="academic-persons-edit-view" alternativeMarkupIdentifier="inline"/>
                                         </f:link.action>
@@ -96,8 +96,8 @@
                                             action="edit"
                                             arguments="{physicalAddress: physicalAddress}"
                                             class="btn btn-primary"
-                                            aria-label="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
-                                            title="{f:translate(key: 'actions.edit', extensionName: 'academic_persons_edit')}"
+                                            aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
+                                            title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                                         >
                                             <core:icon identifier="academic-persons-edit-edit" alternativeMarkupIdentifier="inline"/>
                                         </f:link.action>
@@ -111,11 +111,11 @@
                                                     class="btn btn-outline-secondary sort-top desktop"
                                                     aria-label="{f:translate(
                                                         key: 'actions.setToTop',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                     title="{f:translate(
                                                         key: 'actions.setToTop',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                 >
                                                     <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
@@ -137,11 +137,11 @@
                                                     class="btn btn-outline-secondary sort-up desktop"
                                                     aria-label="{f:translate(
                                                         key: 'actions.sortUp',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                     title="{f:translate(
                                                         key: 'actions.sortUp',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                 >
                                                     <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
@@ -163,11 +163,11 @@
                                                     class="btn btn-outline-secondary sort-down desktop"
                                                     aria-label="{f:translate(
                                                         key: 'actions.sortDown',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                     title="{f:translate(
                                                         key: 'actions.sortDown',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                 >
                                                     <core:icon identifier="academic-persons-edit-sort" alternativeMarkupIdentifier="inline"/>
@@ -189,11 +189,11 @@
                                                     class="btn btn-outline-secondary sort-bottom desktop"
                                                     aria-label="{f:translate(
                                                         key: 'actions.setToBottom',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                     title="{f:translate(
                                                         key: 'actions.setToBottom',
-                                                        extensionName: 'academic_persons_edit'
+                                                        extensionName: 'AcademicPersonsEdit'
                                                     )}"
                                                 >
                                                     <core:icon identifier="academic-persons-edit-to-top" alternativeMarkupIdentifier="inline"/>
@@ -210,11 +210,11 @@
                                             class="btn btn-danger"
                                             aria-label="{f:translate(
                                                 key: 'actions.delete',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             title="{f:translate(
                                                 key: 'actions.delete',
-                                                extensionName: 'academic_persons_edit'
+                                                extensionName: 'AcademicPersonsEdit'
                                             )}"
                                             onclick="document.getElementById('delete-physicalAddress-{physicalAddress.uid}').showModal()"
                                         >
@@ -243,7 +243,7 @@
     </f:then>
     <f:else>
         <p>
-            {f:translate(key: 'list.noPhysicalAddressesFound', extensionName: 'academic_persons_edit')}
+            {f:translate(key: 'list.noPhysicalAddressesFound', extensionName: 'AcademicPersonsEdit')}
         </p>
     </f:else>
 </f:if>
