@@ -46,8 +46,9 @@ from the same file.
 
 Consequences worth knowing before reporting a problem:
 
-*   A field configured :yaml:`disabled` or :yaml:`readonly` is rendered locked.
-    The ProfileEditing JSON endpoint rejects attempts to submit it.
+*   A field configured :yaml:`disabled`, :yaml:`readonly` or
+    :yaml:`frontendreadonly` is rendered locked. The ProfileEditing JSON
+    endpoint rejects attempts to submit it.
 *   :guilabel:`First name`, :guilabel:`Middle name` and :guilabel:`Last name` are
     **locked by default**, because profile names are usually owned by the
     connected frontend user record and synchronised from elsewhere. They are
@@ -55,7 +56,8 @@ Consequences worth knowing before reporting a problem:
     editor either: the same validation set is merged into the TCA of the
     profile table through :php:`TcaValidationMerger`, where :yaml:`disabled`
     becomes :php:`readOnly`. Unlocking a field for the frontend form unlocks it
-    in the backend as well.
+    in the backend as well. :yaml:`frontendreadonly` locks a field for the
+    frontend form only and keeps it editable in the record editor.
 *   Document validators are selected by the section's stored record ``type``;
     validators from sibling sections are never merged as a fallback.
 *   The normalized rules are applied to the frontend controls, server-side

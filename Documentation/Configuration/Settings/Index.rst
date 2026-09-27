@@ -73,6 +73,9 @@ Supported flags are:
           metadata.
     *   - ``readonly``
         - Prevents editing in the frontend editor.
+    *   - ``frontendreadonly``
+        - Prevents editing in the frontend editor like ``readonly``, and keeps
+          the field editable in the TYPO3 backend.
     *   - ``disabled``
         - Disables editing and implies ``readonly``. A locked field can never
           remain required.
