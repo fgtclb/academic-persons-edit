@@ -68,6 +68,7 @@ describe("the profile editing contract", () => {
           update: endpoints.update,
           updateContractContact: endpoints.updateContractContact,
           updateDocument: endpoints.updateDocument,
+          visibility: endpoints.visibility,
         },
       );
     });
@@ -193,7 +194,7 @@ describe("the profile editing contract", () => {
     it("reports every endpoint as unconfigured rather than as an empty url", () => {
       assert.deepEqual(
         Object.values({ ...context.urls }),
-        new Array(15).fill(undefined),
+        new Array(16).fill(undefined),
       );
     });
 

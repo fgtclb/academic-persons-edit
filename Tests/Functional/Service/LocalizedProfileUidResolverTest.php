@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * The resolver is four database queries and no logic that a mock could show, so it is
+ * The resolver is a few database queries and no logic that a mock could show, so it is
  * tested against real rows rather than as a unit.
  *
  * What it decides is which profile row an image write addresses, and getting it wrong
@@ -30,6 +30,8 @@ final class LocalizedProfileUidResolverTest extends AbstractAcademicPersonsEditT
      * uid 3  default language, translated into language 1 by a hidden row (uid 4)
      * uid 5  default language, no translation at all
      * uid 6  default language, deleted
+     * uid 7  default language, hidden, translated into language 1 (uid 8, hidden with it)
+     * uid 9  default language, hidden, no translation at all
      */
     private function importProfiles(): void
     {
@@ -46,6 +48,10 @@ final class LocalizedProfileUidResolverTest extends AbstractAcademicPersonsEditT
         yield 'the translation in its own language is itself' => [2, 1, 2];
         yield 'a language without a translation row writes the default record' => [5, 1, 5];
         yield 'a hidden translation is not found' => [3, 1, null];
+        yield 'a hidden profile is itself in the default language' => [7, 0, 7];
+        yield 'a hidden profile resolves to its translation, hidden with it' => [7, 1, 8];
+        yield 'the translation of a hidden profile in its own language is itself' => [8, 1, 8];
+        yield 'a hidden profile without a translation row writes the default record' => [9, 1, 9];
         yield 'a deleted record is not found' => [6, 1, null];
         yield 'a record that does not exist is not found' => [999, 1, null];
         yield 'an invalid uid is not found' => [0, 1, null];
@@ -90,5 +96,21 @@ final class LocalizedProfileUidResolverTest extends AbstractAcademicPersonsEditT
 
         $this->assertNull($this->subject()->resolve(3, 1));
         $this->assertNull($this->subject()->resolve(4, 1));
+    }
+
+    /**
+     * A profile whose default record is hidden is hidden as a whole, and its owner still
+     * edits it: the editor reaches it only through the owner lookup, which the caller
+     * has passed already. What stays refused is a translation hidden on its own while its
+     * default record is visible, the case above.
+     */
+    #[Test]
+    public function theRowsOfAHiddenProfileAreResolvedForItsOwner(): void
+    {
+        $this->importProfiles();
+
+        $this->assertSame(7, $this->subject()->resolve(7, 0));
+        $this->assertSame(8, $this->subject()->resolve(7, 1));
+        $this->assertSame(8, $this->subject()->resolve(8, 1));
     }
 }

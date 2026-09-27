@@ -105,8 +105,14 @@ or the code fills in, a category type or a field name for example.
         - :file:`Templates/Profile/List.html`
     *   - :xml:`list.profile.assigned`
         - :file:`Templates/Profile/List.html`
+    *   - :xml:`list.profile.hidden`
+        - :file:`Templates/Profile/List.html`
     *   - :xml:`profile.<field>.label`
         - :file:`Partials/Profile/Field/Checkbox.html`, :file:`Partials/Profile/Field/Editable.html`, :file:`Partials/Profile/Field/Group.html`, :file:`Partials/Profile/Field/Helptext.html`, :file:`Partials/Profile/Field/Preview.html`, :file:`Partials/Profile/Field/Select.html`
+    *   - :xml:`profile.hidden.description`
+        - :file:`Partials/Profile/Header.html`
+    *   - :xml:`profile.hidden.label`
+        - :file:`Partials/Profile/Header.html`
     *   - :xml:`profile.image.placeholder.alt`
         - :file:`Partials/Profile/Image/Card.html`, :file:`Templates/Profile/Index.html`
     *   - :xml:`profile.skipSync.description`

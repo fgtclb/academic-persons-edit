@@ -73,30 +73,45 @@
                                                 {profile.middleName}
                                                 {profile.lastName}
                                             </span>
+                                            <f:if condition="{profile.hidden}">
+                                                <span
+                                                    class="badge text-bg-secondary rounded-0"
+                                                    data-pe-profile-hidden>
+                                                    <f:translate
+                                                        key="list.profile.hidden"
+                                                        extensionName="AcademicPersonsEdit" />
+                                                </span>
+                                            </f:if>
                                         </div>
                                     </td>
                                     <td class="text-nowrap">{item.language}</td>
                                     <td class="text-end text-nowrap">
                                         <div
                                             class="d-inline-flex flex-wrap justify-content-end gap-2">
-                                            <f:link.action
-                                                pageUid="{settings.detailPid}"
-                                                action="detail"
-                                                arguments="{profile: profile}"
-                                                pluginName="Detail"
-                                                controller="Profile"
-                                                aria-label="{f:translate(key:
-                                                'actions.view', extensionName:
-                                                'AcademicPersonsEdit')}"
-                                                title="{f:translate(key:
-                                                'actions.view', extensionName:
-                                                'AcademicPersonsEdit')}"
-                                                extensionName="academicpersons"
-                                                class="btn rounded-0 btn-link">
-                                                <core:icon
-                                                    identifier="academic-persons-edit-view"
-                                                    alternativeMarkupIdentifier="inline" />
-                                            </f:link.action>
+                                            <f:comment>
+                                                A hidden profile has no public detail
+                                                page, so it gets no link to one.
+                                            </f:comment>
+                                            <f:if condition="!{profile.hidden}">
+                                                <f:link.action
+                                                    pageUid="{settings.detailPid}"
+                                                    action="detail"
+                                                    arguments="{profile: profile}"
+                                                    pluginName="Detail"
+                                                    controller="Profile"
+                                                    aria-label="{f:translate(key:
+                                                    'actions.view', extensionName:
+                                                    'AcademicPersonsEdit')}"
+                                                    title="{f:translate(key:
+                                                    'actions.view', extensionName:
+                                                    'AcademicPersonsEdit')}"
+                                                    extensionName="academicpersons"
+                                                    class="btn rounded-0 btn-link">
+                                                    <core:icon
+                                                        identifier="academic-persons-edit-view"
+                                                        alternativeMarkupIdentifier="inline" />
+                                                </f:link.action>
+                                            </f:if>
                                             <f:link.action
                                                 action="index"
                                                 controller="Profile"

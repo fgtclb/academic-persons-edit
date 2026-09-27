@@ -6,3 +6,6 @@
 ,4,1,0,1,1,3,"Verborgene","Übersetzung","verborgene-uebersetzung"
 ,5,1,0,0,0,0,"Untranslated","Profile","untranslated-profile"
 ,6,1,1,0,0,0,"Deleted","Profile","deleted-profile"
+,7,1,0,1,0,0,"Hidden","Profile","hidden-profile"
+,8,1,0,1,1,7,"Verborgenes","Profil","verborgenes-profil"
+,9,1,0,1,0,0,"Hidden","Untranslated","hidden-untranslated"

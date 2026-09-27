@@ -1,0 +1,5 @@
+# A site package that keeps the "Show my profile publicly" switch of the
+# profile editor from owners. The settings files merge recursively, so this
+# names the one special field it changes.
+special:
+  hidden: ~

@@ -18,6 +18,7 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
         'index',
         'update',
         'updateSkipSync',
+        'updateVisibility',
         'uploadImage',
         'deleteImage',
         'documentForm',

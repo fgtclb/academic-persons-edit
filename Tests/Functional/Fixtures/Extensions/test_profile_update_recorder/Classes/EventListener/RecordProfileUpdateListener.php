@@ -20,6 +20,11 @@ final class RecordProfileUpdateListener
      */
     public static array $announcements = [];
 
+    /**
+     * @var list<bool> Whether the announced profile object is hidden, per announcement
+     */
+    public static array $hiddenStates = [];
+
     #[AsEventListener(identifier: 'test-profile-update-recorder/record')]
     public function __invoke(AfterProfileUpdateEvent $event): void
     {
@@ -28,5 +33,6 @@ final class RecordProfileUpdateListener
             $event->getSite()?->getIdentifier(),
             $event->getOrigin()->value,
         ];
+        self::$hiddenStates[] = $event->getProfile()->getHidden();
     }
 }

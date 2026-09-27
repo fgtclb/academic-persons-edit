@@ -69,7 +69,8 @@ const readEditingContext = (root) => {
       toggleDocumentVisibility: contract.toggleDocumentVisibilityUrl,
       update: contract.updateUrl,
       updateContractContact: contract.updateContractContactUrl,
-      updateDocument: contract.updateDocumentUrl
+      updateDocument: contract.updateDocumentUrl,
+      visibility: contract.visibilityUrl
     })
   });
 };

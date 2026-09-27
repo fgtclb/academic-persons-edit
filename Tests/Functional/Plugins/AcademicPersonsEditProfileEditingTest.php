@@ -2376,6 +2376,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 'index',
                 'update',
                 'updateSkipSync',
+                'updateVisibility',
                 'uploadImage',
                 'deleteImage',
                 'documentForm',

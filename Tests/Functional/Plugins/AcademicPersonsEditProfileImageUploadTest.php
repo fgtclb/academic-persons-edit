@@ -146,6 +146,41 @@ final class AcademicPersonsEditProfileImageUploadTest extends AbstractFrontendPr
     }
 
     /**
+     * An owner who hid the profile still edits it, the image included: the upload maps
+     * its profile argument and resolves the row it writes to while the profile is hidden.
+     */
+    #[Test]
+    public function anImageIsUploadedToAHiddenProfileOfTheOwner(): void
+    {
+        $this->setUpProfileEditingTestCase();
+        $this->getConnectionPool()
+            ->getConnectionForTable('tx_academicpersons_domain_model_profile')
+            ->update('tx_academicpersons_domain_model_profile', ['hidden' => 1], ['uid' => self::PROFILE_ID]);
+        $submitData = $this->extractImageFormSubmissionData($this->renderProfileEditingPage());
+        $temporaryFile = $this->instancePath . '/typo3temp/'
+            . uniqid('profile-editing-image-', false) . '.upload';
+        copy(__DIR__ . '/Fixtures/Uploads/profile-image.png', $temporaryFile);
+        $uploadedFiles = [];
+        $this->addNestedFormValue(
+            $uploadedFiles,
+            $submitData['fileInputName'],
+            new UploadedFile(
+                $temporaryFile,
+                (int)filesize($temporaryFile),
+                UPLOAD_ERR_OK,
+                'profile-image.png',
+                'application/octet-stream',
+            ),
+        );
+
+        $response = $this->submitProfileImageForm($submitData['action'], $submitData['body'], $uploadedFiles);
+
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertSame(1, $this->getPersistedProfileImageCount());
+        $this->assertCount(1, $this->getStoredFiles());
+    }
+
+    /**
      * @return array{title: string, alternative: string}|array{}
      */
     private function fetchFileMetadata(int $fileUid): array

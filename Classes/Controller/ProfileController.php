@@ -67,6 +67,7 @@ use FGTCLB\AcademicPersonsEdit\Service\ProfileRichTextSanitizerInterface;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateRequestService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateValidationService;
+use FGTCLB\AcademicPersonsEdit\Service\ProfileVisibilityWriter;
 use FGTCLB\AcademicPersonsEdit\Service\RichTextCharacterCounter;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Context\Context;
@@ -156,6 +157,7 @@ final class ProfileController extends ActionController
     private const JSON_ACTIONS = [
         'update',
         'updateSkipSync',
+        'updateVisibility',
         'deleteImage',
         'documentForm',
         'createDocument',
@@ -243,6 +245,7 @@ final class ProfileController extends ActionController
         private readonly ProfileUpdateRequestService $profileUpdateRequestService,
         private readonly ProfileUpdateValidationService $profileUpdateValidationService,
         private readonly LocalizedProfileUidResolver $localizedProfileUidResolver,
+        private readonly ProfileVisibilityWriter $profileVisibilityWriter,
         private readonly ProfileImageRelationWriter $profileImageRelationWriter,
         private readonly DataHandlerExecutionContext $dataHandlerExecutionContext,
         private readonly ProfileFieldOptionsService $profileFieldOptionsService,
@@ -359,7 +362,7 @@ final class ProfileController extends ActionController
      */
     public function listAction(): ResponseInterface
     {
-        $profiles = $this->profileRepository->findByFrontendUser(
+        $profiles = $this->profileRepository->findByFrontendUserIncludingHidden(
             (int)$this->context->getPropertyFromAspect('frontend.user', 'id', 0),
         );
         $site = $this->request->getAttribute('site');
@@ -770,6 +773,100 @@ final class ProfileController extends ActionController
                 'internal_server_error',
                 500,
                 'The synchronization setting could not be updated.',
+            );
+        }
+    }
+
+    /**
+     * Shows or hides the profile through its dedicated JSON endpoint, the owner's
+     * "Show my profile publicly" switch.
+     *
+     * The endpoint accepts exactly one boolean field, hidden, the value of the
+     * profile's `hidden` column, which the switch displays inverted. It is refused
+     * with a 403 when the installation made the switch read-only, disabled it or
+     * removed it, so that a profile an editor hid stays hidden. The value is written
+     * for the default-language record and reaches every translation, see
+     * {@see ProfileVisibilityWriter}. The owner keeps reaching the profile either way:
+     * the editor finds the owner's profiles including hidden ones.
+     *
+     * @return ResponseInterface A JSON response containing the profile UID and whether it is hidden now.
+     */
+    public function updateVisibilityAction(): ResponseInterface
+    {
+        $requestResult = $this->profileUpdateRequestService->validate(
+            $this->request,
+        );
+        if (!$requestResult->isValid()) {
+            $this->throwJsonError(
+                $requestResult->getError() ?? 'invalid_request',
+                $requestResult->getStatusCode(),
+            );
+        }
+        $payload = $requestResult->getPayload();
+        $profile = $requestResult->getProfile();
+        if ($payload === null || $profile === null) {
+            $this->throwJsonError('internal_server_error', 500);
+        }
+        if (!$this->isSpecialFieldWritable('hidden')) {
+            $this->throwJsonError(
+                'visibility_not_editable',
+                403,
+                'The visibility of this profile cannot be changed here.',
+            );
+        }
+        $data = $payload->getData();
+        if (
+            array_keys($data) !== ['hidden']
+            || !is_bool($data['hidden'])
+        ) {
+            $this->throwJsonError(
+                'invalid_payload',
+                400,
+                'The payload must contain exactly one boolean hidden value.',
+            );
+        }
+        // Written through the DataHandler, like the image: a frontend request acting
+        // in a non-live workspace would produce a version of the record nobody asked
+        // for, see requirePersistedProfileUid().
+        if ($this->dataHandlerExecutionContext->isFrontendRequestInWorkspace()) {
+            $this->throwJsonError(
+                'workspace_not_supported',
+                409,
+                'The visibility of the profile cannot be changed from a workspace preview.',
+            );
+        }
+        try {
+            // The uid of an Extbase language overlay is the one of its default-language
+            // record, which is the record the value belongs to.
+            $hidden = $this->profileVisibilityWriter->write(
+                (int)$profile->getUid(),
+                $data['hidden'],
+            );
+            // The object follows the stored state, so that a listener of the update
+            // reads it. It is marked clean: the DataHandler wrote the value, and the
+            // persistence of Extbase must not write it again at the end of the request.
+            $profile->setHidden($hidden);
+            $profile->_memorizeCleanState('hidden');
+            if (!$profile->getIsTranslation()) {
+                $this->dispatchProfileUpdate($profile);
+            }
+            return new JsonResponse([
+                'success' => true,
+                'profile' => $profile->getUid(),
+                'hidden' => $hidden,
+            ]);
+        } catch (PropagateResponseException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $this->logManager
+                ->getLogger(self::class)
+                ->error('Updating the profile visibility failed.', [
+                    'exception' => $exception,
+                ]);
+            $this->throwJsonError(
+                'internal_server_error',
+                500,
+                'The visibility of the profile could not be updated.',
             );
         }
     }

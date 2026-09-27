@@ -318,13 +318,15 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
      * equivalence hold for the two shapes no page of the shipped settings
      * renders live.
      *
-     * Two controls are named exceptions and neither is a profile field:
+     * Three controls are named exceptions and none is a profile field:
      *
      * - the synchronisation switch of `Profile/Header.html`, which deliberately
      *   carries `__sync-checkbox` and not `__field`, because
      *   `frontend/profile/fields.ts` collects the latter and would save and
      *   validate the switch as a mapped property. It is spelled once, and with
      *   the `disabled` expression `Field/Control.html` uses.
+     * - the visibility switch of the same partial, `__visibility-checkbox`, for
+     *   the same reason: it writes through an endpoint of its own.
      * - the `<f:form.upload>` of `Image/Editor.html`, which is the Extbase file
      *   upload control and has no counterpart in the five shapes.
      *
@@ -357,7 +359,9 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
                 . '[not(@type="hidden")]'
                 . '[not(@type="file")]'
                 . '[not(contains(concat(" ", normalize-space(@class), " "), '
-                . '" academic-persons-profile-editing__sync-checkbox "))]',
+                . '" academic-persons-profile-editing__sync-checkbox "))]'
+                . '[not(contains(concat(" ", normalize-space(@class), " "), '
+                . '" academic-persons-profile-editing__visibility-checkbox "))]',
         );
         $this->assertNotFalse($controls);
         $this->assertGreaterThan(0, $controls->length);

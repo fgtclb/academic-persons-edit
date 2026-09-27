@@ -1,0 +1,8 @@
+"tx_academicpersons_domain_model_profile"
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","l10n_source","first_name","last_name","slug"
+,1,1,0,0,0,0,0,"Max","Müllermann","max-muellermann"
+,2,1,0,0,1,1,1,"Max","Müllermann (DE)","max-muellermann-de"
+,3,1,0,0,2,1,1,"Max","Müllermann (FR)","max-muellermann-fr"
+,4,1,0,0,1,0,0,"Nur","Deutsch","nur-deutsch"
+,5,1,1,0,0,0,0,"Deleted","Profile","deleted-profile"
+,6,1,0,0,1,5,5,"Deleted","Translation","deleted-translation"

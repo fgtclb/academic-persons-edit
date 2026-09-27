@@ -15,6 +15,9 @@
         name="skipSyncUrl"
         value="{f:uri.action(action: 'updateSkipSync', controller: 'Profile', pageType: 1733735, absolute: true)}" />
     <f:variable
+        name="visibilityUrl"
+        value="{f:uri.action(action: 'updateVisibility', controller: 'Profile', pageType: 1733735, absolute: true)}" />
+    <f:variable
         name="deleteImageUrl"
         value="{f:uri.action(action: 'deleteImage', controller: 'Profile', pageType: 1733735, absolute: true)}" />
     <f:variable
@@ -102,6 +105,7 @@
             data-academic-persons-profile-editing
             data-update-url="{updateUrl}"
             data-skip-sync-url="{skipSyncUrl}"
+            data-visibility-url="{visibilityUrl}"
             data-delete-image-url="{deleteImageUrl}"
             data-document-form-url="{documentFormUrl}"
             data-create-document-url="{createDocumentUrl}"
@@ -187,6 +191,7 @@
                         profile: profile,
                         title: specialFields.title,
                         skipSync: specialFields.skipSync,
+                        visibility: specialFields.hidden,
                         fieldsFormIds: fieldsFormIds
                     }" />
                 <div class="container-fluid px-0">

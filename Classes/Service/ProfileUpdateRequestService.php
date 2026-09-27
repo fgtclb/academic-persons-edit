@@ -94,8 +94,10 @@ final readonly class ProfileUpdateRequestService
             0,
         );
 
+        // Hidden profiles are included: the owner must reach a profile they hid to
+        // show it again. The visibility window keeps applying.
         foreach (
-            $this->profileRepository->findByFrontendUser($frontendUserId) as $profile
+            $this->profileRepository->findByFrontendUserIncludingHidden($frontendUserId) as $profile
         ) {
             if (
                 $profile instanceof Profile

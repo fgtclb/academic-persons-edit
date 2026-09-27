@@ -38,6 +38,7 @@ use FGTCLB\AcademicPersonsEdit\Service\ProfileRichTextSanitizerInterface;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateRequestService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateValidationService;
+use FGTCLB\AcademicPersonsEdit\Service\ProfileVisibilityWriter;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\NullLogger;
@@ -422,6 +423,7 @@ final class ProfileControllerTest extends UnitTestCase
                 $academicPersonsSettings,
             ),
             new LocalizedProfileUidResolver($connectionPool, $tcaSchemaFactory),
+            new ProfileVisibilityWriter($connectionPool, $dataHandlerExecutionContext, $tcaSchemaFactory),
             $profileImageRelationWriter,
             $dataHandlerExecutionContext,
             $profileFieldOptionsService,

@@ -64,6 +64,7 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
         foreach ([
             'update' => 'data-update-url',
             'updateSkipSync' => 'data-skip-sync-url',
+            'updateVisibility' => 'data-visibility-url',
             'deleteImage' => 'data-delete-image-url',
             'documentForm' => 'data-document-form-url',
             'createDocument' => 'data-create-document-url',
@@ -139,6 +140,7 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
     {
         yield 'profile fields' => ['update', ['firstName' => 'Taken over']];
         yield 'synchronisation switch' => ['updateSkipSync', ['skipSync' => true]];
+        yield 'visibility switch' => ['updateVisibility', ['hidden' => true]];
         yield 'image' => ['deleteImage', []];
         yield 'document form' => ['documentForm', ['section' => 'cooperation', 'mode' => 'add']];
         yield 'document create' => ['createDocument', ['section' => 'cooperation', 'fields' => ['title' => 'x']]];

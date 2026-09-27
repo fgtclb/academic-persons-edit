@@ -74,6 +74,53 @@
                     </div>
                 </form>
             </f:if>
+            <f:if condition="{visibility}">
+                <f:variable
+                    name="visibilityElementId"
+                    value="profile-editing-{profile.uid}-visibility" />
+                <form
+                    class="academic-persons-profile-editing__visibility-form flex-shrink-0"
+                    data-pe-visibility-form>
+                    <div
+                        class="form-check form-switch form-check-lg mb-0 d-flex flex-row align-items-center">
+                        <f:comment>
+                            The owner's "Show my profile publicly" switch. Like the
+                            synchronisation switch above it is not a profile field,
+                            so it carries the "__visibility-checkbox" class and not
+                            the "__field" one. It shows the profile's "hidden"
+                            column inverted: it is on while the profile is public.
+                        </f:comment>
+                        <f:form.checkbox
+                            name="visibility"
+                            id="{visibilityElementId}"
+                            class="form-check-input academic-persons-profile-editing__visibility-checkbox"
+                            value="1"
+                            checked="!{profile.hidden}"
+                            aria-describedby="{visibilityElementId}-error"
+                            aria-invalid="false"
+                            disabled="{f:if(condition: '{visibility.validation.disabled} || {visibility.validation.readOnly}', then: 'disabled')}" />
+                        <label
+                            class="form-check-label ms-3 cursor-pointer"
+                            for="{visibilityElementId}"
+                            title="{f:translate(key: 'profile.hidden.description', extensionName: 'AcademicPersonsEdit')}">
+                            <f:translate
+                                key="profile.hidden.label"
+                                extensionName="AcademicPersonsEdit" />
+                        </label>
+                        <f:render
+                            partial="Profile/Field/Helptext"
+                            arguments="{
+                                helptext: visibility.helptext,
+                                labelKey: 'profile.hidden.label',
+                                elementId: visibilityElementId
+                            }" />
+                        <div
+                            id="{visibilityElementId}-error"
+                            class="invalid-feedback"
+                            role="alert"></div>
+                    </div>
+                </form>
+            </f:if>
             <!--
                 No fields form, no toggle: the button would open nothing, and
                 the "aria-controls" it carries would be an empty IDREF list.

@@ -26,10 +26,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * - no translation row exists at all: the default-language uid - the same row the
  *   text endpoints write through Extbase in that situation, so one language never
  *   silently edits a record another one cannot see;
- * - the record is gone, or the translation exists but is hidden: `null`, which the
- *   caller answers with a 404. A hidden translation is a row the visitor may not
- *   see, and writing the default record instead would edit a different profile
- *   than the one on screen.
+ * - the record is gone, or the translation exists but is hidden while its default
+ *   record is visible: `null`, which the caller answers with a 404. Such a
+ *   translation is a row the visitor may not see, and writing the default record
+ *   instead would edit a different profile than the one on screen.
+ *
+ * A profile whose default record is hidden is hidden as a whole, and its rows are
+ * resolved like visible ones: the editor reaches such a profile only through the
+ * owner lookup, and its owner edits it to show it again.
  *
  * Only live rows are resolved. `ProfileImageRelationWriter` refuses a workspace
  * version uid, and the editor has no workspace story of its own: the uid it hands
@@ -63,13 +67,17 @@ final readonly class LocalizedProfileUidResolver
                 ];
             },
         );
-        if ($record === null || $record['hidden']) {
+        if ($record === null) {
+            return null;
+        }
+        $defaultProfileUid = $record['translationParentUid'] > 0 ? $record['translationParentUid'] : $record['uid'];
+        $profileIsHidden = $this->isProfileHidden($columns, $record, $defaultProfileUid);
+        if ($record['hidden'] && !$profileIsHidden) {
             return null;
         }
         if ($languageId <= 0 || $record['languageUid'] === $languageId) {
             return $record['uid'];
         }
-        $defaultProfileUid = $record['translationParentUid'] > 0 ? $record['translationParentUid'] : $record['uid'];
         $translation = $this->findRecord(
             $columns,
             static function ($queryBuilder) use ($columns, $defaultProfileUid, $languageId) {
@@ -90,7 +98,33 @@ final readonly class LocalizedProfileUidResolver
             // as the Extbase based text endpoints do for the same profile.
             return $defaultProfileUid;
         }
-        return $translation['hidden'] ? null : $translation['uid'];
+        return $translation['hidden'] && !$profileIsHidden ? null : $translation['uid'];
+    }
+
+    /**
+     * Whether the default-language record of the profile is hidden, which hides the
+     * profile in every language.
+     *
+     * @param array{language: string, translationParent: string, disabled: string} $columns
+     * @param array{uid: int, languageUid: int, translationParentUid: int, hidden: bool} $record
+     */
+    private function isProfileHidden(array $columns, array $record, int $defaultProfileUid): bool
+    {
+        if ($record['uid'] === $defaultProfileUid) {
+            return $record['hidden'];
+        }
+        $defaultRecord = $this->findRecord(
+            $columns,
+            static function ($queryBuilder) use ($defaultProfileUid) {
+                return [
+                    $queryBuilder->expr()->eq(
+                        'uid',
+                        $queryBuilder->createNamedParameter($defaultProfileUid, Connection::PARAM_INT),
+                    ),
+                ];
+            },
+        );
+        return $defaultRecord !== null && $defaultRecord['hidden'];
     }
 
     /**

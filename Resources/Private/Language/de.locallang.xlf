@@ -20,6 +20,10 @@
         <source>Profile</source>
         <target>Profil</target>
       </trans-unit>
+      <trans-unit id="list.profile.hidden">
+        <source>Not public</source>
+        <target>Nicht öffentlich</target>
+      </trans-unit>
       <trans-unit id="list.language">
         <source>Language</source>
         <target>Sprache</target>
@@ -149,6 +153,14 @@
       <trans-unit id="profile.skipSync.description">
         <source>Disabling the profile synchronization will prevent automatic updates from external sources.</source>
         <target>Die Deaktivierung der Profil-Synchronisation verhindert automatische Aktualisierungen aus externen Quellen.</target>
+      </trans-unit>
+      <trans-unit id="profile.hidden.label">
+        <source>Show my profile publicly</source>
+        <target>Mein Profil öffentlich anzeigen</target>
+      </trans-unit>
+      <trans-unit id="profile.hidden.description">
+        <source>Switched off, your profile is left out of every public list and its detail page is not found. You can still edit it here.</source>
+        <target>Ausgeschaltet erscheint Ihr Profil in keiner öffentlichen Liste, und seine Detailseite wird nicht gefunden. Sie können es hier weiterhin bearbeiten.</target>
       </trans-unit>
 
       <!-- Profile information fields -->

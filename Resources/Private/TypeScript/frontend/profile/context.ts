@@ -105,6 +105,7 @@ type ProfileEditingContract = {
   updateContractContactUrl?: string;
   updateDocumentUrl?: string;
   updateUrl?: string;
+  visibilityUrl?: string;
 };
 
 /** The writing endpoints, named after the action rather than the attribute. */
@@ -124,6 +125,7 @@ export interface EditingUrls {
   readonly update: string | undefined;
   readonly updateContractContact: string | undefined;
   readonly updateDocument: string | undefined;
+  readonly visibility: string | undefined;
 }
 
 /**
@@ -305,6 +307,7 @@ export const readEditingContext = (root: HTMLElement): EditingContext => {
       update: contract.updateUrl,
       updateContractContact: contract.updateContractContactUrl,
       updateDocument: contract.updateDocumentUrl,
+      visibility: contract.visibilityUrl,
     }),
   });
 };

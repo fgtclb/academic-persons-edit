@@ -72,6 +72,7 @@ import {
 import { initializeFieldEditing } from "@fgtclb/academic-persons-edit/frontend/profile/fields.js";
 import { initializeStickyImageOffset } from "@fgtclb/academic-persons-edit/frontend/profile/sticky-image.js";
 import { createSkipSync } from "@fgtclb/academic-persons-edit/frontend/profile/sync.js";
+import { createVisibility } from "@fgtclb/academic-persons-edit/frontend/profile/visibility.js";
 
 /**
  * The prefix and the tag name, re-exported from `elements/names.ts` where they
@@ -99,8 +100,8 @@ const isStatusType = (value: unknown): value is StatusType =>
 /**
  * Builds the editor of one root: the controllers first, the initialisers after.
  *
- * Every listener the two controllers register is delegated on the root and every
- * initialiser writes DOM below it, so the six calls are independent of each
+ * Every listener the three controllers register is delegated on the root and every
+ * initialiser writes DOM below it, so the seven calls are independent of each
  * other as they stand today - but that is a property of the current
  * implementations and not something either side promises, and reordering them
  * buys nothing.
@@ -108,6 +109,7 @@ const isStatusType = (value: unknown): value is StatusType =>
 const startProfileEditing = (context: EditingContext): void => {
   createDocumentEditing(context);
   createSkipSync(context);
+  createVisibility(context);
   initializeStickyImageOffset(context.root);
   initializeFieldEditing(context);
   initializeDocumentSections(context);

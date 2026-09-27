@@ -17,6 +17,9 @@
       <trans-unit id="list.profile">
         <source>Profile</source>
       </trans-unit>
+      <trans-unit id="list.profile.hidden">
+        <source>Not public</source>
+      </trans-unit>
       <trans-unit id="list.language">
         <source>Language</source>
       </trans-unit>
@@ -116,6 +119,12 @@
       </trans-unit>
       <trans-unit id="profile.skipSync.description">
         <source>Disabling the profile synchronization will prevent automatic updates from external sources.</source>
+      </trans-unit>
+      <trans-unit id="profile.hidden.label">
+        <source>Show my profile publicly</source>
+      </trans-unit>
+      <trans-unit id="profile.hidden.description">
+        <source>Switched off, your profile is left out of every public list and its detail page is not found. You can still edit it here.</source>
       </trans-unit>
 
       <!-- Profile information fields -->

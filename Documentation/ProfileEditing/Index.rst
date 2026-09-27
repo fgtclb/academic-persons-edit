@@ -65,6 +65,12 @@ the site, the same one an unauthenticated visitor gets — raised as a propagate
 response rather than returned by the action, because on TYPO3 v13 the status
 code of an Extbase plugin response never reaches the frontend response.
 
+The list includes the owner's hidden profiles, so that an owner who switched a
+profile off can open it and switch it on again. Such a profile carries a
+:guilabel:`Not public` mark and no :guilabel:`View` link, because its detail
+page answers with page not found. Start time, end time and frontend user groups
+of a profile keep applying: an expired profile is not listed.
+
 The :guilabel:`View` URI uses extension ``academicpersons``, controller
 ``Profile``, action ``detail`` and plugin ``Detail``. Its target page comes
 from ``plugin.tx_academicpersons.detailPid`` and must contain the
@@ -87,6 +93,9 @@ The controller assigns the following variables to the Fluid template:
     *   - ``{profile}``
         - Explicitly selected profile after its assignment to the authenticated
           frontend user has been verified.
+    *   - ``{profiles}``
+        - The assigned profiles as a plain list, hidden ones included. This
+          variable belongs to the default list action and list template.
     *   - ``{profileListItems}``
         - Assigned Profiles and their readable site-language labels. This
           variable belongs to the default list action and list template.
@@ -94,8 +103,8 @@ The controller assigns the following variables to the Fluid template:
         - Ordered Fluid view models generated from :yaml:`profile`. Every
           section contains regular fields and inserted composite special items.
     *   - ``{specialFields}``
-        - Typed :yaml:`special` components, including composed title, image and
-          synchronization metadata.
+        - Typed :yaml:`special` components, including composed title, image,
+          synchronization and visibility metadata.
     *   - ``{profileFieldOptions}``
         - Options for every configured :yaml:`renderType: select` field. The
           option source remains the matching Profile TCA field.
@@ -487,7 +496,8 @@ Unknown profile properties, configured read-only/disabled fields and select
 values not configured in the matching TCA field are rejected. The direct academic/honorific
 ``profile.title`` field is an ordinary configured Profile property; the
 composed display name is :yaml:`special.title`. ``skipSync`` is a direct special
-property. A configured ``combinedLink`` additionally enables its matching
+property. ``hidden`` is not accepted here: the visibility switch has an endpoint
+of its own, see :ref:`profile-visibility-switch`. A configured ``combinedLink`` additionally enables its matching
 ``*Title`` companion. All other writable Profile properties come from
 :yaml:`profile`.
 Extbase validation errors are returned in an ``errors`` object keyed by
@@ -949,6 +959,56 @@ Any additional property or a non-boolean value returns ``invalid_payload``.
 On failure the JavaScript restores the last successfully persisted checkbox
 state.
 
+..  _profile-visibility-switch:
+
+Visibility switch
+=================
+
+:guilabel:`Show my profile publicly` sits next to the synchronization checkbox
+and works the same way: a form of its own, saved on change, restored to the
+last stored state when the request fails. It shows the profile's ``hidden``
+field inverted, so it is on while the profile is public. Switched off, the
+profile is left out of every public list and its detail page answers with page
+not found. The owner keeps opening and editing it, image included, and switches
+it on again from the same place.
+
+It is written by ``updateVisibilityAction()``, which accepts exactly one
+boolean property, the value of ``hidden``:
+
+..  code-block:: json
+    :caption: Visibility update
+
+    {
+      "profile": 123,
+      "data": {
+        "hidden": true
+      }
+    }
+
+The value is written for the default-language record through the DataHandler,
+so it reaches every translation at once, from whichever site language the
+owner uses. The response carries the stored value as ``hidden``. Any additional
+property or a non-boolean value returns ``invalid_payload``.
+
+The switch is on by default. An installation that leaves visibility to its
+editors takes it away in its :file:`Configuration/AcademicPersons/Settings.yaml`,
+the same way as any other special field:
+
+..  code-block:: yaml
+    :caption: EXT:my_sitepackage/Configuration/AcademicPersons/Settings.yaml
+
+    special:
+      hidden:
+        validators:
+          - readonly
+
+``readonly`` and ``disabled`` render the switch disabled, and ``hidden: ~``
+removes it. In all three cases the endpoint answers ``403`` with
+``visibility_not_editable`` and a profile an editor hid stays hidden. Backend
+editors keep the :guilabel:`Visible` checkbox of the profile either way: unlike
+the other fields of :file:`Settings.yaml`, the flags of this switch are not
+applied to the backend form.
+
 Expanding profile image editor
 ==============================
 
@@ -1120,9 +1180,10 @@ Authentication and responses
 ============================
 
 Every endpoint above requires an authenticated frontend user and accepts only the
-profile assigned to that user. The generic update, synchronization and delete
-endpoints propagate machine-readable JSON errors. Image upload validation is
-also converted to and propagated as JSON by the controller's error action.
+profile assigned to that user. The generic update, synchronization, visibility
+and delete endpoints propagate machine-readable JSON errors. Image upload
+validation is also converted to and propagated as JSON by the controller's error
+action.
 
 ..  list-table:: Response status codes
     :header-rows: 1
@@ -1141,11 +1202,19 @@ also converted to and propagated as JSON by the controller's error action.
         - ``authentication_required``
         - No frontend user is authenticated.
     *   - ``403``
-        - ``profile_not_editable``
-        - The profile is not assigned to the frontend user.
+        - ``profile_not_editable``, ``image_not_editable`` or
+          ``visibility_not_editable``
+        - The profile is not assigned to the frontend user, or the installation
+          made the image or the visibility switch read-only, disabled it or
+          removed it.
     *   - ``405``
         - ``method_not_allowed``
         - A JSON endpoint was called with a method other than ``POST``.
+    *   - ``409``
+        - ``workspace_not_supported``
+        - The image or the visibility was to be changed from a workspace
+          preview. Both are written through the DataHandler and would produce a
+          workspace version nobody asked for.
     *   - ``415``
         - ``unsupported_media_type``
         - A JSON endpoint was called without ``Content-Type:
@@ -1322,6 +1391,8 @@ which slot carries which value.
         - Generic field update endpoint.
     *   - ``data-skip-sync-url``
         - Synchronization endpoint.
+    *   - ``data-visibility-url``
+        - Visibility endpoint of :guilabel:`Show my profile publicly`.
     *   - ``data-delete-image-url``
         - Image deletion endpoint.
     *   - ``data-document-form-url``, ``data-create-document-url``,

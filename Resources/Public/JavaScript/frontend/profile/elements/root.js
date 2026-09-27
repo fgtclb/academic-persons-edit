@@ -19,12 +19,14 @@ import {
 import { initializeFieldEditing } from "@fgtclb/academic-persons-edit/frontend/profile/fields.js";
 import { initializeStickyImageOffset } from "@fgtclb/academic-persons-edit/frontend/profile/sticky-image.js";
 import { createSkipSync } from "@fgtclb/academic-persons-edit/frontend/profile/sync.js";
+import { createVisibility } from "@fgtclb/academic-persons-edit/frontend/profile/visibility.js";
 const profileEditingStatusEvent = "pe:status";
 const statusTypes = ["danger", "info", "success", "warning"];
 const isStatusType = (value) => typeof value === "string" && statusTypes.includes(value);
 const startProfileEditing = (context) => {
   createDocumentEditing(context);
   createSkipSync(context);
+  createVisibility(context);
   initializeStickyImageOffset(context.root);
   initializeFieldEditing(context);
   initializeDocumentSections(context);

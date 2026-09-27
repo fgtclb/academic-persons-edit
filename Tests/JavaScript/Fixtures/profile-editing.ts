@@ -40,6 +40,7 @@ import {
 export const endpoints = {
   update: "https://example.test/profile/update",
   skipSync: "https://example.test/profile/skip-sync",
+  visibility: "https://example.test/profile/visibility",
   deleteImage: "https://example.test/profile/delete-image",
   documentForm: "https://example.test/profile/document-form",
   createDocument: "https://example.test/profile/create-document",
@@ -157,6 +158,7 @@ export const profileEditingRoot = ({
   data-academic-persons-profile-editing
   data-update-url="${endpoints.update}"
   data-skip-sync-url="${endpoints.skipSync}"
+  data-visibility-url="${endpoints.visibility}"
   data-delete-image-url="${endpoints.deleteImage}"
   data-document-form-url="${endpoints.documentForm}"
   data-create-document-url="${endpoints.createDocument}"
@@ -429,19 +431,22 @@ export const statusToast = (): string => `
 </div>`;
 
 /**
- * `Partials/Profile/Header.html:5-97` - the profile name, the synchronisation
- * switch and the "edit all" toggle.
+ * `Partials/Profile/Header.html` - the profile name, the synchronisation
+ * switch, the visibility switch and the "edit all" toggle. `visible` is the
+ * state of the visibility switch, which is on while the profile is public.
  */
 export const profileHeader = ({
   profileUid = 1,
   nameFieldIds = "firstName lastName",
   name = "Ada Lovelace",
   skipSync = false,
+  visible = true,
 }: {
   profileUid?: number;
   nameFieldIds?: string;
   name?: string;
   skipSync?: boolean;
+  visible?: boolean;
 } = {}): string => `
 <header data-pe-profile-header>
   <h1 id="profile-editing-${profileUid}-name-heading" class="h2 fw-bolder mb-0"
@@ -453,6 +458,15 @@ export const profileHeader = ({
         aria-describedby="profile-editing-${profileUid}-skipSync-error" aria-invalid="false"${skipSync ? " checked" : ""} />
       <label class="form-check-label" for="profile-editing-${profileUid}-skipSync">Do not synchronise</label>
       <div id="profile-editing-${profileUid}-skipSync-error" class="invalid-feedback" role="alert"></div>
+    </div>
+  </form>
+  <form class="academic-persons-profile-editing__visibility-form flex-shrink-0" data-pe-visibility-form>
+    <div class="form-check form-switch">
+      <input class="form-check-input academic-persons-profile-editing__visibility-checkbox"
+        type="checkbox" name="visibility" id="profile-editing-${profileUid}-visibility" value="1"
+        aria-describedby="profile-editing-${profileUid}-visibility-error" aria-invalid="false"${visible ? " checked" : ""} />
+      <label class="form-check-label" for="profile-editing-${profileUid}-visibility">Show my profile publicly</label>
+      <div id="profile-editing-${profileUid}-visibility-error" class="invalid-feedback" role="alert"></div>
     </div>
   </form>
   <button class="btn rounded-0 btn-outline-secondary btn-sm" type="button"

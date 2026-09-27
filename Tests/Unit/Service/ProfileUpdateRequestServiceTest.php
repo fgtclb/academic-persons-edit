@@ -14,7 +14,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Stream;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ProfileUpdateRequestServiceTest extends UnitTestCase
@@ -25,7 +24,7 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $context = $this->createMock(Context::class);
         $context->expects($this->never())->method('getPropertyFromAspect');
         $profileRepository = $this->createMock(ProfileRepository::class);
-        $profileRepository->expects($this->never())->method('findByFrontendUser');
+        $profileRepository->expects($this->never())->method('findByFrontendUserIncludingHidden');
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createRequest('GET', 'not json'),
@@ -40,7 +39,7 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $context = $this->createMock(Context::class);
         $context->expects($this->never())->method('getPropertyFromAspect');
         $profileRepository = $this->createMock(ProfileRepository::class);
-        $profileRepository->expects($this->never())->method('findByFrontendUser');
+        $profileRepository->expects($this->never())->method('findByFrontendUserIncludingHidden');
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createRequest('POST', '{"profile": 123,'),
@@ -55,7 +54,7 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $context = $this->createMock(Context::class);
         $context->expects($this->never())->method('getPropertyFromAspect');
         $profileRepository = $this->createMock(ProfileRepository::class);
-        $profileRepository->expects($this->never())->method('findByFrontendUser');
+        $profileRepository->expects($this->never())->method('findByFrontendUserIncludingHidden');
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createRequest('POST', '{"profile":123,"data":[]}', 'text/plain'),
         );
@@ -68,7 +67,7 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $context = $this->createMock(Context::class);
         $context->expects($this->never())->method('getPropertyFromAspect');
         $profileRepository = $this->createMock(ProfileRepository::class);
-        $profileRepository->expects($this->never())->method('findByFrontendUser');
+        $profileRepository->expects($this->never())->method('findByFrontendUserIncludingHidden');
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createJsonRequest([
@@ -84,7 +83,7 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
     {
         $context = $this->createContext(false);
         $profileRepository = $this->createMock(ProfileRepository::class);
-        $profileRepository->expects($this->never())->method('findByFrontendUser');
+        $profileRepository->expects($this->never())->method('findByFrontendUserIncludingHidden');
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createValidRequest(),
@@ -100,11 +99,11 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $profileRepository = $this->createMock(ProfileRepository::class);
         $profileRepository
             ->expects($this->once())
-            ->method('findByFrontendUser')
+            ->method('findByFrontendUserIncludingHidden')
             ->with(37)
-            ->willReturn($this->createQueryResult([
+            ->willReturn([
                 $this->createProfile(456),
-            ]));
+            ]);
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createValidRequest(),
@@ -121,12 +120,12 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $profileRepository = $this->createMock(ProfileRepository::class);
         $profileRepository
             ->expects($this->once())
-            ->method('findByFrontendUser')
+            ->method('findByFrontendUserIncludingHidden')
             ->with(37)
-            ->willReturn($this->createQueryResult([
+            ->willReturn([
                 $this->createProfile(456),
                 $requestedProfile,
-            ]));
+            ]);
 
         $result = $this->createSubject($context, $profileRepository)->validate(
             $this->createValidRequest(),
@@ -214,52 +213,6 @@ final class ProfileUpdateRequestServiceTest extends UnitTestCase
         $profile = new Profile();
         $profile->_setProperty('uid', $uid);
         return $profile;
-    }
-
-    /**
-     * @param list<Profile> $profiles
-     * @return QueryResultInterface<int, Profile>
-     */
-    private function createQueryResult(array $profiles): QueryResultInterface
-    {
-        $position = 0;
-        $queryResult = $this->createMock(QueryResultInterface::class);
-        $queryResult
-            ->method('rewind')
-            ->willReturnCallback(
-                static function () use (&$position): void {
-                    $position = 0;
-                },
-            );
-        $queryResult
-            ->method('valid')
-            ->willReturnCallback(
-                static function () use (&$position, $profiles): bool {
-                    return array_key_exists($position, $profiles);
-                },
-            );
-        $queryResult
-            ->method('current')
-            ->willReturnCallback(
-                static function () use (&$position, $profiles): ?Profile {
-                    return $profiles[$position] ?? null;
-                },
-            );
-        $queryResult
-            ->method('key')
-            ->willReturnCallback(
-                static function () use (&$position): int {
-                    return $position;
-                },
-            );
-        $queryResult
-            ->method('next')
-            ->willReturnCallback(
-                static function () use (&$position): void {
-                    ++$position;
-                },
-            );
-        return $queryResult;
     }
 
     private function assertFailure(
