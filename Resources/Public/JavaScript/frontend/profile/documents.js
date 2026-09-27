@@ -72,6 +72,7 @@ const asDocumentField = (value) => {
     displayValue: String(field.displayValue ?? ""),
     helptext: String(field.helptext ?? ""),
     label: String(field.label ?? field.name),
+    managed: field.managed === true,
     max: field.max ?? null,
     min: field.min ?? null,
     name: field.name,

@@ -12,6 +12,15 @@
                 key="profileEditing.documents.hidden"
                 extensionName="AcademicPersonsEdit" />
         </span>
+        <f:if condition="{managed}">
+            <span
+                class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                data-pe-document-managed-badge>
+                <f:translate
+                    key="profileEditing.field.managed"
+                    extensionName="AcademicPersonsEdit" />
+            </span>
+        </f:if>
         <div
             class="d-flex flex-nowrap align-items-center gap-1"
             role="group"

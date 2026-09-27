@@ -17,6 +17,11 @@
                 <f:if condition="{field.validation.required}">
                     <abbr class="align-self-start" title="{f:translate(key: 'profileEditing.field.required', extensionName: 'AcademicPersonsEdit')}">*</abbr>
                 </f:if>
+                <f:if condition="{field.managed}">
+                    <f:render
+                        partial="Profile/Field/ManagedBadge"
+                        arguments="{elementId: elementId}" />
+                </f:if>
             </div>
             <f:if condition="{richText}">
                 <f:then>

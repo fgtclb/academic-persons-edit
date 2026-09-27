@@ -45,6 +45,25 @@ export const fieldControlId = (
   field: DocumentField,
 ): string => `${prefix}-${index}-${field.name}`;
 
+/**
+ * Whether the control of a field is disabled.
+ *
+ * A select and a checkbox know no read-only state, so a read-only one is
+ * disabled, as every control is while a request runs. The request is built
+ * from the editor's values, not from the controls, so a disabled control
+ * still sends its value.
+ */
+export const isControlDisabled = (
+  control: Element,
+  field: DocumentField,
+  pending: boolean,
+): boolean =>
+  field.disabled === true ||
+  pending ||
+  (field.readOnly === true &&
+    (control instanceof HTMLSelectElement ||
+      (control instanceof HTMLInputElement && control.type === "checkbox")));
+
 /** The id of the message of one field, which `aria-describedby` points at. */
 export const fieldErrorId = (
   prefix: string,
@@ -88,6 +107,8 @@ const inputTypeOf = (type: string): string =>
 const cloneControl = (options: FieldCloneOptions, controlId: string, errorId: string): DocumentFragment => {
   const { field, hook, value } = options;
   const disabled = flag(field.disabled === true || options.pending);
+  // See isControlDisabled(): a read-only select or checkbox is disabled.
+  const locked = flag(field.disabled === true || field.readOnly === true || options.pending);
   const invalid = options.error === undefined || options.error === "" ? "false" : "true";
   const shared = {
     contactField: hook === "contactField" ? field.name : undefined,
@@ -107,6 +128,7 @@ const cloneControl = (options: FieldCloneOptions, controlId: string, errorId: st
     const control = fillPrototype(options.source, "control-select", {
       ...shared,
       ...required,
+      disabled: locked,
     });
     const select = control.query<HTMLSelectElement>("select");
     control.list(
@@ -129,6 +151,7 @@ const cloneControl = (options: FieldCloneOptions, controlId: string, errorId: st
     const control = fillPrototype(options.source, "control-checkbox", {
       ...shared,
       checked: value === true ? true : undefined,
+      disabled: locked,
       // The three hooks of the permanent profile fields. A document or
       // contact checkbox has no autosave and no state labels, so the filler
       // takes the attributes off the clone rather than the prototype
@@ -230,6 +253,7 @@ export const cloneField = (options: FieldCloneOptions): DocumentFragment => {
           errorHidden: message === "" ? true : undefined,
           errorId,
           label: field.label,
+          managed: flag(field.managed),
         })
       : fillPrototype(
           options.source,
@@ -247,6 +271,7 @@ export const cloneField = (options: FieldCloneOptions): DocumentFragment => {
               field.characterLimit !== undefined &&
               field.characterLimit > 0,
             label: field.label,
+            managed: flag(field.managed),
             required: flag(field.required),
           },
         );

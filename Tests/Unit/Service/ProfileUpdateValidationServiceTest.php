@@ -104,13 +104,17 @@ final class ProfileUpdateValidationServiceTest extends UnitTestCase
         );
     }
 
+    /**
+     * A locked field keeps its stored value and the rest of the request is
+     * applied, the same answer a contract or contact field gets.
+     */
     #[Test]
-    public function profileFieldsMarkedReadOnlyByTheirSectionAreRejected(): void
+    public function profileFieldsMarkedReadOnlyByTheirSectionAreIgnored(): void
     {
-        $formData = new ProfileFormData(firstName: 'Persisted');
+        $formData = new ProfileFormData(firstName: 'Persisted', lastName: 'Persisted');
         $factory = $this->createStub(ProfileFormDataFactoryInterface::class);
         $factory->method('createFromProfile')->willReturn($formData);
-        $settings = ValidationSettings::forProfileFields(['firstName' => 'text'], ['firstName']);
+        $settings = ValidationSettings::forProfileFields(['firstName' => 'text', 'lastName' => 'text'], ['firstName']);
         $subject = new ProfileUpdateValidationService(
             $factory,
             new ProfileFormDataValidator(),
@@ -118,13 +122,68 @@ final class ProfileUpdateValidationServiceTest extends UnitTestCase
             $this->createStub(ProfileRichTextSanitizerInterface::class),
             $settings,
         );
-        $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage('Unknown profile property "firstName".');
-        $subject->createFormData(
+        $payload = new ProfileUpdatePayload(profileUid: 123, data: ['firstName' => 'Submitted', 'lastName' => 'Submitted']);
+
+        $result = $subject->createFormData($this->createPluginControllerActionContext(), new Profile(), $payload);
+
+        $this->assertFalse($result->hasPropertyOverride('firstName'));
+        $this->assertSame('Submitted', $result->getPropertyOverride('lastName'));
+        $this->assertSame(['lastName' => 'Submitted'], $subject->getNormalizedData($result, $payload));
+    }
+
+    /**
+     * A field the synchronisation manages on the profile is dropped like a
+     * locked one, although its settings let the owner write it.
+     */
+    #[Test]
+    public function aManagedProfileFieldIsIgnored(): void
+    {
+        $formData = new ProfileFormData(firstName: 'Persisted', lastName: 'Persisted');
+        $factory = $this->createStub(ProfileFormDataFactoryInterface::class);
+        $factory->method('createFromProfile')->willReturn($formData);
+        $settings = ValidationSettings::forProfileFields(['firstName' => 'text', 'lastName' => 'text']);
+        $subject = new ProfileUpdateValidationService(
+            $factory,
+            new ProfileFormDataValidator(),
+            new ProfileFieldOptionsService($settings),
+            $this->createStub(ProfileRichTextSanitizerInterface::class),
+            $settings,
+        );
+
+        $result = $subject->createFormData(
             $this->createPluginControllerActionContext(),
             new Profile(),
-            new ProfileUpdatePayload(profileUid: 123, data: ['firstName' => 'Submitted']),
+            new ProfileUpdatePayload(profileUid: 123, data: ['firstName' => 'Submitted', 'lastName' => 'Submitted']),
+            ['lastName'],
         );
+
+        $this->assertSame('Submitted', $result->getPropertyOverride('firstName'));
+        $this->assertFalse($result->hasPropertyOverride('lastName'));
+    }
+
+    /**
+     * Dropping a locked property must not hide a writable one that lost its
+     * value on the way: that is a defect, not a lock.
+     */
+    #[Test]
+    public function aWritablePropertyWithoutANormalizedValueStillThrows(): void
+    {
+        $settings = ValidationSettings::forProfileFields(['firstName' => 'text', 'lastName' => 'text']);
+        $subject = new ProfileUpdateValidationService(
+            $this->createStub(ProfileFormDataFactoryInterface::class),
+            new ProfileFormDataValidator(),
+            new ProfileFieldOptionsService($settings),
+            $this->createStub(ProfileRichTextSanitizerInterface::class),
+            $settings,
+        );
+        $formData = new ProfileFormData();
+        $formData->setPropertyOverride('firstName', 'Submitted');
+        $payload = new ProfileUpdatePayload(profileUid: 123, data: ['firstName' => 'Submitted', 'lastName' => 'Submitted']);
+
+        $this->assertSame(['firstName' => 'Submitted'], $subject->getNormalizedData($formData, $payload, ['lastName']));
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Profile property "lastName" was not normalized.');
+        $subject->getNormalizedData($formData, $payload);
     }
 
     #[Test]
@@ -141,13 +200,14 @@ final class ProfileUpdateValidationServiceTest extends UnitTestCase
             $this->createStub(ProfileRichTextSanitizerInterface::class),
             $settings,
         );
-        $this->expectException(\UnexpectedValueException::class);
-        $this->expectExceptionMessage('Unknown profile property "title".');
-        $subject->createFormData(
+
+        $result = $subject->createFormData(
             $this->createPluginControllerActionContext(),
             new Profile(),
             new ProfileUpdatePayload(profileUid: 123, data: ['title' => 'Submitted']),
         );
+
+        $this->assertFalse($result->hasPropertyOverride('title'));
     }
 
     #[Test]

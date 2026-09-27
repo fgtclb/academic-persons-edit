@@ -119,6 +119,7 @@ export const labels = {
   hide: "Hide in frontend",
   show: "Show in frontend",
   hidden: "Hidden",
+  managed: "Synchronised",
   contactActions: "Contact actions",
   edit: "Edit",
   delete: "Delete",
@@ -285,6 +286,7 @@ const fieldWrapper = (columnClass: string, checkbox: boolean): string =>
     <template data-pe-list="control"></template>
     <label class="form-check-label ms-2" data-pe-attr="for:controlId" data-pe-slot="label"></label>
     <template data-pe-list="helptext"></template>
+    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2" data-pe-when="managed">${labels.managed}</span>
     <div class="invalid-feedback d-block" role="alert" data-pe-attr="id:errorId hidden:errorHidden" data-pe-slot="error"></div>
   </div>
 </div>`
@@ -295,6 +297,7 @@ const fieldWrapper = (columnClass: string, checkbox: boolean): string =>
       <span class="text-danger ms-1" aria-hidden="true" data-pe-when="required">*</span>
     </label>
     <template data-pe-list="helptext"></template>
+    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2" data-pe-when="managed">${labels.managed}</span>
   </div>
   <template data-pe-list="control"></template>
   <div class="form-text text-end" aria-live="polite" data-pe-character-counter data-pe-when="hasCharacterLimit" data-pe-attr="data-pe-for:controlId">0 / <span data-pe-slot="characterLimit"></span></div>
@@ -364,13 +367,14 @@ export const prototypes = (): string => `
   <template data-pe-list="summary"></template>
   <div class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto pe-2">
     <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-when="hidden">${labels.hidden}</span>
+    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-when="managed">${labels.managed}</span>
     <div class="d-flex flex-nowrap align-items-center gap-1" role="group" aria-label="${labels.contactActions}" data-pe-contract-contact-actions>
     <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-hide title="${labels.hide}" aria-label="${labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden" hidden="hidden"></span></button>
     <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-view title="${labels.view}" aria-label="${labels.view}" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-attr="aria-controls:editorId aria-expanded:viewExpanded"><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>
     <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-sort="down" title="${labels.sortDown}" aria-label="${labels.sortDown}"><span data-test-icon="move-down"></span></button>
     <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-sort="up" title="${labels.sortUp}" aria-label="${labels.sortUp}"><span data-test-icon="move-up"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-delete title="${labels.delete}" aria-label="${labels.delete}" data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded"><span data-test-icon="delete"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-edit title="${labels.edit}" aria-label="${labels.edit}" data-pe-attr="aria-controls:editorId aria-expanded:editExpanded"><span data-test-icon="edit"></span></button>
+    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-when="deletable" data-pe-contract-contact-delete title="${labels.delete}" aria-label="${labels.delete}" data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded"><span data-test-icon="delete"></span></button>
+    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-when="editable" data-pe-contract-contact-edit title="${labels.edit}" aria-label="${labels.edit}" data-pe-attr="aria-controls:editorId aria-expanded:editExpanded"><span data-test-icon="edit"></span></button>
     </div>
   </div>
   <div class="col-12 mt-3" data-pe-list="editor" data-pe-attr="hidden:editorHidden"></div>

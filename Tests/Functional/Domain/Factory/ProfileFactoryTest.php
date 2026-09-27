@@ -66,6 +66,26 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
+     * A property the synchronisation manages on the profile is kept as
+     * stored, and the rest of the request is written.
+     */
+    #[Test]
+    public function updateSkipsAPropertyTheSynchronisationManages(): void
+    {
+        $formData = new ProfileFormData();
+        $formData->setPropertyOverride('firstName', 'Jean-Luc');
+        $formData->setPropertyOverride('lastName', 'Picard');
+
+        $this->applyAndPersist($formData, ['lastName']);
+
+        $row = $this->getConnectionPool()
+            ->getConnectionForTable('tx_academicpersons_domain_model_profile')
+            ->select(['first_name', 'last_name'], 'tx_academicpersons_domain_model_profile', ['uid' => 1])
+            ->fetchAssociative();
+        $this->assertSame(['first_name' => 'Jean-Luc', 'last_name' => 'Kirk'], $row);
+    }
+
+    /**
      * @param array<string, string> $submitted
      */
     private function updateProfileWith(array $submitted): void
@@ -80,7 +100,10 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
         ));
     }
 
-    private function applyAndPersist(ProfileFormData $formData): void
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function applyAndPersist(ProfileFormData $formData, array $managedProperties = []): void
     {
         $profile = $this->persistenceManager()->getObjectByIdentifier(1, Profile::class);
         $this->assertInstanceOf(Profile::class, $profile);
@@ -89,6 +112,7 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
             $this->createValidationSet('profile'),
             $profile,
             $formData,
+            $managedProperties,
         );
         $this->persistenceManager()->update($profile);
         $this->persistenceManager()->persistAll();

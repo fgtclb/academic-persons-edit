@@ -1,0 +1,18 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+    <f:comment>
+        The marker of a profile field the synchronisation manages on this
+        profile. The field is read-only for that reason, not because of the
+        editor configuration, so it says where the value comes from.
+    </f:comment>
+    <span
+        class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2"
+        data-pe-field-managed
+        data-pe-for="{elementId}">
+        <f:translate
+            key="profileEditing.field.managed"
+            extensionName="AcademicPersonsEdit" />
+    </span>
+</html>

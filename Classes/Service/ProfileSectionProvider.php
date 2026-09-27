@@ -43,6 +43,7 @@ final readonly class ProfileSectionProvider
     ) {}
 
     /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the edited profile
      * @return array<string, array{
      *     identifier: string,
      *     position: int,
@@ -50,9 +51,9 @@ final readonly class ProfileSectionProvider
      *     items: list<array{kind: 'field', field: array<string, mixed>}|array{kind: 'special', special: array<string, mixed>}>
      * }>
      */
-    public function getSections(): array
+    public function getSections(array $managedProperties = []): array
     {
-        $specialFields = $this->getSpecialFields();
+        $specialFields = $this->getSpecialFields($managedProperties);
         $consumedFields = [];
         $specialByFirstField = [];
         foreach ($specialFields as $special) {
@@ -80,7 +81,7 @@ final readonly class ProfileSectionProvider
                 if (isset($consumedFields[$field->identifier])) {
                     continue;
                 }
-                $items[] = ['kind' => 'field', 'field' => $this->createFieldView($field)];
+                $items[] = ['kind' => 'field', 'field' => $this->createFieldView($field, $managedProperties)];
             }
             $sections[$section->identifier] = $this->createSectionView($section, $items);
         }
@@ -88,6 +89,7 @@ final readonly class ProfileSectionProvider
     }
 
     /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the edited profile
      * @return array<string, array{
      *     identifier: string,
      *     type: string,
@@ -103,11 +105,11 @@ final readonly class ProfileSectionProvider
      *     helptext: string,
      * }>
      */
-    public function getSpecialFields(): array
+    public function getSpecialFields(array $managedProperties = []): array
     {
         $specialFields = [];
         foreach ($this->academicPersonsSettings->specialFields as $specialField) {
-            $specialFields[$specialField->identifier] = $this->createSpecialView($specialField);
+            $specialFields[$specialField->identifier] = $this->createSpecialView($specialField, $managedProperties);
         }
         return $specialFields;
     }
@@ -132,6 +134,7 @@ final readonly class ProfileSectionProvider
     }
 
     /**
+     * @param list<string> $managedProperties
      * @return array{
      *     identifier: string,
      *     type: string,
@@ -147,13 +150,13 @@ final readonly class ProfileSectionProvider
      *     helptext: string
      * }
      */
-    private function createSpecialView(SpecialField $specialField): array
+    private function createSpecialView(SpecialField $specialField, array $managedProperties): array
     {
         $fields = [];
         foreach ($specialField->fieldIdentifiers as $fieldIdentifier) {
             $field = $this->academicPersonsSettings->getProfileField($fieldIdentifier);
             if ($field !== null) {
-                $fieldView = $this->createFieldView($field);
+                $fieldView = $this->createFieldView($field, $managedProperties);
                 if (strtolower($specialField->renderType) === 'title') {
                     $fieldView['columnClass'] = self::TITLE_FIELD_COLUMN_CLASSES[$field->propertyName]
                         ?? 'col-12';
@@ -179,10 +182,18 @@ final readonly class ProfileSectionProvider
     }
 
     /**
+     * A field the synchronisation manages on the edited profile is shown
+     * read-only and marked as synchronised. It gets a copy of its validation
+     * for this one page, never cached, and loses `required`, as a
+     * `frontendreadonly` field does: the owner cannot supply a value they
+     * cannot edit.
+     *
+     * @param list<string> $managedProperties
      * @return array<string, mixed>
      */
-    private function createFieldView(ProfileField $field): array
+    private function createFieldView(ProfileField $field, array $managedProperties): array
     {
+        $managed = in_array($field->propertyName, $managedProperties, true);
         $view = [
             'identifier' => $field->identifier,
             'labelKey' => 'profile.' . $field->identifier . '.label',
@@ -192,7 +203,8 @@ final readonly class ProfileSectionProvider
             'fieldType' => $field->fieldType,
             'renderType' => $field->renderType,
             'autocomplete' => self::FIELD_AUTOCOMPLETE[$field->propertyName] ?? '',
-            'validation' => $field->validation,
+            'validation' => $managed ? $this->createManagedValidation($field->validation) : $field->validation,
+            'managed' => $managed,
             'position' => $field->position,
             'helptext' => $field->helptext,
         ];
@@ -220,14 +232,35 @@ final readonly class ProfileSectionProvider
                         tcaConfig: [],
                         inputType: 'text',
                     ),
+                    'managed' => false,
                     'position' => $field->position + 1,
                 ]
-                : $this->createFieldView($titleField);
+                : $this->createFieldView($titleField, $managedProperties);
             $view['groupFields'] = [$view, $titleView];
             $view['groupDisplayFields'] = [$titleView, $view];
             $view['groupFieldIdentifiers'] = $field->identifier . ' ' . $titleIdentifier;
             $view['groupDisplayFieldIdentifiers'] = $titleIdentifier . ' ' . $field->identifier;
         }
         return $view;
+    }
+
+    /**
+     * Every argument of the constructor is passed on, so an argument added to
+     * `Validation` later has to be added here as well.
+     */
+    private function createManagedValidation(Validation $validation): Validation
+    {
+        return new Validation(
+            identifier: $validation->identifier,
+            fieldName: $validation->fieldName,
+            required: false,
+            disabled: $validation->disabled,
+            readOnly: true,
+            validatorClassNames: $validation->validatorClassNames,
+            tcaConfig: $validation->tcaConfig,
+            inputType: $validation->inputType,
+            flags: $validation->flags,
+            characterLimit: $validation->characterLimit,
+        );
     }
 }

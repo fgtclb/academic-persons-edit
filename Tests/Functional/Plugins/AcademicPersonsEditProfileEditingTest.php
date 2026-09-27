@@ -1840,8 +1840,12 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         );
     }
 
+    /**
+     * A locked field keeps its stored value, as a locked field of a contract
+     * or contact does, and the request itself succeeds.
+     */
     #[Test]
-    public function profileUpdateRejectsAProfileFieldMarkedReadOnlyInItsSection(): void
+    public function profileUpdateIgnoresAProfileFieldMarkedReadOnlyInItsSection(): void
     {
         $this->setUpProfileEditingTestCase();
         $updateUrl = $this->extractDataUrl($this->renderProfileEditingPage(), 'data-update-url');
@@ -1850,10 +1854,9 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             ['profile' => self::PROFILE_ID, 'data' => ['firstName' => 'Manipulated']],
         );
         $body = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertSame(422, $response->getStatusCode(), (string)$response->getBody());
-        $this->assertFalse($body['success']);
-        $this->assertSame('invalid_profile_data', $body['error']);
-        $this->assertSame('Unknown profile property "firstName".', $body['message']);
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertTrue($body['success']);
+        $this->assertSame([], $body['data']);
         $storedValue = $this->getConnectionPool()
             ->getConnectionForTable('tx_academicpersons_domain_model_profile')
             ->executeQuery(

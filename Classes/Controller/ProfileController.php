@@ -61,6 +61,7 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
+use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileFieldOptionsService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileRichTextSanitizerInterface;
@@ -109,6 +110,7 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
  *      type: string,
  *      required: bool,
  *      readOnly: bool,
+ *      managed: bool,
  *      disabled: bool,
  *      richText: bool,
  *      characterLimit: int,
@@ -129,6 +131,9 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
  *      uid: int,
  *      sorting: int,
  *      hidden: bool,
+ *      managed: bool,
+ *      editable: bool,
+ *      deletable: bool,
  *      values: array<string, mixed>,
  *      display: array<string, string>,
  *      summary: list<array{label: string, value: string}>
@@ -268,6 +273,7 @@ final class ProfileController extends ActionController
         private readonly OrganisationalUnitRepository $organisationalUnitRepository,
         private readonly LocationRepository $locationRepository,
         private readonly ProfileRichTextSanitizerInterface $profileRichTextSanitizer,
+        private readonly ManagedRecordLocks $managedRecordLocks,
     ) {}
 
     /**
@@ -410,12 +416,13 @@ final class ProfileController extends ActionController
                 1777046201,
             );
         }
+        $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
-            'profileSections' => $this->profileSectionProvider->getSections(),
-            'specialFields' => $this->profileSectionProvider->getSpecialFields(),
+            'profileSections' => $this->profileSectionProvider->getSections($managedProperties),
+            'specialFields' => $this->profileSectionProvider->getSpecialFields($managedProperties),
             'profileFieldOptions' => $this->profileFieldOptionsService->getOptionsByField($this->request),
             'documentSections' => $this->profileDocumentSectionProvider->getSections($profile),
             'imageAllowedMimeTypes' => $this->resolveImageAllowedMimeTypes(),
@@ -609,11 +616,13 @@ final class ProfileController extends ActionController
                 $this->request,
                 $this->settings,
             );
+            $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
             try {
                 $profileFormData = $this->profileUpdateValidationService->createFormData(
                     $pluginControllerActionContext,
                     $profile,
                     $payload,
+                    $managedProperties,
                 );
             } catch (\UnexpectedValueException $exception) {
                 // Only this call describes the submitted payload in its message, so
@@ -647,6 +656,7 @@ final class ProfileController extends ActionController
                 $this->academicPersonsSettings->getProfileUpdateValidationSet(),
                 $profile,
                 $profileFormData,
+                $managedProperties,
             );
             $this->profileRepository->update($updatedProfile);
             $this->persistAndDispatchProfileUpdate($updatedProfile);
@@ -656,6 +666,7 @@ final class ProfileController extends ActionController
                 'data' => $this->profileUpdateValidationService->getNormalizedData(
                     $profileFormData,
                     $payload,
+                    $managedProperties,
                 ),
             ]);
         } catch (PropagateResponseException $exception) {
@@ -709,6 +720,15 @@ final class ProfileController extends ActionController
                 'invalid_payload',
                 400,
                 'The payload must contain exactly one boolean skipSync value.',
+            );
+        }
+        if (!$this->isSpecialFieldWritable('skipSync')) {
+            // The switch is the whole request, so a locked switch is refused
+            // rather than ignored as a locked field of the profile form is.
+            $this->throwJsonError(
+                'invalid_profile_data',
+                422,
+                'Unknown profile property "skipSync".',
             );
         }
         try {
@@ -906,13 +926,15 @@ final class ProfileController extends ActionController
             if ($recordUid !== null && $record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
+            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
+            $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, $mode);
             $response = [
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'section' => $section->identifier,
                 'kind' => $section->isContractSection() ? 'contract' : 'profileInformation',
                 'record' => $record?->getUid(),
-                'fields' => $this->getDocumentFieldDefinitions($section, $record),
+                'fields' => $this->getDocumentFieldDefinitions($section, $record, $managedProperties),
             ];
             if ($record instanceof Contract) {
                 $response['contactSections'] = $this->getContractContactSections($record);
@@ -1007,10 +1029,13 @@ final class ProfileController extends ActionController
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
+            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
+            $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, 'edit');
             $normalizedFields = $this->normalizeAndValidateDocumentFields(
                 $section,
                 $this->getSubmittedDocumentFields($data),
                 false,
+                $managedProperties,
             );
             if ($record instanceof Contract) {
                 $this->contractRepository->update(
@@ -1018,6 +1043,7 @@ final class ProfileController extends ActionController
                         $section->validationSet,
                         $record,
                         $this->createContractFormData($normalizedFields),
+                        $managedProperties,
                     ),
                 );
             } else {
@@ -1110,6 +1136,12 @@ final class ProfileController extends ActionController
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
+            $this->assertManagedDocumentActionAllowed(
+                $section,
+                $record,
+                $this->managedRecordLocks->getManagedProperties($record),
+                'delete',
+            );
             if ($record instanceof Contract) {
                 $this->contractRepository->remove($record);
             } else {
@@ -1236,6 +1268,8 @@ final class ProfileController extends ActionController
             if ($recordUid !== null && $record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
+            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
+            $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, $mode);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
@@ -1243,7 +1277,7 @@ final class ProfileController extends ActionController
                 'section' => $section->identifier,
                 'record' => $record?->getUid(),
                 'title' => $this->getContractContactSingularLabel($section),
-                'fields' => $this->getContractContactFieldDefinitions($section, $record),
+                'fields' => $this->getContractContactFieldDefinitions($section, $record, $managedProperties),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
@@ -1307,12 +1341,15 @@ final class ProfileController extends ActionController
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
+            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
+            $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, 'edit');
             $normalizedFields = $this->normalizeAndValidateContractContactFields(
                 $section,
                 $this->getSubmittedDocumentFields($data),
                 false,
+                $managedProperties,
             );
-            $this->updateContractContactRecord($section, $record, $normalizedFields);
+            $this->updateContractContactRecord($section, $record, $normalizedFields, $managedProperties);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
                 'success' => true,
@@ -1346,6 +1383,12 @@ final class ProfileController extends ActionController
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
+            $this->assertManagedContractContactActionAllowed(
+                $section,
+                $record,
+                $this->managedRecordLocks->getManagedProperties($record),
+                'delete',
+            );
             $this->removeContractContactRecord($record);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
@@ -1533,6 +1576,29 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * Refuses the delete of a contact the synchronisation manages, and its edit
+     * once every editable field of it is managed. Hiding and sorting are not
+     * checked here: the synchronisation writes neither.
+     *
+     * @param ContractContactRecord|null $record
+     * @param list<string> $managedProperties
+     */
+    private function assertManagedContractContactActionAllowed(
+        ContractContactSection $section,
+        Address|Email|PhoneNumber|null $record,
+        array $managedProperties,
+        string $action,
+    ): void {
+        if (in_array($action, $this->managedRecordLocks->getLockedContactActions($section, $record, $managedProperties), true)) {
+            $this->throwJsonError(
+                'contract_contact_action_not_allowed',
+                403,
+                'This action is not allowed for a synchronised Contract contact.',
+            );
+        }
+    }
+
+    /**
      * Validates the current request payload and resolves the profile and document section.
      *
      * @return array{0: Profile, 1: DocumentSection, 2: array<string, mixed>}
@@ -1659,6 +1725,28 @@ final class ProfileController extends ActionController
         };
         if (!$allowed) {
             $this->throwJsonError('document_action_not_allowed', 403, 'This action is not allowed for the document section.');
+        }
+    }
+
+    /**
+     * Refuses the delete of a contract the synchronisation manages, and its edit
+     * once every editable field of it is managed. Profile information has no
+     * import identifier and therefore nothing managed.
+     *
+     * @param list<string> $managedProperties
+     */
+    private function assertManagedDocumentActionAllowed(
+        DocumentSection $section,
+        Contract|ProfileInformation|null $record,
+        array $managedProperties,
+        string $action,
+    ): void {
+        if (in_array($action, $this->managedRecordLocks->getLockedDocumentActions($section, $record, $managedProperties), true)) {
+            $this->throwJsonError(
+                'document_action_not_allowed',
+                403,
+                'This action is not allowed for a synchronised record.',
+            );
         }
     }
 
@@ -1869,11 +1957,13 @@ final class ProfileController extends ActionController
 
     /**
      * @param ContractContactRecord|null $record
+     * @param list<string> $managedProperties the properties the synchronisation manages on the record
      * @return list<DocumentFieldDefinition>
      */
     private function getContractContactFieldDefinitions(
         ContractContactSection $section,
         Address|Email|PhoneNumber|null $record,
+        array $managedProperties = [],
     ): array {
         $definitions = [];
         foreach ($section->fields as $field) {
@@ -1891,9 +1981,29 @@ final class ProfileController extends ActionController
             $definition['characterLimit'] = $field->validation->characterLimit;
             $definition['autocomplete'] = $field->autocomplete;
             $definition['helptext'] = $this->getContractContactHelptext($field);
-            $definitions[] = $definition;
+            $definitions[] = $this->applyManagedField($definition, $managedProperties);
         }
         return $definitions;
+    }
+
+    /**
+     * Locks a field the synchronisation manages on the record. It is not
+     * required any more, as for `frontendreadonly`: the owner cannot supply a
+     * value they cannot edit.
+     *
+     * @param DocumentFieldDefinition $definition
+     * @param list<string> $managedProperties
+     * @return DocumentFieldDefinition
+     */
+    private function applyManagedField(array $definition, array $managedProperties): array
+    {
+        if (!in_array($definition['name'], $managedProperties, true)) {
+            return $definition;
+        }
+        $definition['readOnly'] = true;
+        $definition['required'] = false;
+        $definition['managed'] = true;
+        return $definition;
     }
 
     private function getContractContactTranslationPrefix(ContractContactSection $section): string
@@ -2004,9 +2114,11 @@ final class ProfileController extends ActionController
         ContractContactSection $section,
         Address|Email|PhoneNumber $record,
     ): array {
+        $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
+        $lockedActions = $this->managedRecordLocks->getLockedContactActions($section, $record, $managedProperties);
         $values = [];
         $display = [];
-        foreach ($this->getContractContactFieldDefinitions($section, $record) as $field) {
+        foreach ($this->getContractContactFieldDefinitions($section, $record, $managedProperties) as $field) {
             $values[$field['name']] = $field['value'];
             $display[$field['name']] = $field['displayValue'];
         }
@@ -2014,6 +2126,9 @@ final class ProfileController extends ActionController
             'uid' => (int)$record->getUid(),
             'sorting' => $record->getSorting(),
             'hidden' => $record->getHidden(),
+            'managed' => in_array('delete', $lockedActions, true),
+            'editable' => !in_array('edit', $lockedActions, true),
+            'deletable' => !in_array('delete', $lockedActions, true),
             'values' => $values,
             'display' => $display,
             'summary' => $this->getContractContactSummary($section, $display),
@@ -2056,24 +2171,34 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * A field the section does not have is refused. A locked one, managed on
+     * the record or locked with `readonly`, `frontendreadonly` or `disabled`,
+     * is dropped and keeps its stored value, because the editor sends every
+     * field of the open record, the locked ones included.
+     *
      * @param array<string, mixed> $fields
+     * @param list<string> $managedProperties
      * @return array<string, string>
      */
     private function normalizeAndValidateContractContactFields(
         ContractContactSection $section,
         array $fields,
         bool $creating,
+        array $managedProperties = [],
     ): array {
         $definitionsByName = [];
-        foreach ($this->getContractContactFieldDefinitions($section, null) as $definition) {
+        foreach ($this->getContractContactFieldDefinitions($section, null, $managedProperties) as $definition) {
             $definitionsByName[$definition['name']] = $definition;
         }
         $errors = [];
         $normalized = [];
         foreach ($fields as $name => $value) {
             $definition = $definitionsByName[$name] ?? null;
-            if ($definition === null || $definition['readOnly'] || $definition['disabled']) {
+            if ($definition === null) {
                 $errors[$name][] = 'This field cannot be changed.';
+                continue;
+            }
+            if ($definition['readOnly'] || $definition['disabled']) {
                 continue;
             }
             try {
@@ -2157,28 +2282,30 @@ final class ProfileController extends ActionController
     /**
      * @param ContractContactRecord $record
      * @param array<string, string> $fields
+     * @param list<string> $managedProperties
      */
     private function updateContractContactRecord(
         ContractContactSection $section,
         Address|Email|PhoneNumber $record,
         array $fields,
+        array $managedProperties,
     ): void {
         $formData = $this->createContractContactFormData($section, $fields);
         if ($record instanceof Address && $formData instanceof AddressFormData) {
             $this->addressRepository->update(
-                $this->addressFactory->updateFromFormData($section->validationSet, $record, $formData),
+                $this->addressFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
             );
             return;
         }
         if ($record instanceof Email && $formData instanceof EmailFormData) {
             $this->emailRepository->update(
-                $this->emailFactory->updateFromFormData($section->validationSet, $record, $formData),
+                $this->emailFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
             );
             return;
         }
         if ($record instanceof PhoneNumber && $formData instanceof PhoneNumberFormData) {
             $this->phoneNumberRepository->update(
-                $this->phoneNumberFactory->updateFromFormData($section->validationSet, $record, $formData),
+                $this->phoneNumberFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
             );
             return;
         }
@@ -2300,11 +2427,13 @@ final class ProfileController extends ActionController
      *
      * @param DocumentSection $section The document section whose fields should be resolved.
      * @param Contract|ProfileInformation|null $record The current record used to populate field values.
+     * @param list<string> $managedProperties The properties the synchronisation manages on the record.
      * @return list<DocumentFieldDefinition>
      */
     private function getDocumentFieldDefinitions(
         DocumentSection $section,
         Contract|ProfileInformation|null $record,
+        array $managedProperties = [],
     ): array {
         $definitions = $section->isContractSection()
             ? $this->getContractFieldDefinitions($record instanceof Contract ? $record : null)
@@ -2330,6 +2459,7 @@ final class ProfileController extends ActionController
             $definition['helptext'] = $helptext === ''
                 ? ''
                 : ($this->translate($helptext) ?? $helptext);
+            $definition = $this->applyManagedField($definition, $managedProperties);
         }
         unset($definition);
         return $definitions;
@@ -2504,6 +2634,7 @@ final class ProfileController extends ActionController
             'type' => $type,
             'required' => false,
             'readOnly' => false,
+            'managed' => false,
             'disabled' => false,
             'richText' => $richText,
             'characterLimit' => 0,
@@ -2662,17 +2793,24 @@ final class ProfileController extends ActionController
      * types, and applies the section's validation rules. Required fields are also
      * enforced when creating a new document.
      *
+     * A field the section does not have is refused. A locked one, managed on
+     * the record or locked with `readonly`, `frontendreadonly` or `disabled`,
+     * is dropped and keeps its stored value, because the editor sends every
+     * field of the open record, the locked ones included.
+     *
      * @param DocumentSection $section The document section whose field definitions and validation rules apply.
      * @param array<string, mixed> $fields Raw field data submitted by the client, keyed by field name.
      * @param bool $creating Whether the document is currently being created.
+     * @param list<string> $managedProperties The properties the synchronisation manages on the record.
      * @return array<string, mixed> Normalized and validated field values keyed by field name.
      */
     private function normalizeAndValidateDocumentFields(
         DocumentSection $section,
         array $fields,
         bool $creating,
+        array $managedProperties = [],
     ): array {
-        $definitions = $this->getDocumentFieldDefinitions($section, null);
+        $definitions = $this->getDocumentFieldDefinitions($section, null, $managedProperties);
         $definitionsByName = [];
         foreach ($definitions as $definition) {
             $definitionsByName[$definition['name']] = $definition;
@@ -2681,8 +2819,11 @@ final class ProfileController extends ActionController
         $normalized = [];
         foreach ($fields as $name => $value) {
             $definition = $definitionsByName[$name] ?? null;
-            if ($definition === null || $definition['readOnly'] || $definition['disabled']) {
+            if ($definition === null) {
                 $errors[$name][] = 'This field cannot be changed.';
+                continue;
+            }
+            if ($definition['readOnly'] || $definition['disabled']) {
                 continue;
             }
             try {

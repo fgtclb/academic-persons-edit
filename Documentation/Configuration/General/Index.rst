@@ -47,8 +47,12 @@ from the same file.
 Consequences worth knowing before reporting a problem:
 
 *   A field configured :yaml:`disabled`, :yaml:`readonly` or
-    :yaml:`frontendreadonly` is rendered locked. The ProfileEditing JSON
-    endpoint rejects attempts to submit it.
+    :yaml:`frontendreadonly` is rendered locked. A value submitted for it is
+    ignored and keeps the stored one, while the other fields of the same save
+    are stored. The editor sends every field of an open contract or contact
+    when it saves, the locked ones included.
+*   A field the synchronisation owns on a record is locked on that record
+    only, see :ref:`configuration-general-managed-fields`.
 *   :guilabel:`First name`, :guilabel:`Middle name` and :guilabel:`Last name` are
     **locked by default**, because profile names are usually owned by the
     connected frontend user record and synchronised from elsewhere. They are
@@ -66,6 +70,35 @@ Consequences worth knowing before reporting a problem:
 See :ref:`configuration-editor-settings` for the schema, supported validator
 flags, document aliases, shipped defaults and override rules. The same
 :yaml:`profile` map also controls the public detail layout.
+
+..  _configuration-general-managed-fields:
+
+Fields the synchronisation owns
+===============================
+
+The :yaml:`managedFields` map of :file:`EXT:academic_persons` names the fields a
+synchronisation or an import owns, per record type (see the
+`Managed fields <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/ManagedFields/Index.html>`__
+page of that extension). The editor applies it to the records the
+synchronisation wrote: a profile, contract or contact with an import
+identifier, of the default language, whose profile is not excluded with
+:guilabel:`Skip synchronisation`.
+
+*   A managed field is shown read-only with the marker
+    :guilabel:`Synchronised`, on the profile page and in the contract and
+    contact forms. A select or a checkbox is shown disabled. A value submitted
+    for it is ignored.
+*   A contract or contact with a managed field offers no delete, and no edit
+    once every field the owner could edit is managed. The endpoints refuse
+    both with the status 403.
+*   Hiding, showing and sorting such a row stay available. The
+    synchronisation never changes them.
+*   In a translated site language a managed field whose value all languages
+    share stays locked, a translated one is editable, as in the backend, and
+    a synchronised row still offers no delete.
+*   Records the owner added, and every record of an excluded profile, keep
+    every action the configuration allows. An installation that names no
+    managed field sees no difference.
 
 ..  _configuration-general-webp:
 

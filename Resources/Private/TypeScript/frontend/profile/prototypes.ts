@@ -48,6 +48,7 @@ const fieldSlots = [
   "compact",
   "controlId",
   "label",
+  "managed",
   "errorHidden",
   "errorId",
   "error",
@@ -138,6 +139,9 @@ export const prototypeSlots = {
   "contact-row": [
     "uid",
     "hidden",
+    "managed",
+    "editable",
+    "deletable",
     "editorId",
     "viewExpanded",
     "editExpanded",

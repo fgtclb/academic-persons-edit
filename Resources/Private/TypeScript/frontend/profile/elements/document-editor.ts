@@ -45,6 +45,7 @@ import {
   cloneDisplayRow,
   cloneField,
   fieldControlId,
+  isControlDisabled,
 } from "@fgtclb/academic-persons-edit/frontend/profile/elements/field-clone.js";
 import {
   profileContractContactsElementName,
@@ -470,7 +471,7 @@ export class ProfileDocumentEditorElement extends ProfileEditingElement<ProfileD
           control instanceof HTMLSelectElement ||
           control instanceof HTMLTextAreaElement
         ) {
-          control.disabled = field.disabled || this.pending;
+          control.disabled = isControlDisabled(control, field, this.pending);
         }
       });
     }

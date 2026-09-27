@@ -56,7 +56,7 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
     public static function prototypeProvider(): array
     {
         $control = ['controlId', 'name', 'disabled', 'describedBy', 'invalid', 'documentField', 'contactField'];
-        $field = ['columnClass', 'compact', 'controlId', 'label', 'errorHidden', 'errorId', 'error'];
+        $field = ['columnClass', 'compact', 'controlId', 'label', 'managed', 'errorHidden', 'errorId', 'error'];
         $panel = [
             'busy', 'pending', 'spinnerHidden', 'errorHidden', 'error', 'isDelete',
             'isSave', 'deleteConfirmation', 'showDisplay', 'showFields', 'showActions',
@@ -90,8 +90,8 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
             ],
             'contact-row' => [
                 [
-                    'uid', 'hidden', 'editorId', 'viewExpanded', 'editExpanded',
-                    'deleteExpanded', 'editorHidden',
+                    'uid', 'hidden', 'managed', 'editable', 'deletable', 'editorId', 'viewExpanded',
+                    'editExpanded', 'deleteExpanded', 'editorHidden',
                 ],
                 ['summary', 'editor'],
             ],

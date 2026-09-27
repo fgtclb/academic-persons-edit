@@ -74,7 +74,7 @@ const contact = (uid: number, city: string, hidden = false): {
 });
 
 const addresses = (
-  ...items: ReturnType<typeof contact>[]
+  ...items: ContractContactSection["items"]
 ): ContractContactSection[] => [
   {
     identifier: "addresses",
@@ -169,6 +169,55 @@ describe("the contract contacts element", () => {
   });
 
   describe("the list", () => {
+    /**
+     * A contact the synchronisation maintains cannot be deleted, and not
+     * edited once every editable field of it is maintained. The server says
+     * so per item. Hiding and sorting stay, and an item without the flags,
+     * as an older controller answers it, keeps every button.
+     */
+    it("takes the delete and the edit away from a synchronised contact", async () => {
+      const element = await mount({
+        sections: addresses(
+          { ...contact(21, "London"), managed: true, editable: false, deletable: false },
+          { ...contact(22, "Turin"), managed: true, editable: true, deletable: false },
+          contact(23, "Rome"),
+        ),
+      });
+      const controls = (uid: number): string[] =>
+        [
+          "[data-pe-contract-contact-hide]",
+          "[data-pe-contract-contact-view]",
+          '[data-pe-contract-contact-sort="up"]',
+          "[data-pe-contract-contact-edit]",
+          "[data-pe-contract-contact-delete]",
+        ].filter(
+          (selector): boolean =>
+            element.querySelector(`[data-pe-contract-contact-item="${uid}"] ${selector}`) !== null,
+        );
+      const badge = (uid: number): string | undefined =>
+        Array.from(
+          element.querySelectorAll<HTMLElement>(`[data-pe-contract-contact-item="${uid}"] .badge`),
+        )
+          .map((node): string => node.textContent?.trim() ?? "")
+          .find((text): boolean => text === labels.managed);
+
+      assert.deepEqual(controls(21), [
+        "[data-pe-contract-contact-hide]",
+        "[data-pe-contract-contact-view]",
+        '[data-pe-contract-contact-sort="up"]',
+      ]);
+      assert.deepEqual(controls(22), [
+        "[data-pe-contract-contact-hide]",
+        "[data-pe-contract-contact-view]",
+        '[data-pe-contract-contact-sort="up"]',
+        "[data-pe-contract-contact-edit]",
+      ]);
+      assert.equal(controls(23).length, 5);
+      assert.equal(badge(21), labels.managed);
+      assert.equal(badge(22), labels.managed);
+      assert.equal(badge(23), undefined);
+    });
+
     it("renders one section per entry, with its heading and its rows", async () => {
       const element = await mount({
         sections: [
@@ -380,6 +429,84 @@ describe("the contract contacts element", () => {
   });
 
   describe("the editor", () => {
+    /**
+     * A field the synchronisation maintains arrives read-only with a marker.
+     * A select knows no read-only state, so a read-only one is disabled, and
+     * a field without the marker carries none.
+     */
+    it("marks a synchronised field and locks a read-only select", async () => {
+      const element = await mount({
+        sections: addresses(contact(21, "London")),
+        editor: openEditor({
+          mode: "edit",
+          record: 21,
+          fields: [
+            field({ name: "city", readOnly: true, managed: true }),
+            field({
+              name: "country",
+              label: "Country",
+              type: "select",
+              readOnly: true,
+              managed: true,
+              options: [{ label: "Italy", value: "it" }],
+            }),
+            field({ name: "street", label: "Street" }),
+          ],
+          values: { city: "London", country: "it", street: "" },
+        }),
+      });
+      // The marker stands next to the label of its field.
+      const marked = (name: string): boolean => {
+        const control = select(element, `[data-pe-contract-contact-field="${name}"]`, HTMLElement);
+        const label = select(element, `label[for="${control.id}"]`, HTMLLabelElement);
+        return Array.from(label.parentElement?.querySelectorAll<HTMLElement>(".badge") ?? []).some(
+          (badge): boolean => badge.textContent?.trim() === labels.managed,
+        );
+      };
+
+      assert.equal(select(element, '[data-pe-contract-contact-field="city"]', HTMLInputElement).readOnly, true);
+      assert.equal(select(element, '[data-pe-contract-contact-field="country"]', HTMLSelectElement).disabled, true);
+      assert.equal(select(element, '[data-pe-contract-contact-field="street"]', HTMLInputElement).readOnly, false);
+      assert.equal(marked("city"), true);
+      assert.equal(marked("country"), true);
+      assert.equal(marked("street"), false);
+    });
+
+    /**
+     * The state a request leaves behind: every control is disabled while it
+     * runs, and afterwards a read-only select has to stay disabled while an
+     * editable one comes back.
+     */
+    it("keeps a read-only select disabled when a request ends", async () => {
+      const fields = [
+        field({
+          name: "type",
+          label: "Type",
+          type: "select",
+          readOnly: true,
+          options: [{ label: "Business", value: "business" }],
+        }),
+        field({
+          name: "country",
+          label: "Country",
+          type: "select",
+          options: [{ label: "Italy", value: "it" }],
+        }),
+      ];
+      const editor = openEditor({ mode: "edit", record: 21, fields, values: { type: "business", country: "it" } });
+      const element = await mount({ sections: addresses(contact(21, "London")), editor });
+      const disabled = (name: string): boolean =>
+        select(element, `[data-pe-contract-contact-field="${name}"]`, HTMLSelectElement).disabled;
+
+      element.editor = { ...editor, pending: true };
+      await element.updateComplete;
+      assert.deepEqual([disabled("type"), disabled("country")], [true, true]);
+
+      element.editor = { ...editor, pending: false };
+      await element.updateComplete;
+      assert.deepEqual([disabled("type"), disabled("country")], [true, false]);
+    });
+
     it("stands below the heading of its section for an addition", async () => {
       const element = await mount({
         sections: addresses(contact(21, "London")),

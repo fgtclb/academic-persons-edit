@@ -4,6 +4,7 @@ import {
 } from "@fgtclb/academic-persons-edit/frontend/profile/prototypes.js";
 import { parseRichTextPreview } from "@fgtclb/academic-persons-edit/frontend/profile/rich-text.js";
 const fieldControlId = (prefix, index, field) => `${prefix}-${index}-${field.name}`;
+const isControlDisabled = (control, field, pending) => field.disabled === true || pending || field.readOnly === true && (control instanceof HTMLSelectElement || control instanceof HTMLInputElement && control.type === "checkbox");
 const fieldErrorId = (prefix, index, field) => `${prefix}-error-${index}-${field.name}`;
 const text = (value) => value === null || value === void 0 ? "" : String(value);
 const flag = (value) => value === true ? true : void 0;
@@ -12,6 +13,7 @@ const inputTypeOf = (type) => type === "" || type === "date" ? "text" : type;
 const cloneControl = (options, controlId, errorId) => {
   const { field, hook, value } = options;
   const disabled = flag(field.disabled === true || options.pending);
+  const locked = flag(field.disabled === true || field.readOnly === true || options.pending);
   const invalid = options.error === void 0 || options.error === "" ? "false" : "true";
   const shared = {
     contactField: hook === "contactField" ? field.name : void 0,
@@ -26,7 +28,8 @@ const cloneControl = (options, controlId, errorId) => {
   if (field.type === "select") {
     const control = fillPrototype(options.source, "control-select", {
       ...shared,
-      ...required
+      ...required,
+      disabled: locked
     });
     const select = control.query("select");
     control.list(
@@ -47,6 +50,7 @@ const cloneControl = (options, controlId, errorId) => {
     const control = fillPrototype(options.source, "control-checkbox", {
       ...shared,
       checked: value === true ? true : void 0,
+      disabled: locked,
       // The three hooks of the permanent profile fields. A document or
       // contact checkbox has no autosave and no state labels, so the filler
       // takes the attributes off the clone rather than the prototype
@@ -125,7 +129,8 @@ const cloneField = (options) => {
     error: message,
     errorHidden: message === "" ? true : void 0,
     errorId,
-    label: field.label
+    label: field.label,
+    managed: flag(field.managed)
   }) : fillPrototype(
     options.source,
     field.type === "textarea" ? "field-wide" : "field-default",
@@ -139,6 +144,7 @@ const cloneField = (options) => {
       errorId,
       hasCharacterLimit: field.richText === true && field.characterLimit !== void 0 && field.characterLimit > 0,
       label: field.label,
+      managed: flag(field.managed),
       required: flag(field.required)
     }
   );
@@ -187,5 +193,6 @@ export {
   cloneDisplayRow,
   cloneField,
   fieldControlId,
-  fieldErrorId
+  fieldErrorId,
+  isControlDisabled
 };

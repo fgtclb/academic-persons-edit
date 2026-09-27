@@ -19,25 +19,34 @@ class PhoneNumberFactory
     {
         $phoneNumber = new PhoneNumberModel();
         $phoneNumber = $this->setContract($validationSet, $phoneNumber, $contract);
-        $phoneNumber = $this->setPhoneNumber($validationSet, $phoneNumber, $form);
-        $phoneNumber = $this->setType($validationSet, $phoneNumber, $form);
+        $phoneNumber = $this->setPhoneNumber($validationSet, $phoneNumber, $form, []);
+        $phoneNumber = $this->setType($validationSet, $phoneNumber, $form, []);
         return $phoneNumber;
     }
 
-    public function updateFromFormData(ValidationSet $validationSet, PhoneNumberModel $phoneNumber, PhoneNumberFormData $form): PhoneNumberModel
+    /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the record, kept as stored
+     */
+    public function updateFromFormData(ValidationSet $validationSet, PhoneNumberModel $phoneNumber, PhoneNumberFormData $form, array $managedProperties = []): PhoneNumberModel
     {
-        $phoneNumber = $this->setPhoneNumber($validationSet, $phoneNumber, $form);
-        $phoneNumber = $this->setType($validationSet, $phoneNumber, $form);
+        $phoneNumber = $this->setPhoneNumber($validationSet, $phoneNumber, $form, $managedProperties);
+        $phoneNumber = $this->setType($validationSet, $phoneNumber, $form, $managedProperties);
         return $phoneNumber;
     }
 
     /**
      * A value is applied to the domain model only when the property may be written
-     * (not readOnly / disabled by validation configuration) and was explicitly
-     * registered as an override by the JSON request handler.
+     * (not readOnly / disabled by validation configuration, not managed by the
+     * synchronisation on this record) and was explicitly registered as an override
+     * by the JSON request handler.
+     *
+     * @param list<string> $managedProperties
      */
-    private function mayApplyProperty(ValidationSet $validationSet, PhoneNumberFormData $form, string $propertyName): bool
+    private function mayApplyProperty(ValidationSet $validationSet, PhoneNumberFormData $form, string $propertyName, array $managedProperties): bool
     {
+        if (in_array($propertyName, $managedProperties, true)) {
+            return false;
+        }
         $validation = $validationSet->get($propertyName);
         if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
@@ -55,18 +64,24 @@ class PhoneNumberFactory
         return $model;
     }
 
-    private function setPhoneNumber(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form): PhoneNumberModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setPhoneNumber(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form, array $managedProperties): PhoneNumberModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'phoneNumber')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'phoneNumber', $managedProperties)) {
             $override = $form->getPropertyOverride('phoneNumber');
             $model->setPhoneNumber(is_string($override) ? $override : $form->getPhoneNumber());
         }
         return $model;
     }
 
-    private function setType(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form): PhoneNumberModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setType(ValidationSet $validationSet, PhoneNumberModel $model, PhoneNumberFormData $form, array $managedProperties): PhoneNumberModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'type', $managedProperties)) {
             $override = $form->getPropertyOverride('type');
             $model->setType(is_string($override) ? $override : $form->getType());
         }

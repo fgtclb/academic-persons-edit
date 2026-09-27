@@ -19,25 +19,34 @@ class EmailFactory
     {
         $email = new EmailModel();
         $email = $this->setContract($validationSet, $email, $contract);
-        $email = $this->setEmail($validationSet, $email, $form);
-        $email = $this->setType($validationSet, $email, $form);
+        $email = $this->setEmail($validationSet, $email, $form, []);
+        $email = $this->setType($validationSet, $email, $form, []);
         return $email;
     }
 
-    public function updateFromFormData(ValidationSet $validationSet, EmailModel $email, EmailFormData $form): EmailModel
+    /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the record, kept as stored
+     */
+    public function updateFromFormData(ValidationSet $validationSet, EmailModel $email, EmailFormData $form, array $managedProperties = []): EmailModel
     {
-        $email = $this->setEmail($validationSet, $email, $form);
-        $email = $this->setType($validationSet, $email, $form);
+        $email = $this->setEmail($validationSet, $email, $form, $managedProperties);
+        $email = $this->setType($validationSet, $email, $form, $managedProperties);
         return $email;
     }
 
     /**
      * A value is applied to the domain model only when the property may be written
-     * (not readOnly / disabled by validation configuration) and was explicitly
-     * registered as an override by the JSON request handler.
+     * (not readOnly / disabled by validation configuration, not managed by the
+     * synchronisation on this record) and was explicitly registered as an override
+     * by the JSON request handler.
+     *
+     * @param list<string> $managedProperties
      */
-    private function mayApplyProperty(ValidationSet $validationSet, EmailFormData $form, string $propertyName): bool
+    private function mayApplyProperty(ValidationSet $validationSet, EmailFormData $form, string $propertyName, array $managedProperties): bool
     {
+        if (in_array($propertyName, $managedProperties, true)) {
+            return false;
+        }
         $validation = $validationSet->get($propertyName);
         if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
@@ -55,18 +64,24 @@ class EmailFactory
         return $model;
     }
 
-    private function setEmail(ValidationSet $validationSet, EmailModel $model, EmailFormData $form): EmailModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setEmail(ValidationSet $validationSet, EmailModel $model, EmailFormData $form, array $managedProperties): EmailModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'email')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'email', $managedProperties)) {
             $override = $form->getPropertyOverride('email');
             $model->setEmail(is_string($override) ? $override : $form->getEmail());
         }
         return $model;
     }
 
-    private function setType(ValidationSet $validationSet, EmailModel $model, EmailFormData $form): EmailModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setType(ValidationSet $validationSet, EmailModel $model, EmailFormData $form, array $managedProperties): EmailModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'type', $managedProperties)) {
             $override = $form->getPropertyOverride('type');
             $model->setType(is_string($override) ? $override : $form->getType());
         }

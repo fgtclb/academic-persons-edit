@@ -105,6 +105,41 @@ final class EmailFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
+     * An address the synchronisation manages is kept as stored, while the
+     * type of the same request is written.
+     */
+    #[Test]
+    public function updateKeepsAnAddressTheSynchronisationManages(): void
+    {
+        $formData = $this->mapFormData(
+            EmailFormData::class,
+            'emailAddressFormData',
+            [
+                'emailAddress' => '1',
+                'emailAddressFormData' => [
+                    'email' => 'changed@example.com',
+                    'type' => 'private',
+                ],
+            ],
+        );
+        $email = $this->persistenceManager()->getObjectByIdentifier(1, Email::class);
+        $this->assertInstanceOf(Email::class, $email);
+
+        $this->persistUpdate((new EmailFactory())->updateFromFormData(
+            $this->createValidationSet('emailAddress'),
+            $email,
+            $formData,
+            ['email'],
+        ));
+
+        $row = $this->getConnectionPool()
+            ->getConnectionForTable('tx_academicpersons_domain_model_email')
+            ->select(['email', 'type'], 'tx_academicpersons_domain_model_email', ['uid' => 1])
+            ->fetchAssociative();
+        $this->assertSame(['email' => 'stored@example.com', 'type' => 'private'], $row);
+    }
+
+    /**
      * The near miss of the case above: an empty value that *was* submitted is a deletion the
      * editor asked for, and must be written. Deciding on the value instead of on the request
      * would make emptying a field impossible.

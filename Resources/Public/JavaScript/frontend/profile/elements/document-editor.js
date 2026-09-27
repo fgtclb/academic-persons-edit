@@ -10,7 +10,8 @@ import {
   applyFieldErrors,
   cloneDisplayRow,
   cloneField,
-  fieldControlId
+  fieldControlId,
+  isControlDisabled
 } from "@fgtclb/academic-persons-edit/frontend/profile/elements/field-clone.js";
 import {
   profileContractContactsElementName,
@@ -318,7 +319,7 @@ class ProfileDocumentEditorElement extends ProfileEditingElement {
           `#${CSS.escape(fieldControlId(documentFieldIdPrefix, index, field))}`
         );
         if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) {
-          control.disabled = field.disabled || this.pending;
+          control.disabled = isControlDisabled(control, field, this.pending);
         }
       });
     }

@@ -1,0 +1,22 @@
+# A site package whose profiles, contracts and contacts are filled by a
+# synchronisation. Of the e-mail addresses only the address is managed, so
+# the type stays the owner's and the row keeps its edit action. Both fields
+# of a phone number are managed, so its row offers no edit at all. Nothing
+# of the physical addresses is managed.
+managedFields:
+  profile:
+    - website
+  contracts:
+    - position
+  emailAddresses:
+    - emailAddress
+  phoneNumbers:
+    - phoneNumber
+    - phoneNumberType
+
+# Such a site usually keeps the synchronisation switch from owners as well.
+# Its endpoint carries that one value and keeps refusing it.
+special:
+  skipSync:
+    validators:
+      - readonly

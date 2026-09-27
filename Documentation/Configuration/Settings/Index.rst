@@ -72,7 +72,8 @@ Supported flags are:
         - Adds ``NotEmptyValidator`` plus the frontend HTML, marker and JSON
           metadata.
     *   - ``readonly``
-        - Prevents editing in the frontend editor.
+        - Prevents editing in the frontend editor. A submitted value is
+          ignored.
     *   - ``frontendreadonly``
         - Prevents editing in the frontend editor like ``readonly``, and keeps
           the field editable in the TYPO3 backend.

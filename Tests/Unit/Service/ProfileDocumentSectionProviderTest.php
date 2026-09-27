@@ -11,11 +11,15 @@ use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
 use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
+use FGTCLB\AcademicPersons\Profile\ManagedFieldResolver;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersons\Settings\ContractField;
 use FGTCLB\AcademicPersons\Settings\DocumentSection;
+use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -128,7 +132,19 @@ final class ProfileDocumentSectionProviderTest extends UnitTestCase
                 $result->method('toArray')->willReturn($informationByType[$type] ?? []);
                 return $result;
             });
-        return new ProfileDocumentSectionProvider($settings, $contractRepository, $informationRepository);
+        return new ProfileDocumentSectionProvider(
+            $settings,
+            $contractRepository,
+            $informationRepository,
+            new ManagedRecordLocks(
+                new ManagedFieldResolver(
+                    $settings,
+                    $this->createStub(ConnectionPool::class),
+                    $this->createStub(TcaSchemaFactory::class),
+                ),
+                $settings,
+            ),
+        );
     }
 
     private function contractField(string $identifier, string $helptext, int $position): ContractField

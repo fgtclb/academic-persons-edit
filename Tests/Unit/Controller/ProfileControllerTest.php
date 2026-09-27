@@ -13,6 +13,7 @@ use FGTCLB\AcademicPersons\Domain\Repository\OrganisationalUnitRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\PhoneNumberRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
+use FGTCLB\AcademicPersons\Profile\ManagedFieldResolver;
 use FGTCLB\AcademicPersons\Service\DataHandlerExecutionContext;
 use FGTCLB\AcademicPersons\Service\ProfileImageMetadataService;
 use FGTCLB\AcademicPersons\Service\ProfileImageRelationWriter;
@@ -32,6 +33,7 @@ use FGTCLB\AcademicPersonsEdit\Domain\Parser\ProfileUpdatePayloadParser;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
+use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileFieldOptionsService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileRichTextSanitizerInterface;
@@ -390,6 +392,10 @@ final class ProfileControllerTest extends UnitTestCase
             $tcaSchemaFactory,
         );
 
+        $managedRecordLocks = new ManagedRecordLocks(
+            new ManagedFieldResolver($academicPersonsSettings, $connectionPool, $tcaSchemaFactory),
+            $academicPersonsSettings,
+        );
         $subject = new ProfileController(
             new Context(),
             $this->createStub(PersistenceManager::class),
@@ -432,6 +438,7 @@ final class ProfileControllerTest extends UnitTestCase
                 $academicPersonsSettings,
                 $this->createStub(ContractRepository::class),
                 $this->createStub(ProfileInformationRepository::class),
+                $managedRecordLocks,
             ),
             $this->createStub(ContractFactory::class),
             $this->createStub(ContractRepository::class),
@@ -450,6 +457,7 @@ final class ProfileControllerTest extends UnitTestCase
             $this->createStub(OrganisationalUnitRepository::class),
             $this->createStub(LocationRepository::class),
             $this->createStub(ProfileRichTextSanitizerInterface::class),
+            $managedRecordLocks,
         );
 
         $requestProperty = new \ReflectionProperty(

@@ -23,16 +23,28 @@ final readonly class ProfileUpdateValidationService
         private AcademicPersonsSettings $academicPersonsSettings,
     ) {}
 
+    /**
+     * A property the profile form does not have is refused. A locked one,
+     * managed on the profile or locked with `readonly`, `frontendreadonly` or
+     * `disabled`, is dropped and keeps its stored value, as a locked field of
+     * a contract or contact is.
+     *
+     * @param list<string> $managedProperties the properties the synchronisation manages on the profile
+     */
     public function createFormData(
         PluginControllerActionContext $context,
         Profile $profile,
         ProfileUpdatePayload $payload,
+        array $managedProperties = [],
     ): ProfileFormData {
         $profileFormData = $this->profileFormDataFactory->createFromProfile($context, $profile);
-        $editableProperties = $this->getEditableProperties($profileFormData);
+        $properties = $this->getProperties($profileFormData);
         foreach ($payload->getData() as $propertyName => $value) {
-            if (!in_array($propertyName, $editableProperties, true)) {
+            if (!array_key_exists($propertyName, $properties)) {
                 throw new \UnexpectedValueException(sprintf('Unknown profile property "%s".', $propertyName));
+            }
+            if (!$properties[$propertyName] || in_array($propertyName, $managedProperties, true)) {
+                continue;
             }
             $profileField = $this->academicPersonsSettings->getProfileField($propertyName);
             $specialField = $this->academicPersonsSettings->getSpecialField($propertyName);
@@ -63,18 +75,28 @@ final readonly class ProfileUpdateValidationService
     }
 
     /**
+     * The normalized value of every submitted property. A property that
+     * {@see self::createFormData()} dropped as locked has none and is left
+     * out. Any other property without one is a defect and throws.
+     *
+     * @param list<string> $managedProperties the properties the synchronisation manages on the profile
      * @return array<string, mixed>
      */
     public function getNormalizedData(
         ProfileFormData $profileFormData,
         ProfileUpdatePayload $payload,
+        array $managedProperties = [],
     ): array {
+        $properties = $this->getProperties($profileFormData);
         $data = [];
         foreach (array_keys($payload->getData()) as $propertyName) {
-            if (!$profileFormData->hasPropertyOverride($propertyName)) {
+            if ($profileFormData->hasPropertyOverride($propertyName)) {
+                $data[$propertyName] = $profileFormData->getPropertyOverride($propertyName);
+                continue;
+            }
+            if (($properties[$propertyName] ?? false) && !in_array($propertyName, $managedProperties, true)) {
                 throw new \UnexpectedValueException(sprintf('Profile property "%s" was not normalized.', $propertyName));
             }
-            $data[$propertyName] = $profileFormData->getPropertyOverride($propertyName);
         }
         return $data;
     }
@@ -85,42 +107,38 @@ final readonly class ProfileUpdateValidationService
     }
 
     /**
-     * @return list<string>
+     * The properties the profile form has, each with whether its settings let
+     * the owner write it. A property declared twice is writable when one of
+     * its declarations allows it.
+     *
+     * @return array<string, bool>
      */
-    private function getEditableProperties(ProfileFormData $profileFormData): array
+    private function getProperties(ProfileFormData $profileFormData): array
     {
         $properties = [];
         foreach ($this->academicPersonsSettings->specialFields as $field) {
-            if (
-                $field->hasDirectProfileProperty()
-                && $profileFormData->_hasProperty($field->identifier)
-                && !$field->validation->readOnly
-                && !$field->validation->disabled
-            ) {
-                $properties[] = $field->identifier;
+            if ($field->hasDirectProfileProperty() && $profileFormData->_hasProperty($field->identifier)) {
+                $properties[$field->identifier] = ($properties[$field->identifier] ?? false)
+                    || (!$field->validation->readOnly && !$field->validation->disabled);
             }
         }
         foreach ($this->academicPersonsSettings->profileSections as $section) {
             foreach ($section->fields as $field) {
-                if ($field->validation->readOnly || $field->validation->disabled) {
-                    continue;
-                }
+                $writable = !$field->validation->readOnly && !$field->validation->disabled;
                 if ($profileFormData->_hasProperty($field->propertyName)) {
-                    $properties[] = $field->propertyName;
+                    $properties[$field->propertyName] = ($properties[$field->propertyName] ?? false) || $writable;
                 }
                 if (strtolower($field->renderType) === 'combinedlink') {
                     $titleProperty = $field->propertyName . 'Title';
                     $titleField = $this->academicPersonsSettings->getProfileField($titleProperty);
-                    if (
-                        $profileFormData->_hasProperty($titleProperty)
-                        && ($titleField === null
-                            || (!$titleField->validation->readOnly && !$titleField->validation->disabled))
-                    ) {
-                        $properties[] = $titleProperty;
+                    if ($profileFormData->_hasProperty($titleProperty)) {
+                        $properties[$titleProperty] = ($properties[$titleProperty] ?? false)
+                            || ($writable && ($titleField === null
+                                || (!$titleField->validation->readOnly && !$titleField->validation->disabled)));
                     }
                 }
             }
         }
-        return array_values(array_unique($properties));
+        return $properties;
     }
 }

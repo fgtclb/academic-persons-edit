@@ -76,6 +76,11 @@
                                         labelKey: field.labelKey,
                                         elementId: elementId
                                     }" />
+                                <f:if condition="{field.managed}">
+                                    <f:render
+                                        partial="Profile/Field/ManagedBadge"
+                                        arguments="{elementId: elementId}" />
+                                </f:if>
                             </div>
                             <f:render
                                 partial="Profile/Field/Control"

@@ -341,6 +341,9 @@
       <trans-unit id="profileEditing.field.empty">
         <source>Not specified</source>
       </trans-unit>
+      <trans-unit id="profileEditing.field.managed">
+        <source>Synchronised</source>
+      </trans-unit>
       <trans-unit id="profileEditing.field.required">
         <source>Required</source>
       </trans-unit>

@@ -63,6 +63,13 @@
                         key="profileEditing.contractContacts.hidden"
                         extensionName="AcademicPersonsEdit" />
                 </span>
+                <span
+                    class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                    data-pe-when="managed">
+                    <f:translate
+                        key="profileEditing.field.managed"
+                        extensionName="AcademicPersonsEdit" />
+                </span>
                 <div
                     class="d-flex flex-nowrap align-items-center gap-1"
                     role="group"
@@ -136,6 +143,7 @@
                     <button
                         type="button"
                         class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-when="deletable"
                         data-pe-contract-contact-delete
                         title="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
@@ -148,6 +156,7 @@
                     <button
                         type="button"
                         class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        data-pe-when="editable"
                         data-pe-contract-contact-edit
                         title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"

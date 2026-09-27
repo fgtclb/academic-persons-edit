@@ -443,6 +443,10 @@
         <source>Not specified</source>
         <target>Keine Angabe</target>
       </trans-unit>
+      <trans-unit id="profileEditing.field.managed">
+        <source>Synchronised</source>
+        <target>Synchronisiert</target>
+      </trans-unit>
       <trans-unit id="profileEditing.field.required">
         <source>Required</source>
         <target>Pflichtfeld</target>

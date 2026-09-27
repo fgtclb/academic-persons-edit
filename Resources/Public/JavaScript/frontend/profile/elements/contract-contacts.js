@@ -13,7 +13,8 @@ import {
   applyFieldErrors,
   cloneDisplayRow,
   cloneField,
-  fieldControlId
+  fieldControlId,
+  isControlDisabled
 } from "@fgtclb/academic-persons-edit/frontend/profile/elements/field-clone.js";
 import { profileContractContactsElementName } from "@fgtclb/academic-persons-edit/frontend/profile/elements/names.js";
 import { fillPrototype } from "@fgtclb/academic-persons-edit/frontend/profile/prototypes.js";
@@ -40,7 +41,14 @@ const editorShape = (editor) => [
   editor.title,
   editor.deleteConfirmation
 ].join("|");
-const rowShape = (item) => JSON.stringify([item.uid, item.hidden, item.summary]);
+const rowShape = (item) => JSON.stringify([
+  item.uid,
+  item.hidden,
+  item.summary,
+  item.managed === true,
+  item.editable !== false,
+  item.deletable !== false
+]);
 const reconcile = (parent, keys, keyOf, create, update) => {
   const existing = /* @__PURE__ */ new Map();
   Array.from(parent.children).forEach((child) => {
@@ -219,7 +227,12 @@ class ProfileContractContactsElement extends ProfileEditingElement {
       throw new Error(`The contact "${key}" is not in its section any more.`);
     }
     const clone = fillPrototype(source, "contact-row", {
+      // The synchronisation takes the delete of a row it maintains away, and
+      // the edit once every editable field is maintained. The buttons are
+      // left out rather than disabled, as the server refuses the requests.
+      deletable: item.deletable !== false,
       deleteExpanded: "false",
+      editable: item.editable !== false,
       editExpanded: "false",
       editorHidden: true,
       editorId: editorId(section),
@@ -227,6 +240,7 @@ class ProfileContractContactsElement extends ProfileEditingElement {
       // through `data-pe-attr` and shows the "hidden" badge through
       // `data-pe-when` - and an empty string is falsy to the latter.
       hidden: item.hidden ? "hidden" : void 0,
+      managed: item.managed === true,
       uid: item.uid,
       viewExpanded: "false"
     });
@@ -420,7 +434,7 @@ class ProfileContractContactsElement extends ProfileEditingElement {
         `#${CSS.escape(fieldControlId(contractContactFieldIdPrefix, index, field))}`
       );
       if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) {
-        control.disabled = field.disabled || editor.pending;
+        control.disabled = isControlDisabled(control, field, editor.pending);
       }
     });
     panel.querySelectorAll(

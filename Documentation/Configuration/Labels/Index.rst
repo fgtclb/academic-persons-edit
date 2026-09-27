@@ -179,6 +179,8 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/Documents/Header.html`, :file:`Partials/Profile/Documents/ProfileInformationRow.html`
     *   - :xml:`profileEditing.field.empty`
         - :file:`Partials/Profile/Field/Group.html`, :file:`Partials/Profile/Field/Preview.html`, :file:`Templates/Profile/Index.html`
+    *   - :xml:`profileEditing.field.managed`
+        - :file:`Partials/Profile/Documents/Actions.html`, :file:`Partials/Profile/Documents/ContractContacts.html`, :file:`Partials/Profile/Field/ManagedBadge.html`, :file:`Partials/Profile/Field/PrototypeWrapper.html`
     *   - :xml:`profileEditing.field.required`
         - :file:`Partials/Profile/Field/Editable.html`, :file:`Partials/Profile/Field/Group.html`, :file:`Partials/Profile/Field/Preview.html`, :file:`Partials/Profile/Field/Select.html`
     *   - :xml:`profileEditing.form.apply`

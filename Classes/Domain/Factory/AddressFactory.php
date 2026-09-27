@@ -23,40 +23,50 @@ class AddressFactory
 
         $address = new AddressModel();
         $address = $this->setContract($validationSet, $address, $contract);
-        $address = $this->setStreet($validationSet, $address, $form);
-        $address = $this->setStreetNumber($validationSet, $address, $form);
-        $address = $this->setAdditional($validationSet, $address, $form);
-        $address = $this->setZip($validationSet, $address, $form);
-        $address = $this->setCity($validationSet, $address, $form);
-        $address = $this->setState($validationSet, $address, $form);
-        $address = $this->setCountry($validationSet, $address, $form);
-        $address = $this->setType($validationSet, $address, $form);
+        $address = $this->setStreet($validationSet, $address, $form, []);
+        $address = $this->setStreetNumber($validationSet, $address, $form, []);
+        $address = $this->setAdditional($validationSet, $address, $form, []);
+        $address = $this->setZip($validationSet, $address, $form, []);
+        $address = $this->setCity($validationSet, $address, $form, []);
+        $address = $this->setState($validationSet, $address, $form, []);
+        $address = $this->setCountry($validationSet, $address, $form, []);
+        $address = $this->setType($validationSet, $address, $form, []);
         return $address;
     }
 
+    /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the record, kept as stored
+     */
     public function updateFromFormData(
         ValidationSet $validationSet,
         AddressModel $address,
         AddressFormData $form,
+        array $managedProperties = [],
     ): AddressModel {
-        $address = $this->setStreet($validationSet, $address, $form);
-        $address = $this->setStreetNumber($validationSet, $address, $form);
-        $address = $this->setAdditional($validationSet, $address, $form);
-        $address = $this->setZip($validationSet, $address, $form);
-        $address = $this->setCity($validationSet, $address, $form);
-        $address = $this->setState($validationSet, $address, $form);
-        $address = $this->setCountry($validationSet, $address, $form);
-        $address = $this->setType($validationSet, $address, $form);
+        $address = $this->setStreet($validationSet, $address, $form, $managedProperties);
+        $address = $this->setStreetNumber($validationSet, $address, $form, $managedProperties);
+        $address = $this->setAdditional($validationSet, $address, $form, $managedProperties);
+        $address = $this->setZip($validationSet, $address, $form, $managedProperties);
+        $address = $this->setCity($validationSet, $address, $form, $managedProperties);
+        $address = $this->setState($validationSet, $address, $form, $managedProperties);
+        $address = $this->setCountry($validationSet, $address, $form, $managedProperties);
+        $address = $this->setType($validationSet, $address, $form, $managedProperties);
         return $address;
     }
 
     /**
      * A value is applied to the domain model only when the property may be written
-     * (not readOnly / disabled by validation configuration) and was explicitly
-     * registered as an override by the JSON request handler.
+     * (not readOnly / disabled by validation configuration, not managed by the
+     * synchronisation on this record) and was explicitly registered as an override
+     * by the JSON request handler.
+     *
+     * @param list<string> $managedProperties
      */
-    private function mayApplyProperty(ValidationSet $validationSet, AddressFormData $form, string $propertyName): bool
+    private function mayApplyProperty(ValidationSet $validationSet, AddressFormData $form, string $propertyName, array $managedProperties): bool
     {
+        if (in_array($propertyName, $managedProperties, true)) {
+            return false;
+        }
         $validation = $validationSet->get($propertyName);
         if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
@@ -74,72 +84,96 @@ class AddressFactory
         return $model;
     }
 
-    private function setStreet(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setStreet(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'street')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'street', $managedProperties)) {
             $override = $form->getPropertyOverride('street');
             $model->setStreet(is_string($override) ? $override : $form->getStreet());
         }
         return $model;
     }
 
-    private function setStreetNumber(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setStreetNumber(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'streetNumber')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'streetNumber', $managedProperties)) {
             $override = $form->getPropertyOverride('streetNumber');
             $model->setStreetNumber(is_string($override) ? $override : $form->getStreetNumber());
         }
         return $model;
     }
 
-    private function setAdditional(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setAdditional(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'additional')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'additional', $managedProperties)) {
             $override = $form->getPropertyOverride('additional');
             $model->setAdditional(is_string($override) ? $override : $form->getAdditional());
         }
         return $model;
     }
 
-    private function setZip(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setZip(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'zip')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'zip', $managedProperties)) {
             $override = $form->getPropertyOverride('zip');
             $model->setZip(is_string($override) ? $override : $form->getZip());
         }
         return $model;
     }
 
-    private function setCity(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setCity(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'city')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'city', $managedProperties)) {
             $override = $form->getPropertyOverride('city');
             $model->setCity(is_string($override) ? $override : $form->getCity());
         }
         return $model;
     }
 
-    private function setState(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setState(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'state')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'state', $managedProperties)) {
             $override = $form->getPropertyOverride('state');
             $model->setState(is_string($override) ? $override : $form->getState());
         }
         return $model;
     }
 
-    private function setCountry(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setCountry(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'country')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'country', $managedProperties)) {
             $override = $form->getPropertyOverride('country');
             $model->setCountry(is_string($override) ? $override : $form->getCountry());
         }
         return $model;
     }
 
-    private function setType(ValidationSet $validationSet, AddressModel $model, AddressFormData $form): AddressModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setType(ValidationSet $validationSet, AddressModel $model, AddressFormData $form, array $managedProperties): AddressModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'type')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'type', $managedProperties)) {
             $override = $form->getPropertyOverride('type');
             $model->setType(is_string($override) ? $override : $form->getType());
         }

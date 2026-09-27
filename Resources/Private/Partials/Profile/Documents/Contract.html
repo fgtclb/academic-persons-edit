@@ -7,9 +7,20 @@
         arguments="{items: items, rowFields: rowFields}" />
     <div data-pe-document-items>
         <f:for each="{items}" as="contract" iteration="itemIteration">
+            <f:comment>
+                A contract the synchronisation manages offers no delete, and no
+                edit once every editable field of it is managed. A caller that
+                passes no rowActions, such as an older override of
+                Sections.html, gets the actions of the section.
+            </f:comment>
+            <f:variable name="contractActions" value="{actions}" />
+            <f:if condition="{rowActions}">
+                <f:variable name="contractActions" value="{rowActions.{contract.uid}}" />
+            </f:if>
+            <f:variable name="contractManaged" value="{managedItems.{contract.uid}}" />
             <f:render
                 partial="Profile/Documents/ContractRow"
-                arguments="{contract: contract, itemIteration: itemIteration, rowFields: rowFields, actions: actions, sortable: sortable}" />
+                arguments="{contract: contract, itemIteration: itemIteration, rowFields: rowFields, actions: contractActions, managed: contractManaged, sortable: sortable}" />
         </f:for>
     </div>
     <div class="d-none" aria-hidden="true" data-pe-document-item-template>

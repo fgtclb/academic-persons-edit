@@ -206,14 +206,31 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
+     * A property the synchronisation manages on the record is kept as stored,
+     * as a read-only one is, although the validation set allows it.
+     */
+    #[Test]
+    public function updateSkipsAPropertyTheSynchronisationManages(): void
+    {
+        $this->updateContractWith(
+            ['position' => 'New Position', 'validFrom' => '05.06.2022'],
+            managedProperties: ['validFrom'],
+        );
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/ContractFactoryTest/updatedPositionOnly.csv');
+    }
+
+    /**
      * @param array<string, string|object> $submitted
      * @param array<string, mixed> $overrides
+     * @param list<string> $managedProperties
      */
     private function updateContractWith(
         array $submitted,
         array $overrides = [],
         string $readOnlyProperty = '',
         string $disabledProperty = '',
+        array $managedProperties = [],
     ): Contract {
         $formData = $this->mapFormData(
             ContractFormData::class,
@@ -236,7 +253,7 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
                 ? $this->createValidationSet('contract', $disabledProperty, disabled: true)
                 : $this->createValidationSet('contract'));
 
-        $contract = (new ContractFactory())->updateFromFormData($validationSet, $contract, $formData);
+        $contract = (new ContractFactory())->updateFromFormData($validationSet, $contract, $formData, $managedProperties);
         $this->persistenceManager()->update($contract);
         $this->persistenceManager()->persistAll();
         return $contract;

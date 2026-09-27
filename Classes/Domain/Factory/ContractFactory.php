@@ -22,39 +22,48 @@ class ContractFactory
     {
         $contract = new ContractModel();
         $contract = $this->setProfile($validationSet, $contract, $profile);
-        $contract = $this->setOrganisationalUnit($validationSet, $contract, $form);
-        $contract = $this->setFunctionType($validationSet, $contract, $form);
-        $contract = $this->setValidFrom($validationSet, $contract, $form);
-        $contract = $this->setValidTo($validationSet, $contract, $form);
-        $contract = $this->setPosition($validationSet, $contract, $form);
-        $contract = $this->setLocation($validationSet, $contract, $form);
-        $contract = $this->setRoom($validationSet, $contract, $form);
-        $contract = $this->setOfficeHours($validationSet, $contract, $form);
-        $contract = $this->setPublish($validationSet, $contract, $form);
+        $contract = $this->setOrganisationalUnit($validationSet, $contract, $form, []);
+        $contract = $this->setFunctionType($validationSet, $contract, $form, []);
+        $contract = $this->setValidFrom($validationSet, $contract, $form, []);
+        $contract = $this->setValidTo($validationSet, $contract, $form, []);
+        $contract = $this->setPosition($validationSet, $contract, $form, []);
+        $contract = $this->setLocation($validationSet, $contract, $form, []);
+        $contract = $this->setRoom($validationSet, $contract, $form, []);
+        $contract = $this->setOfficeHours($validationSet, $contract, $form, []);
+        $contract = $this->setPublish($validationSet, $contract, $form, []);
         return $contract;
     }
 
-    public function updateFromFormData(ValidationSet $validationSet, ContractModel $contract, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties the properties the synchronisation manages on the record, kept as stored
+     */
+    public function updateFromFormData(ValidationSet $validationSet, ContractModel $contract, ContractFormData $form, array $managedProperties = []): ContractModel
     {
-        $contract = $this->setOrganisationalUnit($validationSet, $contract, $form);
-        $contract = $this->setFunctionType($validationSet, $contract, $form);
-        $contract = $this->setValidFrom($validationSet, $contract, $form);
-        $contract = $this->setValidTo($validationSet, $contract, $form);
-        $contract = $this->setPosition($validationSet, $contract, $form);
-        $contract = $this->setLocation($validationSet, $contract, $form);
-        $contract = $this->setRoom($validationSet, $contract, $form);
-        $contract = $this->setOfficeHours($validationSet, $contract, $form);
-        $contract = $this->setPublish($validationSet, $contract, $form);
+        $contract = $this->setOrganisationalUnit($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setFunctionType($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setValidFrom($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setValidTo($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setPosition($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setLocation($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setRoom($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setOfficeHours($validationSet, $contract, $form, $managedProperties);
+        $contract = $this->setPublish($validationSet, $contract, $form, $managedProperties);
         return $contract;
     }
 
     /**
      * A value is applied to the domain model only when the property may be written
-     * (not readOnly / disabled by validation configuration) and was explicitly
-     * registered as an override by the JSON request handler.
+     * (not readOnly / disabled by validation configuration, not managed by the
+     * synchronisation on this record) and was explicitly registered as an override
+     * by the JSON request handler.
+     *
+     * @param list<string> $managedProperties
      */
-    private function mayApplyProperty(ValidationSet $validationSet, ContractFormData $form, string $propertyName): bool
+    private function mayApplyProperty(ValidationSet $validationSet, ContractFormData $form, string $propertyName, array $managedProperties): bool
     {
+        if (in_array($propertyName, $managedProperties, true)) {
+            return false;
+        }
         $validation = $validationSet->get($propertyName);
         if ($validation !== null && ($validation->readOnly || $validation->disabled)) {
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
@@ -72,81 +81,108 @@ class ContractFactory
         return $model;
     }
 
-    private function setOrganisationalUnit(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setOrganisationalUnit(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'organisationalUnit')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'organisationalUnit', $managedProperties)) {
             $override = $form->getPropertyOverride('organisationalUnit');
             $model->setOrganisationalUnit($override instanceof OrganisationalUnit ? $override : $form->getOrganisationalUnit());
         }
         return $model;
     }
 
-    private function setFunctionType(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setFunctionType(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'functionType')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'functionType', $managedProperties)) {
             $override = $form->getPropertyOverride('functionType');
             $model->setFunctionType($override instanceof FunctionType ? $override : $form->getFunctionType());
         }
         return $model;
     }
 
-    private function setValidFrom(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setValidFrom(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'validFrom')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'validFrom', $managedProperties)) {
             $override = $form->getPropertyOverride('validFrom');
             $model->setValidFrom($override instanceof \DateTime ? $override : $form->getValidFrom());
         }
         return $model;
     }
 
-    private function setValidTo(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setValidTo(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'validTo')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'validTo', $managedProperties)) {
             $override = $form->getPropertyOverride('validTo');
             $model->setValidTo($override instanceof \DateTime ? $override : $form->getValidTo());
         }
         return $model;
     }
 
-    private function setPosition(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setPosition(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'position')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'position', $managedProperties)) {
             $override = $form->getPropertyOverride('position');
             $model->setPosition(is_string($override) ? $override : $form->getPosition());
         }
         return $model;
     }
 
-    private function setLocation(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setLocation(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'location')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'location', $managedProperties)) {
             $override = $form->getPropertyOverride('location');
             $model->setLocation($override instanceof Location ? $override : $form->getLocation());
         }
         return $model;
     }
 
-    private function setRoom(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setRoom(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'room')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'room', $managedProperties)) {
             $override = $form->getPropertyOverride('room');
             $model->setRoom(is_string($override) ? $override : $form->getRoom());
         }
         return $model;
     }
 
-    private function setOfficeHours(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setOfficeHours(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'officeHours')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'officeHours', $managedProperties)) {
             $override = $form->getPropertyOverride('officeHours');
             $model->setOfficeHours(is_string($override) ? $override : $form->getOfficeHours());
         }
         return $model;
     }
 
-    private function setPublish(ValidationSet $validationSet, ContractModel $model, ContractFormData $form): ContractModel
+    /**
+     * @param list<string> $managedProperties
+     */
+    private function setPublish(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
     {
-        if ($this->mayApplyProperty($validationSet, $form, 'publish')) {
+        if ($this->mayApplyProperty($validationSet, $form, 'publish', $managedProperties)) {
             $override = $form->getPropertyOverride('publish');
             $model->setPublish(is_bool($override) ? $override : $form->isPublish());
         }

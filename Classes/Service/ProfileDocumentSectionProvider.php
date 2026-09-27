@@ -37,6 +37,7 @@ final readonly class ProfileDocumentSectionProvider
         private AcademicPersonsSettings $academicPersonsSettings,
         private ContractRepository $contractRepository,
         private ProfileInformationRepository $profileInformationRepository,
+        private ManagedRecordLocks $managedRecordLocks,
     ) {}
 
     /**
@@ -49,6 +50,8 @@ final readonly class ProfileDocumentSectionProvider
      *     readOnly: bool,
      *     rowFields: list<string>,
      *     actions: list<string>,
+     *     rowActions: array<int, list<string>>,
+     *     managedItems: array<int, bool>,
      *     canCreate: bool,
      *     sortable: bool,
      *     validations: array<string, Validation>,
@@ -61,6 +64,19 @@ final readonly class ProfileDocumentSectionProvider
         $sections = [];
         foreach ($this->academicPersonsSettings->documentSections as $section) {
             $contractSection = $section->isContractSection();
+            $items = $contractSection
+                ? $this->getContractItems($profile)
+                : $this->getProfileInformationItems($profile, $section);
+            $actions = $section->getAllowedActions();
+            $rowActions = [];
+            $managedItems = [];
+            foreach ($items as $item) {
+                $managedProperties = $this->managedRecordLocks->getManagedProperties($item);
+                $lockedActions = $this->managedRecordLocks->getLockedDocumentActions($section, $item, $managedProperties);
+                $rowActions[(int)$item->getUid()] = array_values(array_diff($actions, $lockedActions));
+                // A row the synchronisation owns always loses its delete.
+                $managedItems[(int)$item->getUid()] = in_array('delete', $lockedActions, true);
+            }
             $sections[] = [
                 'identifier' => $section->identifier,
                 'fieldName' => $section->fieldName,
@@ -69,14 +85,14 @@ final readonly class ProfileDocumentSectionProvider
                 'kind' => $contractSection ? 'contract' : 'profileInformation',
                 'readOnly' => $section->readOnly,
                 'rowFields' => $section->rowFields,
-                'actions' => $section->getAllowedActions(),
+                'actions' => $actions,
+                'rowActions' => $rowActions,
+                'managedItems' => $managedItems,
                 'canCreate' => $section->allowsCreate(),
                 'sortable' => $section->allowsDragSorting(),
                 'validations' => $section->validationSet->validations,
                 'position' => $section->position,
-                'items' => $contractSection
-                    ? $this->getContractItems($profile)
-                    : $this->getProfileInformationItems($profile, $section),
+                'items' => $items,
             ];
         }
         return $sections;

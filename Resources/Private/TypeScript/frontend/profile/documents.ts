@@ -56,6 +56,8 @@ export interface DocumentField {
   displayValue?: string;
   helptext?: string;
   label: string;
+  /** Maintained by the synchronisation on this record, and read-only for that reason. */
+  managed?: boolean;
   max?: number | null;
   min?: number | null;
   name: string;
@@ -83,7 +85,15 @@ export interface ContractContactSummary {
 }
 
 export interface ContractContactItem extends DocumentItem {
+  /**
+   * `false` when the synchronisation takes the action away. Missing reads as
+   * `true`, so a response of an older controller keeps its buttons.
+   */
+  deletable?: boolean;
+  editable?: boolean;
   hidden: boolean;
+  /** At least one field of the contact is maintained by the synchronisation. */
+  managed?: boolean;
   summary: ContractContactSummary[];
   uid: number;
 }
@@ -213,6 +223,7 @@ const asDocumentField = (value: unknown): DocumentField | null => {
     displayValue: String(field.displayValue ?? ""),
     helptext: String(field.helptext ?? ""),
     label: String(field.label ?? field.name),
+    managed: field.managed === true,
     max: field.max ?? null,
     min: field.min ?? null,
     name: field.name,

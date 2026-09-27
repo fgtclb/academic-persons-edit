@@ -54,6 +54,7 @@ import {
   cloneDisplayRow,
   cloneField,
   fieldControlId,
+  isControlDisabled,
 } from "@fgtclb/academic-persons-edit/frontend/profile/elements/field-clone.js";
 import { profileContractContactsElementName } from "@fgtclb/academic-persons-edit/frontend/profile/elements/names.js";
 import { fillPrototype } from "@fgtclb/academic-persons-edit/frontend/profile/prototypes.js";
@@ -151,7 +152,14 @@ const editorShape = (editor: ProfileContractContactEditorState): string =>
  * the visitor is standing in - and the caret with it - out of the document.
  */
 const rowShape = (item: ContractContactItem): string =>
-  JSON.stringify([item.uid, item.hidden, item.summary]);
+  JSON.stringify([
+    item.uid,
+    item.hidden,
+    item.summary,
+    item.managed === true,
+    item.editable !== false,
+    item.deletable !== false,
+  ]);
 
 /**
  * Puts `keys` in `parent`, in that order, reusing what is already there.
@@ -388,7 +396,12 @@ export class ProfileContractContactsElement extends ProfileEditingElement<Profil
       throw new Error(`The contact "${key}" is not in its section any more.`);
     }
     const clone = fillPrototype(source, "contact-row", {
+      // The synchronisation takes the delete of a row it maintains away, and
+      // the edit once every editable field is maintained. The buttons are
+      // left out rather than disabled, as the server refuses the requests.
+      deletable: item.deletable !== false,
       deleteExpanded: "false",
+      editable: item.editable !== false,
       editExpanded: "false",
       editorHidden: true,
       editorId: editorId(section),
@@ -396,6 +409,7 @@ export class ProfileContractContactsElement extends ProfileEditingElement<Profil
       // through `data-pe-attr` and shows the "hidden" badge through
       // `data-pe-when` - and an empty string is falsy to the latter.
       hidden: item.hidden ? "hidden" : undefined,
+      managed: item.managed === true,
       uid: item.uid,
       viewExpanded: "false",
     });
@@ -622,7 +636,7 @@ export class ProfileContractContactsElement extends ProfileEditingElement<Profil
         control instanceof HTMLSelectElement ||
         control instanceof HTMLTextAreaElement
       ) {
-        control.disabled = field.disabled || editor.pending;
+        control.disabled = isControlDisabled(control, field, editor.pending);
       }
     });
     panel

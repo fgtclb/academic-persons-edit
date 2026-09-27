@@ -1,0 +1,12 @@
+"tx_academicpersons_domain_model_contract",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","room","publish","sorting","import_identifier"
+,1,100,0,0,0,0,1,1914364800,"Rectorate","",1,10,"fe_users:1"
+,2,100,0,0,0,0,1,1756598400,"Professor","",1,20,""
+"tx_academicpersons_domain_model_email",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","email","type","sorting","import_identifier"
+,1,100,0,0,0,0,1,"rectorate@example.com","business",10,"fe_users:1"
+,2,100,0,0,0,0,1,"office@example.com","business",20,""
+"tx_academicpersons_domain_model_phone_number",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","phone_number","type","sorting","import_identifier"
+,1,100,0,0,0,0,1,"+49 2161 123456","business",10,"telephone:fe_users:1"
+,2,100,0,0,0,0,1,"+49 2161 654321","business",20,""
