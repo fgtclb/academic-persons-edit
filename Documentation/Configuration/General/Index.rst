@@ -45,9 +45,12 @@ read directly.
 
 Consequences worth knowing before reporting a problem:
 
-*   A field configured :yaml:`disabled` or :yaml:`readonly` is rendered locked,
-    and a value submitted for it anyway is discarded rather than stored. This is
-    deliberate and protects already stored data.
+*   A field configured :yaml:`disabled`, :yaml:`readonly` or
+    :yaml:`frontendreadonly` is rendered locked, and a value submitted for it
+    anyway is discarded rather than stored. This is deliberate and protects
+    already stored data. A select or checkbox stays operable in the browser,
+    which ignores :html:`readonly` on those controls, but a changed value is
+    discarded the same way.
 *   :guilabel:`First name`, :guilabel:`Middle name` and :guilabel:`Last name` are
     **locked by default**, because profile names are usually owned by the
     connected frontend user record and synchronised from elsewhere. They are
@@ -55,7 +58,9 @@ Consequences worth knowing before reporting a problem:
     configuration also drives the backend, not in the TYPO3 record editor
     either.
 *   Because both editing contexts share one configuration, unlocking a field for
-    the frontend form also unlocks it in the backend.
+    the frontend form also unlocks it in the backend. :yaml:`frontendreadonly`
+    locks a field for the frontend form only and keeps it editable in the
+    record editor.
 
 See `Validation settings
 <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Validations/Index.html>`__
