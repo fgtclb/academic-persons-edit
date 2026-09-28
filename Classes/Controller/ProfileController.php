@@ -13,6 +13,7 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 
 use FGTCLB\AcademicBase\Controller\GetCurrentContentRecordMethodTrait;
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
+use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContextInterface;
 use FGTCLB\AcademicBase\Settings\Validation;
 use FGTCLB\AcademicPersons\Domain\Model\Address;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
@@ -632,12 +633,9 @@ final class ProfileController extends ActionController
             $this->throwJsonError('internal_server_error', 500);
         }
         try {
-            $pluginControllerActionContext = new PluginControllerActionContext(
-                $this->request,
-                $this->settings,
-            );
             $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
             $this->assertSubmittedProjectFieldsAreUsable($payload);
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $profileFormData = $this->createValidatedProfileFormData(
                 $pluginControllerActionContext,
                 $profile,
@@ -646,6 +644,7 @@ final class ProfileController extends ActionController
                 'The submitted profile data is invalid.',
             );
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateProfile,
                 fields: array_filter(
@@ -750,10 +749,7 @@ final class ProfileController extends ActionController
             );
         }
         try {
-            $pluginControllerActionContext = new PluginControllerActionContext(
-                $this->request,
-                $this->settings,
-            );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $profileFormData = $this->createValidatedProfileFormData(
                 $pluginControllerActionContext,
                 $profile,
@@ -762,6 +758,7 @@ final class ProfileController extends ActionController
                 'The submitted synchronization setting is invalid.',
             );
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateSkipSync,
                 fields: $payload->getData(),
@@ -863,7 +860,9 @@ final class ProfileController extends ActionController
             );
         }
         try {
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateVisibility,
                 fields: ['hidden' => $data['hidden']],
@@ -982,7 +981,9 @@ final class ProfileController extends ActionController
                 $fields,
                 true,
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::CreateDocument,
                 $section->identifier,
@@ -1063,7 +1064,9 @@ final class ProfileController extends ActionController
                 false,
                 $managedProperties,
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateDocument,
                 $section->identifier,
@@ -1133,7 +1136,9 @@ final class ProfileController extends ActionController
             if (!is_bool($hidden)) {
                 $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
             }
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::ToggleDocumentVisibility,
                 $section->identifier,
@@ -1190,7 +1195,9 @@ final class ProfileController extends ActionController
                 $this->managedRecordLocks->getManagedProperties($record),
                 'delete',
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::DeleteDocument,
                 $section->identifier,
@@ -1229,6 +1236,7 @@ final class ProfileController extends ActionController
     {
         try {
             [$profile, $section, $data] = $this->getDocumentRequest();
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             if (array_key_exists('order', $data)) {
                 $this->assertDocumentPayload($data, ['section', 'order'], ['section', 'order']);
                 $this->assertDocumentActionAllowed($section, 'reorder');
@@ -1236,6 +1244,7 @@ final class ProfileController extends ActionController
                 $order = $this->getSubmittedDocumentOrder($data);
                 $this->assertCompleteDocumentOrder($records, $order);
                 $this->dispatchBeforeWrite(
+                    $pluginControllerActionContext,
                     $profile,
                     ProfileEditingAction::SortDocument,
                     $section->identifier,
@@ -1268,6 +1277,7 @@ final class ProfileController extends ActionController
             }
             $this->assertDocumentActionAllowed($section, $direction);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::SortDocument,
                 $section->identifier,
@@ -1373,7 +1383,9 @@ final class ProfileController extends ActionController
                 $fields,
                 true,
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::CreateContractContact,
                 $section->identifier,
@@ -1433,7 +1445,9 @@ final class ProfileController extends ActionController
                 false,
                 $managedProperties,
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $replacedFields = $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateContractContact,
                 $section->identifier,
@@ -1489,7 +1503,9 @@ final class ProfileController extends ActionController
                 $this->managedRecordLocks->getManagedProperties($record),
                 'delete',
             );
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::DeleteContractContact,
                 $section->identifier,
@@ -1541,7 +1557,9 @@ final class ProfileController extends ActionController
             if (!is_bool($hidden)) {
                 $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
             }
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::ToggleContractContactVisibility,
                 $section->identifier,
@@ -1588,7 +1606,9 @@ final class ProfileController extends ActionController
             if (!is_string($direction) || !in_array($direction, ['up', 'down'], true)) {
                 $this->throwJsonError('invalid_payload', 400, 'The direction must be up or down.');
             }
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::SortContractContact,
                 $section->identifier,
@@ -3376,7 +3396,8 @@ final class ProfileController extends ActionController
                     1776760203,
                 );
             }
-            $imageMetadata = $this->persistUploadedProfileImage($profile);
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
+            $imageMetadata = $this->persistUploadedProfileImage($profile, $pluginControllerActionContext);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
@@ -3440,7 +3461,8 @@ final class ProfileController extends ActionController
             );
         }
         try {
-            $deleted = $this->deleteProfileImage($profile);
+            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
+            $deleted = $this->deleteProfileImage($profile, $pluginControllerActionContext);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
@@ -3499,7 +3521,7 @@ final class ProfileController extends ActionController
      *
      * @return array<string, string> The metadata written for the uploaded profile image.
      */
-    private function persistUploadedProfileImage(Profile $profile): array
+    private function persistUploadedProfileImage(Profile $profile, PluginControllerActionContextInterface $pluginControllerActionContext): array
     {
         $uploadedImageFile = $this->getSubmittedProfileImageFile($profile);
         if ($uploadedImageFile === null) {
@@ -3511,6 +3533,7 @@ final class ProfileController extends ActionController
             // has to take the file with it - the catch below is what does that.
             $persistedProfileUid = $this->requirePersistedProfileUid($profile);
             $this->dispatchBeforeWrite(
+                $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UploadImage,
                 record: $profile->getImage(),
@@ -3578,10 +3601,11 @@ final class ProfileController extends ActionController
      * @param Profile $profile The profile whose image should be deleted.
      * @return bool True if an image was deleted, otherwise false if no image was assigned.
      */
-    private function deleteProfileImage(Profile $profile): bool
+    private function deleteProfileImage(Profile $profile, PluginControllerActionContextInterface $pluginControllerActionContext): bool
     {
         $persistedProfileUid = $this->requirePersistedProfileUid($profile);
         $this->dispatchBeforeWrite(
+            $pluginControllerActionContext,
             $profile,
             ProfileEditingAction::DeleteImage,
             record: $profile->getImage(),
@@ -3733,6 +3757,7 @@ final class ProfileController extends ActionController
      * @return array<string, mixed>|null The replaced fields, or null when no listener replaced them.
      */
     private function dispatchBeforeWrite(
+        PluginControllerActionContextInterface $pluginControllerActionContext,
         Profile $profile,
         ProfileEditingAction $action,
         ?string $sectionIdentifier = null,
@@ -3746,7 +3771,7 @@ final class ProfileController extends ActionController
             $sectionIdentifier,
             $record,
             $fields,
-            new PluginControllerActionContext($this->request, $this->settings),
+            $pluginControllerActionContext,
             $contract,
         );
         $this->eventDispatcher->dispatch($event);
