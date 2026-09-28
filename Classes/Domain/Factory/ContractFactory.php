@@ -69,8 +69,8 @@ class ContractFactory
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
             return false;
         }
-        // Only apply explicitly registered overrides. A PSR-14 listener may replace
-        // such an override before the transformation runs.
+        // Only apply explicitly registered overrides: the submitted values, or the
+        // values a listener of BeforeProfileEditingWriteEvent replaced them with.
         return $form->shouldApplyProperty($propertyName);
     }
 

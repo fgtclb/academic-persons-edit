@@ -53,8 +53,8 @@ class ProfileInformationFactory
             // ReadOnly or disabled: keep existing persisted data and ignore the submitted value.
             return false;
         }
-        // Only apply values sent within the current request or registered as override
-        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        // Only apply explicitly registered overrides: the submitted values, or the
+        // values a listener of BeforeProfileEditingWriteEvent replaced them with.
         return $form->shouldApplyProperty($propertyName);
     }
 

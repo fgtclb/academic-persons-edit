@@ -33,9 +33,11 @@ abstract class AbstractFormData
     }
 
     /**
-     * Register an override value for a property. This is the intended extension
-     * point for the JSON request handler and for PSR-14 event listeners replacing
-     * data before the transformation runs.
+     * Register an override value for a property. The JSON request handler registers
+     * the submitted values here once they are validated, or the values a listener of
+     * {@see \FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent}
+     * replaced them with, validated in the same way. A listener never reaches the
+     * form data object itself.
      */
     final public function setPropertyOverride(string $propertyName, mixed $value): void
     {

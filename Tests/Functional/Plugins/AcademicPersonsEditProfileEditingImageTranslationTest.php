@@ -386,6 +386,14 @@ final class AcademicPersonsEditProfileEditingImageTranslationTest extends Abstra
         $this->assertSame('profile_not_found', $body['error'] ?? null);
         $this->assertSame([], $this->getActiveImageReferences());
         $this->assertSame([], $this->getStoredFiles());
+
+        // The removal answers the same, and not with an internal error.
+        $deleteResponse = $this->deleteImage(profileUid: 2);
+
+        $this->assertSame(404, $deleteResponse->getStatusCode(), (string)$deleteResponse->getBody());
+        $deleteBody = json_decode((string)$deleteResponse->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($deleteBody);
+        $this->assertSame('profile_not_found', $deleteBody['error'] ?? null);
     }
 
     #[Test]

@@ -1207,6 +1207,13 @@ action.
         - The profile is not assigned to the frontend user, or the installation
           made the image or the visibility switch read-only, disabled it or
           removed it.
+    *   - ``404``
+        - ``profile_not_found``, ``document_not_found``,
+          ``contract_contact_not_found``, ``unknown_document_section`` or
+          ``unknown_contract_contact_section``
+        - The profile has no record in the site language of an image write,
+          the section of a document or contact request is not configured, or
+          its record does not belong to the profile.
     *   - ``405``
         - ``method_not_allowed``
         - A JSON endpoint was called with a method other than ``POST``.
@@ -1223,6 +1230,11 @@ action.
         - ``invalid_profile_data``, ``validation_failed`` or
           ``image_upload_missing``
         - A field value or uploaded file is invalid.
+    *   - ``422``
+        - ``write_refused``
+        - A listener of the :ref:`write event <developers-before-write-event>`
+          refused the write. The message is the listener's reason, and the
+          editor shows it to the person.
     *   - ``500``
         - ``internal_server_error``
         - An unexpected error occurred. Details are logged but not exposed in

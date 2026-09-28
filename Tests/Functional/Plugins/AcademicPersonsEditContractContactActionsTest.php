@@ -7,6 +7,7 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
+use TESTS\TestEditorWriteListener\EventListener\EditorWriteListener;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
@@ -21,6 +22,9 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
  * leaves `readonly` false, which is the configuration an integrator writes for
  * "the contact rows are read only": the buttons disappear, and before this the
  * endpoints still carried the request out for anyone who sent it by hand.
+ *
+ * A refused action is refused before the write event, so the recording listener of
+ * `test_editor_write_listener` must not hear of it.
  */
 final class AcademicPersonsEditContractContactActionsTest extends AbstractFrontendProfilePluginTestCase
 {
@@ -35,7 +39,15 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
     protected function setUp(): void
     {
         $this->addTestExtensionsToLoad('tests/test-contract-contact-actions');
+        $this->addTestExtensionsToLoad('tests/test-editor-write-listener');
         parent::setUp();
+        EditorWriteListener::reset();
+    }
+
+    protected function tearDown(): void
+    {
+        EditorWriteListener::reset();
+        parent::tearDown();
     }
 
     /**
@@ -123,6 +135,7 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
         $this->assertSame('Campus Road', $this->getAddressStreet(self::ADDRESS_ID));
         $this->assertSame(0, $this->getDeletedAddressCount());
         $this->assertSame(0, $this->getHiddenAddressCount());
+        $this->assertSame([], EditorWriteListener::$calls);
     }
 
     /**
@@ -154,6 +167,7 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
         $body = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($body);
         $this->assertTrue($body['success'] ?? false, (string)$response->getBody());
+        $this->assertSame(['createContractContact'], array_column(EditorWriteListener::$calls, 'action'));
     }
 
     /**
@@ -185,6 +199,7 @@ final class AcademicPersonsEditContractContactActionsTest extends AbstractFronte
                 )
                 ->fetchOne(),
         );
+        $this->assertSame([], EditorWriteListener::$calls);
     }
 
     private function setUpContractContactTestCase(): void

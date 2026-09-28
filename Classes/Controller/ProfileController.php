@@ -57,7 +57,11 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AddressFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\EmailFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\PhoneNumberFormData;
+use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
+use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileUpdatePayload;
+use FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent;
+use FGTCLB\AcademicPersonsEdit\Event\ProfileEditingAction;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
@@ -617,39 +621,30 @@ final class ProfileController extends ActionController
                 $this->settings,
             );
             $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
-            try {
-                $profileFormData = $this->profileUpdateValidationService->createFormData(
+            $profileFormData = $this->createValidatedProfileFormData(
+                $pluginControllerActionContext,
+                $profile,
+                $payload,
+                $managedProperties,
+                'The submitted profile data is invalid.',
+            );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UpdateProfile,
+                fields: array_filter(
+                    $payload->getData(),
+                    static fn(string $propertyName): bool => $profileFormData->hasPropertyOverride($propertyName),
+                    ARRAY_FILTER_USE_KEY,
+                ),
+            );
+            if ($replacedFields !== null) {
+                $payload = new ProfileUpdatePayload($payload->getProfileUid(), $replacedFields);
+                $profileFormData = $this->createValidatedProfileFormData(
                     $pluginControllerActionContext,
                     $profile,
                     $payload,
                     $managedProperties,
-                );
-            } catch (\UnexpectedValueException $exception) {
-                // Only this call describes the submitted payload in its message, so
-                // only this call may relay one. Anything the persisting code below
-                // raises is logged and answered as an internal error instead.
-                $this->throwJsonError(
-                    'invalid_profile_data',
-                    422,
-                    $exception->getMessage(),
-                );
-            }
-            //@todo: Edit validator for links
-            $validationResult = $this->profileUpdateValidationService->validate(
-                $profileFormData,
-            );
-            if ($validationResult->hasErrors()) {
-                $errors = [];
-                foreach ($validationResult->getFlattenedErrors() as $propertyPath => $propertyErrors) {
-                    foreach ($propertyErrors as $propertyError) {
-                        $errors[$propertyPath][] = $propertyError->getMessage();
-                    }
-                }
-                $this->throwJsonError(
-                    'validation_failed',
-                    422,
                     'The submitted profile data is invalid.',
-                    $errors,
                 );
             }
             $updatedProfile = $this->profileFactory->updateFromFormData(
@@ -711,17 +706,7 @@ final class ProfileController extends ActionController
         if ($payload === null || $profile === null) {
             $this->throwJsonError('internal_server_error', 500);
         }
-        $data = $payload->getData();
-        if (
-            array_keys($data) !== ['skipSync']
-            || !is_bool($data['skipSync'])
-        ) {
-            $this->throwJsonError(
-                'invalid_payload',
-                400,
-                'The payload must contain exactly one boolean skipSync value.',
-            );
-        }
+        $this->assertSkipSyncPayload($payload->getData());
         if (!$this->isSpecialFieldWritable('skipSync')) {
             // The switch is the whole request, so a locked switch is refused
             // rather than ignored as a locked field of the profile form is.
@@ -736,37 +721,26 @@ final class ProfileController extends ActionController
                 $this->request,
                 $this->settings,
             );
-            try {
-                $profileFormData = $this->profileUpdateValidationService->createFormData(
+            $profileFormData = $this->createValidatedProfileFormData(
+                $pluginControllerActionContext,
+                $profile,
+                $payload,
+                [],
+                'The submitted synchronization setting is invalid.',
+            );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UpdateSkipSync,
+                fields: $payload->getData(),
+            );
+            if ($replacedFields !== null) {
+                $this->assertSkipSyncPayload($replacedFields);
+                $profileFormData = $this->createValidatedProfileFormData(
                     $pluginControllerActionContext,
                     $profile,
-                    $payload,
-                );
-            } catch (\UnexpectedValueException $exception) {
-                // Only this call describes the submitted payload in its message, so
-                // only this call may relay one. Anything the persisting code below
-                // raises is logged and answered as an internal error instead.
-                $this->throwJsonError(
-                    'invalid_profile_data',
-                    422,
-                    $exception->getMessage(),
-                );
-            }
-            $validationResult = $this->profileUpdateValidationService->validate(
-                $profileFormData,
-            );
-            if ($validationResult->hasErrors()) {
-                $errors = [];
-                foreach ($validationResult->getFlattenedErrors() as $propertyPath => $propertyErrors) {
-                    foreach ($propertyErrors as $propertyError) {
-                        $errors[$propertyPath][] = $propertyError->getMessage();
-                    }
-                }
-                $this->throwJsonError(
-                    'validation_failed',
-                    422,
+                    new ProfileUpdatePayload($payload->getProfileUid(), $replacedFields),
+                    [],
                     'The submitted synchronization setting is invalid.',
-                    $errors,
                 );
             }
             $updatedProfile = $this->profileFactory->updateFromFormData(
@@ -856,6 +830,11 @@ final class ProfileController extends ActionController
             );
         }
         try {
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UpdateVisibility,
+                fields: ['hidden' => $data['hidden']],
+            );
             // The uid of an Extbase language overlay is the one of its default-language
             // record, which is the record the value belongs to.
             $hidden = $this->profileVisibilityWriter->write(
@@ -970,6 +949,19 @@ final class ProfileController extends ActionController
                 $fields,
                 true,
             );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::CreateDocument,
+                $section->identifier,
+                fields: array_intersect_key($fields, $normalizedFields),
+            );
+            if ($replacedFields !== null) {
+                $normalizedFields = $this->normalizeAndValidateDocumentFields(
+                    $section,
+                    $replacedFields,
+                    true,
+                );
+            }
             if ($section->isContractSection()) {
                 $record = $this->contractFactory->createFromFormData(
                     $section->validationSet,
@@ -1031,12 +1023,28 @@ final class ProfileController extends ActionController
             }
             $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
             $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, 'edit');
+            $fields = $this->getSubmittedDocumentFields($data);
             $normalizedFields = $this->normalizeAndValidateDocumentFields(
                 $section,
-                $this->getSubmittedDocumentFields($data),
+                $fields,
                 false,
                 $managedProperties,
             );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UpdateDocument,
+                $section->identifier,
+                $record,
+                array_intersect_key($fields, $normalizedFields),
+            );
+            if ($replacedFields !== null) {
+                $normalizedFields = $this->normalizeAndValidateDocumentFields(
+                    $section,
+                    $replacedFields,
+                    false,
+                    $managedProperties,
+                );
+            }
             if ($record instanceof Contract) {
                 $this->contractRepository->update(
                     $this->contractFactory->updateFromFormData(
@@ -1092,6 +1100,13 @@ final class ProfileController extends ActionController
             if (!is_bool($hidden)) {
                 $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
             }
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::ToggleDocumentVisibility,
+                $section->identifier,
+                $record,
+                ['hidden' => $hidden],
+            );
             $record->setHidden($hidden);
             if ($record instanceof Contract) {
                 $this->contractRepository->update($record);
@@ -1142,6 +1157,12 @@ final class ProfileController extends ActionController
                 $this->managedRecordLocks->getManagedProperties($record),
                 'delete',
             );
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::DeleteDocument,
+                $section->identifier,
+                $record,
+            );
             if ($record instanceof Contract) {
                 $this->contractRepository->remove($record);
             } else {
@@ -1178,10 +1199,16 @@ final class ProfileController extends ActionController
             if (array_key_exists('order', $data)) {
                 $this->assertDocumentPayload($data, ['section', 'order'], ['section', 'order']);
                 $this->assertDocumentActionAllowed($section, 'reorder');
-                $process = $this->reorderDocumentRecords(
-                    $this->getDocumentRecords($profile, $section),
-                    $this->getSubmittedDocumentOrder($data),
+                $records = $this->getDocumentRecords($profile, $section);
+                $order = $this->getSubmittedDocumentOrder($data);
+                $this->assertCompleteDocumentOrder($records, $order);
+                $this->dispatchBeforeWrite(
+                    $profile,
+                    ProfileEditingAction::SortDocument,
+                    $section->identifier,
+                    fields: ['order' => $order],
                 );
+                $process = $this->reorderDocumentRecords($records, $order);
                 if ($process['changed']) {
                     $this->persistAndDispatchProfileUpdate($profile);
                 }
@@ -1198,7 +1225,8 @@ final class ProfileController extends ActionController
             }
             $this->assertDocumentPayload($data, ['section', 'record', 'direction'], ['section', 'record', 'direction']);
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            if ($this->findDocumentRecord($profile, $section, $recordUid) === null) {
+            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
             $direction = $data['direction'];
@@ -1206,6 +1234,13 @@ final class ProfileController extends ActionController
                 $this->throwJsonError('invalid_payload', 400, 'The direction must be up or down.');
             }
             $this->assertDocumentActionAllowed($section, $direction);
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::SortDocument,
+                $section->identifier,
+                $record,
+                ['direction' => $direction],
+            );
             $records = $this->getDocumentRecords($profile, $section);
             $process = $this->sortItems(
                 $records,
@@ -1299,11 +1334,26 @@ final class ProfileController extends ActionController
                 ['contract', 'section', 'fields'],
             );
             $this->assertContractContactActionAllowed('add');
+            $fields = $this->getSubmittedDocumentFields($data);
             $normalizedFields = $this->normalizeAndValidateContractContactFields(
                 $section,
-                $this->getSubmittedDocumentFields($data),
+                $fields,
                 true,
             );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::CreateContractContact,
+                $section->identifier,
+                fields: array_intersect_key($fields, $normalizedFields),
+                contract: $contract,
+            );
+            if ($replacedFields !== null) {
+                $normalizedFields = $this->normalizeAndValidateContractContactFields(
+                    $section,
+                    $replacedFields,
+                    true,
+                );
+            }
             $record = $this->createContractContactRecord($contract, $section, $normalizedFields);
             $record->setSorting($this->getNextContractContactSortingValue($contract, $section));
             $record->setPid((int)$contract->getPid());
@@ -1343,12 +1393,29 @@ final class ProfileController extends ActionController
             }
             $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
             $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, 'edit');
+            $fields = $this->getSubmittedDocumentFields($data);
             $normalizedFields = $this->normalizeAndValidateContractContactFields(
                 $section,
-                $this->getSubmittedDocumentFields($data),
+                $fields,
                 false,
                 $managedProperties,
             );
+            $replacedFields = $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UpdateContractContact,
+                $section->identifier,
+                $record,
+                array_intersect_key($fields, $normalizedFields),
+                $contract,
+            );
+            if ($replacedFields !== null) {
+                $normalizedFields = $this->normalizeAndValidateContractContactFields(
+                    $section,
+                    $replacedFields,
+                    false,
+                    $managedProperties,
+                );
+            }
             $this->updateContractContactRecord($section, $record, $normalizedFields, $managedProperties);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
@@ -1388,6 +1455,13 @@ final class ProfileController extends ActionController
                 $record,
                 $this->managedRecordLocks->getManagedProperties($record),
                 'delete',
+            );
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::DeleteContractContact,
+                $section->identifier,
+                $record,
+                contract: $contract,
             );
             $this->removeContractContactRecord($record);
             $this->persistAndDispatchProfileUpdate($profile);
@@ -1434,6 +1508,14 @@ final class ProfileController extends ActionController
             if (!is_bool($hidden)) {
                 $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
             }
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::ToggleContractContactVisibility,
+                $section->identifier,
+                $record,
+                ['hidden' => $hidden],
+                $contract,
+            );
             $record->setHidden($hidden);
             $this->updateContractContactVisibility($record);
             $this->persistAndDispatchProfileUpdate($profile);
@@ -1465,13 +1547,22 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('sort');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            if ($this->findContractContactRecord($contract, $section, $recordUid) === null) {
+            $record = $this->findContractContactRecord($contract, $section, $recordUid);
+            if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
             $direction = $data['direction'];
             if (!is_string($direction) || !in_array($direction, ['up', 'down'], true)) {
                 $this->throwJsonError('invalid_payload', 400, 'The direction must be up or down.');
             }
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::SortContractContact,
+                $section->identifier,
+                $record,
+                ['direction' => $direction],
+                $contract,
+            );
             $process = $this->sortItems(
                 $this->getContractContactRecords($contract, $section),
                 $recordUid,
@@ -2380,11 +2471,31 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * Refuses a submitted order that does not name every record of the section exactly once.
+     *
+     * @param list<Contract|ProfileInformation> $records The records of the section.
+     * @param list<int> $order The submitted order as a list of record UIDs.
+     */
+    private function assertCompleteDocumentOrder(array $records, array $order): void
+    {
+        $currentOrder = array_map(
+            static fn(Contract|ProfileInformation $record): int => (int)$record->getUid(),
+            $records,
+        );
+        $submittedOrder = $order;
+        sort($currentOrder);
+        sort($submittedOrder);
+        if ($submittedOrder !== $currentOrder || count(array_unique($order)) !== count($order)) {
+            $this->throwJsonError('invalid_payload', 400, 'The document order must contain every section record exactly once.');
+        }
+    }
+
+    /**
      * Reorders document records to the submitted sequence and updates their sorting values.
      *
-     * The submitted order is validated to contain each record exactly once. Records are
-     * then assigned their new sorting position in increments of 10 and marked as changed.
-     * Flushing them is left to the caller, which announces the change through
+     * The submitted order has been checked by {@see self::assertCompleteDocumentOrder()}.
+     * Records are assigned their new sorting position in increments of 10 and marked as
+     * changed. Flushing them is left to the caller, which announces the change through
      * {@see self::persistAndDispatchProfileUpdate()}.
      *
      * @param list<Contract|ProfileInformation> $records The records that should be reordered.
@@ -2397,14 +2508,6 @@ final class ProfileController extends ActionController
         $recordsByUid = [];
         foreach ($records as $record) {
             $recordsByUid[(int)$record->getUid()] = $record;
-        }
-        $currentOrder = array_keys($recordsByUid);
-        $normalizedCurrentOrder = $currentOrder;
-        $normalizedSubmittedOrder = $order;
-        sort($normalizedCurrentOrder);
-        sort($normalizedSubmittedOrder);
-        if ($normalizedSubmittedOrder !== $normalizedCurrentOrder || count(array_unique($order)) !== count($order)) {
-            $this->throwJsonError('invalid_payload', 400, 'The document order must contain every section record exactly once.');
         }
         $orderedRecords = [];
         $changed = false;
@@ -3311,6 +3414,8 @@ final class ProfileController extends ActionController
                 'deleted' => $deleted,
                 'hasImage' => false,
             ]);
+        } catch (PropagateResponseException $exception) {
+            throw $exception;
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -3372,6 +3477,11 @@ final class ProfileController extends ActionController
             // storage by the time the action runs, so every refusal from here on
             // has to take the file with it - the catch below is what does that.
             $persistedProfileUid = $this->requirePersistedProfileUid($profile);
+            $this->dispatchBeforeWrite(
+                $profile,
+                ProfileEditingAction::UploadImage,
+                record: $profile->getImage(),
+            );
             $replacedFileUids = $this->profileImageRelationWriter->replace(
                 $persistedProfileUid,
                 $uploadedImageFile,
@@ -3438,6 +3548,11 @@ final class ProfileController extends ActionController
     private function deleteProfileImage(Profile $profile): bool
     {
         $persistedProfileUid = $this->requirePersistedProfileUid($profile);
+        $this->dispatchBeforeWrite(
+            $profile,
+            ProfileEditingAction::DeleteImage,
+            record: $profile->getImage(),
+        );
         $removedFileUids = $this->profileImageRelationWriter->remove($persistedProfileUid);
         if ($removedFileUids === []) {
             return false;
@@ -3569,6 +3684,111 @@ final class ProfileController extends ActionController
     private function getCurrentContentObjectRenderer(): ?ContentObjectRenderer
     {
         return $this->request->getAttribute('currentContentObject');
+    }
+
+    /**
+     * Offers a write the editor accepted to the listeners of
+     * {@see BeforeProfileEditingWriteEvent}, right before anything of it is stored.
+     *
+     * A refused write is answered with 422 `write_refused` and the listener's reason.
+     * Fields a listener replaced are returned for the caller to validate again, exactly
+     * as submitted ones, so that replaced fields can neither carry an invalid or
+     * unsanitised value nor write a field the configuration or the synchronisation
+     * locks.
+     *
+     * @param array<string, mixed> $fields The values of the write in the shape the editor submits them.
+     * @return array<string, mixed>|null The replaced fields, or null when no listener replaced them.
+     */
+    private function dispatchBeforeWrite(
+        Profile $profile,
+        ProfileEditingAction $action,
+        ?string $sectionIdentifier = null,
+        ?AbstractEntity $record = null,
+        array $fields = [],
+        ?Contract $contract = null,
+    ): ?array {
+        $event = new BeforeProfileEditingWriteEvent(
+            $profile,
+            $action,
+            $sectionIdentifier,
+            $record,
+            $fields,
+            new PluginControllerActionContext($this->request, $this->settings),
+            $contract,
+        );
+        $this->eventDispatcher->dispatch($event);
+        if ($event->isRefused()) {
+            $this->throwJsonError('write_refused', 422, $event->getReason());
+        }
+        return $event->getFields() !== $fields ? $event->getFields() : null;
+    }
+
+    /**
+     * Builds the form data of a profile write from the payload and validates it, or
+     * answers the request with the error.
+     *
+     * @param list<string> $managedProperties
+     */
+    private function createValidatedProfileFormData(
+        PluginControllerActionContext $pluginControllerActionContext,
+        Profile $profile,
+        ProfileUpdatePayload $payload,
+        array $managedProperties,
+        string $validationMessage,
+    ): ProfileFormData {
+        try {
+            $profileFormData = $this->profileUpdateValidationService->createFormData(
+                $pluginControllerActionContext,
+                $profile,
+                $payload,
+                $managedProperties,
+            );
+        } catch (\UnexpectedValueException $exception) {
+            // Only this call describes the submitted payload in its message, so
+            // only this call may relay one. Anything the persisting code of the
+            // action raises is logged and answered as an internal error instead.
+            $this->throwJsonError(
+                'invalid_profile_data',
+                422,
+                $exception->getMessage(),
+            );
+        }
+        //@todo: Edit validator for links
+        $validationResult = $this->profileUpdateValidationService->validate(
+            $profileFormData,
+        );
+        if ($validationResult->hasErrors()) {
+            $errors = [];
+            foreach ($validationResult->getFlattenedErrors() as $propertyPath => $propertyErrors) {
+                foreach ($propertyErrors as $propertyError) {
+                    $errors[$propertyPath][] = $propertyError->getMessage();
+                }
+            }
+            $this->throwJsonError(
+                'validation_failed',
+                422,
+                $validationMessage,
+                $errors,
+            );
+        }
+        return $profileFormData;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function assertSkipSyncPayload(array $data): void
+    {
+        if (
+            array_keys($data) !== ['skipSync']
+            || !is_bool($data['skipSync'])
+        ) {
+            $this->throwJsonError(
+                'invalid_payload',
+                400,
+                'The payload must contain exactly one boolean skipSync value.',
+            );
+        }
     }
 
     /**
