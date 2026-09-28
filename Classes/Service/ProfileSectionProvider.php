@@ -43,7 +43,11 @@ final readonly class ProfileSectionProvider
     ) {}
 
     /**
+     * A project field, a column a site package declared in the persons settings, has
+     * no property on the profile model: its view carries the stored value itself.
+     *
      * @param list<string> $managedProperties the properties the synchronisation manages on the edited profile
+     * @param array<string, string|bool> $projectFieldValues the stored values of the project fields, keyed by property name
      * @return array<string, array{
      *     identifier: string,
      *     position: int,
@@ -51,7 +55,7 @@ final readonly class ProfileSectionProvider
      *     items: list<array{kind: 'field', field: array<string, mixed>}|array{kind: 'special', special: array<string, mixed>}>
      * }>
      */
-    public function getSections(array $managedProperties = []): array
+    public function getSections(array $managedProperties = [], array $projectFieldValues = []): array
     {
         $specialFields = $this->getSpecialFields($managedProperties);
         $consumedFields = [];
@@ -81,7 +85,11 @@ final readonly class ProfileSectionProvider
                 if (isset($consumedFields[$field->identifier])) {
                     continue;
                 }
-                $items[] = ['kind' => 'field', 'field' => $this->createFieldView($field, $managedProperties)];
+                $fieldView = $this->createFieldView($field, $managedProperties);
+                if ($field->custom) {
+                    $fieldView['value'] = $projectFieldValues[$field->propertyName] ?? '';
+                }
+                $items[] = ['kind' => 'field', 'field' => $fieldView];
             }
             $sections[$section->identifier] = $this->createSectionView($section, $items);
         }
@@ -207,6 +215,7 @@ final readonly class ProfileSectionProvider
             'managed' => $managed,
             'position' => $field->position,
             'helptext' => $field->helptext,
+            'custom' => $field->custom,
         ];
         if (strtolower($field->renderType) === 'combinedlink') {
             $titleProperty = $field->propertyName . 'Title';

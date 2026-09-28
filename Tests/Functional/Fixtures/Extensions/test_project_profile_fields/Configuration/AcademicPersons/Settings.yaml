@@ -1,0 +1,73 @@
+# The columns of this extension as project fields of the profile editor: a
+# required name prefix, a checkbox, a locked and a managed code, a rich text
+# note, a code all languages share, a code a translation may keep as its own,
+# an e-mail address and a web address.
+profile:
+  namePrefix:
+    custom: true
+    section: information
+    fieldName: tx_test_prefix
+    fieldType: input
+    renderType: text
+    validators:
+      - required
+  guestLecturer:
+    custom: true
+    section: information
+    fieldName: tx_test_guest
+    fieldType: check
+    renderType: checkbox
+  lockedCode:
+    custom: true
+    section: information
+    fieldName: tx_test_code
+    fieldType: input
+    renderType: text
+    validators:
+      - readonly
+  syncedCode:
+    custom: true
+    section: information
+    fieldName: tx_test_synced
+    fieldType: input
+    renderType: text
+  noteText:
+    custom: true
+    section: aboutme
+    fieldName: tx_test_note
+    fieldType: textarea
+    renderType: ckeditor
+    validators:
+      - html
+  sharedCode:
+    custom: true
+    section: information
+    fieldName: tx_test_shared
+    fieldType: input
+    renderType: text
+  ownCode:
+    custom: true
+    section: information
+    fieldName: tx_test_own
+    fieldType: input
+    renderType: text
+  contactMail:
+    custom: true
+    section: information
+    fieldName: tx_test_mail
+    fieldType: input
+    renderType: email
+    validators:
+      - email
+  webLink:
+    custom: true
+    section: information
+    fieldName: tx_test_web
+    fieldType: input
+    renderType: text
+    validators:
+      - url
+
+managedFields:
+  profile:
+    - syncedCode

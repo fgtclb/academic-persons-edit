@@ -177,12 +177,16 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/Documents/ContractRow.html`, :file:`Partials/Profile/Documents/Header.html`, :file:`Partials/Profile/Documents/ProfileInformationRow.html`
     *   - :xml:`profileEditing.documents.year`
         - :file:`Partials/Profile/Documents/Header.html`, :file:`Partials/Profile/Documents/ProfileInformationRow.html`
+    *   - :xml:`profileEditing.field.checked`
+        - :file:`Partials/Profile/Field/Control.html`, :file:`Partials/Profile/Field/Preview.html`
     *   - :xml:`profileEditing.field.empty`
         - :file:`Partials/Profile/Field/Group.html`, :file:`Partials/Profile/Field/Preview.html`, :file:`Templates/Profile/Index.html`
     *   - :xml:`profileEditing.field.managed`
         - :file:`Partials/Profile/Documents/Actions.html`, :file:`Partials/Profile/Documents/ContractContacts.html`, :file:`Partials/Profile/Field/ManagedBadge.html`, :file:`Partials/Profile/Field/PrototypeWrapper.html`
     *   - :xml:`profileEditing.field.required`
         - :file:`Partials/Profile/Field/Editable.html`, :file:`Partials/Profile/Field/Group.html`, :file:`Partials/Profile/Field/Preview.html`, :file:`Partials/Profile/Field/Select.html`
+    *   - :xml:`profileEditing.field.unchecked`
+        - :file:`Partials/Profile/Field/Control.html`, :file:`Partials/Profile/Field/Preview.html`
     *   - :xml:`profileEditing.form.apply`
         - :file:`Partials/Profile/Field/FormActions.html`
     *   - :xml:`profileEditing.form.apply.title`
@@ -265,10 +269,6 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/UnsavedChanges.html`
     *   - :xml:`profileEditing.user_image_not_available`
         - :file:`Partials/Profile/Image/Card.html`
-    *   - :xml:`profileEditing.visibility.private`
-        - :file:`Partials/Profile/Field/Control.html`
-    *   - :xml:`profileEditing.visibility.public`
-        - :file:`Partials/Profile/Field/Control.html`
     *   - :xml:`profileInformation.bodytext.label`
         - :file:`Partials/Profile/Documents/Header.html`, :file:`Partials/Profile/Documents/ProfileInformationRow.html`
     *   - The help texts of the profile fields, full references into a language file: the override is keyed by the id of the label in that file

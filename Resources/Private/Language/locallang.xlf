@@ -338,6 +338,12 @@
       <trans-unit id="profileEditing.visibility.public">
         <source>Public</source>
       </trans-unit>
+      <trans-unit id="profileEditing.field.checked">
+        <source>Yes</source>
+      </trans-unit>
+      <trans-unit id="profileEditing.field.unchecked">
+        <source>No</source>
+      </trans-unit>
       <trans-unit id="profileEditing.field.empty">
         <source>Not specified</source>
       </trans-unit>

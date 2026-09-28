@@ -18,6 +18,7 @@ use FGTCLB\AcademicPersons\Service\DataHandlerExecutionContext;
 use FGTCLB\AcademicPersons\Service\ProfileImageMetadataService;
 use FGTCLB\AcademicPersons\Service\ProfileImageRelationWriter;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
+use FGTCLB\AcademicPersons\Settings\ProjectProfileFieldCheck;
 use FGTCLB\AcademicPersons\Types\EmailAddressTypes;
 use FGTCLB\AcademicPersons\Types\PhoneNumberTypes;
 use FGTCLB\AcademicPersons\Types\PhysicalAddressTypes;
@@ -41,6 +42,7 @@ use FGTCLB\AcademicPersonsEdit\Service\ProfileSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateRequestService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateValidationService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileVisibilityWriter;
+use FGTCLB\AcademicPersonsEdit\Service\ProjectProfileFields;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\NullLogger;
@@ -458,6 +460,13 @@ final class ProfileControllerTest extends UnitTestCase
             $this->createStub(LocationRepository::class),
             $this->createStub(ProfileRichTextSanitizerInterface::class),
             $managedRecordLocks,
+            new ProjectProfileFields(
+                $academicPersonsSettings,
+                new ProjectProfileFieldCheck(),
+                $tcaSchemaFactory,
+                $connectionPool,
+                $dataHandlerExecutionContext,
+            ),
         );
 
         $requestProperty = new \ReflectionProperty(

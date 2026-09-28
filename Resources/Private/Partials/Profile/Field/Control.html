@@ -25,6 +25,10 @@
           rows          rows of a textarea
           autosave      render the autosave hook on a checkbox (live mode only)
 
+        A project field, a column a site package declared in the persons
+        settings, has no property on the profile: its field definition
+        carries the stored value as "value", and "custom" is set.
+
         The one branch on "prototype" is below and there is deliberately no
         second one: in prototype mode the concrete id, name and value are empty
         and the "data-pe-attr" bindings carry their slot names instead, which
@@ -67,9 +71,16 @@
         <f:else>
             <f:variable name="controlId" value="{elementId}" />
             <f:variable name="controlName" value="{field.propertyName}" />
-            <f:variable
-                name="controlValue"
-                value="{profile.{field.propertyName}}" />
+            <f:if condition="{field.custom}">
+                <f:then>
+                    <f:variable name="controlValue" value="{field.value}" />
+                </f:then>
+                <f:else>
+                    <f:variable
+                        name="controlValue"
+                        value="{profile.{field.propertyName}}" />
+                </f:else>
+            </f:if>
             <f:variable name="controlDescribedBy" value="{elementId}-error" />
             <f:comment>
                 A date is typed into a text control here as well. The field
@@ -106,16 +117,16 @@
                 value="{f:if(condition: '{field.validation.disabled} || {field.validation.readOnly}', then: 'disabled')}" />
             <f:variable
                 name="controlChecked"
-                value="{f:if(condition: '{profile.{field.propertyName}}', then: 'checked')}" />
+                value="{f:if(condition: controlValue, then: 'checked')}" />
             <f:variable
                 name="controlCharacterLimit"
                 value="{field.validation.characterLimit}" />
             <f:variable
                 name="controlCheckedLabel"
-                value="{f:translate(key: 'profileEditing.visibility.public', extensionName: 'AcademicPersonsEdit')}" />
+                value="{f:translate(key: 'profileEditing.field.checked', extensionName: 'AcademicPersonsEdit')}" />
             <f:variable
                 name="controlUncheckedLabel"
-                value="{f:translate(key: 'profileEditing.visibility.private', extensionName: 'AcademicPersonsEdit')}" />
+                value="{f:translate(key: 'profileEditing.field.unchecked', extensionName: 'AcademicPersonsEdit')}" />
             <f:variable
                 name="controlAutosave"
                 value="{f:if(condition: '{autosave} && !{field.validation.disabled} && !{field.validation.readOnly}', then: 'true')}" />

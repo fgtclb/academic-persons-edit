@@ -201,6 +201,130 @@ ignored for non-CKEditor controls, and removing it or setting it to a non-
 positive value disables both the counter and the additional validation without
 changing backend FormEngine.
 
+..  _configuration-editor-project-fields:
+
+Project fields
+==============
+
+A column a site package adds to the profile table can be edited in the profile
+editor. The site package ships the column itself, its SQL and its TCA, and
+declares it below :yaml:`profile` as a project field with :yaml:`custom: true`:
+
+..  code-block:: sql
+    :caption: EXT:my_sitepackage/ext_tables.sql
+
+    CREATE TABLE tx_academicpersons_domain_model_profile (
+        tx_mysitepackage_name_prefix varchar(30) DEFAULT '' NOT NULL
+    );
+
+..  code-block:: php
+    :caption: EXT:my_sitepackage/Configuration/TCA/Overrides/tx_academicpersons_domain_model_profile.php
+
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(
+        'tx_academicpersons_domain_model_profile',
+        [
+            'tx_mysitepackage_name_prefix' => [
+                'label' => 'LLL:EXT:my_sitepackage/Resources/Private/Language/locallang_db.xlf:profile.name_prefix',
+                'config' => ['type' => 'input', 'max' => 30],
+            ],
+        ],
+    );
+
+..  code-block:: yaml
+    :caption: EXT:my_sitepackage/Configuration/AcademicPersons/Settings.yaml
+
+    profile:
+      namePrefix:
+        custom: true
+        section: information
+        fieldName: tx_mysitepackage_name_prefix
+        fieldType: input
+        renderType: text
+        validators:
+          - required
+
+The identifier, :yaml:`namePrefix` here, is the name the editor submits the value
+under. It must not be a property of the profile model, and a
+:yaml:`propertyName` is ignored. :yaml:`fieldName` names the column and is
+required. The field appears after the shipped fields of its section.
+
+The column has to be in the TCA of the profile table with the type ``input``,
+``text``, ``email``, ``link``, ``number`` or ``check``. It must be neither a
+system column, such as the language column or the column that hides the
+profile, nor a column of the shipped profile model. A column a project maps in
+an XCLASS of the model is not a column of the shipped model and can be used.
+
+The renderer has to fit the column:
+
+..  list-table::
+    :header-rows: 1
+
+    *   - TCA type of the column
+        - Renderer and validators
+    *   - ``input``, ``number``
+        - ``text``, ``textarea`` or a renderer of an input type, such as
+          ``phone``
+    *   - ``text``
+        - ``text``, ``textarea`` or ``ckeditor``
+    *   - ``email``
+        - The ``email`` validator, which the DataHandler would otherwise apply
+          after the other fields of the request are stored
+    *   - ``link``
+        - The ``url`` validator, for the same reason, and ``allowedTypes``
+          that include ``url``. The field takes web addresses, ``http`` and
+          ``https``, and no other link of TYPO3
+    *   - ``check``
+        - ``checkbox``, and no other column takes it
+
+``select`` and ``combinedLink`` are not available. A checkbox shows
+:guilabel:`Yes` or :guilabel:`No`, labels that are overridden like every other
+label of the editor, see :ref:`configuration-labels`.
+
+A project field is validated, limited and sanitised like any other field with
+the same configuration, in the same pass, so an invalid value stores nothing of
+the request. Its validators reach the backend form of the column as well, a
+:yaml:`required` project field is required there too. The flags
+:yaml:`readonly`, :yaml:`frontendreadonly` and :yaml:`disabled` and the
+:yaml:`managedFields` map lock it like any other field.
+
+The editor reads the value from the row of the edited language and writes it
+there, through the DataHandler: a translation keeps its own value, and the
+change gets a history entry. A column with ``l10n_mode: exclude`` is written to
+the default-language record instead, from which every translation takes it. A
+column with ``allowLanguageSynchronization`` keeps the value a translation is
+given as the translation's own, as the backend does when an editor types one.
+The value is written after the regular fields of the same request and before the
+update is announced, so the translation synchronisation sees it, and the answer
+carries the value as it was stored. An update made in a translation is not
+announced, as for every other field. That holds for a shared column written to
+the default-language record as well, which the DataHandler carries into the
+translations itself. A workspace preview cannot write a project field and is
+answered with ``409``.
+
+The two writes of one request are not one transaction. A value that passed the
+validation and is refused by the DataHandler nonetheless, by a hook of the
+installation for example, is answered with ``500`` and logged, and the regular
+fields of the request stay stored.
+
+The label is :xml:`profile.<identifier>.label` of the editor, set like any
+other label, see :ref:`configuration-labels`:
+
+..  code-block:: typoscript
+
+    plugin.tx_academicpersonsedit._LOCAL_LANG {
+      default.profile.namePrefix.label = Name prefix
+      de.profile.namePrefix.label = Namenszusatz
+    }
+
+A column that cannot be used raises a deprecation notice while the TCA is
+compiled, which names the field, the column and the reason. The backend and
+the install tool keep working, the settings of the field are not applied to the
+TCA, and a test run that fails on deprecations fails on it. The profile editor
+fails with an exception carrying the same message whenever it renders the
+page, and answers a request writing the field with ``500`` and the error
+``invalid_project_field``. Where deprecation notices are not logged, that
+exception is what points to the mistake.
+
 Contract form and contact sections
 ==================================
 

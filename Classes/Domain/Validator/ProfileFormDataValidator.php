@@ -29,8 +29,9 @@ final class ProfileFormDataValidator extends AbstractFormDataValidator
         foreach ($this->getAcademicPersonsSettings()->profileSections as $section) {
             $validations = array_filter(
                 $section->validationSet->validations,
-                static fn(mixed $validation, string $property): bool => $profileFormData->_hasProperty($property)
-                    && $profileFormData->shouldApplyProperty($property),
+                static fn(mixed $validation, string $property): bool => (
+                    $profileFormData->_hasProperty($property) || $profileFormData->hasCustomValue($property)
+                ) && $profileFormData->shouldApplyProperty($property),
                 ARRAY_FILTER_USE_BOTH,
             );
             $this->processValidationSet(

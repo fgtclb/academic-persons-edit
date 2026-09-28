@@ -24,10 +24,12 @@ final readonly class ProfileUpdateValidationService
     ) {}
 
     /**
-     * A property the profile form does not have is refused. A locked one,
-     * managed on the profile or locked with `readonly`, `frontendreadonly` or
-     * `disabled`, is dropped and keeps its stored value, as a locked field of
-     * a contract or contact is.
+     * A property the profile form does not have is refused, unless the settings
+     * declare it as a project field, whose value is carried by name. A locked
+     * one, managed on the profile or locked with `readonly`, `frontendreadonly`
+     * or `disabled`, is dropped and keeps its stored value, as a locked field of
+     * a contract or contact is. Whether the column of a project field may be
+     * written is the caller's check, before anything is stored.
      *
      * @param list<string> $managedProperties the properties the synchronisation manages on the profile
      */
@@ -39,11 +41,18 @@ final readonly class ProfileUpdateValidationService
     ): ProfileFormData {
         $profileFormData = $this->profileFormDataFactory->createFromProfile($context, $profile);
         $properties = $this->getProperties($profileFormData);
+        $customFields = $this->academicPersonsSettings->getCustomProfileFields();
         foreach ($payload->getData() as $propertyName => $value) {
-            if (!array_key_exists($propertyName, $properties)) {
+            // A project field first: its identifier is no property of the model, but it
+            // may be named like one the form data object has for its own use.
+            $customField = $customFields[$propertyName] ?? null;
+            if ($customField === null && !array_key_exists($propertyName, $properties)) {
                 throw new \UnexpectedValueException(sprintf('Unknown profile property "%s".', $propertyName));
             }
-            if (!$properties[$propertyName] || in_array($propertyName, $managedProperties, true)) {
+            $writable = $customField !== null
+                ? !$customField->validation->readOnly && !$customField->validation->disabled
+                : $properties[$propertyName];
+            if (!$writable || in_array($propertyName, $managedProperties, true)) {
                 continue;
             }
             $profileField = $this->academicPersonsSettings->getProfileField($propertyName);
@@ -66,8 +75,26 @@ final readonly class ProfileUpdateValidationService
             } elseif (!is_string($value)) {
                 throw new \UnexpectedValueException(sprintf('Invalid value for profile property "%s".', $propertyName));
             }
+            // The URL validator accepts a `t3://` link as well, which the DataHandler resolves
+            // for a link column and empties when it resolves to nothing it allows, after the
+            // other fields of the request are stored. A project field takes web addresses.
+            if (
+                $customField !== null
+                && in_array('url', $customField->validation->flags, true)
+                && is_string($value)
+                && $value !== ''
+                && preg_match('#^https?://#i', trim($value)) !== 1
+            ) {
+                throw new \UnexpectedValueException(
+                    sprintf('Invalid web address for profile property "%s".', $propertyName),
+                );
+            }
             if (is_string($value) && $this->profileRichTextSanitizer->supports($propertyName)) {
                 $value = $this->profileRichTextSanitizer->sanitize($value);
+            }
+            if ($customField !== null) {
+                $profileFormData->setCustomValue($propertyName, $value);
+                continue;
             }
             $profileFormData->setPropertyOverride($propertyName, $value);
         }
@@ -124,6 +151,9 @@ final readonly class ProfileUpdateValidationService
         }
         foreach ($this->academicPersonsSettings->profileSections as $section) {
             foreach ($section->fields as $field) {
+                if ($field->custom) {
+                    continue;
+                }
                 $writable = !$field->validation->readOnly && !$field->validation->disabled;
                 if ($profileFormData->_hasProperty($field->propertyName)) {
                     $properties[$field->propertyName] = ($properties[$field->propertyName] ?? false) || $writable;

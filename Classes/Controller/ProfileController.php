@@ -63,6 +63,7 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileUpdatePayload;
 use FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent;
 use FGTCLB\AcademicPersonsEdit\Event\ProfileEditingAction;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
+use FGTCLB\AcademicPersonsEdit\Service\Exception\InvalidProjectProfileFieldException;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
 use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
@@ -73,6 +74,7 @@ use FGTCLB\AcademicPersonsEdit\Service\ProfileSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateRequestService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateValidationService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileVisibilityWriter;
+use FGTCLB\AcademicPersonsEdit\Service\ProjectProfileFields;
 use FGTCLB\AcademicPersonsEdit\Service\RichTextCharacterCounter;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Context\Context;
@@ -278,6 +280,7 @@ final class ProfileController extends ActionController
         private readonly LocationRepository $locationRepository,
         private readonly ProfileRichTextSanitizerInterface $profileRichTextSanitizer,
         private readonly ManagedRecordLocks $managedRecordLocks,
+        private readonly ProjectProfileFields $projectProfileFields,
     ) {}
 
     /**
@@ -421,11 +424,18 @@ final class ProfileController extends ActionController
             );
         }
         $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
+        // A column the editor must not use fails the page with the exception naming it.
+        $projectFields = $this->projectProfileFields->getFields();
+        $this->projectProfileFields->assertUsable($projectFields);
+        $projectRecordUid = $projectFields === [] ? null : $this->resolvePersistedProfileUid($profile);
         $this->view->assignMultiple([
             'data' => $this->getCurrentContentObjectRenderer()?->data,
             'record' => $this->getCurrentContentRecord($this->getCurrentContentObjectRenderer()),
             'profile' => $profile,
-            'profileSections' => $this->profileSectionProvider->getSections($managedProperties),
+            'profileSections' => $this->profileSectionProvider->getSections(
+                $managedProperties,
+                $projectRecordUid === null ? [] : $this->projectProfileFields->readValues($projectRecordUid, $projectFields),
+            ),
             'specialFields' => $this->profileSectionProvider->getSpecialFields($managedProperties),
             'profileFieldOptions' => $this->profileFieldOptionsService->getOptionsByField($this->request),
             'documentSections' => $this->profileDocumentSectionProvider->getSections($profile),
@@ -597,6 +607,12 @@ final class ProfileController extends ActionController
      * and concrete values replace it. The method validates the payload and form
      * data before persisting the updated entity and returning the normalized data.
      *
+     * The values of project fields, columns a site package declared in the persons
+     * settings, are validated in the same pass and written through the DataHandler
+     * once the Extbase write is done, to the row of the edited language. They are
+     * written before the update is announced, so the listeners of the announcement
+     * see them, and the answer carries the values as they were stored.
+     *
      * @return ResponseInterface A JSON response with the updated profile UID and normalized values.
      */
     public function updateAction(): ResponseInterface
@@ -621,6 +637,7 @@ final class ProfileController extends ActionController
                 $this->settings,
             );
             $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
+            $this->assertSubmittedProjectFieldsAreUsable($payload);
             $profileFormData = $this->createValidatedProfileFormData(
                 $pluginControllerActionContext,
                 $profile,
@@ -639,6 +656,7 @@ final class ProfileController extends ActionController
             );
             if ($replacedFields !== null) {
                 $payload = new ProfileUpdatePayload($payload->getProfileUid(), $replacedFields);
+                $this->assertSubmittedProjectFieldsAreUsable($payload);
                 $profileFormData = $this->createValidatedProfileFormData(
                     $pluginControllerActionContext,
                     $profile,
@@ -647,6 +665,7 @@ final class ProfileController extends ActionController
                     'The submitted profile data is invalid.',
                 );
             }
+            $projectRecordUid = $this->resolveProjectFieldRecord($profile, $profileFormData);
             $updatedProfile = $this->profileFactory->updateFromFormData(
                 $this->academicPersonsSettings->getProfileUpdateValidationSet(),
                 $profile,
@@ -654,15 +673,29 @@ final class ProfileController extends ActionController
                 $managedProperties,
             );
             $this->profileRepository->update($updatedProfile);
-            $this->persistAndDispatchProfileUpdate($updatedProfile);
+            $this->persistAndDispatchProfileUpdate(
+                $updatedProfile,
+                $projectRecordUid === null
+                    ? null
+                    : fn() => $this->projectProfileFields->writeValues($projectRecordUid, $profileFormData->getCustomValues()),
+            );
+            $data = $this->profileUpdateValidationService->getNormalizedData(
+                $profileFormData,
+                $payload,
+                $managedProperties,
+            );
+            if ($projectRecordUid !== null) {
+                // The DataHandler applies the TCA of a column, a `max` for example, so
+                // the answer carries what it stored rather than what was submitted.
+                $data = array_replace($data, $this->projectProfileFields->readValues(
+                    $projectRecordUid,
+                    array_intersect_key($this->projectProfileFields->getFields(), $profileFormData->getCustomValues()),
+                ));
+            }
             return new JsonResponse([
                 'success' => true,
                 'profile' => $updatedProfile->getUid(),
-                'data' => $this->profileUpdateValidationService->getNormalizedData(
-                    $profileFormData,
-                    $payload,
-                    $managedProperties,
-                ),
+                'data' => $data,
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
@@ -3775,6 +3808,56 @@ final class ProfileController extends ActionController
     }
 
     /**
+     * Checks the project fields a profile update names before anything else of it:
+     * a column the editor must not use is answered with 500 and the message naming
+     * it, as it is a mistake of the installation rather than of the request, and no
+     * validation of its value may answer first.
+     */
+    private function assertSubmittedProjectFieldsAreUsable(ProfileUpdatePayload $payload): void
+    {
+        try {
+            $this->projectProfileFields->assertUsable(
+                array_intersect_key($this->projectProfileFields->getFields(), $payload->getData()),
+            );
+        } catch (InvalidProjectProfileFieldException $exception) {
+            $this->logManager->getLogger(self::class)->error($exception->getMessage(), ['exception' => $exception]);
+            $this->throwJsonError('invalid_project_field', 500, $exception->getMessage());
+        }
+    }
+
+    /**
+     * Resolves the row the values of the project fields of a profile update go to,
+     * before anything is written.
+     *
+     * @return int|null The uid of the row of the edited language, or null when the
+     *                  update carries no project field value to write.
+     */
+    private function resolveProjectFieldRecord(Profile $profile, ProfileFormData $profileFormData): ?int
+    {
+        if ($profileFormData->getCustomValues() === []) {
+            return null;
+        }
+        // Written through the DataHandler, like the visibility: a frontend request acting
+        // in a non-live workspace would produce a version of the record nobody asked for.
+        if ($this->dataHandlerExecutionContext->isFrontendRequestInWorkspace()) {
+            $this->throwJsonError(
+                'workspace_not_supported',
+                409,
+                'The project fields of the profile cannot be edited from a workspace preview.',
+            );
+        }
+        $recordUid = $this->resolvePersistedProfileUid($profile);
+        if ($recordUid === null) {
+            $this->throwJsonError(
+                'profile_not_found',
+                404,
+                'The profile does not exist in the requested language.',
+            );
+        }
+        return $recordUid;
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     private function assertSkipSyncPayload(array $data): void
@@ -3807,10 +3890,18 @@ final class ProfileController extends ActionController
 
     /**
      * Persists all pending changes before announcing the updated profile aggregate.
+     *
+     * @param (\Closure(): void)|null $beforeAnnouncement a write of its own, run after the
+     *                                                     Extbase write and before the
+     *                                                     announcement, whose result the
+     *                                                     listeners have to see
      */
-    private function persistAndDispatchProfileUpdate(?Profile $profile): void
+    private function persistAndDispatchProfileUpdate(?Profile $profile, ?\Closure $beforeAnnouncement = null): void
     {
         $this->persistenceManager->persistAll();
+        if ($beforeAnnouncement !== null) {
+            $beforeAnnouncement();
+        }
         if ($profile === null || $profile->getUid() === null || $profile->getIsTranslation()) {
             return;
         }

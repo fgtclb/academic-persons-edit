@@ -3,6 +3,18 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true">
+    <f:comment>
+        A project field carries its stored value in "value", see
+        Field/Control.html. A checkbox shows whether it is checked.
+    </f:comment>
+    <f:if condition="{field.custom}">
+        <f:then>
+            <f:variable name="fieldValue" value="{field.value}" />
+        </f:then>
+        <f:else>
+            <f:variable name="fieldValue" value="{profile.{field.propertyName}}" />
+        </f:else>
+    </f:if>
     <div
         class="d-flex align-items-start gap-3"
         data-form-field-button-area
@@ -32,9 +44,9 @@
                         data-pe-for="{elementId}"
                         data-empty-label="{f:translate(key: 'profileEditing.content.empty', extensionName: 'AcademicPersonsEdit')}">
                         <div data-pe-rich-text-preview-content>
-                            <f:if condition="{profile.{field.propertyName}}">
+                            <f:if condition="{fieldValue}">
                                 <f:then
-                                    >{profile.{field.propertyName} ->
+                                    >{fieldValue ->
                                     f:format.html()}</f:then
                                 >
                                 <f:else>
@@ -50,8 +62,13 @@
                 </f:then>
                 <f:else>
                     <div class="text-break" data-pe-field-preview-content>
-                        <f:if condition="{profile.{field.propertyName}}">
-                            <f:then>{profile.{field.propertyName}}</f:then>
+                        <f:if condition="{checkbox}">
+                            <f:then>
+                                <f:translate
+                                    key="{f:if(condition: fieldValue, then: 'profileEditing.field.checked', else: 'profileEditing.field.unchecked')}"
+                                    extensionName="AcademicPersonsEdit" />
+                            </f:then>
+                            <f:else if="{fieldValue}">{fieldValue}</f:else>
                             <f:else>
                                 <span class="text-body-secondary">
                                     <f:translate

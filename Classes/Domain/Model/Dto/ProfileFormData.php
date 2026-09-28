@@ -5,10 +5,21 @@ declare(strict_types=1);
 namespace FGTCLB\AcademicPersonsEdit\Domain\Model\Dto;
 
 /**
+ * The submitted profile values. The columns a project declares as project fields of
+ * the persons settings have no property here: their values are carried by name, see
+ * {@see self::setCustomValue()}.
+ *
  * @internal to be used only in `EXT:academic_persons_edit` and not part of public API. May change at any time.
  */
 class ProfileFormData extends AbstractFormData
 {
+    /**
+     * The property names of the project field values registered for this request.
+     *
+     * @var array<string, true>
+     */
+    private array $customProperties = [];
+
     protected string $title = '';
     protected string $firstName = '';
     protected string $middleName = '';
@@ -132,5 +143,33 @@ class ProfileFormData extends AbstractFormData
     public function getSkipSync(): bool
     {
         return $this->skipSync;
+    }
+
+    /**
+     * Registers the value of a project field, once it passed the checks of the JSON
+     * request handler. It is carried as a property override, so the validation and
+     * the answer of the request read it like a submitted value of a property.
+     */
+    final public function setCustomValue(string $propertyName, mixed $value): void
+    {
+        $this->customProperties[$propertyName] = true;
+        $this->setPropertyOverride($propertyName, $value);
+    }
+
+    final public function hasCustomValue(string $propertyName): bool
+    {
+        return isset($this->customProperties[$propertyName]);
+    }
+
+    /**
+     * @return array<string, mixed> the values of the project fields, keyed by property name
+     */
+    final public function getCustomValues(): array
+    {
+        $values = [];
+        foreach (array_keys($this->customProperties) as $propertyName) {
+            $values[$propertyName] = $this->getPropertyOverride($propertyName);
+        }
+        return $values;
     }
 }

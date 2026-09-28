@@ -439,6 +439,14 @@
         <source>Public</source>
         <target>Öffentlich</target>
       </trans-unit>
+      <trans-unit id="profileEditing.field.checked">
+        <source>Yes</source>
+        <target>Ja</target>
+      </trans-unit>
+      <trans-unit id="profileEditing.field.unchecked">
+        <source>No</source>
+        <target>Nein</target>
+      </trans-unit>
       <trans-unit id="profileEditing.field.empty">
         <source>Not specified</source>
         <target>Keine Angabe</target>
