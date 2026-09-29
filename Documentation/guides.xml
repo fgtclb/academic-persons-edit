@@ -8,7 +8,7 @@
                project-home="https://extensions.typo3.org/extension/academic_persons_edit/"
                project-repository="https://github.com/fgtclb/academic-persons-edit"
                project-issues="https://github.com/fgtclb/academic-extensions/issues"
-               edit-on-github-branch="main"
+               edit-on-github-branch="2"
                edit-on-github="fgtclb/academic-extensions"
                edit-on-github-directory="packages/fgtclb/academic-persons-edit/Documentation"
                typo3-core-preferred="stable"/>
