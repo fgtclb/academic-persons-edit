@@ -1,7 +1,7 @@
 "tx_academicpersons_domain_model_contract",
-,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","publish","sorting"
-,1,100,0,0,0,0,1,1914364800,"Rectorate",1,10
-,2,100,0,0,0,0,1,1756598400,"Professor",1,20
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","sorting"
+,1,100,0,0,0,0,1,1914364800,"Rectorate",10
+,2,100,0,0,0,0,1,1756598400,"Professor",20
 "tx_academicpersons_domain_model_address",
 ,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","street","street_number","additional","zip","city","state","country","type","sorting"
 ,1,100,0,0,0,0,1,"Campus Road","14","Building B","41061","Mönchengladbach","NRW","DE","business",10

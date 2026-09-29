@@ -111,21 +111,6 @@ final class ContractFormDataTest extends UnitTestCase
     }
 
     /**
-     * `publish` decides whether the contract shows up in the frontend at all, and the form
-     * data defaults it to `false`. A mapping that never assigns it would pass every test
-     * built on an unpublished contract, so the published case is the one that matters.
-     */
-    #[Test]
-    public function thePublishFlagOfAContractIsTakenOver(): void
-    {
-        $published = new Contract();
-        $published->setPublish(true);
-
-        $this->assertTrue(ContractFormData::createFromContract($published)->isPublish());
-        $this->assertFalse(ContractFormData::createFromContract(new Contract())->isPublish());
-    }
-
-    /**
      * The factory produces a display object without explicit property overrides, so
      * `ContractFactory` may not write any of it back.
      */
@@ -136,6 +121,6 @@ final class ContractFormDataTest extends UnitTestCase
 
         $this->assertFalse($formData->shouldApplyProperty('organisationalUnit'));
         $this->assertFalse($formData->shouldApplyProperty('validFrom'));
-        $this->assertFalse($formData->shouldApplyProperty('publish'));
+        $this->assertFalse($formData->shouldApplyProperty('officeHours'));
     }
 }

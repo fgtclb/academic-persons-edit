@@ -174,9 +174,6 @@
       <trans-unit id="contract.officeHours.label">
         <source>Office hours</source>
       </trans-unit>
-      <trans-unit id="contract.publish.label">
-        <source>Publish</source>
-      </trans-unit>
 
       <!-- Physical address fields -->
 

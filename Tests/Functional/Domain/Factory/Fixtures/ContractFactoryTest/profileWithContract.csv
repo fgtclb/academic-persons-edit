@@ -18,5 +18,5 @@ tx_academicpersons_domain_model_location,
 ,1,2,"Bridge"
 ,2,2,"Sickbay"
 tx_academicpersons_domain_model_contract,
-,uid,pid,profile,organisational_unit,function_type,valid_from,valid_to,position,location,room,office_hours,publish,sorting
-,1,2,1,1,1,1580515200,1893456000,"Stored Position",1,"Stored Room","Stored office hours",1,1
+,uid,pid,profile,organisational_unit,function_type,valid_from,valid_to,position,location,room,office_hours,sorting
+,1,2,1,1,1,1580515200,1893456000,"Stored Position",1,"Stored Room","Stored office hours",1

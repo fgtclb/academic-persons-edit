@@ -170,7 +170,9 @@ but the shape of it is:
     ``list.hidden.badge``, ``list.contract.position``, the ``profile.*``
     section headings and every ``*FormData.*.error.*`` unit.
 *   ``contract.published.label`` was a stale duplicate of
-    ``contract.publish.label``, which stays, and is removed;
+    ``contract.publish.label`` and is removed. ``contract.publish.label`` went
+    later with the switch it labelled, see
+    :ref:`breaking-contract-publish-switch-removed`.
     ``emailAddress.emailAddress.label`` is replaced by the shorter
     ``emailAddress.email.label``, which is new in this release.
 *   The year fields of a timeline entry keep their labels

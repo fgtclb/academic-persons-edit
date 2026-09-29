@@ -8,8 +8,8 @@
 ,"uid_local","uid_foreign","sorting","sorting_foreign"
 ,2,2,1,1
 "tx_academicpersons_domain_model_contract"
-,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","publish","sorting","physical_addresses"
-,90,100,0,0,0,0,2,1914364800,"Foreign rectorate",1,10,1
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","valid_from","position","sorting","physical_addresses"
+,90,100,0,0,0,0,2,1914364800,"Foreign rectorate",10,1
 "tx_academicpersons_domain_model_profile_information"
 ,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","type","title","bodytext","link","year","year_start","year_end","sorting"
 ,90,100,0,0,0,0,2,"cooperation","Foreign cooperation","","",\NULL,2025,2026,10

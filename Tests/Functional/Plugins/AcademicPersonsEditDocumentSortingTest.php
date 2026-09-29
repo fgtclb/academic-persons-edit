@@ -342,7 +342,6 @@ final class AcademicPersonsEditDocumentSortingTest extends AbstractFrontendProfi
                 'pid' => self::PROFILE_PAGE_ID,
                 'profile' => self::PROFILE_ID,
                 'position' => sprintf('Contract %d', $uid),
-                'publish' => 1,
                 'sorting' => $sorting,
             ]);
         }

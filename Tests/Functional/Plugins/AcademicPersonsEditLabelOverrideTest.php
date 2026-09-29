@@ -240,10 +240,6 @@ final class AcademicPersonsEditLabelOverrideTest extends AbstractFrontendProfile
             'document form', 'field:position:label',
             'contract.position.label', 'Position',
         ];
-        yield 'document form, checkbox value translated by the controller' => [
-            'document form', 'field:publish:displayValue',
-            'profileEditing.visibility.public', 'Public',
-        ];
         yield 'document form, help text of a field translated by the controller, a full reference' => [
             'document form', 'field:position:helptext',
             'helptext.contracts.position', 'Enter the position or role associated with this employment contract.',

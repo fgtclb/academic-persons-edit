@@ -224,10 +224,6 @@
         <source>Office hours</source>
         <target>Sprechzeiten</target>
       </trans-unit>
-      <trans-unit id="contract.publish.label">
-        <source>Publish</source>
-        <target>Veröffentlichen</target>
-      </trans-unit>
 
       <!-- Physical address fields -->
 

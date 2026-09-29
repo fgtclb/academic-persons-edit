@@ -2684,9 +2684,7 @@ final class ProfileController extends ActionController
                 default => '',
             };
         }
-        $getter = $field->propertyName === 'publish'
-            ? 'isPublish'
-            : 'get' . ucfirst($field->propertyName);
+        $getter = 'get' . ucfirst($field->propertyName);
         if (!is_callable([$record, $getter])) {
             return null;
         }

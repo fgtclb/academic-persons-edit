@@ -58,7 +58,6 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
                     'position' => 'New Position',
                     'room' => 'New Room',
                     'officeHours' => 'New office hours',
-                    'publish' => '1',
                 ],
             ],
             self::DATE_FORMATS,
@@ -78,7 +77,6 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
         $this->assertSame(2, $contract->getLocation()?->getUid());
         $this->assertSame('01.02.2021', $contract->getValidFrom()?->format('d.m.Y'));
         $this->assertSame('31.12.2021', $contract->getValidTo()?->format('d.m.Y'));
-        $this->assertTrue($contract->isPublish());
 
         $contract->setPid(2);
         $contract->setSorting(2);
@@ -95,7 +93,7 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
      * its location and forgets its runtime - from a request that only changed the position.
      */
     #[Test]
-    public function updateKeepsStoredRelationsDatesAndPublishFlagThatWereNotSubmitted(): void
+    public function updateKeepsStoredRelationsAndDatesThatWereNotSubmitted(): void
     {
         $contract = $this->updateContractWith(['position' => 'New Position']);
 
@@ -103,19 +101,6 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
         $this->assertSame(1, $contract->getLocation()?->getUid());
         $this->assertNotNull($contract->getValidFrom());
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/ContractFactoryTest/updatedPositionOnly.csv');
-    }
-
-    /**
-     * The near miss of the case above, and the reason it cannot be solved by looking at the
-     * value: an unpublish is submitted as the value `0`, which is indistinguishable from the
-     * boolean default of a checkbox that was never rendered.
-     */
-    #[Test]
-    public function updateAppliesSubmittedUnpublish(): void
-    {
-        $this->updateContractWith(['position' => 'New Position', 'publish' => '0']);
-
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/ContractFactoryTest/updatedPositionAndUnpublished.csv');
     }
 
     /**

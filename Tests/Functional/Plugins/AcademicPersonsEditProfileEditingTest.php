@@ -1391,7 +1391,6 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 'location',
                 'room',
                 'officeHours',
-                'publish',
             ],
             array_column($formBody['fields'] ?? [], 'name'),
         );
@@ -1457,7 +1456,6 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                     'location' => '',
                     'room' => 'B 1.23',
                     'officeHours' => '<p>By appointment</p>',
-                    'publish' => true,
                 ],
             ],
         ]);
@@ -1499,6 +1497,40 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                     [$createdUid],
                 )
                 ->fetchOne(),
+        );
+    }
+
+    /**
+     * A contract has no publish switch any more. Whether it is shown is its
+     * visibility, which the hide action of the list sets. A client that still
+     * sends the old field gets the answer of any other field the form does not
+     * have, and nothing of the request is stored.
+     */
+    #[Test]
+    public function contractSaveRefusesTheRemovedPublishField(): void
+    {
+        $this->setUpProfileEditingTestCase();
+        $this->seedStructuredDocumentSections();
+        $updateUrl = $this->extractDataUrl($this->renderProfileEditingPage(), 'data-update-document-url');
+
+        $response = $this->postJson($updateUrl, [
+            'profile' => self::PROFILE_ID,
+            'data' => [
+                'section' => 'contracts',
+                'record' => 1,
+                'fields' => ['position' => 'Changed', 'publish' => false],
+            ],
+        ]);
+
+        $this->assertSame(422, $response->getStatusCode(), (string)$response->getBody());
+        $body = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame(['This field cannot be changed.'], $body['errors']['publish'] ?? null);
+        $this->assertSame(
+            ['position' => 'Rectorate', 'hidden' => 0],
+            $this->getConnectionPool()
+                ->getConnectionForTable('tx_academicpersons_domain_model_contract')
+                ->select(['position', 'hidden'], 'tx_academicpersons_domain_model_contract', ['uid' => 1])
+                ->fetchAssociative(),
         );
     }
 

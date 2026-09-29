@@ -30,7 +30,6 @@ class ContractFactory
         $contract = $this->setLocation($validationSet, $contract, $form, []);
         $contract = $this->setRoom($validationSet, $contract, $form, []);
         $contract = $this->setOfficeHours($validationSet, $contract, $form, []);
-        $contract = $this->setPublish($validationSet, $contract, $form, []);
         return $contract;
     }
 
@@ -47,7 +46,6 @@ class ContractFactory
         $contract = $this->setLocation($validationSet, $contract, $form, $managedProperties);
         $contract = $this->setRoom($validationSet, $contract, $form, $managedProperties);
         $contract = $this->setOfficeHours($validationSet, $contract, $form, $managedProperties);
-        $contract = $this->setPublish($validationSet, $contract, $form, $managedProperties);
         return $contract;
     }
 
@@ -173,18 +171,6 @@ class ContractFactory
         if ($this->mayApplyProperty($validationSet, $form, 'officeHours', $managedProperties)) {
             $override = $form->getPropertyOverride('officeHours');
             $model->setOfficeHours(is_string($override) ? $override : $form->getOfficeHours());
-        }
-        return $model;
-    }
-
-    /**
-     * @param list<string> $managedProperties
-     */
-    private function setPublish(ValidationSet $validationSet, ContractModel $model, ContractFormData $form, array $managedProperties): ContractModel
-    {
-        if ($this->mayApplyProperty($validationSet, $form, 'publish', $managedProperties)) {
-            $override = $form->getPropertyOverride('publish');
-            $model->setPublish(is_bool($override) ? $override : $form->isPublish());
         }
         return $model;
     }
