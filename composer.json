@@ -50,7 +50,7 @@
             "extension-key": "academic_persons_edit",
             "version": "3.0.0-dev",
             "Package": {
-                "providesPackages": {}
+                "providesPackages": []
             }
         },
         "branch-alias": {
