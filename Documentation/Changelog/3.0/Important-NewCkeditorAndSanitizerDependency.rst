@@ -17,7 +17,7 @@ profile editing view:
         -   Constraint
         -   What needs it
     *   -   :composer:`typo3/cms-rte-ckeditor`
-        -   ``~13.4.0@dev || ~14.3.6@dev``
+        -   ``~13.4.35 || ~14.3.7``
         -   The rich text fields of the editing view load six CKEditor 5
             bundles shipped by that system extension. Only its JavaScript is
             used - none of its backend rich text configuration.

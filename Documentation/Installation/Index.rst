@@ -10,7 +10,7 @@ download and install it using one of the following methods.
 Requirements
 ============
 
-Version 3 requires TYPO3 13.4 or TYPO3 14.3, and PHP 8.2 or newer.
+Version 3 requires TYPO3 13.4.35 or TYPO3 14.3.7 at least, and PHP 8.2 or newer.
 
 Updating an existing installation from 2.4 is a sequence of schema update,
 upgrade wizards, settings migration and template work, and the order of it
