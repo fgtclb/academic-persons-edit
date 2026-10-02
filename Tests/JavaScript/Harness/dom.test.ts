@@ -5,6 +5,7 @@ import {
   installDom,
   isObjectUrlAlive,
   nextFrame,
+  recordedNavigations,
   resetBody,
   setBoundingRect,
   setClientSize,
@@ -44,6 +45,7 @@ describe("the installed DOM", () => {
 
   it("puts the browser constructors a module reaches for on globalThis", () => {
     for (const name of [
+      "AbortController",
       "CustomEvent",
       "DocumentFragment",
       "Element",
@@ -62,6 +64,10 @@ describe("the installed DOM", () => {
         `globalThis.${name} is missing`,
       );
     }
+  });
+
+  it("hands out the window's own AbortController rather than node's", () => {
+    assert.equal(globalThis.AbortController, (window as unknown as { AbortController: unknown }).AbortController);
   });
 
   it("keeps the window as the receiver of the methods it copies", () => {
@@ -284,6 +290,47 @@ describe("what jsdom does not provide", () => {
 
     assert.equal(stage.clientWidth, 640);
     assert.equal(stage.clientHeight, 480);
+  });
+});
+
+describe("submitting and navigating", () => {
+  beforeEach(() => {
+    resetBody();
+  });
+
+  it("counts a plain form submission on the form, without a submit event", () => {
+    const body = resetBody('<form action="/programs" method="post"></form>');
+    const form = body.querySelector("form");
+    assert.ok(form !== null);
+    let submitEvents = 0;
+    form.addEventListener("submit", () => {
+      submitEvents += 1;
+    });
+
+    form.submit();
+    form.submit();
+
+    assert.equal(form.getAttribute("data-test-submitted"), "2");
+    // A browser fires no "submit" event for "submit()", which is what keeps a module that
+    // intercepts the event from intercepting its own fallback.
+    assert.equal(submitEvents, 0);
+  });
+
+  it("records a reload with the url it reloads, and forgets it on the next reset", () => {
+    window.location.reload();
+
+    assert.deepEqual(recordedNavigations(), [window.location.href]);
+
+    resetBody();
+    assert.deepEqual(recordedNavigations(), []);
+  });
+
+  it("does not record a change of the fragment, which jsdom performs", () => {
+    const before = window.location.href;
+    window.location.hash = "#results";
+    window.history.replaceState(null, "", before);
+
+    assert.deepEqual(recordedNavigations(), []);
   });
 });
 

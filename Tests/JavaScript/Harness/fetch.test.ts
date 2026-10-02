@@ -101,6 +101,39 @@ describe("the request double", () => {
     assert.equal(status, 200);
   });
 
+  it("reports the url a followed redirect ended at", async () => {
+    const requests = install();
+    requests.respondWithPage("<p>Programs</p>", "https://example.test/programs?filter=2");
+
+    const response = await fetch("/programs", { method: "POST" });
+
+    assert.equal(response.url, "https://example.test/programs?filter=2");
+    assert.equal(await response.text(), "<p>Programs</p>");
+  });
+
+  it("rejects a request when its signal aborts, also while its response is held open", async () => {
+    const requests = install();
+    const pending = requests.respondLater();
+    const controller = new AbortController();
+
+    const inFlight = fetch("/programs", { signal: controller.signal });
+    controller.abort();
+    // Settling it afterwards changes nothing about the rejected call.
+    pending.settle({});
+
+    await assert.rejects(inFlight, { name: "AbortError" });
+    assert.equal(requests.lastCall()?.signal, controller.signal);
+  });
+
+  it("rejects a request whose signal was aborted before it started", async () => {
+    const requests = install();
+    requests.respond({});
+    const controller = new AbortController();
+    controller.abort();
+
+    await assert.rejects(fetch("/programs", { signal: controller.signal }), { name: "AbortError" });
+  });
+
   it("puts node's own fetch back", () => {
     const requests = install();
     const stubbed = globalThis.fetch;
