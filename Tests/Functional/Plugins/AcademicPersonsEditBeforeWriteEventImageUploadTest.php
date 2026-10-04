@@ -9,7 +9,6 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use TESTS\TestEditorWriteListener\EventListener\EditorWriteListener;
-use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Http\UploadedFile;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 
@@ -38,25 +37,6 @@ final class AcademicPersonsEditBeforeWriteEventImageUploadTest extends AbstractF
     {
         EditorWriteListener::reset();
         parent::tearDown();
-    }
-
-    /**
-     * The class schema cache stays in memory, see
-     * {@see AcademicPersonsEditProfileImageUploadTest::frontendPluginTestConfiguration()}.
-     */
-    protected function frontendPluginTestConfiguration(array $additionalConfiguration = []): array
-    {
-        return parent::frontendPluginTestConfiguration(array_replace_recursive([
-            'SYS' => [
-                'caching' => [
-                    'cacheConfigurations' => [
-                        'extbase' => [
-                            'backend' => TransientMemoryBackend::class,
-                        ],
-                    ],
-                ],
-            ],
-        ], $additionalConfiguration));
     }
 
     private function uploadProfileImage(): ResponseInterface
