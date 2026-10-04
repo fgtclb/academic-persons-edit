@@ -2171,22 +2171,29 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
      * Every icon identifier a shipped partial asks for has to be registered, and every
      * registered one has to be asked for by something.
      *
-     * `<core:icon>` never fails on an unknown identifier: `IconFactory` answers with the
-     * `default-not-found` placeholder and the identifier that was asked for is gone from
-     * the markup. The Fluid scan catches the identifiers of a state the fixture does not
-     * reach - a read-only section renders no save button - which is why it is a scan and
-     * not only an assertion on the rendered page.
+     * `<ab:icon>` never fails on an unknown identifier: the frontend icon registry answers
+     * with the `default-not-found` placeholder and the identifier that was asked for is gone
+     * from the markup. The Fluid scan catches the identifiers of a state the fixture does
+     * not reach - a read-only section renders no save button - which is why it is a scan
+     * and not only an assertion on the rendered page. The action icons are frontend icons,
+     * so a tag left on `<core:icon>` asks the icon registry of the backend, which does not
+     * know them, and fails the scan as well.
      */
     #[Test]
     public function everyIconIdentifierOfTheShippedTemplatesIsRegistered(): void
     {
-        $registeredIcons = require __DIR__ . '/../../../Configuration/Icons.php';
+        $registeredIcons = require __DIR__ . '/../../../Configuration/FrontendIcons.php';
         $this->assertIsArray($registeredIcons);
         $fluidSources = $this->getProfileEditingFluidSources();
+        $this->assertStringNotContainsString(
+            '<core:icon',
+            $fluidSources,
+            'A profile editing template renders an icon through the icon registry of the backend.',
+        );
         $this->assertGreaterThan(
             0,
             preg_match_all(
-                '@<core:icon\b[^>]*?\bidentifier="([^"]+)"@s',
+                '@<ab:icon\b[^>]*?\bidentifier="([^"]+)"@s',
                 $fluidSources,
                 $matches,
             ),
@@ -2221,7 +2228,9 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
     /**
      * The counterpart of the scan above, on the rendered page: the identifiers really
      * resolve at runtime and are inlined rather than rendered as an <img>, which is what
-     * lets a button's own colour reach its glyph.
+     * lets a button's own colour reach its glyph. The wrapper of the save icon is written
+     * out in full, because site stylesheets select its classes and the inner
+     * `icon-markup`.
      */
     #[Test]
     public function theRenderedEditorResolvesEveryIconItAsksFor(): void
@@ -2253,6 +2262,13 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 sprintf('The rendered editor does not carry the icon "%s".', $identifier),
             );
         }
+        $this->assertStringContainsString(
+            '<span class="t3js-icon icon icon-size-small icon-state-default icon-academic-persons-edit-save"'
+            . ' data-identifier="academic-persons-edit-save" aria-hidden="true">' . "\n"
+            . "\t" . '<span class="icon-markup">' . "\n"
+            . '<svg ',
+            $content,
+        );
     }
 
     /**

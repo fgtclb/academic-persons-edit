@@ -64,18 +64,22 @@ Replacing an icon
 -----------------
 
 The action icons of the profile editing frontend are addressed by identifier,
-not by file. They are registered in :file:`Configuration/Icons.php` of
-:file:`EXT:academic_persons_edit` as ``academic-persons-edit-add``,
-``-back``, ``-clear``, ``-delete``, ``-edit``, ``-help``, ``-move-down``,
-``-move-up``, ``-save``, ``-sort-handle``, ``-undo``, ``-upload-image`` and
-``-view``.
+not by file. They are frontend icons, registered in
+:file:`Configuration/FrontendIcons.php` of :file:`EXT:academic_persons_edit` for
+the frontend icon registry of :guilabel:`academic_base` as
+``academic-persons-edit-add``, ``-back``, ``-clear``, ``-delete``, ``-edit``,
+``-help``, ``-move-down``, ``-move-up``, ``-save``, ``-sort-handle``,
+``-undo``, ``-upload-image``, ``-view``, ``-view-close``, ``-visible`` and
+``-hidden``, and the templates render them with the ``ab:icon`` ViewHelper of
+:guilabel:`academic_base`.
 
 To use different artwork, register the identifier again in the
-:file:`Configuration/Icons.php` of the sitepackage with the own file - a later
-registration wins, and no template has to be overridden:
+:file:`Configuration/FrontendIcons.php` of the sitepackage with the own file.
+The sitepackage has to depend on :guilabel:`academic_persons_edit`, so its
+registration is read later and wins, and no template has to be overridden:
 
 ..  code-block:: php
-    :caption: EXT:mysitepackage/Configuration/Icons.php
+    :caption: EXT:mysitepackage/Configuration/FrontendIcons.php
 
     <?php
 
@@ -88,10 +92,15 @@ registration wins, and no template has to be overridden:
         ],
     ];
 
-That provider inlines the file rather than rendering an :html:`<img>`, so the
-glyph takes the colour of the button it sits in. A file registered with it
-carries a ``viewBox``, draws its shapes in ``currentColor`` and has no ``id``
-attribute - the markup is part of the document, possibly more than once.
+The replacement reaches the controls the editor builds in the browser as well,
+because they are cloned from markup the page renders. An entry in the
+:file:`Configuration/Icons.php` of the sitepackage does not reach the editor.
+
+The provider of the example inlines the file rather than rendering an
+:html:`<img>`, so the glyph takes the colour of the button it sits in. A file
+registered with it carries a ``viewBox``, draws its shapes in ``currentColor``
+and has no ``id`` attribute - the markup is part of the document, possibly more
+than once.
 
 The shipped files are `Bootstrap Icons <https://icons.getbootstrap.com/>`__;
 their MIT licence ships beside them in

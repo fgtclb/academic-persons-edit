@@ -1,0 +1,19 @@
+{
+    "name": "tests/editor-icon-replacement",
+    "description": "A site package that replaces profile editing icons, one in the right file and one in the wrong one, for tests",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "typo3/cms-core": "~13.4.35 || ~14.3.7",
+        "fgtclb/academic-persons-edit": "~3.0.0@dev"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "test_editor_icon_replacement",
+            "version": "3.0.0-dev",
+            "Package": {
+                "providesPackages": []
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <f:if condition="{helptext}">
         <button
@@ -16,7 +16,7 @@
             data-bs-title="{f:translate(key: labelKey, extensionName: 'AcademicPersonsEdit')}"
             data-bs-content="{f:translate(key: helptext, extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: helptext, extensionName: 'AcademicPersonsEdit')}">
-            <core:icon
+            <ab:icon
                 identifier="academic-persons-edit-help"
                 size="small"
                 alternativeMarkupIdentifier="inline" />

@@ -1,6 +1,7 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <div
         class="btn-group btn-group-sm d-none flex-shrink-0 {f:if(condition: besideHeading, then: 'ms-auto', else: 'align-self-end')}"
@@ -16,7 +17,7 @@
             title="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}">
             <span aria-hidden="true" class="fs-5 lh-1">
-                <core:icon
+                <ab:icon
                     identifier="academic-persons-edit-clear"
                     size="small"
                     alternativeMarkupIdentifier="inline" />
@@ -30,7 +31,7 @@
             title="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}">
             <span aria-hidden="true" class="fs-5 lh-1">
-                <core:icon
+                <ab:icon
                     identifier="academic-persons-edit-undo"
                     size="small"
                     alternativeMarkupIdentifier="inline" />
@@ -44,7 +45,7 @@
             title="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}">
             <span aria-hidden="true" class="fs-5 lh-1">
-                <core:icon
+                <ab:icon
                     identifier="academic-persons-edit-save"
                     size="small"
                     alternativeMarkupIdentifier="inline" />

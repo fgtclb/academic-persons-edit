@@ -398,9 +398,10 @@ describe("the document editor element", () => {
     });
 
     /**
-     * The help of a field is a popover, and its icon is cloned from the
-     * `<template data-pe-icon>` Fluid rendered - the icon registry knows the
-     * identifiers and the site's overrides, and a browser can ask neither.
+     * The help of a field is a popover, and its icon is cloned with the
+     * `helptext-button` prototype Fluid rendered in
+     * `Partials/Profile/Prototypes.html`. The frontend icon registry knows the
+     * identifiers and the site's replacements, and a browser can ask neither.
      */
     it("clones the icon Fluid rendered for a field that has help", async () => {
       const element = await mount({

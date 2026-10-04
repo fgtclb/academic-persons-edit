@@ -135,7 +135,7 @@ Bundled libraries
 -----------------
 
 One third-party set is shipped with the extension, with its licence file next
-to it: Bootstrap Icons (MIT), the thirteen control icons of this view, as SVG
+to it: Bootstrap Icons (MIT), the sixteen control icons of this view, as SVG
 files under :file:`Resources/Public/Icons/` with
 :file:`LICENSE-bootstrap-icons.txt` beside them.
 

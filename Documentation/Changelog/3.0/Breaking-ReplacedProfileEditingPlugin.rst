@@ -143,12 +143,13 @@ inlines the ``<svg>`` where TYPO3's own :php:`SvgIconProvider` emitted an
 the *Feature: Icon provider for icons that follow the text colour* entry of
 `EXT:academic_base` describes the provider.
 
-Thirteen action icons are registered, under the identifiers listed in
-:ref:`profile-editing-icons`; the extension icon ``persons_edit_icon`` is the
-fourteenth entry of :file:`Configuration/Icons.php` and is unchanged. They are
-Bootstrap Icons (MIT) drawn in ``currentColor`` and rendered inline, so they
-take the colour of the control they sit in - see
-:ref:`feature-profile-editing-icon-set`.
+Sixteen action icons are registered in :file:`Configuration/FrontendIcons.php`,
+under the identifiers listed in :ref:`profile-editing-icons`. The extension
+icon ``persons_edit_icon`` is the only entry of :file:`Configuration/Icons.php`
+and is unchanged. They are Bootstrap Icons (MIT) drawn in ``currentColor`` and
+rendered inline, so they take the colour of the control they sit in - see
+:ref:`feature-profile-editing-icon-set` and
+:ref:`breaking-persons-edit-profile-editing-icons-moved-to-the-frontend-icon-registry`.
 
 Removed labels
 --------------

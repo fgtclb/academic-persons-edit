@@ -10,7 +10,7 @@
  * only ones:
  *
  * - `<f:translate>` is replaced by the English text it resolves to, and
- *   `<core:icon>` by nothing at all. Neither is read by the JavaScript.
+ *   `<ab:icon>` by nothing at all. Neither is read by the JavaScript.
  * - What an element writes is not transcribed: the mount points are, and
  *   the element renders into them here exactly as it does in a browser. The
  *   partials they were transcribed from are named at each block.
@@ -238,7 +238,7 @@ export const profileEditingElement = (options: RootOptions = {}): string => `
  *
  * Transcribed rather than generated, exactly as every other block here is, and
  * with the same two reductions: `<f:translate>` becomes its English text and
- * `<core:icon>` becomes a marker element. What the transcription has to get
+ * `<ab:icon>` becomes a marker element. What the transcription has to get
  * right is the contract - the prototype names, the four verbs and their keys,
  * the hooks and the classes - and that is not left to care: the functional
  * test `AcademicPersonsEditProfileEditingPrototypesTest` asserts the same

@@ -7,8 +7,10 @@ Feature: The profile editing icon set
 Description
 ===========
 
-The profile editing frontend addresses its action icons through fourteen
-identifiers registered in :file:`Configuration/Icons.php`:
+The profile editing frontend addresses its action icons through sixteen
+identifiers registered in :file:`Configuration/FrontendIcons.php`, for the
+frontend icon registry of :guilabel:`academic_base`, and rendered with its
+``ab:icon`` ViewHelper:
 
 ..  list-table::
     :header-rows: 1
@@ -57,16 +59,18 @@ their MIT licence in
 ``currentColor`` and registered with
 :php:`\FGTCLB\AcademicBase\Imaging\IconProvider\CurrentColorSvgIconProvider`,
 which inlines the file instead of rendering an :html:`<img>` - so a glyph takes
-the colour of the button it sits in, in the frontend as much as in a dark
-backend colour scheme.
+the colour of the button it sits in.
 
 Impact
 ======
 
 The identifiers are public API. A site package that wants different artwork
-re-registers one of them in its own :file:`Configuration/Icons.php` with its
-own file and needs no template override; a file registered that way is drawn
-in ``currentColor`` as well, or it will not follow the surrounding text.
+and depends on :guilabel:`academic_persons_edit` registers one of them again in
+its own :file:`Configuration/FrontendIcons.php` with its own file and needs no
+template override. A file registered that way is drawn in ``currentColor`` as
+well, or it will not follow the surrounding text. An entry in the
+:file:`Configuration/Icons.php` of the site package does not reach the editor,
+see :ref:`breaking-persons-edit-profile-editing-icons-moved-to-the-frontend-icon-registry`.
 
 Five of the identifiers - ``academic-persons-edit-edit``,
 ``academic-persons-edit-view``, ``academic-persons-edit-delete``,
@@ -84,8 +88,9 @@ with version 3.0.
 Migration
 =========
 
-No migration is required. An installation that re-registered one of the five
-existing identifiers in a site package keeps its own artwork, since a later
-registration wins.
+An installation that re-registered one of the five existing identifiers in the
+:file:`Configuration/Icons.php` of a site package moves that entry to the
+:file:`Configuration/FrontendIcons.php` of the site package to keep its own
+artwork.
 
 ..  index:: Frontend, Fluid, Template

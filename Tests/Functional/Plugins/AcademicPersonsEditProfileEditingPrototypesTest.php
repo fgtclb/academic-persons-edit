@@ -439,6 +439,67 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
         );
     }
 
+    /**
+     * The icons of the controls the editor builds in the browser.
+     *
+     * The elements clone these templates and never render an icon themselves,
+     * so the icon inside a template is the one every built control shows. It
+     * is rendered by the server like any other, from the frontend icon
+     * registry: a template partial that still asks the icon registry of the
+     * backend clones TYPO3's not-found icon into every row it builds.
+     *
+     * @return array<string, array{0: string, 1: list<string>}>
+     */
+    public static function clonedIconsProvider(): array
+    {
+        return [
+            'helptext-button' => ['//template[@data-pe-proto="helptext-button"]', ['academic-persons-edit-help']],
+            'contact-section' => ['//template[@data-pe-proto="contact-section"]', ['academic-persons-edit-add']],
+            'contact-row' => [
+                '//template[@data-pe-proto="contact-row"]',
+                [
+                    'academic-persons-edit-visible',
+                    'academic-persons-edit-hidden',
+                    'academic-persons-edit-view',
+                    'academic-persons-edit-view-close',
+                    'academic-persons-edit-move-down',
+                    'academic-persons-edit-move-up',
+                    'academic-persons-edit-delete',
+                    'academic-persons-edit-edit',
+                ],
+            ],
+            'new-button' => ['//template[@data-pe-new-button-template]', ['academic-persons-edit-edit']],
+        ];
+    }
+
+    /**
+     * @param list<string> $identifiers
+     */
+    #[Test]
+    #[DataProvider('clonedIconsProvider')]
+    public function aClonedTemplateCarriesTheIconsOfItsControls(string $query, array $identifiers): void
+    {
+        $this->setUpProfileEditingTestCase();
+        $document = new \DOMDocument();
+        $this->assertTrue($document->loadHTML($this->renderProfileEditingPage(), LIBXML_NOERROR | LIBXML_NOWARNING));
+        $templates = (new \DOMXPath($document))->query($query);
+        $this->assertNotFalse($templates);
+        $this->assertCount(1, $templates);
+        $template = $templates->item(0);
+        $this->assertInstanceOf(\DOMElement::class, $template);
+        $markup = '';
+        foreach ($template->childNodes as $child) {
+            $markup .= $document->saveHTML($child);
+        }
+
+        $this->assertStringNotContainsString('default-not-found', $markup);
+        $this->assertSame(count($identifiers), substr_count($markup, 'data-identifier="'));
+        foreach ($identifiers as $identifier) {
+            $this->assertStringContainsString('data-identifier="' . $identifier . '"', $markup);
+        }
+        $this->assertStringContainsString('<svg', $markup);
+    }
+
     private function getPartialSource(string $relativePath): string
     {
         $path = __DIR__ . '/../../../Resources/Private/Partials/Profile/' . $relativePath . '.html';

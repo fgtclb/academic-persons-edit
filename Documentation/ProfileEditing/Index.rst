@@ -574,7 +574,8 @@ label to :guilabel:`Close all`. Activating it again collapses every editor
 without saving or discarding browser-side drafts. There is no global footer
 action area; save and undo remain explicit per-field actions.
 
-The pencil is rendered through TYPO3's ``core:icon`` ViewHelper. Template
+The pencil is rendered through the ``ab:icon`` ViewHelper of
+:guilabel:`academic_base`, from the frontend icon registry. Template
 overrides may replace the icon but must retain the button's edit hook,
 ``data-pe-for`` target and accessible label. The profile value itself must not
 be placed back inside the button.
@@ -720,12 +721,16 @@ rather than an HTML ``template`` element, and the successful create response is
 rendered by cloning the row inside it.
 
 The icons of a browser-rendered editor cannot be resolved in the browser:
-``core:icon`` asks the icon registry, which knows the set this extension
-registers and whatever a site overrode. Under the prototype design that needs no
-mechanism of its own: an icon is rendered by Fluid **inside the prototype that
-draws it** — the help button of a field, the five row controls of a contact and
-the add control of a section — so it is part of the markup an override reaches
-and no module ever looks one up.
+``ab:icon`` asks the frontend icon registry of :guilabel:`academic_base`, which
+knows the set this extension registers and whatever a site package replaced.
+Under the prototype design that needs no mechanism of its own: an icon is
+rendered by Fluid **inside the prototype that draws it**, in the help button of
+a field, the six row controls of a contact, the add control of a section and
+the edit button of a field without a value. So it is part of the markup an
+override reaches, and no module ever looks one up. An override of one of those
+partials that renders an action icon with ``core:icon`` clones TYPO3's
+not-found icon into every row it builds, because the icon registry of the
+backend does not know the action icons.
 
 ``contract`` is retained as a separate document kind. It uses the same editor
 for its configured fields and appends three contract-specific contact sections
@@ -1843,11 +1848,13 @@ A project that talks to the endpoints from its own code has to send the header.
 Icon identifiers
 ================
 
-The action icons of the editor are registered in
-:file:`Configuration/Icons.php` and rendered through ``core:icon`` with
+The sixteen action icons of the editor are frontend icons. They are registered
+in :file:`Configuration/FrontendIcons.php` for the frontend icon registry of
+:guilabel:`academic_base` and rendered through its ``ab:icon`` ViewHelper with
 ``alternativeMarkupIdentifier="inline"``, so the SVG is inlined and follows the
-text colour of the button it sits in. The files are `Bootstrap Icons
-<https://icons.getbootstrap.com/>`__ (MIT, see
+text colour of the button it sits in. A site package replaces one in its own
+:file:`Configuration/FrontendIcons.php`, see :ref:`templates-override-icons`.
+The files are `Bootstrap Icons <https://icons.getbootstrap.com/>`__ (MIT, see
 :file:`Resources/Public/Icons/LICENSE-bootstrap-icons.txt`) drawn in
 ``currentColor``.
 
@@ -1903,5 +1910,11 @@ overrides address.
     *   - ``academic-persons-edit-view-close``
         - :file:`view-close.svg`
         - Close the read view a row action opened
+    *   - ``academic-persons-edit-visible``
+        - :file:`visible.svg`
+        - Hide a visible row, shown while the row is visible
+    *   - ``academic-persons-edit-hidden``
+        - :file:`hidden.svg`
+        - Show a hidden row, shown while the row is hidden
 
 ..  index:: AJAX, CKEditor, Fluid, Frontend, JavaScript, JSON, Profile image, Rich text, NotScanned

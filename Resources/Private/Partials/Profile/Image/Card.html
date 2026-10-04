@@ -1,7 +1,7 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <section aria-labelledby="profile-editing-{profile.uid}-image-heading">
         <f:if condition="{image}">
@@ -90,7 +90,7 @@
                     aria-controls="profile-editing-{profile.uid}-image-view"
                     title="{f:translate(key: 'profileEditing.image.edit', extensionName: 'AcademicPersonsEdit')}"
                     aria-label="{f:translate(key: 'profileEditing.image.edit', extensionName: 'AcademicPersonsEdit')}">
-                    <core:icon
+                    <ab:icon
                         identifier="academic-persons-edit-upload-image"
                         size="small"
                         alternativeMarkupIdentifier="inline" />

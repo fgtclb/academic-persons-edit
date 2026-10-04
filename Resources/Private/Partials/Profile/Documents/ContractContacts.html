@@ -1,7 +1,7 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <f:comment>
         The contacts of one contract, as prototypes: one section per kind, one
@@ -23,7 +23,7 @@
                     class="btn rounded-0 btn-sm btn-link p-2"
                     data-pe-contract-contact-add
                     data-pe-attr="aria-controls:editorId aria-expanded:addExpanded disabled:addDisabled">
-                    <core:icon
+                    <ab:icon
                         identifier="academic-persons-edit-add"
                         size="small"
                         alternativeMarkupIdentifier="inline" />
@@ -84,13 +84,13 @@
                         data-pe-label-visible="{f:translate(key: 'actions.hide', extensionName: 'AcademicPersonsEdit')}"
                         data-pe-label-hidden="{f:translate(key: 'actions.show', extensionName: 'AcademicPersonsEdit')}">
                         <span data-pe-visibility-icon="visible">
-                            <core:icon
+                            <ab:icon
                                 identifier="academic-persons-edit-visible"
                                 size="small"
                                 alternativeMarkupIdentifier="inline" />
                         </span>
                         <span data-pe-visibility-icon="hidden" hidden="hidden">
-                            <core:icon
+                            <ab:icon
                                 identifier="academic-persons-edit-hidden"
                                 size="small"
                                 alternativeMarkupIdentifier="inline" />
@@ -106,13 +106,13 @@
                         data-pe-label-expanded="{f:translate(key: 'actions.viewClose', extensionName: 'AcademicPersonsEdit')}"
                         data-pe-attr="aria-controls:editorId aria-expanded:viewExpanded">
                         <span data-pe-view-icon="collapsed">
-                            <core:icon
+                            <ab:icon
                                 identifier="academic-persons-edit-view"
                                 size="small"
                                 alternativeMarkupIdentifier="inline" />
                         </span>
                         <span data-pe-view-icon="expanded" hidden="hidden">
-                            <core:icon
+                            <ab:icon
                                 identifier="academic-persons-edit-view-close"
                                 size="small"
                                 alternativeMarkupIdentifier="inline" />
@@ -124,7 +124,7 @@
                         data-pe-contract-contact-sort="down"
                         title="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}">
-                        <core:icon
+                        <ab:icon
                             identifier="academic-persons-edit-move-down"
                             size="small"
                             alternativeMarkupIdentifier="inline" />
@@ -135,7 +135,7 @@
                         data-pe-contract-contact-sort="up"
                         title="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}">
-                        <core:icon
+                        <ab:icon
                             identifier="academic-persons-edit-move-up"
                             size="small"
                             alternativeMarkupIdentifier="inline" />
@@ -148,7 +148,7 @@
                         title="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                         data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded">
-                        <core:icon
+                        <ab:icon
                             identifier="academic-persons-edit-delete"
                             size="small"
                             alternativeMarkupIdentifier="inline" />
@@ -161,7 +161,7 @@
                         title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                         data-pe-attr="aria-controls:editorId aria-expanded:editExpanded">
-                        <core:icon
+                        <ab:icon
                             identifier="academic-persons-edit-edit"
                             size="small"
                             alternativeMarkupIdentifier="inline" />

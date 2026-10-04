@@ -303,10 +303,11 @@ describe("the contract contacts element", () => {
     });
 
     /**
-     * The controls of the list are the seven icons `Templates/Profile/Index.html`
-     * renders as `<template data-pe-icon="…">`. They are cloned rather than
-     * written in TypeScript, because the icon registry knows the identifiers
-     * and the site's overrides and a browser can ask neither.
+     * The controls of the list carry the nine icons of the `contact-section`
+     * and `contact-row` prototypes of `Partials/Profile/Documents/ContractContacts.html`,
+     * rendered into them by Fluid. They are cloned with the prototype rather
+     * than written in TypeScript, because the frontend icon registry knows the
+     * identifiers and the site's replacements and a browser can ask neither.
      */
     it("clones the icon Fluid rendered for every control", async () => {
       const element = await mount({ sections: addresses(contact(21, "London")) });
