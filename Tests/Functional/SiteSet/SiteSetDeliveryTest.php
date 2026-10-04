@@ -172,6 +172,15 @@ final class SiteSetDeliveryTest extends AbstractAcademicPersonsEditTestCase
             $pageTsConfig['mod.']['wizards.']['newContentElement.']['wizardItems.']['academic.']['elements.'] ?? [],
             'The site set did not deliver the new content element wizard entry.',
         );
+        // The wizard shows the icon the page module shows for the same content element.
+        $this->assertSame(
+            'tx-academicpersonsedit-plugin-profile-editing',
+            $pageTsConfig['mod.']['wizards.']['newContentElement.']['wizardItems.']['academic.']['elements.']['academicpersonsedit_profileediting.']['iconIdentifier'] ?? null,
+        );
+        $this->assertSame(
+            $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['academicpersonsedit_profileediting'] ?? null,
+            $pageTsConfig['mod.']['wizards.']['newContentElement.']['wizardItems.']['academic.']['elements.']['academicpersonsedit_profileediting.']['iconIdentifier'] ?? null,
+        );
     }
 
     /**

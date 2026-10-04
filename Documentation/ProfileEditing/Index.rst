@@ -722,7 +722,7 @@ rendered by cloning the row inside it.
 
 The icons of a browser-rendered editor cannot be resolved in the browser:
 ``ab:icon`` asks the frontend icon registry of :guilabel:`academic_base`, which
-knows the set this extension registers and whatever a site package replaced.
+knows the shared icon set and whatever a site package replaced.
 Under the prototype design that needs no mechanism of its own: an icon is
 rendered by Fluid **inside the prototype that draws it**, in the help button of
 a field, the six row controls of a contact, the add control of a section and
@@ -753,8 +753,8 @@ tables, exactly the switch the previous editor offered for these three record
 kinds - through the ``toggleContractContactVisibility`` endpoint, which is sent
 the target state rather than a "flip" so that a double press stores what the
 visitor saw. The button's label names the press - :guilabel:`Hide in frontend`
-or :guilabel:`Show in frontend` - and its glyph (``academic-persons-edit-visible``
-respectively ``academic-persons-edit-hidden``) shows the state; it carries no
+or :guilabel:`Show in frontend` - and its glyph (``tx-academicbase-state-visible``
+respectively ``tx-academicbase-state-hidden``) shows the state; it carries no
 ``aria-pressed``, because a label that changes with the state would announce
 the opposite of what a pressed button does. A hidden row is drawn in the
 secondary text colour, its controls at full contrast, and carries a
@@ -1848,73 +1848,83 @@ A project that talks to the endpoints from its own code has to send the header.
 Icon identifiers
 ================
 
-The sixteen action icons of the editor are frontend icons. They are registered
-in :file:`Configuration/FrontendIcons.php` for the frontend icon registry of
-:guilabel:`academic_base` and rendered through its ``ab:icon`` ViewHelper with
+The action and state icons of the editor are the shared frontend icons of
+:guilabel:`academic_base`. They are registered in the
+:file:`Configuration/FrontendIcons.php` of :guilabel:`academic_base` for its
+frontend icon registry and rendered through its ``ab:icon`` ViewHelper with
 ``alternativeMarkupIdentifier="inline"``, so the SVG is inlined and follows the
-text colour of the button it sits in. A site package replaces one in its own
+text colour of the button it sits in. This extension registers no frontend
+icon of its own. A site package replaces one in its own
 :file:`Configuration/FrontendIcons.php`, see :ref:`templates-override-icons`.
-The files are `Bootstrap Icons <https://icons.getbootstrap.com/>`__ (MIT, see
-:file:`Resources/Public/Icons/LICENSE-bootstrap-icons.txt`) drawn in
-``currentColor``.
+The files are Font Awesome Free solid icons drawn in ``currentColor``, their
+licence (CC BY 4.0) is
+:file:`EXT:academic_base/Resources/Public/Icons/LICENSE-font-awesome.txt`.
 
 Identifier and file name name the *action*, not the glyph: a project that
 replaces the icon set changes the drawing, not the identifiers its template
-overrides address.
+overrides address. Every academic extension renders the same identifier for
+the same action, so a replacement applies to all of them.
 
 ..  list-table::
     :header-rows: 1
 
     *   - Identifier
-        - File
+        - File in :file:`EXT:academic_base/Resources/Public/Icons/`
         - Used for
-    *   - ``academic-persons-edit-add``
-        - :file:`add.svg`
+    *   - ``tx-academicbase-action-add``
+        - :file:`action/add.svg`
         - Add a document, contract or contact row
-    *   - ``academic-persons-edit-back``
-        - :file:`back.svg`
+    *   - ``tx-academicbase-action-back``
+        - :file:`action/back.svg`
         - Back to the profile overview
-    *   - ``academic-persons-edit-clear``
-        - :file:`clear.svg`
+    *   - ``tx-academicbase-action-clear``
+        - :file:`action/clear.svg`
         - Clear the value of a field
-    *   - ``academic-persons-edit-delete``
-        - :file:`delete.svg`
+    *   - ``tx-academicbase-action-delete``
+        - :file:`action/delete.svg`
         - Delete a row or the profile image
-    *   - ``academic-persons-edit-edit``
-        - :file:`edit.svg`
-        - Open a field or a row for editing
-    *   - ``academic-persons-edit-help``
-        - :file:`help.svg`
-        - Help text popover
-    *   - ``academic-persons-edit-move-down``
-        - :file:`move-down.svg`
-        - Move a row down
-    *   - ``academic-persons-edit-move-up``
-        - :file:`move-up.svg`
-        - Move a row up
-    *   - ``academic-persons-edit-save``
-        - :file:`save.svg`
-        - Save a field or a row
-    *   - ``academic-persons-edit-sort-handle``
-        - :file:`sort-handle.svg`
+    *   - ``tx-academicbase-action-drag``
+        - :file:`action/drag.svg`
         - Drag handle of a sortable list
-    *   - ``academic-persons-edit-undo``
-        - :file:`undo.svg`
+    *   - ``tx-academicbase-action-edit``
+        - :file:`action/edit.svg`
+        - Open a field or a row for editing
+    *   - ``tx-academicbase-action-help``
+        - :file:`action/help.svg`
+        - Help text popover
+    *   - ``tx-academicbase-action-move-down``
+        - :file:`action/move-down.svg`
+        - Move a row down
+    *   - ``tx-academicbase-action-move-up``
+        - :file:`action/move-up.svg`
+        - Move a row up
+    *   - ``tx-academicbase-action-save``
+        - :file:`action/save.svg`
+        - Save a field or a row
+    *   - ``tx-academicbase-action-undo``
+        - :file:`action/undo.svg`
         - Restore the last saved value
-    *   - ``academic-persons-edit-upload-image``
-        - :file:`upload-image.svg`
+    *   - ``tx-academicbase-action-upload-image``
+        - :file:`action/upload-image.svg`
         - Open the profile image editor
-    *   - ``academic-persons-edit-view``
-        - :file:`view.svg`
+    *   - ``tx-academicbase-action-view``
+        - :file:`action/view.svg`
         - Open a row read-only, or the public profile
-    *   - ``academic-persons-edit-view-close``
-        - :file:`view-close.svg`
+    *   - ``tx-academicbase-action-view-close``
+        - :file:`action/view-close.svg`
         - Close the read view a row action opened
-    *   - ``academic-persons-edit-visible``
-        - :file:`visible.svg`
+    *   - ``tx-academicbase-state-visible``
+        - :file:`state/visible.svg`
         - Hide a visible row, shown while the row is visible
-    *   - ``academic-persons-edit-hidden``
-        - :file:`hidden.svg`
+    *   - ``tx-academicbase-state-hidden``
+        - :file:`state/hidden.svg`
         - Show a hidden row, shown while the row is hidden
+
+The content element icon is the one icon this extension registers, as
+``tx-academicpersonsedit-plugin-profile-editing`` in its
+:file:`Configuration/Icons.php` for the backend: the page module and the new
+content element wizard show it. Its file is
+:file:`Resources/Public/Icons/plugin/profile-editing.svg`, a Font Awesome Free
+icon as well, see :ref:`third-party-icons`.
 
 ..  index:: AJAX, CKEditor, Fluid, Frontend, JavaScript, JSON, Profile image, Rich text, NotScanned

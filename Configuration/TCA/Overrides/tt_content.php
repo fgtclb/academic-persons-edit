@@ -18,7 +18,7 @@ use FGTCLB\AcademicBase\TcaManipulator;
         [
             'label' => 'LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:plugin.profile_editing.label',
             'value' => 'academicpersonsedit_profileediting',
-            'icon' => 'persons_edit_icon',
+            'icon' => 'tx-academicpersonsedit-plugin-profile-editing',
             'group' => 'academic',
         ],
         'academic_persons_edit'

@@ -134,10 +134,11 @@ somewhere else leaves it where it is going.
 Bundled libraries
 -----------------
 
-One third-party set is shipped with the extension, with its licence file next
-to it: Bootstrap Icons (MIT), the sixteen control icons of this view, as SVG
-files under :file:`Resources/Public/Icons/` with
-:file:`LICENSE-bootstrap-icons.txt` beside them.
+The control icons of this view are the shared Font Awesome Free solid icons
+(CC BY 4.0) of :guilabel:`academic_base`, shipped there under
+:file:`Resources/Public/Icons/` with :file:`LICENSE-font-awesome.txt` beside
+them. The content element icon of this extension is one of the same set, with
+its own :file:`Resources/Public/Icons/LICENSE-font-awesome.txt`.
 
 No JavaScript library is shipped. The view is Fluid, driven by five plain
 custom elements that depend on no framework; CKEditor 5 is loaded from the

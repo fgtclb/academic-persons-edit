@@ -12,7 +12,7 @@ TCEFORM.tt_content.CType.removeItems := removeFromList(academicpersonsedit_profi
 mod.wizards.newContentElement.wizardItems.academic {
   elements {
     academicpersonsedit_profileediting {
-      iconIdentifier = persons_edit_icon
+      iconIdentifier = tx-academicpersonsedit-plugin-profile-editing
       title = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.title
       description = LLL:EXT:academic_persons_edit/Resources/Private/Language/locallang_be.xlf:newContentElement.wizardItems.academic.profileEditing.description
       tt_content_defValues {

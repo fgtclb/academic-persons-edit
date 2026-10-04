@@ -15,17 +15,18 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Package\PackageManager;
 
 /**
- * A site package replaces an action icon of the profile editor in its own
+ * A site package replaces an action icon the profile editor renders in its own
  * `Configuration/FrontendIcons.php`, and every control shows its drawing without a
  * template override, the controls the editor builds in the browser from the templates
  * of the page included. A replacement left in `Configuration/Icons.php` does not reach
  * the editor, which shows the shipped drawing.
  *
- * The fixture `tests/editor-icon-replacement` is that site package: it replaces
- * `academic-persons-edit-edit` in the file of the frontend and
- * `academic-persons-edit-delete` in the file of the backend, both with a rectangle. A
+ * The editor renders the shared icons of academic_base, so the identifiers replaced are
+ * those of academic_base. The fixture `tests/editor-icon-replacement` is that site
+ * package: it replaces `tx-academicbase-action-edit` in the file of the frontend and
+ * `tx-academicbase-action-delete` in the file of the backend, both with a rectangle. A
  * TYPO3 v14 test instance orders the packages by their keys, so the first test asserts
- * that the fixture loads after academic_persons_edit.
+ * that the fixture loads after academic_base and academic_persons_edit.
  */
 final class AcademicPersonsEditIconReplacementTest extends AbstractFrontendProfilePluginTestCase
 {
@@ -46,10 +47,12 @@ final class AcademicPersonsEditIconReplacementTest extends AbstractFrontendProfi
     {
         $packageKeys = array_keys($this->get(PackageManager::class)->getActivePackages());
 
-        $this->assertGreaterThan(
-            array_search('academic_persons_edit', $packageKeys, true),
-            array_search('test_editor_icon_replacement', $packageKeys, true),
-        );
+        foreach (['academic_base', 'academic_persons_edit'] as $extensionKey) {
+            $this->assertGreaterThan(
+                array_search($extensionKey, $packageKeys, true),
+                array_search('test_editor_icon_replacement', $packageKeys, true),
+            );
+        }
     }
 
     /**
@@ -63,14 +66,14 @@ final class AcademicPersonsEditIconReplacementTest extends AbstractFrontendProfi
         $this->setUpProfileEditingTestCase();
         $content = $this->renderProfileEditingPage();
 
-        $edits = $this->renderedIconMarkups($content, 'academic-persons-edit-edit');
+        $edits = $this->renderedIconMarkups($content, 'tx-academicbase-action-edit');
         $this->assertNotSame([], $edits);
         foreach ($edits as $markup) {
             $this->assertStringContainsString(self::REPLACED_DRAWING, $markup);
         }
         foreach (['//template[@data-pe-proto="contact-row"]', '//template[@data-pe-new-button-template]'] as $query) {
             $template = $this->templateMarkup($content, $query);
-            $this->assertStringContainsString('data-identifier="academic-persons-edit-edit"', $template);
+            $this->assertStringContainsString('data-identifier="tx-academicbase-action-edit"', $template);
             $this->assertStringContainsString(self::REPLACED_DRAWING, $template);
         }
     }
@@ -81,14 +84,14 @@ final class AcademicPersonsEditIconReplacementTest extends AbstractFrontendProfi
         $this->setUpProfileEditingTestCase();
         $content = $this->renderProfileEditingPage();
 
-        $deletes = $this->renderedIconMarkups($content, 'academic-persons-edit-delete');
+        $deletes = $this->renderedIconMarkups($content, 'tx-academicbase-action-delete');
         $this->assertNotSame([], $deletes);
         foreach ($deletes as $markup) {
             $this->assertStringNotContainsString(self::REPLACED_DRAWING, $markup);
-            $this->assertStringContainsString('d="M5.5 5.5A.5.5', $markup);
+            $this->assertStringContainsString('d="M232.7 69.9', $markup);
         }
         $this->assertStringContainsString(
-            'data-identifier="academic-persons-edit-delete"',
+            'data-identifier="tx-academicbase-action-delete"',
             $this->templateMarkup($content, '//template[@data-pe-proto="contact-row"]'),
         );
     }

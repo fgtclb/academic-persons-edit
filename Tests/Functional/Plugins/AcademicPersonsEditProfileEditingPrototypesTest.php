@@ -453,22 +453,22 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
     public static function clonedIconsProvider(): array
     {
         return [
-            'helptext-button' => ['//template[@data-pe-proto="helptext-button"]', ['academic-persons-edit-help']],
-            'contact-section' => ['//template[@data-pe-proto="contact-section"]', ['academic-persons-edit-add']],
+            'helptext-button' => ['//template[@data-pe-proto="helptext-button"]', ['tx-academicbase-action-help']],
+            'contact-section' => ['//template[@data-pe-proto="contact-section"]', ['tx-academicbase-action-add']],
             'contact-row' => [
                 '//template[@data-pe-proto="contact-row"]',
                 [
-                    'academic-persons-edit-visible',
-                    'academic-persons-edit-hidden',
-                    'academic-persons-edit-view',
-                    'academic-persons-edit-view-close',
-                    'academic-persons-edit-move-down',
-                    'academic-persons-edit-move-up',
-                    'academic-persons-edit-delete',
-                    'academic-persons-edit-edit',
+                    'tx-academicbase-state-visible',
+                    'tx-academicbase-state-hidden',
+                    'tx-academicbase-action-view',
+                    'tx-academicbase-action-view-close',
+                    'tx-academicbase-action-move-down',
+                    'tx-academicbase-action-move-up',
+                    'tx-academicbase-action-delete',
+                    'tx-academicbase-action-edit',
                 ],
             ],
-            'new-button' => ['//template[@data-pe-new-button-template]', ['academic-persons-edit-edit']],
+            'new-button' => ['//template[@data-pe-new-button-template]', ['tx-academicbase-action-edit']],
         ];
     }
 

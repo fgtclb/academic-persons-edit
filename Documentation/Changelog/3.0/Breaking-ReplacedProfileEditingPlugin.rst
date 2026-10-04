@@ -133,9 +133,12 @@ The ten icon files 2.4 shipped for the form flow are deleted:
 Five of the ten identifiers they were registered under go with them:
 ``academic-persons-edit-add-image``, ``-add-item``, ``-cancel``, ``-sort`` and
 ``-to-top``. The other five - ``academic-persons-edit-edit``, ``-view``,
-``-delete``, ``-save`` and ``-back`` - stay and now resolve to the new artwork.
+``-delete``, ``-save`` and ``-back`` - are renamed to the shared icons of
+:guilabel:`academic_base`, together with the content element icon
+``persons_edit_icon``, see
+:ref:`breaking-persons-edit-profile-editing-icons-moved-to-the-frontend-icon-registry`.
 
-They also resolve through a different icon provider:
+The icons also resolve through a different icon provider:
 :php:`FGTCLB\AcademicBase\Imaging\IconProvider\CurrentColorSvgIconProvider`
 inlines the ``<svg>`` where TYPO3's own :php:`SvgIconProvider` emitted an
 ``<img>``. A site package styling the editor's icons through a rule such as
@@ -143,12 +146,9 @@ inlines the ``<svg>`` where TYPO3's own :php:`SvgIconProvider` emitted an
 the *Feature: Icon provider for icons that follow the text colour* entry of
 `EXT:academic_base` describes the provider.
 
-Sixteen action icons are registered in :file:`Configuration/FrontendIcons.php`,
-under the identifiers listed in :ref:`profile-editing-icons`. The extension
-icon ``persons_edit_icon`` is the only entry of :file:`Configuration/Icons.php`
-and is unchanged. They are Bootstrap Icons (MIT) drawn in ``currentColor`` and
-rendered inline, so they take the colour of the control they sit in - see
-:ref:`feature-profile-editing-icon-set` and
+The identifiers the editor renders are listed in :ref:`profile-editing-icons`.
+They are drawn in ``currentColor`` and rendered inline, so they take the colour
+of the control they sit in - see
 :ref:`breaking-persons-edit-profile-editing-icons-moved-to-the-frontend-icon-registry`.
 
 Removed labels
@@ -261,9 +261,10 @@ Migration
     layout.
 #.  Replace links to the removed actions with a link to the ``index`` action
     and the ``profileUid`` argument, or with the profile overview.
-#.  Replace the five removed icon identifiers with the ones of
+#.  Replace the removed and renamed icon identifiers with the ones of
     :ref:`profile-editing-icons`, and re-point CSS that selected the icons as
-    an ``<img>``.
+    an ``<img>`` - see
+    :ref:`breaking-persons-edit-profile-editing-icons-moved-to-the-frontend-icon-registry`.
 #.  Confirm that the site actually delivers page type ``1733735``. Include the
     site set ``fgtclb/academic-persons-edit-profile-editing`` or the static
     template of this extension; a site package that maintains a copy of the

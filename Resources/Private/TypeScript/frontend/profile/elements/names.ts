@@ -13,9 +13,8 @@
  * The names themselves are public API from the moment they ship. A custom
  * element name is global and has no scoping mechanism of any kind, so the
  * prefix has to be one this extension provably owns - the extension key with
- * its underscores replaced, which is the same token the icon identifiers
- * (`academic-persons-edit-add`) and the import map specifier
- * (`@fgtclb/academic-persons-edit/`) already use, and whose uniqueness TER and
+ * its underscores replaced, which is the same token the import map specifier
+ * (`@fgtclb/academic-persons-edit/`) already uses, and whose uniqueness TER and
  * packagist enforce. A shorter `academic-profile-` would read better and would
  * be a name `academic_persons`, which ships frontend JavaScript of its own,
  * could claim just as well.

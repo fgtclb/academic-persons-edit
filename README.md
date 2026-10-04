@@ -13,7 +13,7 @@ Profiles get connected with a frontend user and the frontend user is allow to ed
 
 The `Edit Person’s Profiles` content element renders the whole profile on one page and saves each change where
 it is made, through JSON endpoints of the same plugin. What it renders, which endpoints it uses, which
-icons it registers and what a route enhancer or a firewall has to let through is documented in
+icons it renders and what a route enhancer or a firewall has to let through is documented in
 [Documentation/ProfileEditing](./Documentation/ProfileEditing/Index.rst); the configuration of the fields
 and sections it shows is documented in
 [Documentation/Configuration/Settings](./Documentation/Configuration/Settings/Index.rst).
@@ -115,3 +115,7 @@ The full declarations are also included in this repository:
 ## License
 
 This extension is released under the [GPL-2.0-or-later](LICENSE) license.
+
+The SVG icons below `Resources/Public/Icons/`, except `Extension.svg`, are
+Font Awesome Free icons licensed under CC BY 4.0, see
+[LICENSE-font-awesome.txt](Resources/Public/Icons/LICENSE-font-awesome.txt).
