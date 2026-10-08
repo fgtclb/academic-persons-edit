@@ -4,26 +4,26 @@
     data-namespace-typo3-fluid="true"
 >
 
+<f:comment>
+    The messages of the fields are rendered next to them by "Profile/Forms/FieldWrapper". This
+    summary announces that the form was rejected, and lists the errors of the form object itself,
+    which belong to no field. "object" is the name of the form object, "emailAddressFormData".
+</f:comment>
 <f:form.validationResults for="{object}">
     <f:if condition="{validationResults.flattenedErrors}">
         <ul class="typo3-messages">
-            <f:for
-                each="{validationResults.flattenedErrors}"
-                key="propertyName"
-                as="errors"
-            >
-                <f:for each="{errors}" as="error">
-                    <li class="alert alert-danger" role="alert">
-                        <f:debug>{propertyName}.error.{error.code}</f:debug>
-                        <p>
-                            {f:translate(
-                                key: '{propertyName}.error.{error.code}',
-                                default: propertyName,
-                                extensionName: 'AcademicPersonsEdit'
-                            )}
-                        </p>
-                    </li>
-                </f:for>
+            <li class="alert alert-danger" role="alert">
+                <p>{f:translate(key: 'form.errors', extensionName: 'AcademicPersonsEdit')}</p>
+            </li>
+            <f:for each="{validationResults.errors}" as="error">
+                <li class="alert alert-danger" role="alert">
+                    <p>
+                        <f:render
+                            partial="Profile/Forms/ErrorMessage"
+                            arguments="{error: error, propertyPath: object}"
+                        />
+                    </p>
+                </li>
             </f:for>
         </ul>
     </f:if>

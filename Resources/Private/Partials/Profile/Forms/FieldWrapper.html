@@ -1,21 +1,26 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:pe="http://typo3.org/ns/FGTCLB/AcademicPersonsEdit/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
 
-<f:form.validationResults for="{elementId}" as="validationResults">
+<f:variable
+    name="propertyPath"
+    value="{pe:form.propertyPath(property: element.identifier)}"
+/>
+
+<f:form.validationResults for="{propertyPath}" as="validationResults">
     <div class="mb-3{f:if(condition:'{validationResults.flattenedErrors}', then:' field--has-error')} {class}">
         <f:if condition="{validationResults.flattenedErrors}">
             <ul>
                 <f:for each="{validationResults.flattenedErrors}" as="errors">
                     <f:for each="{errors}" as="error">
-                        <li class="notification notification--is-danger">{propertyName}
-                            {f:translate(
-                                key: 'form.{elementId}.error.{error.code}',
-                                default: propertyName,
-                                extensionName: 'AcademicPersonsEdit'
-                            )}
+                        <li class="notification notification--is-danger">
+                            <f:render
+                                partial="Profile/Forms/ErrorMessage"
+                                arguments="{error: error, propertyPath: propertyPath}"
+                            />
                         </li>
                     </f:for>
                 </f:for>

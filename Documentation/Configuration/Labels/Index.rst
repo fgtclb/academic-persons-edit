@@ -62,8 +62,8 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/Forms/Textarea.html`, :file:`Partials/Profile/Forms/Textfield.html`
     *   - :xml:`<property>.delete`
         - :file:`Partials/Profile/Buttons/DeleteCancel.html`
-    *   - :xml:`<propertyName>.error.<code>`
-        - :file:`Partials/Profile/Forms/Errors.html`
+    *   - :xml:`<formObject>.<field>.error.<code>`, see :ref:`configuration-labels-validation`
+        - :file:`Partials/Profile/Forms/ErrorMessage.html`
     *   - :xml:`actions.add`
         - :file:`Templates/Contract/Show.html`, :file:`Templates/Profile/Show.html`
     *   - :xml:`actions.cancel`
@@ -118,8 +118,10 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/List/EmailAddresses.html`
     *   - :xml:`emailAddress.type.label`
         - :file:`Partials/Profile/List/EmailAddresses.html`
-    *   - :xml:`form.<field>.error.<code>`
-        - :file:`Partials/Profile/Forms/FieldWrapper.html`
+    *   - :xml:`form.error.<code>`, see :ref:`configuration-labels-validation`
+        - :file:`Partials/Profile/Forms/ErrorMessage.html`
+    *   - :xml:`form.errors`
+        - :file:`Partials/Profile/Forms/Errors.html`
     *   - :xml:`list.actions`
         - :file:`Partials/Profile/List/Contracts.html`, :file:`Partials/Profile/List/EmailAddresses.html`, :file:`Partials/Profile/List/PhoneNumbers.html`, :file:`Partials/Profile/List/PhysicalAddresses.html`, :file:`Partials/Profile/List/ProfileInformation.html`, :file:`Templates/Profile/List.html`
     *   - :xml:`list.contract.position`
@@ -194,3 +196,35 @@ or the code fills in, a category type or a field name for example.
         - :file:`Partials/Profile/List/ProfileInformation.html`
     *   - The messages of a rejected image upload, :xml:`upload.error.<code>` and :xml:`validation.error.1471708998` of :file:`EXT:academic_base/Resources/Private/Language/locallang.xlf`: no :typoscript:`_LOCAL_LANG` reaches them, a language file override does
         - :file:`Templates/Profile/EditImage.html`
+
+..  _configuration-labels-validation:
+
+Messages of a rejected form
+===========================
+
+A form the editor rejects is shown again with the values that were entered, a
+note above it, :xml:`form.errors`, and a message at every field that was
+rejected. The message is the first label found of these:
+
+#.  :xml:`<formObject>.<field>.error.<code>`, for one field of one form, for
+    example :xml:`contractFormData.validTo.error.1307719788`. The form objects
+    are :xml:`addressFormData`, :xml:`contractFormData`,
+    :xml:`emailAddressFormData`, :xml:`phoneNumberFormData`,
+    :xml:`profileFormData` and :xml:`profileInformationFormData`.
+#.  :xml:`form.error.<code>`, for every field, for example
+    :xml:`form.error.1221560718` for a required field that was left empty.
+#.  The message of the TYPO3 validator that rejected the value.
+
+:xml:`<code>` is the code of the validation error. The extension ships a label
+for the codes its forms produce: 1221560718 and 1221560910 for a required field
+left empty, 1221559976 for an invalid email address, 1332933658 for a year that
+is not a number and 1307719788 for an invalid date.
+
+A :xml:`form.error.<code>` label is formatted with the arguments of the error,
+the way :php:`sprintf()` formats a string, whenever the error carries any. The
+two conversion errors do: 1332933658 passes the entered value, 1307719788 the
+entered value and the expected date format. In such a label a literal percent
+sign is written :xml:`%%`, and :xml:`%1$s` inserts the first argument. A single
+:xml:`%` there makes the rendering fail. A
+:xml:`<formObject>.<field>.error.<code>` label is shown as it is written, never
+formatted.

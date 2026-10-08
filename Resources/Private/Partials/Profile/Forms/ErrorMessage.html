@@ -1,0 +1,27 @@
+<html
+    lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:comment>
+    Renders the message of one validation error. A label keyed by the property path and the
+    error code wins, for example "contractFormData.validTo.error.1307719788", then a label
+    keyed by the error code alone, "form.error.1221559976", then the message of the validator.
+</f:comment>
+<f:variable
+    name="message"
+    value="{f:translate(
+        key: 'form.error.{error.code}',
+        default: error.message,
+        arguments: error.arguments,
+        extensionName: 'AcademicPersonsEdit'
+    )}"
+/>
+{f:translate(
+    key: '{propertyPath}.error.{error.code}',
+    default: message,
+    extensionName: 'AcademicPersonsEdit'
+)}
+
+</html>

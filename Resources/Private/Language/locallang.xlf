@@ -663,6 +663,24 @@
 
 			<!-- Error Messages -->
 
+			<trans-unit id="form.errors">
+				<source>The form could not be saved. Please correct the marked fields.</source>
+			</trans-unit>
+			<trans-unit id="form.error.1221560910">
+				<source>This field is required.</source>
+			</trans-unit>
+			<trans-unit id="form.error.1221560718">
+				<source>This field is required.</source>
+			</trans-unit>
+			<trans-unit id="form.error.1221559976">
+				<source>Please enter a valid email address.</source>
+			</trans-unit>
+			<trans-unit id="form.error.1332933658">
+				<source>Please enter a number.</source>
+			</trans-unit>
+			<trans-unit id="form.error.1307719788">
+				<source>Please enter a valid date, for example 31.12.2025.</source>
+			</trans-unit>
 			<trans-unit id="contractFormData.validTo.error.1307719788">
 				<source>"Valid to" must be a valid date. (Seperated by .)</source>
 			</trans-unit>
