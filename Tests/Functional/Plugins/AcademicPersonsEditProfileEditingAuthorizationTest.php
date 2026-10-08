@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\UploadedFile;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 /**
@@ -29,6 +30,10 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractFrontendProfilePluginTestCase
 {
     private const FOREIGN_PROFILE_ID = 2;
+    /**
+     * The page of the editing plugin in `profileEditingPage.csv`.
+     */
+    private const EDITING_PAGE_ID = 2;
     private const FOREIGN_CONTRACT_ID = 90;
     private const FOREIGN_DOCUMENT_ID = 90;
     private const FOREIGN_ADDRESS_ID = 90;
@@ -284,9 +289,14 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
     /**
      * The HTML action propagates the site's own access denied response instead of
      * rendering. Which status that carries is the site's error handling, not this
-     * extension's - the fixture site configures none, so core answers 404. What
-     * this pins is that the response is an error and carries none of the foreign
-     * profile.
+     * extension's - the fixture site configures none, so core answers 403, and the
+     * test pins exactly that: any other error, the 404 of a failed cHash comparison
+     * among them, is not the access check. It also pins that the response carries
+     * none of the foreign profile.
+     *
+     * The link to the foreign profile is generated with a valid cHash. One edited
+     * from the link of the own profile fails the cHash comparison, a 404 of its own
+     * that never reaches the access check (ACE-882).
      */
     #[Test]
     public function theIndexActionOfAForeignProfileIsAnsweredWithAnErrorResponse(): void
@@ -302,18 +312,17 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
         );
 
         $response = $this->requestAsFrontendUser(
-            new InternalRequest(
-                str_replace(
-                    'profileUid%5D=' . self::PROFILE_ID,
-                    'profileUid%5D=' . self::FOREIGN_PROFILE_ID,
-                    $ownProfileLink,
-                ),
-            ),
+            new InternalRequest($this->linkToProfile($ownProfileLink, self::FOREIGN_PROFILE_ID)),
         );
 
-        $this->assertGreaterThanOrEqual(400, $response->getStatusCode());
-        $this->assertStringNotContainsString('Eve', (string)$response->getBody());
-        $this->assertStringNotContainsString('data-academic-persons-profile-editing', (string)$response->getBody());
+        $this->assertSame(403, $response->getStatusCode());
+        // Nothing of the foreign profile is rendered: neither its last name nor the editor
+        // bound to its uid. Its first name "Eve" is no proof, the random CSP nonce of the
+        // TYPO3 error page can contain it.
+        $body = (string)$response->getBody();
+        $this->assertStringNotContainsString('Intruder', $body);
+        $this->assertStringNotContainsString(sprintf('data-profile-uid="%d"', self::FOREIGN_PROFILE_ID), $body);
+        $this->assertStringNotContainsString('data-academic-persons-profile-editing', $body);
     }
 
     #[Test]
@@ -531,5 +540,21 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
             $this->decodeError($response),
         );
         $this->assertNoUploadReachedTheStorage();
+    }
+
+    /**
+     * The given plugin link, pointing to another profile, with the cHash the site
+     * router calculates for it.
+     */
+    private function linkToProfile(string $link, int $profileUid): string
+    {
+        parse_str((string)parse_url($link, PHP_URL_QUERY), $arguments);
+        unset($arguments['cHash']);
+        $this->assertIsArray($arguments['tx_academicpersonsedit_profileediting'] ?? null);
+        $arguments['tx_academicpersonsedit_profileediting']['profileUid'] = $profileUid;
+        return (string)$this->get(SiteFinder::class)
+            ->getSiteByPageId(self::EDITING_PAGE_ID)
+            ->getRouter()
+            ->generateUri(self::EDITING_PAGE_ID, $arguments);
     }
 }
