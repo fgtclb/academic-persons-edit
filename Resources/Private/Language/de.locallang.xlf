@@ -527,11 +527,11 @@
 
 			<!-- Email address fields -->
 
-			<trans-unit id="emailAddress.emailAddress.label">
+			<trans-unit id="emailAddress.email.label">
 				<source>Email address</source>
 				<target>E-Mail-Adresse</target>
 			</trans-unit>
-			<trans-unit id="emailAddress.emailAddress.placeholder">
+			<trans-unit id="emailAddress.email.placeholder">
 				<source>example@domain.com</source>
 				<target>beispiel@domain.de</target>
 			</trans-unit>

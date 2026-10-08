@@ -405,10 +405,10 @@
 
 			<!-- Email address fields -->
 
-			<trans-unit id="emailAddress.emailAddress.label">
+			<trans-unit id="emailAddress.email.label">
 				<source>Email address</source>
 			</trans-unit>
-			<trans-unit id="emailAddress.emailAddress.placeholder">
+			<trans-unit id="emailAddress.email.placeholder">
 				<source>example@domain.com</source>
 			</trans-unit>
 			<trans-unit id="emailAddress.type.label">

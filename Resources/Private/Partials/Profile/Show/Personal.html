@@ -26,7 +26,7 @@
     <li>
         <b>{f:translate(key: 'profile.name.label', extensionName: 'AcademicPersonsEdit')}:</b>
 
-        <span>{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}</span>
+        <span>{f:if(condition: profile.title, then: '{profile.title} ')}{profile.firstName}{f:if(condition: profile.middleName, then: ' {profile.middleName}')} {profile.lastName}</span>
     </li>
 
     <li>

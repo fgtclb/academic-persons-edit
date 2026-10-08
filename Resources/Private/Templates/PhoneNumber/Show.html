@@ -12,7 +12,7 @@
         <f:render
             partial="Profile/Header"
             arguments="{
-                header: '{profile.title} {profile.firstName} {profile.middleName} {profile.lastName}',
+                header: '{f:if(condition: profile.title, then: \'{profile.title} \')}{profile.firstName}{f:if(condition: profile.middleName, then: \' {profile.middleName}\')} {profile.lastName}',
                 layout: '{data.header_layout}',
                 subheader: '{data.subheader}',
                 detail: 'true',
