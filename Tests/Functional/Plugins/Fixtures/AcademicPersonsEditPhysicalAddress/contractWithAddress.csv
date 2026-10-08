@@ -1,0 +1,6 @@
+"tx_academicpersons_domain_model_contract",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","position","physical_addresses"
+,1,100,0,0,0,0,1,"Captain",1
+"tx_academicpersons_domain_model_address",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","type","street","street_number","zip","city","country","sorting"
+,1,100,0,0,0,0,1,"office","Stored Street","1","12345","Stored City","Stored Country",1
