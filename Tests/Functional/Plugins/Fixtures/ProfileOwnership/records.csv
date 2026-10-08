@@ -1,0 +1,39 @@
+"fe_users",
+,"uid","pid","username","password","deleted","disable","usergroup","tx_extbase_type","first_name","last_name","email"
+,2,100,"other","",0,0,"","Tx_Academicpersonsedit_Domain_Model_FrontendUser","Erika","Musterfrau","erika@example.com"
+"tx_academicpersons_domain_model_profile",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","first_name","last_name","slug","website","frontend_users"
+,2,100,0,0,0,0,"Erika","Musterfrau","erika-musterfrau","https://foreign.example.org",1
+"tx_academicpersons_feuser_mm",
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,2,2,1,1
+"tx_academicpersons_domain_model_contract",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","position","sorting"
+,1,100,0,0,0,0,1,"Own position one",1
+,2,100,0,0,0,0,1,"Own position two",2
+,3,100,0,0,0,0,2,"Foreign position one",1
+,4,100,0,0,0,0,2,"Foreign position two",2
+"tx_academicpersons_domain_model_email",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","type","email","sorting"
+,1,100,0,0,0,0,1,"business","own-one@example.org",1
+,2,100,0,0,0,0,1,"business","own-two@example.org",2
+,3,100,0,0,0,0,3,"business","foreign-one@example.org",1
+,4,100,0,0,0,0,3,"business","foreign-two@example.org",2
+"tx_academicpersons_domain_model_phone_number",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","type","phone_number","sorting"
+,1,100,0,0,0,0,1,"business","+49 30 1000001",1
+,2,100,0,0,0,0,1,"business","+49 30 1000002",2
+,3,100,0,0,0,0,3,"business","+49 30 2000001",1
+,4,100,0,0,0,0,3,"business","+49 30 2000002",2
+"tx_academicpersons_domain_model_address",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","type","street","street_number","zip","city","country","sorting"
+,1,100,0,0,0,0,1,"business","Own Street","1","10001","Own City","Germany",1
+,2,100,0,0,0,0,1,"business","Own Street","2","10001","Own City","Germany",2
+,3,100,0,0,0,0,3,"business","Foreign Street","1","20001","Foreign City","Germany",1
+,4,100,0,0,0,0,3,"business","Foreign Street","2","20001","Foreign City","Germany",2
+"tx_academicpersons_domain_model_profile_information",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","type","title","year","sorting"
+,1,100,0,0,0,0,1,"curriculum_vitae","Own vita one",2001,1
+,2,100,0,0,0,0,1,"curriculum_vitae","Own vita two",2002,2
+,3,100,0,0,0,0,2,"curriculum_vitae","Foreign vita one",2011,1
+,4,100,0,0,0,0,2,"curriculum_vitae","Foreign vita two",2012,2

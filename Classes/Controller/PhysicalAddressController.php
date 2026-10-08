@@ -215,6 +215,7 @@ final class PhysicalAddressController extends AbstractActionController
      */
     public function toggleVisibilityAction(int $physicalAddress): ResponseInterface
     {
+        $this->assertRecordIsOwnedByCurrentFrontendUser('tx_academicpersons_domain_model_address', $physicalAddress);
         $address = $this->addressRepository->findByUidIncludingHidden($physicalAddress);
         if ($address === null) {
             $this->addTranslatedErrorMessage('physicalAddress.toggleVisibility.error.notFound');

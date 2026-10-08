@@ -19,6 +19,7 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
+use FGTCLB\AcademicPersonsEdit\Service\ProfileOwnershipService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -144,12 +145,26 @@ final class ProfileController extends AbstractActionController
         return $this->htmlResponse();
     }
 
+    /**
+     * The file is stored under the configured name while Extbase maps the `profile` argument,
+     * before the action runs. Without a name the converter keeps the name the client sent, in
+     * a folder all profiles share, so a request whose profile name cannot be resolved is
+     * refused here instead.
+     *
+     * The uid is read the way {@see AbstractActionController::initializeAction()} checked it,
+     * from the request arguments. The name comes from the profile row with the deleted
+     * restriction only, so a hidden, scheduled or group restricted profile of the user gets
+     * its name as well.
+     */
     public function initializeAddImageAction(): void
     {
-        $profileUid = 0;
-        $body = $this->request->getParsedBody();
-        if (is_array($body)) {
-            $profileUid = (int)($body['tx_academicpersonsedit_profileediting']['profile']['__identity'] ?? 0);
+        $profileUid = $this->request->hasArgument('profile')
+            ? $this->getRequestedRecordUid($this->request->getArgument('profile'))
+            : 0;
+        $this->assertRecordIsOwnedByCurrentFrontendUser(ProfileOwnershipService::PROFILE_TABLE, $profileUid);
+        $targetFileName = $this->buildProfileImageNameWithoutExtension($profileUid);
+        if ($targetFileName === '') {
+            $this->denyAccess();
         }
         GeneralUtility::makeInstance(FileUploadConverter::class)
             ->setArgumentTypeConverterConfiguration(
@@ -160,7 +175,7 @@ final class ProfileController extends AbstractActionController
                     FileUploadConverter::CONFIGURATION_UPLOAD_FOLDER => $this->settings['editForm']['profileImage']['targetFolder'] ?? null,
                     FileUploadConverter::CONFIGURATION_VALIDATION_FILESIZE_MAXIMUM =>  $this->settings['editForm']['profileImage']['validation']['maxFileSize'] ?? null,
                     FileUploadConverter::CONFIGURATION_VALIDATION_MIME_TYPE_ALLOWED_MIME_TYPES => $this->settings['editForm']['profileImage']['validation']['allowedMimeTypes'] ?? null,
-                    FileUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $this->buildProfileImageNameWithoutExtension($profileUid),
+                    FileUploadConverter::CONFIGURATION_TARGET_FILE_NAME_WITHOUT_EXTENSION => $targetFileName,
                 ]
             );
     }
@@ -202,16 +217,34 @@ final class ProfileController extends AbstractActionController
 
     private function buildProfileImageNameWithoutExtension(int $profileUid): string
     {
-        /** @var Profile|null $profile */
-        $profile = $this->profileRepository->findByUid($profileUid);
-        if ($profile === null) {
+        if ($profileUid <= 0) {
+            return '';
+        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable(ProfileOwnershipService::PROFILE_TABLE);
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $profile = $queryBuilder
+            ->select('first_name', 'last_name')
+            ->from(ProfileOwnershipService::PROFILE_TABLE)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($profileUid, Connection::PARAM_INT)
+                ),
+            )
+            ->setMaxResults(1)
+            ->executeQuery()
+            ->fetchAssociative();
+        if ($profile === false) {
             return '';
         }
 
         return sprintf(
             '%s-%s-%d',
-            $profile->getFirstName(),
-            $profile->getLastName(),
+            (string)$profile['first_name'],
+            (string)$profile['last_name'],
             $profileUid
         );
     }

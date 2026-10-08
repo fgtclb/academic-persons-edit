@@ -215,6 +215,7 @@ final class PhoneNumberController extends AbstractActionController
      */
     public function toggleVisibilityAction(int $phoneNumber): ResponseInterface
     {
+        $this->assertRecordIsOwnedByCurrentFrontendUser('tx_academicpersons_domain_model_phone_number', $phoneNumber);
         $phoneNumberRecord = $this->phoneNumberRepository->findByUidIncludingHidden($phoneNumber);
         if ($phoneNumberRecord === null) {
             $this->addTranslatedErrorMessage('phoneNumber.toggleVisibility.error.notFound');

@@ -215,6 +215,7 @@ final class EmailAddressController extends AbstractActionController
      */
     public function toggleVisibilityAction(int $emailAddress): ResponseInterface
     {
+        $this->assertRecordIsOwnedByCurrentFrontendUser('tx_academicpersons_domain_model_email', $emailAddress);
         $email = $this->emailAddressRepository->findByUidIncludingHidden($emailAddress);
         if ($email === null) {
             $this->addTranslatedErrorMessage('emailAddress.toggleVisibility.error.notFound');

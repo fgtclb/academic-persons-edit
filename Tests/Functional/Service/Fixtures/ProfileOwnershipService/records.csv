@@ -1,0 +1,52 @@
+"tx_academicpersons_domain_model_profile",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","first_name","last_name","frontend_users"
+,1,100,0,0,0,0,"Max","Owner",1
+,2,100,0,0,0,0,"Erika","Foreign",1
+,3,100,0,1,0,0,"Hidden","Owner",1
+,5,100,0,0,1,1,"Max","Owner (translation)",0
+,6,100,0,0,1,2,"Erika","Foreign (translation)",1
+,7,100,1,0,0,0,"Deleted","Owner",1
+,8,100,0,0,1,7,"Deleted","Owner (translation)",0
+,9,100,0,0,0,0,"Shared","Profile",2
+"tx_academicpersons_feuser_mm",
+,"uid_local","uid_foreign","sorting","sorting_foreign"
+,1,1,1,1
+,2,2,1,1
+,3,1,1,1
+,6,1,1,1
+,7,1,1,1
+,9,1,1,1
+,9,2,2,1
+"tx_academicpersons_domain_model_contract",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","position"
+,1,100,0,0,0,0,1,"Own"
+,2,100,0,0,1,1,5,"Own (translation)"
+,3,100,0,0,0,0,2,"Foreign"
+,4,100,0,0,0,0,7,"Of a deleted profile"
+,5,100,1,0,0,0,1,"Deleted, own profile"
+,6,100,0,1,0,0,1,"Hidden, own profile"
+,7,100,0,0,0,0,0,"No profile"
+,8,100,0,0,1,3,5,"Translation of foreign, pointing at own"
+,9,100,0,0,1,1,6,"Translation of own, pointing at foreign"
+,10,100,0,0,1,5,1,"Translation of a deleted own contract"
+"tx_academicpersons_domain_model_email",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","email"
+,1,100,0,0,0,0,1,"own@example.org"
+,2,100,0,0,1,1,2,"own@example.org"
+,3,100,0,0,0,0,3,"foreign@example.org"
+,4,100,0,0,0,0,5,"deleted-contract@example.org"
+,5,100,0,1,0,0,6,"hidden@example.org"
+,6,100,0,0,1,1,3,"own@example.org"
+"tx_academicpersons_domain_model_phone_number",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","phone_number"
+,1,100,0,0,0,0,1,"+49 30 1"
+,3,100,0,0,0,0,3,"+49 30 3"
+"tx_academicpersons_domain_model_address",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","contract","street"
+,1,100,0,0,0,0,1,"Own Street"
+,3,100,0,0,0,0,3,"Foreign Street"
+"tx_academicpersons_domain_model_profile_information",
+,"uid","pid","deleted","hidden","sys_language_uid","l10n_parent","profile","type","title"
+,1,100,0,0,0,0,1,"curriculum_vitae","Own"
+,2,100,0,0,1,1,5,"curriculum_vitae","Own (translation)"
+,3,100,0,0,0,0,2,"curriculum_vitae","Foreign"

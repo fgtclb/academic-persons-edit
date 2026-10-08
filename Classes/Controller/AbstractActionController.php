@@ -11,12 +11,19 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Controller;
 
+use FGTCLB\AcademicPersons\Domain\Model\Address;
+use FGTCLB\AcademicPersons\Domain\Model\Contract;
+use FGTCLB\AcademicPersons\Domain\Model\Email;
+use FGTCLB\AcademicPersons\Domain\Model\PhoneNumber;
+use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
 use FGTCLB\AcademicPersonsEdit\Property\TypeConverter\AbstractFormDataConverter;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
+use FGTCLB\AcademicPersonsEdit\Service\ProfileOwnershipService;
 use FGTCLB\AcademicPersonsEdit\Service\UserSessionService;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Contracts\Service\Attribute\Required;
@@ -55,12 +62,29 @@ abstract class AbstractActionController extends ActionController
         ],
     ];
 
+    /**
+     * The domain models an action of the editor receives as an argument, and the table
+     * each of them is stored in. Every argument of one of these types is checked for
+     * ownership before it is mapped, see {@see self::denyRecordsOfOtherFrontendUsers()}.
+     *
+     * @var array<class-string, string>
+     */
+    private const OWNED_RECORD_TABLES = [
+        Profile::class => ProfileOwnershipService::PROFILE_TABLE,
+        Contract::class => 'tx_academicpersons_domain_model_contract',
+        Email::class => 'tx_academicpersons_domain_model_email',
+        PhoneNumber::class => 'tx_academicpersons_domain_model_phone_number',
+        Address::class => 'tx_academicpersons_domain_model_address',
+        ProfileInformation::class => 'tx_academicpersons_domain_model_profile_information',
+    ];
+
     protected ListSortingService $listSortingService;
     protected PersistenceManager $persistenceManager;
     protected UserSessionService $userSessionService;
     protected LocalizationUtility $localizationUtility;
     protected AcademicPersonsSettings $academicPersonsSettings;
     protected Context $context;
+    protected ProfileOwnershipService $profileOwnershipService;
 
     #[Required]
     public function injectContext(Context $context): void
@@ -98,6 +122,12 @@ abstract class AbstractActionController extends ActionController
         $this->listSortingService = $listSortingService;
     }
 
+    #[Required]
+    public function injectProfileOwnershipService(ProfileOwnershipService $profileOwnershipService): void
+    {
+        $this->profileOwnershipService = $profileOwnershipService;
+    }
+
     /**
      * @return ResponseInterface
      */
@@ -123,6 +153,8 @@ abstract class AbstractActionController extends ActionController
             );
         }
 
+        $this->denyRecordsOfOtherFrontendUsers();
+
         /** @var Argument $argument */
         foreach ($this->arguments as $argument) {
             $this->setCurrentRequestForAbstractFormDataBasedArguments($argument);
@@ -143,6 +175,99 @@ abstract class AbstractActionController extends ActionController
                 }
             }
         }
+    }
+
+    /**
+     * Refuses the request unless every record it names as an argument belongs to a profile
+     * of the logged in frontend user.
+     *
+     * This runs on the raw request arguments, before Extbase maps them. The identity a form
+     * posts is not covered by the cHash, so it can name any record. The mapping itself already
+     * has effects, the profile image upload stores the file while the argument is mapped. An
+     * argument the request does not carry is left to Extbase, which refuses a missing required
+     * argument itself.
+     *
+     * Actions that take a record uid as a plain integer are not covered by this and check
+     * it themselves with {@see self::assertRecordIsOwnedByCurrentFrontendUser()}.
+     */
+    private function denyRecordsOfOtherFrontendUsers(): void
+    {
+        /** @var Argument $argument */
+        foreach ($this->arguments as $argument) {
+            $tableName = $this->getOwnedRecordTable($argument->getDataType());
+            if ($tableName === null || !$this->request->hasArgument($argument->getName())) {
+                continue;
+            }
+            $this->assertRecordIsOwnedByCurrentFrontendUser(
+                $tableName,
+                $this->getRequestedRecordUid($this->request->getArgument($argument->getName())),
+            );
+        }
+    }
+
+    /**
+     * Answers the request with the access denied response of the site unless the record
+     * belongs to a profile of the logged in frontend user. A record that does not exist is
+     * answered the same way, so the response does not tell which uids exist.
+     *
+     * The response is propagated rather than returned with a 403 status: TYPO3 v12 and v13
+     * send the status of an Extbase plugin response with `header()` instead of passing it on
+     * to the frontend response.
+     *
+     * @throws PropagateResponseException
+     */
+    protected function assertRecordIsOwnedByCurrentFrontendUser(string $tableName, int $recordUid): void
+    {
+        $frontendUserUid = (int)$this->context->getPropertyFromAspect('frontend.user', 'id', 0);
+        if ($this->profileOwnershipService->isOwnedByFrontendUser($tableName, $recordUid, $frontendUserUid)) {
+            return;
+        }
+        $this->denyAccess();
+    }
+
+    /**
+     * Answers the request with the access denied response of the site, see
+     * {@see self::assertRecordIsOwnedByCurrentFrontendUser()}.
+     *
+     * @throws PropagateResponseException
+     */
+    protected function denyAccess(): never
+    {
+        throw new PropagateResponseException(
+            GeneralUtility::makeInstance(ErrorController::class)->accessDeniedAction(
+                $this->request,
+                'Record not editable'
+            ),
+            1791459313
+        );
+    }
+
+    private function getOwnedRecordTable(string $dataType): ?string
+    {
+        foreach (self::OWNED_RECORD_TABLES as $className => $tableName) {
+            if (is_a($dataType, $className, true)) {
+                return $tableName;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The uid a request argument names the way Extbase reads it: a plain uid in a link, an
+     * `__identity` in a form. Anything else is no uid and resolves to 0, which no record has.
+     */
+    protected function getRequestedRecordUid(mixed $value): int
+    {
+        if (is_array($value)) {
+            $value = $value['__identity'] ?? null;
+        }
+        if (is_int($value)) {
+            return $value;
+        }
+        if (is_string($value) && ctype_digit($value)) {
+            return (int)$value;
+        }
+        return 0;
     }
 
     /**
