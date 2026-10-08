@@ -50,10 +50,10 @@ download and install it using one of the following methods.
 
 ..  note::
 
-    On **TYPO3 v12** one additional setting is required before the profile
-    editing plugin can render a profile image: `webp` has to be listed in
-    :php:`$GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']`. See
-    :ref:`configuration-general-webp`. On TYPO3 v13 it is part of the default.
+    The profile editing plugin renders the profile image as WebP where
+    :php:`$GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']` lists `webp`,
+    which is the default on TYPO3 v13 but not on TYPO3 v12. See
+    :ref:`configuration-general-webp`.
 
 ..  _TER: https://extensions.typo3.org/extension/academic_persons_edit
 ..  _GitHub Releases: https://github.com/fgtclb/academic-persons-edit/releases

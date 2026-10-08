@@ -1,17 +1,20 @@
 <html
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:pe="http://typo3.org/ns/FGTCLB/AcademicPersonsEdit/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
 
 <f:if condition="{profile.image}">
+    <f:comment>WebP where the installation allows it, the default format otherwise (TYPO3 v12 does not list webp by default).</f:comment>
+    <f:variable name="fileExtension" value="{pe:imageFileExtension(preferred: 'webp')}" />
     <figure>
         <picture>
             <source
                 srcset="{f:uri.image(
                     image: profile.image,
                     maxWidth: '390',
-                    fileExtension: 'webp',
+                    fileExtension: fileExtension,
                 )}"
                 media="(min-width: 992px)"
             >
@@ -19,7 +22,7 @@
                 srcset="{f:uri.image(
                     image: profile.image,
                     maxWidth: '370',
-                    fileExtension: 'webp',
+                    fileExtension: fileExtension,
                 )}"
                 media="(min-width: 768px)"
             >
@@ -27,7 +30,7 @@
                 srcset="{f:uri.image(
                     image: profile.image,
                     maxWidth: '690',
-                    fileExtension: 'webp',
+                    fileExtension: fileExtension,
                 )}"
                 media="(min-width: 576px)"
             >
@@ -35,14 +38,14 @@
                 srcset="{f:uri.image(
                     image: profile.image,
                     maxWidth: '535',
-                    fileExtension: 'webp',
+                    fileExtension: fileExtension,
                 )}"
             >
             <img
                 src="{f:uri.image(
                     image: profile.image,
                     maxWidth: 690,
-                    fileExtension: 'webp',
+                    fileExtension: fileExtension,
                 )}"
                 alt="{profile.image.originalResource.alternative}"
                 title="{profile.image.originalResource.title}"

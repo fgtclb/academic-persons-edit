@@ -46,14 +46,6 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
         'FE' => [
             'debug' => false,
         ],
-        'GFX' => [
-            // `Partials/Profile/Show/Image.html` renders every source as `webp`, which TYPO3
-            // v12 does not allow out of the box — `webp` was added to the default of
-            // `GFX/imagefile_ext` with TYPO3 v13. Without this the profile detail view throws
-            // as soon as the profile has an image, so a v12 installation using this plugin has
-            // to configure it as well.
-            'imagefile_ext' => 'gif,jpg,jpeg,tif,tiff,bmp,pcx,tga,png,pdf,ai,svg,webp',
-        ],
     ];
 
     /**

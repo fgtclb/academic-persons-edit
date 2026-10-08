@@ -70,26 +70,22 @@ defaults and how to override them.
 
 ..  _configuration-general-webp:
 
-Image processing: WebP is required
-==================================
+Image processing: WebP where allowed
+====================================
 
 The profile detail view of the profile editing plugin renders the profile image
-as `WebP`_ only. TYPO3 has to be allowed to produce that format, otherwise
-rendering a profile **that has an image** fails with:
+as `WebP`_ when the installation allows TYPO3 to produce that format, that is
+when `webp` is listed in
+:php:`$GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']`. Otherwise it renders
+the image in its own format, or as PNG for a format a browser cannot show, which
+is what TYPO3 does for any processed image without a file extension given.
 
-..  code-block:: text
+On **TYPO3 v13** `webp` is part of the default value of that list.
 
-    Unable to render image uri in "tt_content:1": The extension webp is not
-    specified in $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'] as a valid
-    image file extension and can not be processed.
-
-On **TYPO3 v13** `webp` is part of the default value of
-:php:`$GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']` and nothing has to be
-done.
-
-On **TYPO3 v12** it is not. An instance running v12 has to add it, either in
-:guilabel:`Admin Tools > Settings > Configure Installation-Wide Options >
-[GFX][imagefile_ext]` or in :file:`config/system/settings.php`:
+On **TYPO3 v12** it is not, so the image is rendered without WebP unless
+the installation adds it, either in :guilabel:`Admin Tools > Settings >
+Configure Installation-Wide Options > [GFX][imagefile_ext]` or in
+:file:`config/system/settings.php`:
 
 ..  code-block:: php
     :caption: config/system/settings.php
@@ -100,13 +96,15 @@ On **TYPO3 v12** it is not. An instance running v12 has to add it, either in
         ],
     ];
 
-..  note::
-
-    Many installations already carry `webp` because another extension or the
-    project setup added it, which is why this is not hit everywhere on v12.
-
 Adding the extension to that list only permits the format. Whether the images
 can actually be produced depends on the configured image processor - GraphicsMagick
 or ImageMagick have to be built with WebP support.
+
+..  note::
+
+    Before version 2.4.0 the partial requested WebP unconditionally, and a
+    profile with an image failed to render where the list lacked `webp`. A
+    partial overridden from that version still does so, see
+    :ref:`important-ace-848-academic-persons-edit`.
 
 ..  _WebP: https://developers.google.com/speed/webp
