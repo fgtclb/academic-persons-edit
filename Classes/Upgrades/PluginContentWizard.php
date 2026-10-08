@@ -35,7 +35,9 @@ final class PluginContentWizard implements UpgradeWizardInterface
 
     public function getDescription(): string
     {
-        return '';
+        return 'Turns every "Insert plugin" content element of the plugin "academicpersonsedit_profileediting"'
+            . ' into a content element of the type of the same name. The plugin is registered as a content element'
+            . ' type, an "Insert plugin" element is not rendered.';
     }
 
     public function executeUpdate(): bool
