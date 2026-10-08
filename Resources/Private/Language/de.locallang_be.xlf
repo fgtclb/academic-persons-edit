@@ -16,12 +16,12 @@
 			</trans-unit>
 
 			<trans-unit id="extension_configuration.profile.autoCreateProfiles.label">
-				<source>Deprecated and no effect. See EXT:academic_persons > autoCreateProfiles</source>
-				<target>Veraltet und hat kein Einfluss mehr. Siehe EXT:academic_persons > autoCreateProfiles</target>
+				<source>Auto create profile (deprecated, no effect): Moved to the extension configuration of EXT:academic_persons, option profile.autoCreateProfiles. An upgrade wizard of EXT:academic_persons copies the value.</source>
+				<target>Profil automatisch anlegen (veraltet, ohne Wirkung): Verschoben in die Erweiterungskonfiguration von EXT:academic_persons, Option profile.autoCreateProfiles. Ein Upgrade-Wizard von EXT:academic_persons übernimmt den Wert.</target>
 			</trans-unit>
 			<trans-unit id="extension_configuration.profile.createProfileForUserGroups.label">
-				<source>Deprecated and no effect. See EXT:academic_persons > createProfileForUserGroups</source>
-				<target>Veraltet und hat kein Einfluss mehr. Siehe EXT:academic_persons > createProfileForUserGroups</target>
+				<source>Create for user groups (deprecated, no effect): Moved to the extension configuration of EXT:academic_persons, option profile.createProfileForUserGroups. An upgrade wizard of EXT:academic_persons copies the value.</source>
+				<target>Für Benutzergruppen anlegen (veraltet, ohne Wirkung): Verschoben in die Erweiterungskonfiguration von EXT:academic_persons, Option profile.createProfileForUserGroups. Ein Upgrade-Wizard von EXT:academic_persons übernimmt den Wert.</target>
 			</trans-unit>
 			<trans-unit id="extension_configuration.profile.allowedLanguages.label">
 				<source>Allowed languages: List of language IDs which a profile can be translated to.</source>
