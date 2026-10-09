@@ -33,7 +33,7 @@ under its language key, :typoscript:`de` for German.
 
     *   - Content element
         - Path
-    *   - :guilabel:`Profile editing` (:typoscript:`academicpersonsedit_profileediting`)
+    *   - :guilabel:`Edit Person’s Profiles` (:typoscript:`academicpersonsedit_profileediting`)
         - :typoscript:`plugin.tx_academicpersonsedit_profileediting._LOCAL_LANG`
 
 A language file override works as well, and replaces the label of the file

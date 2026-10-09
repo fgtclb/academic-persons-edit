@@ -11,8 +11,8 @@
     <header />
     <body>
       <trans-unit id="plugin.profile_editing.label">
-        <source>Profiles: Profile Editing</source>
-        <target>Profile: Profil Editor</target>
+        <source>Edit Person’s Profiles</source>
+        <target>Personen Profil Bearbeitung</target>
       </trans-unit>
 
       <trans-unit id="extension_configuration.profile.allowedLanguages.label">
@@ -21,12 +21,12 @@
       </trans-unit>
 
       <trans-unit id="newContentElement.wizardItems.academic.profileEditing.title">
-        <source>Academic Persons Profile Editing</source>
-        <target>Akademische Personen Profil Bearbeitung</target>
+        <source>Edit Person’s Profiles</source>
+        <target>Personen Profil Bearbeitung</target>
       </trans-unit>
       <trans-unit id="newContentElement.wizardItems.academic.profileEditing.description">
-        <source>Plugin for editing profiles in the frontend</source>
-        <target>Plugin zur Bearbeitung von Profilen im Frontend</target>
+        <source>Editing of personal or commissioned profiles after logging in</source>
+        <target>Bearbeitung von eigenen oder beauftragten Personen-Profilen nach erfolgtem Login</target>
       </trans-unit>
     </body>
   </file>

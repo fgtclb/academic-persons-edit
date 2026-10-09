@@ -4,7 +4,7 @@
 Profile editing
 ===============
 
-The :guilabel:`Profile editing` content element first renders all
+The :guilabel:`Edit Person’s Profiles` content element first renders all
 profiles assigned to the authenticated frontend user. Its :guilabel:`Edit`
 action opens the selected profile in Profile editing; :guilabel:`View` opens
 the public ``academic_persons`` Detail plugin on the page configured through
