@@ -69,6 +69,11 @@ for all academic extensions on the `extension points page of academic_base
 
         Override and customise the frontend templates.
 
+    ..  card:: :ref:`Styling <styling>`
+
+        The classes of the profile list and the editor, the states the editor
+        script writes, and how a site package styles them.
+
     ..  card:: :ref:`For developers <developers>`
 
         Refuse or complete a write of the profile editing with a PSR-14
@@ -93,6 +98,7 @@ for all academic extensions on the `extension points page of academic_base
     Configuration/Index
     ProfileEditing/Index
     Templates/Index
+    Styling/Index
     Developers/Index
     KnownProblems/Index
     Changelog/Changelog-3
