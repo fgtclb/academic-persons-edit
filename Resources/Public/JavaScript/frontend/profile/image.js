@@ -14,7 +14,7 @@ const imageEditorTargetSelector = "[data-pe-image-editor-target]";
 const cropperStageSelector = "[data-pe-image-cropper-stage]";
 const cropperSourceSelector = "[data-pe-image-cropper-source]";
 const imagePreviewColumnSelector = "[data-pe-image-preview-column]";
-const profileFieldsColumnSelector = ".academic-persons-profile-editing__profile-fields-column";
+const profileFieldsColumnSelector = "[data-pe-profile-fields-column]";
 const supportedOutputMimeTypes = /* @__PURE__ */ new Set([
   "image/jpeg",
   "image/png",

@@ -78,7 +78,7 @@ interface BootstrapPopoverConstructor {
 }
 
 interface BootstrapToastStatic {
-  getOrCreateInstance(element: Element): { show(): void };
+  getOrCreateInstance(element: Element): { hide(): void; show(): void };
 }
 
 interface BootstrapApi {
@@ -216,22 +216,22 @@ export const showStatus = (
     danger: {
       title: messages.errorTitle ?? "",
       message: messages.errorMessage ?? "",
-      className: "bg-danger",
+      className: "ace-message-danger",
     },
     success: {
       title: messages.successTitle ?? "",
       message: messages.successMessage ?? "",
-      className: "bg-success",
+      className: "ace-message-success",
     },
     info: {
       title: messages.infoTitle ?? "",
       message: messages.infoMessage ?? "",
-      className: "bg-info",
+      className: "ace-message-info",
     },
     warning: {
       title: messages.warningTitle ?? "",
       message: messages.validation ?? "",
-      className: "bg-warning",
+      className: "ace-message-warning",
     },
   };
   const status = statusValues[type];
@@ -247,22 +247,38 @@ export const showStatus = (
     return;
   }
   statusToast.classList.remove(
-    "d-none",
-    "bg-info",
-    "bg-success",
-    "bg-danger",
-    "bg-warning",
+    "ace-message-info",
+    "ace-message-success",
+    "ace-message-danger",
+    "ace-message-warning",
   );
   statusToast.classList.add(status.className);
-  const titleElement = statusToast.querySelector<HTMLElement>(".status-title");
-  const messageElement = statusToast.querySelector<HTMLElement>(".status-message");
+  const titleElement = statusToast.querySelector<HTMLElement>("[data-pe-status-title]");
+  const messageElement = statusToast.querySelector<HTMLElement>("[data-pe-status-message]");
   if (titleElement !== null) {
     titleElement.textContent = status.title;
   }
   if (messageElement !== null) {
     messageElement.textContent = message ?? status.message;
   }
-  getBootstrap()?.Toast?.getOrCreateInstance(statusToast).show();
+  const toast = getBootstrap()?.Toast?.getOrCreateInstance(statusToast);
+  const closeButton = statusToast.querySelector<HTMLButtonElement>(
+    "[data-pe-status-close]",
+  );
+  if (closeButton !== null) {
+    closeButton.onclick = (): void => {
+      if (toast === undefined) {
+        statusToast.classList.remove("show", "showing");
+      } else {
+        toast.hide();
+      }
+    };
+  }
+  if (toast === undefined) {
+    statusToast.classList.add("show");
+  } else {
+    toast.show();
+  }
 };
 
 export const requestJson = async (

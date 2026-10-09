@@ -93,7 +93,7 @@ abstract class AbstractProfileVisibilitySwitchConfigurationTestCase extends Abst
 
         $this->assertStringContainsString('data-profile-uid="1"', $content);
         $matched = preg_match(
-            '@<input\b[^>]*academic-persons-profile-editing__visibility-checkbox[^>]*>@',
+            '@<input\b[^>]*data-pe-visibility-checkbox[^>]*>@',
             $content,
             $checkbox,
         );

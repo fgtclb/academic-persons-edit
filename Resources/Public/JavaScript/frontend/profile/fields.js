@@ -26,7 +26,7 @@ const editButtonSelector = "[data-academic-persons-profile-editing-activate-btn]
 const editAllButtonSelector = "[data-academic-persons-profile-editing-edit-all-btn]";
 const editAllButtonLabelSelector = "[data-pe-edit-all-button-label]";
 const buttonAreaSelector = "[data-form-field-button-area]";
-const fieldSelector = ".academic-persons-profile-editing__field";
+const fieldSelector = "[data-pe-field-control]";
 const fieldPreviewSelector = "[data-pe-field-preview]";
 const fieldEditorSelector = "[data-pe-field-editor]";
 const fieldGroupSelector = "[data-pe-field-group]";
@@ -139,7 +139,7 @@ const renderFieldGroupPreview = (context, group) => {
     hooks(group).peDisplayFieldIds ?? hooks(group).peFieldIds
   ).map((field) => getFieldDisplayValue(field, getFieldValue(field))).filter((value2) => value2 !== "");
   const value = hooks(group).peDisplayMode === "first" ? values[0] ?? "" : values.join(" ");
-  content.classList.toggle("text-body-secondary", value === "");
+  content.classList.toggle("ace-empty", value === "");
   content.textContent = value || content.dataset.emptyLabel || "";
 };
 const toggleEditGroup = (context, group, state = true, focus = true) => {
@@ -153,8 +153,10 @@ const toggleEditGroup = (context, group, state = true, focus = true) => {
   if (editor === null || fields.length === 0) {
     return;
   }
-  editor.classList.toggle("d-none", !state);
-  preview == null ? void 0 : preview.classList.toggle("d-none", state);
+  editor.hidden = !state;
+  if (preview !== null) {
+    preview.hidden = state;
+  }
   button == null ? void 0 : button.setAttribute("aria-expanded", String(state));
   if (!state) {
     if (focus) {
@@ -188,8 +190,8 @@ const clearValidationErrors = (fields) => {
     field.classList.remove("is-invalid");
     getFieldEditElement(field).classList.remove("is-invalid");
     const feedback = (_a = field.closest(
-      "[data-pe-field-wrapper], [data-pe-group-control], .form-check"
-    )) == null ? void 0 : _a.querySelector(".invalid-feedback");
+      "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]"
+    )) == null ? void 0 : _a.querySelector(".ace-message");
     if (feedback !== null && feedback !== void 0) {
       feedback.textContent = "";
     }
@@ -241,22 +243,19 @@ const renderActivateButton = (context, field, fieldValue) => {
       return;
     }
     if (currentButton !== null) {
-      replacementButton.classList.toggle(
-        "d-none",
-        currentButton.classList.contains("d-none")
-      );
+      replacementButton.hidden = currentButton.hidden;
       currentButton.replaceWith(replacementButton);
       return;
     }
-    (_b = (_a = field.closest(".mb-3, .form-check")) == null ? void 0 : _a.querySelector(buttonAreaSelector)) == null ? void 0 : _b.append(replacementButton);
+    (_b = (_a = field.closest("[data-pe-field-wrapper]")) == null ? void 0 : _a.querySelector(buttonAreaSelector)) == null ? void 0 : _b.append(replacementButton);
     return;
   }
   const displayValue = getFieldDisplayValue(field, fieldValue);
-  content.classList.toggle("text-body-secondary", displayValue === "");
+  content.classList.toggle("ace-empty", displayValue === "");
   content.textContent = displayValue || (preview == null ? void 0 : preview.dataset.emptyLabel) || "";
 };
 const toggleEditField = (context, fieldId, state = true, focus = true) => {
-  var _a, _b, _c;
+  var _a, _b;
   const field = getFieldById(context, fieldId);
   if (field === null || field.disabled || isFieldReadOnly(field)) {
     return;
@@ -266,17 +265,20 @@ const toggleEditField = (context, fieldId, state = true, focus = true) => {
     toggleEditGroup(context, group, state, focus);
     return;
   }
-  getFieldEditElement(field).classList.toggle("d-none", !state);
-  (_a = getFieldPreview(context, field)) == null ? void 0 : _a.classList.toggle("d-none", state);
-  (_b = getActivateButton(context, field)) == null ? void 0 : _b.setAttribute("aria-expanded", String(state));
+  getFieldEditElement(field).hidden = !state;
+  const preview = getFieldPreview(context, field);
+  if (preview !== null) {
+    preview.hidden = state;
+  }
+  (_a = getActivateButton(context, field)) == null ? void 0 : _a.setAttribute("aria-expanded", String(state));
   context.root.querySelectorAll(
     `${fieldActionsSelector}[data-pe-for="${CSS.escape(field.id)}"]`
   ).forEach((actions) => {
-    actions.classList.toggle("d-none", !state);
+    actions.hidden = !state;
   });
   if (!state) {
     if (focus) {
-      (_c = getActivateButton(context, field)) == null ? void 0 : _c.focus();
+      (_b = getActivateButton(context, field)) == null ? void 0 : _b.focus();
     }
     return;
   }
@@ -327,8 +329,8 @@ const showValidationErrors = (context, fields, errors) => {
       toggleEditField(context, field.id, true, false);
     }
     const feedback = (_a = field.closest(
-      "[data-pe-field-wrapper], [data-pe-group-control], .form-check"
-    )) == null ? void 0 : _a.querySelector(".invalid-feedback");
+      "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]"
+    )) == null ? void 0 : _a.querySelector(".ace-message");
     if (feedback !== null && feedback !== void 0) {
       feedback.textContent = Array.isArray(messages) ? messages.map(String).join(" ") : String(messages);
     }
@@ -355,12 +357,14 @@ const initializeFieldEditing = (editingTarget) => {
   );
   renderProfileName(context);
   root.querySelectorAll(fieldGroupSelector).forEach((group) => {
-    var _a;
     renderFieldGroupPreview(context, group);
     const hasEditableField = getGroupFields(context, group).some(
       (field) => !field.disabled && !isFieldReadOnly(field)
     );
-    (_a = group.querySelector(groupEditButtonSelector)) == null ? void 0 : _a.classList.toggle("d-none", !hasEditableField);
+    const editButton = group.querySelector(groupEditButtonSelector);
+    if (editButton !== null) {
+      editButton.hidden = !hasEditableField;
+    }
   });
   fields.filter((field) => field.closest(fieldGroupSelector) === null).forEach(
     (field) => renderActivateButton(context, field, getFieldValue(field))
@@ -426,14 +430,14 @@ const initializeFieldEditing = (editingTarget) => {
     let discarded = false;
     root.querySelectorAll(fieldGroupSelector).forEach((group) => {
       const editor = group.querySelector(groupEditorSelector);
-      if (editor === null || editor === keepOpen || editor.classList.contains("d-none")) {
+      if (editor === null || editor === keepOpen || editor.hidden) {
         return;
       }
       discarded = discardFieldGroup(group, false) || discarded;
     });
     editableFields().filter((field) => field.closest(fieldGroupSelector) === null).forEach((field) => {
       const editor = getFieldEditElement(field);
-      if (editor === field || editor === keepOpen || editor.classList.contains("d-none")) {
+      if (editor === field || editor === keepOpen || editor.hidden) {
         return;
       }
       discarded = discardField(field, false) || discarded;
@@ -638,7 +642,7 @@ const initializeFieldEditing = (editingTarget) => {
       return true;
     }
     const editor = getFieldEditElement(field);
-    return editor !== field && !editor.classList.contains("d-none");
+    return editor !== field && !editor.hidden;
   });
   const fieldsEditor = {
     isOpen: () => formEditingActive || openEditorFields().length > 0,
@@ -661,7 +665,7 @@ const initializeFieldEditing = (editingTarget) => {
   };
   registerOpenEditor(context, fieldsEditor);
   const openFieldEditor = (editor, open) => {
-    const alreadyOpen = editor !== null && !editor.classList.contains("d-none") && !formEditingActive;
+    const alreadyOpen = editor !== null && !editor.hidden && !formEditingActive;
     withOtherEditorsClosed(context, alreadyOpen ? fieldsEditor : null, () => {
       if (!openEditorAllowed()) {
         return;

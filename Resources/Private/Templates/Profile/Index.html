@@ -63,7 +63,7 @@
     <f:link.action
         action="list"
         controller="Profile"
-        class="back-link d-inline-flex align-items-center gap-2 mb-4">
+        class="ace-link ace-back-link">
         <ab:icon
             identifier="tx-academicbase-action-back"
             alternativeMarkupIdentifier="inline" />
@@ -82,7 +82,7 @@
                 first change.
             </f:comment>
             <div
-                class="alert alert-danger"
+                class="ace-message ace-error"
                 role="alert"
                 data-pe-missing-ajax-page-type>
                 <f:translate
@@ -101,7 +101,7 @@
     -->
     <academic-persons-edit-profile-editing>
         <div
-            class="academic-persons-profile-editing container-fluid px-0"
+            class="academic-persons-profile-editing"
             data-academic-persons-profile-editing
             data-update-url="{updateUrl}"
             data-skip-sync-url="{skipSyncUrl}"
@@ -173,7 +173,7 @@
                         arguments="{profile: profile, image: specialFields.image, imageAllowedMimeTypes: imageAllowedMimeTypes}" />
                 </f:if>
             </div>
-            <div>
+            <div class="ace-profile-editing-wrapper">
                 <!--
                     The forms full form editing governs, named so that the
                     "edit all" toggle can point at them. A section the
@@ -194,31 +194,32 @@
                         visibility: specialFields.hidden,
                         fieldsFormIds: fieldsFormIds
                     }" />
-                <div class="container-fluid px-0">
-                    <div class="row gx-lg-5 gy-5 align-items-stretch">
-                        <div
-                            class="col-12 col-lg-4 academic-persons-profile-editing__image-preview-column"
-                            data-pe-image-preview-column>
-                            <div class="sticky-top" data-pe-sticky-image>
+                <div class="ace-content">
+                    <div class="row">
+                        <div class="col-12 col-lg-4" data-pe-image-preview-column>
+                            <div class="ace-image-column">
+                            <div class="ace-sticky-image" data-pe-sticky-image>
                                 <f:if condition="{specialFields.image}">
                                     <f:render
                                         partial="Profile/Image/Card"
                                         arguments="{profile: profile, image: specialFields.image}" />
                                 </f:if>
                             </div>
+                            </div>
                         </div>
-                        <div
-                            class="col-12 col-lg-8 academic-persons-profile-editing__profile-fields-column">
+                        <div class="col-12 col-lg-8" data-pe-profile-fields-column>
+                            <div class="ace-fields-column">
                             <f:if condition="{profileSections.information}">
                                 <f:render
                                     partial="Profile/Profile/Personal"
                                     arguments="{profile: profile, section: profileSections.information, specialFields: specialFields, fieldOptions: profileFieldOptions}" />
                             </f:if>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <div class="mt-5">
+                            <div class="ace-documents">
                                 <f:if condition="{profileSections.aboutme}">
                                     <f:render
                                         partial="Profile/Profile/About"

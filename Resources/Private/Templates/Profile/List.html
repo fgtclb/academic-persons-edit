@@ -11,7 +11,7 @@
         class="academic-persons-edit academic-persons-profile-editing-list"
         aria-labelledby="academic-persons-profile-editing-list-heading"
         data-academic-persons-profile-editing-list>
-        <h1 id="academic-persons-profile-editing-list-heading" class="h2 fw-normal mb-4">
+        <h1 id="academic-persons-profile-editing-list-heading" class="ace-title">
             <f:translate
                 key="list.profile.assigned"
                 extensionName="AcademicPersonsEdit" />
@@ -19,43 +19,43 @@
 
         <f:if condition="{profileListItems}">
             <f:then>
-                <div class="table-responsive">
-                    <table class="table table-striped align-middle mb-0">
-                        <thead>
+                <div class="ace-table-wrap">
+                    <table class="ace-table">
+                        <thead class="ace-header">
                             <tr>
-                                <th scope="col">
+                                <th class="ace-label" scope="col">
                                     <f:translate
                                         key="list.profile"
                                         extensionName="AcademicPersonsEdit" />
                                 </th>
-                                <th scope="col">
+                                <th class="ace-label" scope="col">
                                     <f:translate
                                         key="list.language"
                                         extensionName="AcademicPersonsEdit" />
                                 </th>
-                                <th scope="col" class="text-end">
+                                <th scope="col" class="ace-label ace-actions">
                                     <f:translate
                                         key="list.actions"
                                         extensionName="AcademicPersonsEdit" />
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="ace-content">
                             <f:for each="{profileListItems}" as="item">
                                 <f:variable
                                     name="profile"
                                     value="{item.profile}" />
-                                <tr>
-                                    <td>
+                                <tr class="ace-item">
+                                    <td class="ace-value">
                                         <div
-                                            class="d-flex align-items-center gap-3">
+                                            class="ace-profile">
                                             <f:if condition="{profile.image}">
                                                 <f:then>
                                                     <f:image
                                                         image="{profile.image}"
                                                         width="80c"
                                                         height="80c"
-                                                        class="academic-persons-profile-editing-list__image flex-shrink-0 object-fit-cover"
+                                                        class="ace-image"
                                                         alt="" />
                                                 </f:then>
                                                 <f:else>
@@ -63,11 +63,11 @@
                                                         src="{f:uri.resource(path: 'Images/profile-placeholder.png')}"
                                                         width="80"
                                                         height="80"
-                                                        class="academic-persons-profile-editing-list__image flex-shrink-0 object-fit-cover"
+                                                        class="ace-image"
                                                         alt="" />
                                                 </f:else>
                                             </f:if>
-                                            <span class="fw-medium text-break">
+                                            <span class="ace-title ace-name">
                                                 {profile.title}
                                                 {profile.firstName}
                                                 {profile.middleName}
@@ -75,7 +75,7 @@
                                             </span>
                                             <f:if condition="{profile.hidden}">
                                                 <span
-                                                    class="badge text-bg-secondary rounded-0"
+                                                    class="ace-state"
                                                     data-pe-profile-hidden>
                                                     <f:translate
                                                         key="list.profile.hidden"
@@ -84,10 +84,10 @@
                                             </f:if>
                                         </div>
                                     </td>
-                                    <td class="text-nowrap">{item.language}</td>
-                                    <td class="text-end text-nowrap">
+                                    <td class="ace-value ace-language">{item.language}</td>
+                                    <td class="ace-actions">
                                         <div
-                                            class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                            class="ace-controls">
                                             <f:comment>
                                                 A hidden profile has no public detail
                                                 page, so it gets no link to one.
@@ -106,7 +106,7 @@
                                                     'actions.view', extensionName:
                                                     'AcademicPersonsEdit')}"
                                                     extensionName="academicpersons"
-                                                    class="btn rounded-0 btn-link">
+                                                    class="ace-link ace-control ace-view btn btn-link">
                                                     <ab:icon
                                                         identifier="tx-academicbase-action-view"
                                                         alternativeMarkupIdentifier="inline" />
@@ -122,7 +122,7 @@
                                                 title="{f:translate(key:
                                                 'actions.edit', extensionName:
                                                 'AcademicPersonsEdit')}"
-                                                class="btn rounded-0 btn-link">
+                                                class="ace-link ace-control ace-edit btn btn-link">
                                                 <ab:icon
                                                     identifier="tx-academicbase-action-edit"
                                                     alternativeMarkupIdentifier="inline" />
@@ -136,7 +136,7 @@
                 </div>
             </f:then>
             <f:else>
-                <p class="mb-0">
+                <p class="ace-empty">
                     <f:translate
                         key="list.noProfilesFound"
                         extensionName="AcademicPersonsEdit" />

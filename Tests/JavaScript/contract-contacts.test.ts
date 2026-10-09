@@ -220,7 +220,7 @@ describe("the contacts of a contract", () => {
     assert.deepEqual(items().map((item): unknown => item.uid), [21, 22, 23]);
     assert.equal(controller.contractContact.open, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentSaved,
     );
   });
@@ -279,7 +279,7 @@ describe("the contacts of a contract", () => {
     });
     assert.deepEqual(items().map((item): unknown => item.uid), [22]);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentDeleted,
     );
   });
@@ -325,7 +325,7 @@ describe("the contacts of a contract", () => {
     assert.deepEqual(items().map((item): unknown => item.uid), [22, 21]);
     assert.deepEqual(items().map((item): unknown => item.sorting), [10, 20]);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentSorted,
     );
   });
@@ -357,7 +357,7 @@ describe("the contacts of a contract", () => {
     );
     assert.equal(controller.contractContact.pending, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.contractContactHidden,
     );
   });
@@ -381,7 +381,7 @@ describe("the contacts of a contract", () => {
     });
     assert.equal(items()[0]?.hidden, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.contractContactShown,
     );
   });
@@ -395,7 +395,7 @@ describe("the contacts of a contract", () => {
 
     assert.equal(items()[0]?.hidden, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement).textContent,
       "Not yours.",
     );
   });
@@ -409,7 +409,7 @@ describe("the contacts of a contract", () => {
 
     assert.deepEqual(items().map((item): unknown => item.uid), [21, 22]);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement).textContent,
       "Refused.",
     );
   });

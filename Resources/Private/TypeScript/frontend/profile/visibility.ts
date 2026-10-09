@@ -19,8 +19,7 @@ interface VisibilityController {
   updateVisibility(event: Event): Promise<void>;
 }
 
-const visibilityCheckboxSelector =
-  ".academic-persons-profile-editing__visibility-checkbox";
+const visibilityCheckboxSelector = "[data-pe-visibility-checkbox]";
 const visibilityFormSelector = "[data-pe-visibility-form]";
 
 /**

@@ -6,7 +6,7 @@ import {
 import {
   toEditingContext
 } from "@fgtclb/academic-persons-edit/frontend/profile/context.js";
-const visibilityCheckboxSelector = ".academic-persons-profile-editing__visibility-checkbox";
+const visibilityCheckboxSelector = "[data-pe-visibility-checkbox]";
 const visibilityFormSelector = "[data-pe-visibility-form]";
 const createVisibility = (editingTarget) => {
   const context = toEditingContext(editingTarget);

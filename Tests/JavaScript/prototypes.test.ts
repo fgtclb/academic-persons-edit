@@ -123,7 +123,7 @@ describe("the prototype filler", () => {
     });
 
     assert.equal(
-      select(clone.fragment, ".d-md-none", HTMLElement).textContent,
+      select(clone.fragment, ".ace-label", HTMLElement).textContent,
       "City",
     );
     assert.equal(
@@ -212,11 +212,11 @@ describe("the prototype filler", () => {
 
     assert.ok(shown.query("[data-pe-character-counter]") !== null);
     assert.equal(
-      shown.query("span.text-danger")?.textContent?.trim(),
+      shown.query("span.ace-required")?.textContent?.trim(),
       "*",
     );
     assert.equal(hidden.query("[data-pe-character-counter]"), null);
-    assert.equal(hidden.query("span.text-danger"), null);
+    assert.equal(hidden.query("span.ace-required"), null);
   });
 
   it("puts clones into a list element and in place of a template marker", () => {
@@ -244,7 +244,10 @@ describe("the prototype filler", () => {
     );
     // ... and in place of the marker where the clone is the node itself, so
     // that no wrapper the partial did not ask for ends up in the page.
-    assert.equal(select_.parentElement, wrapper.element);
+    assert.equal(
+      select_.parentElement,
+      select(wrapper.fragment, "[data-pe-field-wrapper]", HTMLElement),
+    );
     assert.equal(wrapper.query("template"), null);
   });
 

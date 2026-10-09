@@ -178,11 +178,11 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
         ) {
             // Not below "[data-pe-field-editor]": libxml's HTML parser does
             // not nest the editing panels the way a browser does, and the
-            // marker class plus "no prototype above it" names the same set.
+            // marker hook plus "no prototype above it" names the same set.
             $live = $xpath->query(
                 '//'
                     . $selector
-                    . '[contains(concat(" ", normalize-space(@class), " "), " academic-persons-profile-editing__field ")]'
+                    . '[@data-pe-field-control]'
                     . '[not(ancestor::template)]',
             );
             $this->assertNotFalse($live);
@@ -271,7 +271,11 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
         $plain = $this->getPrototypeControl($prototypes['control-textarea'] ?? '');
         $rich = $this->getPrototypeControl($prototypes['control-rich-text'] ?? '');
         $this->assertSame($rich->tagName, $plain->tagName);
-        $this->assertSame($this->classList($rich), $this->classList($plain));
+        $this->assertContains('ace-ckeditor', $this->classList($rich));
+        $this->assertSame(
+            array_values(array_diff($this->classList($rich), ['ace-ckeditor'])),
+            $this->classList($plain),
+        );
         $this->assertSame(
             array_values(array_diff(
                 $this->attributeNames($rich),
@@ -311,22 +315,22 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
      * every form control the editor renders comes out of
      * `Profile/Field/Control.html`.
      *
-     * The marker class that partial writes is the evidence. A control spelled
-     * anywhere else either lacks it - and is then found here - or carries it
-     * and is compared attribute by attribute against the prototype of its shape
-     * by `aPrototypeControlIsTheLiveControlOfItsType()`. That is what makes the
-     * equivalence hold for the two shapes no page of the shipped settings
-     * renders live.
+     * The marker hook `data-pe-field-control` that partial writes is the
+     * evidence. A control spelled anywhere else either lacks it - and is then
+     * found here - or carries it and is compared attribute by attribute against
+     * the prototype of its shape by `aPrototypeControlIsTheLiveControlOfItsType()`.
+     * That is what makes the equivalence hold for the two shapes no page of the
+     * shipped settings renders live.
      *
      * Three controls are named exceptions and none is a profile field:
      *
      * - the synchronisation switch of `Profile/Header.html`, which deliberately
-     *   carries `__sync-checkbox` and not `__field`, because
+     *   carries `data-pe-sync-checkbox` and not `data-pe-field-control`, because
      *   `frontend/profile/fields.ts` collects the latter and would save and
      *   validate the switch as a mapped property. It is spelled once, and with
      *   the `disabled` expression `Field/Control.html` uses.
-     * - the visibility switch of the same partial, `__visibility-checkbox`, for
-     *   the same reason: it writes through an endpoint of its own.
+     * - the visibility switch of the same partial, `data-pe-visibility-checkbox`,
+     *   for the same reason: it writes through an endpoint of its own.
      * - the `<f:form.upload>` of `Image/Editor.html`, which is the Extbase file
      *   upload control and has no counterpart in the five shapes.
      *
@@ -358,18 +362,15 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
             '//*[self::input or self::select or self::textarea]'
                 . '[not(@type="hidden")]'
                 . '[not(@type="file")]'
-                . '[not(contains(concat(" ", normalize-space(@class), " "), '
-                . '" academic-persons-profile-editing__sync-checkbox "))]'
-                . '[not(contains(concat(" ", normalize-space(@class), " "), '
-                . '" academic-persons-profile-editing__visibility-checkbox "))]',
+                . '[not(@data-pe-sync-checkbox)]'
+                . '[not(@data-pe-visibility-checkbox)]',
         );
         $this->assertNotFalse($controls);
         $this->assertGreaterThan(0, $controls->length);
         foreach ($controls as $control) {
             $this->assertInstanceOf(\DOMElement::class, $control);
-            $this->assertContains(
-                'academic-persons-profile-editing__field',
-                $this->classList($control),
+            $this->assertTrue(
+                $control->hasAttribute('data-pe-field-control'),
                 sprintf(
                     'A <%s> control is rendered outside Profile/Field/Control.html: %s',
                     $control->tagName,
@@ -579,7 +580,7 @@ final class AcademicPersonsEditProfileEditingPrototypesTest extends AbstractFron
             $document->loadHTML('<body>' . $markup . '</body>', LIBXML_NOERROR | LIBXML_NOWARNING),
         );
         $controls = (new \DOMXPath($document))->query(
-            '//*[contains(concat(" ", normalize-space(@class), " "), " academic-persons-profile-editing__field ")]',
+            '//*[@data-pe-field-control]',
         );
         $this->assertNotFalse($controls);
         $this->assertSame(1, $controls->length);

@@ -15,42 +15,44 @@
           columnClass   the default column class of this shape; the server may
                         override it per field through the "columnClass" slot
           checkbox      the label follows the control instead of preceding it,
-                        and the row is the same "form-check form-switch" a
-                        profile field checkbox is rendered in by
+                        and the row uses the same switch markup a profile field
+                        checkbox is rendered in by
                         Profile/Field/Checkbox.html
     </f:comment>
+    <div class="{columnClass}" data-pe-attr="class:columnClass">
     <div
-        class="{columnClass}"
-        data-pe-attr="class:columnClass data-pe-compact:compact">
+        class="ace-field"
+        data-pe-field-wrapper
+        data-pe-attr="data-pe-compact:compact">
         <f:if condition="{checkbox}">
             <f:then>
-                <div class="form-check form-switch">
+                <div class="ace-switch" data-pe-field-control-group>
                     <template data-pe-list="control"></template>
                     <label
-                        class="form-check-label ms-2"
+                        class="ace-label"
                         data-pe-attr="for:controlId"
                         data-pe-slot="label"></label>
                     <template data-pe-list="helptext"></template>
                     <span
-                        class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2"
+                        class="ace-state"
                         data-pe-when="managed">
                         <f:translate
                             key="profileEditing.field.managed"
                             extensionName="AcademicPersonsEdit" />
                     </span>
                     <div
-                        class="invalid-feedback d-block"
+                        class="ace-message"
                         role="alert"
                         data-pe-attr="id:errorId hidden:errorHidden"
                         data-pe-slot="error"></div>
                 </div>
             </f:then>
             <f:else>
-                <div class="d-flex align-items-center">
-                    <label class="form-label" data-pe-attr="for:controlId">
+                <div class="ace-header">
+                    <label class="ace-label" data-pe-attr="for:controlId">
                         <span data-pe-slot="label"></span>
                         <span
-                            class="text-danger ms-1"
+                            class="ace-required"
                             aria-hidden="true"
                             data-pe-when="required"
                             >*</span
@@ -58,7 +60,7 @@
                     </label>
                     <template data-pe-list="helptext"></template>
                     <span
-                        class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2"
+                        class="ace-state"
                         data-pe-when="managed">
                         <f:translate
                             key="profileEditing.field.managed"
@@ -67,7 +69,7 @@
                 </div>
                 <template data-pe-list="control"></template>
                 <div
-                    class="form-text text-end"
+                    class="ace-counter"
                     aria-live="polite"
                     data-pe-character-counter
                     data-pe-when="hasCharacterLimit"
@@ -75,11 +77,12 @@
                     0 / <span data-pe-slot="characterLimit"></span>
                 </div>
                 <div
-                    class="invalid-feedback d-block"
+                    class="ace-message"
                     role="alert"
                     data-pe-attr="id:errorId hidden:errorHidden"
                     data-pe-slot="error"></div>
             </f:else>
         </f:if>
+    </div>
     </div>
 </html>

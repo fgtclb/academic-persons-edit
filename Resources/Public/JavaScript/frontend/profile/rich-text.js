@@ -128,7 +128,7 @@ const updateRichTextCharacterCounter = (root, field, value) => {
   }
   const count = countRichTextCharacters(value);
   counter.textContent = `${count} / ${limit}`;
-  counter.classList.toggle("text-danger", count > limit);
+  counter.classList.toggle("ace-limit-exceeded", count > limit);
 };
 const isAllowedRichTextLink = (value) => {
   var _a;
@@ -176,12 +176,14 @@ const renderRichTextPreview = (root, field, value) => {
   }
   const normalizedValue = value === null || value === void 0 ? "" : String(value);
   if (getPlainText(normalizedValue) === "") {
+    content.classList.remove("ce-bodytext");
     const emptyLabel = document.createElement("span");
-    emptyLabel.className = "text-body-secondary";
+    emptyLabel.className = "ace-empty";
     emptyLabel.textContent = preview.dataset.emptyLabel ?? "";
     content.replaceChildren(emptyLabel);
     return;
   }
+  content.classList.add("ce-bodytext");
   const parsedDocument = parseRichTextPreview(normalizedValue);
   const fragment = document.createDocumentFragment();
   Array.from(parsedDocument.body.childNodes).forEach((node) => {

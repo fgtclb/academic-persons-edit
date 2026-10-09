@@ -418,7 +418,9 @@ class ProfileContractContactsElement extends ProfileEditingElement {
       return;
     }
     panel.setAttribute("aria-busy", editor.pending ? "true" : "false");
-    const alert = panel.querySelector(".alert[role='alert']");
+    const alert = panel.querySelector(
+      "[data-pe-contract-contact-error]"
+    );
     if (alert !== null) {
       alert.textContent = editor.error;
       alert.hidden = editor.error === "";
@@ -443,7 +445,7 @@ class ProfileContractContactsElement extends ProfileEditingElement {
       button.disabled = editor.pending;
     });
     panel.querySelectorAll(
-      "[data-pe-contract-contact-save] .spinner-border"
+      "[data-pe-contract-contact-spinner]"
     ).forEach((spinner) => {
       spinner.hidden = !editor.pending;
     });

@@ -2,9 +2,9 @@
  * One field of a `documentForm` or `contractContactForm` response, as DOM.
  *
  * Both editors build their fields from the same descriptors and used to build
- * them twice - which is how the checkbox of the document editor ended up with
- * `form-check-input` and the checkbox of the contact editor with
- * `form-control`, shipped and reviewed. There is one builder now, it clones
+ * them twice - which is how the checkbox of the document editor and the
+ * checkbox of the contact editor ended up with different control classes,
+ * shipped and reviewed. There is one builder now, it clones
  * the prototypes of `Partials/Profile/Prototypes.html`, and the two callers
  * differ in exactly two arguments: the id prefix and which of the two field
  * hooks the control carries.

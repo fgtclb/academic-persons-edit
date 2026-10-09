@@ -5,26 +5,18 @@
     <!--
         The profile image editor.
 
-        It is rendered where it is shown - inside the image editor target of
-        "Templates/Profile/Index.html" - and wrapped in the element that drives
-        it. The element renders nothing: the form below is an Extbase
-        "f:form", it carries the "__trustedProperties" signature the property
-        mapper validates the upload against, and nothing in a browser can
-        recompute that. See
-        "Resources/Private/TypeScript/frontend/profile/elements/image-editor.ts".
-
-        Every state the markup below has - what is hidden, what is disabled,
-        which preview is shown - is written by that element. The attributes here
-        are the state a page is delivered in: closed, idle, without an error.
+        The server renders the Extbase form in the image editor target because
+        only it can provide the upload's "__trustedProperties" signature. The
+        custom element updates its closed, idle initial state in the browser.
     -->
     <academic-persons-edit-image-editor>
         <section
             id="profile-editing-{profile.uid}-image-view"
-            class="academic-persons-profile-editing__image-editor border p-3 p-lg-4 mb-5"
+            class="ace-image-editor"
             aria-busy="false"
             hidden="hidden"
             data-pe-image-view-container>
-            <div class="academic-persons-profile-editing__image-editor-content">
+            <div class="ace-content">
                 <f:form
                     action="uploadImage"
                     controller="Profile"
@@ -32,10 +24,11 @@
                     name="profile"
                     object="{profile}"
                     enctype="multipart/form-data"
-                    class="academic-persons-profile-editing__image-form">
-                    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+                    class="ace-form"
+                    data-pe-image-form="true">
+                    <div class="ace-header">
                         <h2
-                            class="display-6 fw-normal mb-0"
+                            class="ace-title"
                             tabindex="-1"
                             data-pe-image-editor-heading>
                             <f:translate
@@ -43,10 +36,10 @@
                                 extensionName="AcademicPersonsEdit" />
                         </h2>
                         <div
-                            class="d-flex align-items-center gap-2"
+                            class="ace-actions"
                             data-pe-image-delete-actions>
                             <button
-                                class="btn rounded-0 btn-danger"
+                                class="ace-control ace-delete btn btn-danger"
                                 type="button"
                                 data-pe-delete-image
                                 title="{f:translate(key: 'profileEditing.image.editor.deleteHint', extensionName: 'AcademicPersonsEdit')}">
@@ -55,7 +48,7 @@
                                     extensionName="AcademicPersonsEdit" />
                             </button>
                             <span
-                                class="text-danger"
+                                class="ace-message"
                                 hidden="hidden"
                                 data-pe-delete-image-confirm-question>
                                 <f:translate
@@ -63,7 +56,7 @@
                                     extensionName="AcademicPersonsEdit" />
                             </span>
                             <button
-                                class="btn rounded-0 btn-outline-secondary"
+                                class="ace-control ace-cancel btn btn-outline-secondary"
                                 type="button"
                                 hidden="hidden"
                                 data-pe-cancel-delete-image>
@@ -72,7 +65,7 @@
                                     extensionName="AcademicPersonsEdit" />
                             </button>
                             <button
-                                class="btn rounded-0 btn-danger"
+                                class="ace-control ace-delete btn btn-danger"
                                 type="button"
                                 hidden="hidden"
                                 data-pe-confirm-delete-image
@@ -85,26 +78,26 @@
                     </div>
 
                     <fieldset data-pe-image-fieldset>
-                        <div class="mb-3" data-pe-image-view-preview>
+                        <div class="ace-preview" data-pe-image-view-preview>
                             <div
-                                class="academic-persons-profile-editing__image-cropper"
+                                class="ace-image-cropper"
                                 hidden="hidden"
                                 data-pe-image-cropper-stage>
                                 <img alt="" data-pe-image-cropper-source />
                             </div>
                             <img
-                                class="img-fluid"
+                                class="ace-image"
                                 alt=""
                                 hidden="hidden"
                                 data-pe-image-selected-preview />
                         </div>
-                        <p class="text-body-secondary">
+                        <p class="ace-helptext">
                             <f:translate
                                 key="profileEditing.image.editor.hint.select"
                                 extensionName="AcademicPersonsEdit" />
                         </p>
                         <f:if condition="{image.renderType} == 'cropper'">
-                            <p class="text-body-secondary">
+                            <p class="ace-helptext">
                                 <f:translate
                                     key="profileEditing.image.editor.hint.ratio"
                                     extensionName="AcademicPersonsEdit" />:
@@ -112,7 +105,7 @@
                             </p>
                         </f:if>
                         <label
-                            class="form-label"
+                            class="ace-label"
                             for="profile-editing-{profile.uid}-image">
                             <f:translate
                                 key="profileEditing.image.upload.label"
@@ -122,7 +115,8 @@
                             <f:form.upload
                                 property="image"
                                 id="profile-editing-{profile.uid}-image"
-                                class="form-control form-control-sm"
+                                class="ace-control ace-upload"
+                                data-pe-image-upload-control
                                 accept="{imageAllowedMimeTypes}"
                                 aria-describedby="profile-editing-{profile.uid}-image-error"
                                 aria-invalid="false"
@@ -132,14 +126,14 @@
 
                     <div
                         id="profile-editing-{profile.uid}-image-error"
-                        class="alert alert-danger mt-3 mb-0"
+                        class="ace-message ace-error"
                         role="alert"
                         hidden="hidden"
                         data-pe-image-error></div>
 
-                    <div class="d-flex justify-content-end gap-2 mt-4">
+                    <div class="ace-actions">
                         <button
-                            class="btn rounded-0 btn-outline-secondary"
+                            class="ace-control ace-cancel btn btn-outline-secondary"
                             type="button"
                             data-pe-close-image-view>
                             <f:translate
@@ -147,12 +141,12 @@
                                 extensionName="AcademicPersonsEdit" />
                         </button>
                         <button
-                            class="btn rounded-0 btn-primary"
+                            class="ace-control ace-save btn btn-primary"
                             type="submit"
                             disabled="disabled"
                             data-pe-upload-image>
                             <span
-                                class="spinner-border spinner-border-sm me-1"
+                                class="ace-spinner"
                                 aria-hidden="true"
                                 hidden="hidden"
                                 data-pe-image-upload-spinner></span>

@@ -196,7 +196,7 @@ describe("the contract contacts element", () => {
         );
       const badge = (uid: number): string | undefined =>
         Array.from(
-          element.querySelectorAll<HTMLElement>(`[data-pe-contract-contact-item="${uid}"] .badge`),
+          element.querySelectorAll<HTMLElement>(`[data-pe-contract-contact-item="${uid}"] .ace-state`),
         )
           .map((node): string => node.textContent?.trim() ?? "")
           .find((text): boolean => text === labels.managed);
@@ -256,7 +256,7 @@ describe("the contract contacts element", () => {
       const element = await mount({ sections: addresses(contact(21, "London")) });
 
       const row = select(element, '[data-pe-contract-contact-item="21"]', HTMLElement);
-      assert.equal(select(row, ".d-md-none", HTMLElement).textContent?.trim(), "City");
+      assert.equal(select(row, ".ace-label", HTMLElement).textContent?.trim(), "City");
       assert.equal(select(row, "span", HTMLElement).textContent?.trim(), "London");
     });
 
@@ -296,8 +296,8 @@ describe("the contract contacts element", () => {
       assert.deepEqual(
         rows.map((row): string => row.className),
         [
-          "row g-0 align-items-center border-bottom py-2 ps-3",
-          "row g-0 align-items-center border-bottom py-2 ps-3",
+          "ace-item",
+          "ace-item",
         ],
       );
     });
@@ -349,11 +349,11 @@ describe("the contract contacts element", () => {
       assert.equal(iconOf(22, "visible").hidden, true);
       assert.equal(iconOf(22, "hidden").hidden, false);
       assert.equal(
-        element.querySelector('[data-pe-contract-contact-item="21"] .badge'),
+        element.querySelector('[data-pe-contract-contact-item="21"] .ace-state'),
         null,
       );
       assert.equal(
-        select(element, '[data-pe-contract-contact-item="22"] .badge', HTMLElement).textContent,
+        select(element, '[data-pe-contract-contact-item="22"] .ace-state', HTMLElement).textContent,
         labels.hidden,
       );
     });
@@ -460,7 +460,7 @@ describe("the contract contacts element", () => {
       const marked = (name: string): boolean => {
         const control = select(element, `[data-pe-contract-contact-field="${name}"]`, HTMLElement);
         const label = select(element, `label[for="${control.id}"]`, HTMLLabelElement);
-        return Array.from(label.parentElement?.querySelectorAll<HTMLElement>(".badge") ?? []).some(
+        return Array.from(label.parentElement?.querySelectorAll<HTMLElement>(".ace-state") ?? []).some(
           (badge): boolean => badge.textContent?.trim() === labels.managed,
         );
       };
@@ -609,7 +609,7 @@ describe("the contract contacts element", () => {
       );
       assert.equal(control.id, "profile-editing-contract-contact-field-1-city");
       assert.equal(
-        selectAll(element, "label.form-label", HTMLLabelElement)[1]?.htmlFor,
+        selectAll(element, "label.ace-label", HTMLLabelElement)[1]?.htmlFor,
         control.id,
       );
     });
@@ -625,7 +625,7 @@ describe("the contract contacts element", () => {
       });
 
       assert.equal(
-        select(element, ".alert-danger", HTMLElement).textContent?.trim(),
+        select(element, "[data-pe-contract-contact-error]", HTMLElement).textContent?.trim(),
         "Please check.",
       );
       const control = select(
@@ -667,7 +667,7 @@ describe("the contract contacts element", () => {
         ),
         [true, true],
       );
-      assert.ok(editor.querySelector(".spinner-border") !== null);
+      assert.ok(editor.querySelector("[data-pe-contract-contact-spinner]") !== null);
     });
 
     it("lists every field as a term and a description in view mode", async () => {
@@ -1154,9 +1154,9 @@ describe("editing the contacts of a contract in the page", () => {
 
     assert.deepEqual(rows(), ["21", "22"]);
     const editor = select(root, "[data-pe-contract-contact-editor]", HTMLElement);
-    assert.equal(select(editor, ".alert-danger", HTMLElement).textContent?.trim(), "Please check.");
+    assert.equal(select(editor, "[data-pe-contract-contact-error]", HTMLElement).textContent?.trim(), "Please check.");
     assert.equal(
-      select(editor, ".invalid-feedback", HTMLElement).textContent?.trim(),
+      select(editor, "[data-pe-contract-contact-fields] .ace-message", HTMLElement).textContent?.trim(),
       "Must not be empty.",
     );
     assert.equal(controller.contractContact.open, true);

@@ -201,7 +201,7 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
         $this->assertSame(
             1,
             preg_match(
-                '@<form\b(?=[^>]*academic-persons-profile-editing__image-form)'
+                '@<form\b(?=[^>]*data-pe-image-form)'
                     . '(?=[^>]*action="([^"]+)")[^>]*>(.*?)</form>@s',
                 $content,
                 $formMatch,

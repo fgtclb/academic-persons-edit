@@ -27,8 +27,8 @@
  * ## No decorators, no shadow root
  *
  * Both for the reasons `elements/root.ts` gives: the suite runs the sources
- * under node's type stripping, and the theme's Bootstrap stylesheet has to
- * reach the controls.
+ * under node's type stripping, and the theme stylesheet has to reach the
+ * controls.
  */
 import {
   createImageEditing,
@@ -344,9 +344,7 @@ export class ProfileImageEditorElement extends ProfileEditingElement {
     const preview = context.root.querySelector("[data-pe-image-preview-column]");
     setClass(preview, "col-lg-4", !collapsed);
     setHidden(preview, collapsed);
-    const fields = context.root.querySelector(
-      ".academic-persons-profile-editing__profile-fields-column",
-    );
+    const fields = context.root.querySelector("[data-pe-profile-fields-column]");
     setClass(fields, "col-lg-12", collapsed);
     setClass(fields, "col-lg-8", !collapsed);
     context.root

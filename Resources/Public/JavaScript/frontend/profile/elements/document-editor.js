@@ -310,7 +310,7 @@ class ProfileDocumentEditorElement extends ProfileEditingElement {
         button.disabled = this.pending;
       });
       this.querySelectorAll(
-        "[data-pe-document-save] .spinner-border"
+        "[data-pe-document-spinner]"
       ).forEach((spinner) => {
         spinner.hidden = !this.pending;
       });
@@ -324,7 +324,7 @@ class ProfileDocumentEditorElement extends ProfileEditingElement {
       });
     }
     if (changed.has("error")) {
-      const alert = section.querySelector(".alert[role='alert']");
+      const alert = section.querySelector("[data-pe-document-error]");
       if (alert !== null) {
         alert.textContent = this.error;
         alert.hidden = this.error === "";

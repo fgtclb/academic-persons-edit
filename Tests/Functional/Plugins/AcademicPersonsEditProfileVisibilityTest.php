@@ -135,7 +135,7 @@ final class AcademicPersonsEditProfileVisibilityTest extends AbstractFrontendPro
         $this->assertTrue($document->loadHTML($content, LIBXML_NOERROR | LIBXML_NOWARNING));
         $nodes = (new \DOMXPath($document))->query(
             '//form[@data-pe-visibility-form]//input[contains(concat(" ", normalize-space(@class), " "),'
-            . ' " academic-persons-profile-editing__visibility-checkbox ")]',
+            . ' " ace-checkbox ")][@data-pe-visibility-checkbox]',
         );
         $this->assertNotFalse($nodes);
         $this->assertCount(1, $nodes, 'The editor renders no visibility switch.');

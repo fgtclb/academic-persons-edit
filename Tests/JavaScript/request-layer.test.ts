@@ -189,15 +189,15 @@ describe("the status regions", () => {
     const alert = select(root, '[data-pe-status-toast="alert"]', HTMLElement);
     const status = select(root, '[data-pe-status-toast="status"]', HTMLElement);
     assert.equal(
-      select(alert, ".status-title", HTMLElement).textContent,
+      select(alert, "[data-pe-status-title]", HTMLElement).textContent,
       "Error",
     );
     assert.equal(
-      select(alert, ".status-message", HTMLElement).textContent,
+      select(alert, "[data-pe-status-message]", HTMLElement).textContent,
       "The change could not be saved.",
     );
-    assert.ok(alert.classList.contains("bg-danger"));
-    assert.equal(select(status, ".status-message", HTMLElement).textContent, "");
+    assert.ok(alert.classList.contains("ace-message-danger"));
+    assert.equal(select(status, "[data-pe-status-message]", HTMLElement).textContent, "");
   });
 
   it("writes everything else into the polite region", () => {
@@ -207,12 +207,12 @@ describe("the status regions", () => {
 
     const status = select(root, '[data-pe-status-toast="status"]', HTMLElement);
     assert.equal(
-      select(status, ".status-title", HTMLElement).textContent,
+      select(status, "[data-pe-status-title]", HTMLElement).textContent,
       "Saved",
     );
-    assert.ok(status.classList.contains("bg-success"));
+    assert.ok(status.classList.contains("ace-message-success"));
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "",
     );
@@ -224,7 +224,7 @@ describe("the status regions", () => {
     showStatus(root, "danger", "The record is locked.");
 
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "The record is locked.",
     );
@@ -241,7 +241,7 @@ describe("the status regions", () => {
     showStatus(root, "warning");
 
     const status = select(root, '[data-pe-status-toast="status"]', HTMLElement);
-    assert.ok(status.classList.contains("bg-warning"));
-    assert.equal(status.classList.contains("bg-info"), false);
+    assert.ok(status.classList.contains("ace-message-warning"));
+    assert.equal(status.classList.contains("ace-message-info"), false);
   });
 });

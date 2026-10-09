@@ -61,12 +61,12 @@ describe("a refused write of a profile field", () => {
     select(root, '[data-pe-save][data-pe-for="profile-editing-1-firstName"]', HTMLButtonElement).click();
     await settle(20);
 
-    const message = select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement);
+    const message = select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement);
     assert.equal(message.textContent, reason);
     assert.equal(message.querySelector("b"), null);
     assert.equal(field.value, "Augusta");
     assert.equal(
-      select(root, "#profile-editing-1-firstName-editor", HTMLElement).classList.contains("d-none"),
+      select(root, "#profile-editing-1-firstName-editor", HTMLElement).hidden,
       false,
     );
   });

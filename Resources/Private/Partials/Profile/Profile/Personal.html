@@ -2,27 +2,27 @@
     lang="en"
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true">
-    <section
+    <section class="ace-section"
         aria-labelledby="profile-editing-{profile.uid}-personal-heading"
         data-profile-section="{section.identifier}">
         <h2
             id="profile-editing-{profile.uid}-personal-heading"
-            class="h2 fw-normal mb-4">
+            class="ace-title">
             <f:translate
                 key="profileEditing.section.personal"
                 extensionName="AcademicPersonsEdit" />
         </h2>
         <form
             id="profile-editing-{profile.uid}-personal-form"
-            class="academic-persons-profile-editing__form"
+            class="ace-form"
             data-pe-fields-form>
-            <fieldset class="border-0 p-0 m-0">
+            <fieldset class="ace-fieldset">
                 <legend class="visually-hidden">
                     <f:translate
                         key="profileEditing.section.personal"
                         extensionName="AcademicPersonsEdit" />
                 </legend>
-                <div class="row g-3">
+                <div class="row">
                     <f:render
                         partial="Profile/Profile/Fields"
                         arguments="{

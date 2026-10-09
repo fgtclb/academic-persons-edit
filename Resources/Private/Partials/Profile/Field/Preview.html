@@ -16,18 +16,18 @@
         </f:else>
     </f:if>
     <div
-        class="d-flex align-items-start gap-3"
+        class="ace-preview"
         data-form-field-button-area
         data-pe-field-preview
         data-pe-for="{elementId}"
         data-empty-label="{f:translate(key: 'profileEditing.field.empty', extensionName: 'AcademicPersonsEdit')}">
-        <div class="flex-grow-1 overflow-hidden">
-            <div class="fw-semibold d-flex flex-row align-items-center">
+        <div class="ace-content">
+            <div class="ace-label">
                 <f:translate
                     key="profile.{field.identifier}.label"
                     extensionName="AcademicPersonsEdit" />
                 <f:if condition="{field.validation.required}">
-                    <abbr class="align-self-start" title="{f:translate(key: 'profileEditing.field.required', extensionName: 'AcademicPersonsEdit')}">*</abbr>
+                    <abbr title="{f:translate(key: 'profileEditing.field.required', extensionName: 'AcademicPersonsEdit')}">*</abbr>
                 </f:if>
                 <f:if condition="{field.managed}">
                     <f:render
@@ -38,19 +38,18 @@
             <f:if condition="{richText}">
                 <f:then>
                     <div
-                        class="text-break"
+                        class="ace-value"
                         data-pe-field-preview-content
                         data-pe-rich-text-preview
                         data-pe-for="{elementId}"
                         data-empty-label="{f:translate(key: 'profileEditing.content.empty', extensionName: 'AcademicPersonsEdit')}">
-                        <div data-pe-rich-text-preview-content>
+                        <div
+                            class="{f:if(condition: fieldValue, then: 'ce-bodytext')}"
+                            data-pe-rich-text-preview-content>
                             <f:if condition="{fieldValue}">
-                                <f:then
-                                    >{fieldValue ->
-                                    f:format.html()}</f:then
-                                >
+                                <f:then>{fieldValue -> f:format.html()}</f:then>
                                 <f:else>
-                                    <span class="text-body-secondary">
+                                    <span class="ace-empty">
                                         <f:translate
                                             key="profileEditing.content.empty"
                                             extensionName="AcademicPersonsEdit" />
@@ -61,7 +60,7 @@
                     </div>
                 </f:then>
                 <f:else>
-                    <div class="text-break" data-pe-field-preview-content>
+                    <div class="ace-value" data-pe-field-preview-content>
                         <f:if condition="{checkbox}">
                             <f:then>
                                 <f:translate
@@ -70,7 +69,7 @@
                             </f:then>
                             <f:else if="{fieldValue}">{fieldValue}</f:else>
                             <f:else>
-                                <span class="text-body-secondary">
+                                <span class="ace-empty">
                                     <f:translate
                                         key="profileEditing.field.empty"
                                         extensionName="AcademicPersonsEdit" />
@@ -84,7 +83,7 @@
         <f:if
             condition="!{field.validation.disabled} && !{field.validation.readOnly}">
             <button
-                class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0"
+                class="ace-control ace-edit btn btn-sm"
                 data-academic-persons-profile-editing-activate-btn
                 data-pe-for="{elementId}"
                 type="button"

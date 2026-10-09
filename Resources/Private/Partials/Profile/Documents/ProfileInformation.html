@@ -5,14 +5,14 @@
     <f:render
         partial="Profile/Documents/Header"
         arguments="{items: items, rowFields: rowFields}" />
-    <div data-pe-document-items>
+    <div class="ace-itemlist" data-pe-document-items>
         <f:for each="{items}" as="item" iteration="itemIteration">
             <f:render
                 partial="Profile/Documents/ProfileInformationRow"
                 arguments="{item: item, itemIteration: itemIteration, rowFields: rowFields, actions: actions, sortable: sortable}" />
         </f:for>
     </div>
-    <div class="d-none" aria-hidden="true" data-pe-document-item-template>
+    <div hidden="hidden" aria-hidden="true" data-pe-document-item-template>
         <f:render
             partial="Profile/Documents/ProfileInformationRow"
             arguments="{template: true, rowFields: rowFields, actions: actions, sortable: sortable}" />

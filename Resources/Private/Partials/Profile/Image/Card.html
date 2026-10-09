@@ -3,11 +3,11 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
-    <section aria-labelledby="profile-editing-{profile.uid}-image-heading">
+    <section class="ace-section" aria-labelledby="profile-editing-{profile.uid}-image-heading">
         <f:if condition="{image}">
             <h2
                 id="profile-editing-{profile.uid}-image-heading"
-                class="h2 fw-normal mb-4">
+                class="ace-title">
                 <f:translate
                     key="profileEditing.image.heading"
                     extensionName="AcademicPersonsEdit" />
@@ -15,8 +15,8 @@
             <div data-pe-image-preview>
                 <f:if condition="{profile.image}">
                     <f:then>
-                        <figure class="mb-0">
-                            <picture class="d-block">
+                        <figure class="ace-figure">
+                            <picture class="ace-picture">
                                 <source
                                     srcset="{f:uri.image(
                                         image: profile.image,
@@ -54,7 +54,7 @@
                                         maxWidth: 690,
                                     )}"
                                     alt="{profile.image.originalResource.alternative}"
-                                    class="img-fluid w-100 object-fit-cover"
+                                    class="ace-image"
                                     title="{profile.image.originalResource.title}"
                                     loading="lazy" />
                             </picture>
@@ -66,11 +66,11 @@
                         </figure>
                     </f:then>
                     <f:else>
-                        <figure class="mb-0">
+                        <figure class="ace-figure">
                             <img
                                 src="{f:uri.resource(path: 'Images/profile-placeholder.png')}"
                                 alt="{f:translate(key: 'profile.image.placeholder.alt', extensionName: 'AcademicPersonsEdit')}"
-                                class="img-fluid w-100 object-fit-cover"
+                                class="ace-image"
                                 title="{f:translate(key: 'profileEditing.user_image_not_available', extensionName: 'AcademicPersonsEdit')}"
                                 loading="lazy" />
                             <figcaption class="visually-hidden">
@@ -83,7 +83,7 @@
             </div>
             <f:if condition="{image.writable}">
                 <button
-                    class="btn rounded-0 btn-outline-secondary btn-sm w-100 d-inline-flex align-items-center justify-content-center mt-2"
+                    class="ace-control ace-edit btn btn-outline-secondary btn-sm"
                     type="button"
                     data-pe-open-image-view
                     aria-expanded="false"
@@ -94,7 +94,7 @@
                         identifier="tx-academicbase-action-upload-image"
                         size="small"
                         alternativeMarkupIdentifier="inline" />
-                    <span class="ms-2"
+                    <span class="ace-label"
                         >{f:translate(key: 'profileEditing.image.edit',
                         extensionName: 'AcademicPersonsEdit')}</span
                     >

@@ -13,14 +13,13 @@
     </f:comment>
     <template data-pe-proto="contact-section">
         <section
-            class="pt-4 mt-4"
+            class="ace-section"
             data-pe-attr="data-pe-contract-contact-section:identifier">
-            <div
-                class="d-flex align-items-center justify-content-between gap-3 mb-3">
-                <h3 class="h4 mb-0" data-pe-slot="label"></h3>
+            <div class="ace-header">
+                <h3 class="ace-title" data-pe-slot="label"></h3>
                 <button
                     type="button"
-                    class="btn rounded-0 btn-sm btn-link p-2"
+                    class="ace-control ace-add btn btn-sm btn-link"
                     data-pe-contract-contact-add
                     data-pe-attr="aria-controls:editorId aria-expanded:addExpanded disabled:addDisabled">
                     <ab:icon
@@ -35,15 +34,15 @@
                 </button>
             </div>
             <div
-                class="mb-3"
+                class="ace-editor"
                 data-pe-list="addEditor"
                 data-pe-attr="hidden:addEditorHidden"></div>
             <div
-                class="border-top"
+                class="ace-itemlist"
                 data-pe-list="rows"
                 data-pe-attr="hidden:rowsHidden"></div>
             <p
-                class="bg-body-tertiary py-2 ps-3 small text-body-secondary"
+                class="ace-empty"
                 role="status"
                 data-pe-attr="hidden:emptyHidden"
                 data-pe-slot="emptyMessage"></p>
@@ -51,33 +50,34 @@
     </template>
     <template data-pe-proto="contact-row">
         <article
-            class="row g-0 align-items-center border-bottom py-2 ps-3"
+            class="ace-item"
             data-pe-attr="data-pe-contract-contact-item:uid data-pe-contract-contact-hidden:hidden">
+            <div class="row">
             <template data-pe-list="summary"></template>
-            <div
-                class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto pe-2">
+            <div class="col-12 col-md-auto">
+            <div class="ace-actions">
                 <span
-                    class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                    class="ace-state"
                     data-pe-when="hidden">
                     <f:translate
                         key="profileEditing.contractContacts.hidden"
                         extensionName="AcademicPersonsEdit" />
                 </span>
                 <span
-                    class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                    class="ace-state"
                     data-pe-when="managed">
                     <f:translate
                         key="profileEditing.field.managed"
                         extensionName="AcademicPersonsEdit" />
                 </span>
                 <div
-                    class="d-flex flex-nowrap align-items-center gap-1"
+                    class="ace-controls"
                     role="group"
                     aria-label="{f:translate(key: 'profileEditing.contractContacts.actions', extensionName: 'AcademicPersonsEdit')}"
                     data-pe-contract-contact-actions>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-visibility btn btn-sm btn-link"
                         data-pe-contract-contact-hide
                         title="{f:translate(key: 'actions.hide', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.hide', extensionName: 'AcademicPersonsEdit')}"
@@ -98,7 +98,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-view btn btn-sm btn-link"
                         data-pe-contract-contact-view
                         title="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
@@ -120,7 +120,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-sort-down btn btn-sm btn-link"
                         data-pe-contract-contact-sort="down"
                         title="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}">
@@ -131,7 +131,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-sort-up btn btn-sm btn-link"
                         data-pe-contract-contact-sort="up"
                         title="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
                         aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}">
@@ -142,7 +142,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-delete btn btn-sm btn-link"
                         data-pe-when="deletable"
                         data-pe-contract-contact-delete
                         title="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
@@ -155,7 +155,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-sm btn-link text-body p-2"
+                        class="ace-control ace-edit btn btn-sm btn-link"
                         data-pe-when="editable"
                         data-pe-contract-contact-edit
                         title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
@@ -168,17 +168,24 @@
                     </button>
                 </div>
             </div>
+            </div>
             <div
-                class="col-12 mt-3"
-                data-pe-list="editor"
-                data-pe-attr="hidden:editorHidden"></div>
+                class="col-12">
+                <div
+                    class="ace-editor"
+                    data-pe-list="editor"
+                    data-pe-attr="hidden:editorHidden"></div>
+            </div>
+            </div>
         </article>
     </template>
     <template data-pe-proto="contact-summary-cell">
-        <div class="col-12 col-md py-1 pe-md-3 text-break">
-            <div class="d-md-none fw-semibold mb-1" data-pe-slot="label"></div>
-            <span data-pe-when="hasValue" data-pe-slot="value"></span>
-            <span data-pe-when="isEmpty">—</span>
+        <div class="col-12 col-md">
+            <div class="ace-cell ace-value">
+                <div class="ace-label" data-pe-slot="label"></div>
+                <span data-pe-when="hasValue" data-pe-slot="value"></span>
+                <span data-pe-when="isEmpty">—</span>
+            </div>
         </div>
     </template>
 </html>

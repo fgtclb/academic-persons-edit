@@ -5,7 +5,7 @@
     <f:render
         partial="Profile/Documents/Header"
         arguments="{items: items, rowFields: rowFields}" />
-    <div data-pe-document-items>
+    <div class="ace-itemlist" data-pe-document-items>
         <f:for each="{items}" as="contract" iteration="itemIteration">
             <f:comment>
                 A contract the synchronisation manages offers no delete, and no
@@ -23,7 +23,7 @@
                 arguments="{contract: contract, itemIteration: itemIteration, rowFields: rowFields, actions: contractActions, managed: contractManaged, sortable: sortable}" />
         </f:for>
     </div>
-    <div class="d-none" aria-hidden="true" data-pe-document-item-template>
+    <div hidden="hidden" aria-hidden="true" data-pe-document-item-template>
         <f:render
             partial="Profile/Documents/ContractRow"
             arguments="{template: true, rowFields: rowFields, actions: actions, sortable: sortable}" />

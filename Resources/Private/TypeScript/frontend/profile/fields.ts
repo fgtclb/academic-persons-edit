@@ -42,7 +42,7 @@ const editButtonSelector = "[data-academic-persons-profile-editing-activate-btn]
 const editAllButtonSelector = "[data-academic-persons-profile-editing-edit-all-btn]";
 const editAllButtonLabelSelector = "[data-pe-edit-all-button-label]";
 const buttonAreaSelector = "[data-form-field-button-area]";
-const fieldSelector = ".academic-persons-profile-editing__field";
+const fieldSelector = "[data-pe-field-control]";
 const fieldPreviewSelector = "[data-pe-field-preview]";
 const fieldEditorSelector = "[data-pe-field-editor]";
 const fieldGroupSelector = "[data-pe-field-group]";
@@ -232,7 +232,7 @@ const renderFieldGroupPreview = (
     hooks(group).peDisplayMode === "first"
       ? (values[0] ?? "")
       : values.join(" ");
-  content.classList.toggle("text-body-secondary", value === "");
+  content.classList.toggle("ace-empty", value === "");
   content.textContent = value || content.dataset.emptyLabel || "";
 };
 
@@ -251,8 +251,10 @@ const toggleEditGroup = (
   if (editor === null || fields.length === 0) {
     return;
   }
-  editor.classList.toggle("d-none", !state);
-  preview?.classList.toggle("d-none", state);
+  editor.hidden = !state;
+  if (preview !== null) {
+    preview.hidden = state;
+  }
   button?.setAttribute("aria-expanded", String(state));
   if (!state) {
     if (focus) {
@@ -293,9 +295,9 @@ const clearValidationErrors = (fields: EditableField[]): void => {
     getFieldEditElement(field).classList.remove("is-invalid");
     const feedback = field
       .closest<HTMLElement>(
-        "[data-pe-field-wrapper], [data-pe-group-control], .form-check",
+        "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]",
       )
-      ?.querySelector<HTMLElement>(".invalid-feedback");
+      ?.querySelector<HTMLElement>(".ace-message");
     if (feedback !== null && feedback !== undefined) {
       feedback.textContent = "";
     }
@@ -364,21 +366,18 @@ const renderActivateButton = (
       return;
     }
     if (currentButton !== null) {
-      replacementButton.classList.toggle(
-        "d-none",
-        currentButton.classList.contains("d-none"),
-      );
+      replacementButton.hidden = currentButton.hidden;
       currentButton.replaceWith(replacementButton);
       return;
     }
     field
-      .closest<HTMLElement>(".mb-3, .form-check")
+      .closest<HTMLElement>("[data-pe-field-wrapper]")
       ?.querySelector<HTMLElement>(buttonAreaSelector)
       ?.append(replacementButton);
     return;
   }
   const displayValue = getFieldDisplayValue(field, fieldValue);
-  content.classList.toggle("text-body-secondary", displayValue === "");
+  content.classList.toggle("ace-empty", displayValue === "");
   content.textContent = displayValue || preview?.dataset.emptyLabel || "";
 };
 
@@ -397,15 +396,18 @@ const toggleEditField = (
     toggleEditGroup(context, group, state, focus);
     return;
   }
-  getFieldEditElement(field).classList.toggle("d-none", !state);
-  getFieldPreview(context, field)?.classList.toggle("d-none", state);
+  getFieldEditElement(field).hidden = !state;
+  const preview = getFieldPreview(context, field);
+  if (preview !== null) {
+    preview.hidden = state;
+  }
   getActivateButton(context, field)?.setAttribute("aria-expanded", String(state));
   context.root
     .querySelectorAll<HTMLElement>(
       `${fieldActionsSelector}[data-pe-for="${CSS.escape(field.id)}"]`,
     )
     .forEach((actions): void => {
-      actions.classList.toggle("d-none", !state);
+      actions.hidden = !state;
     });
   if (!state) {
     if (focus) {
@@ -477,9 +479,9 @@ const showValidationErrors = (
     }
     const feedback = field
       .closest<HTMLElement>(
-        "[data-pe-field-wrapper], [data-pe-group-control], .form-check",
+        "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]",
       )
-      ?.querySelector<HTMLElement>(".invalid-feedback");
+      ?.querySelector<HTMLElement>(".ace-message");
     if (feedback !== null && feedback !== undefined) {
       feedback.textContent = Array.isArray(messages)
         ? messages.map(String).join(" ")
@@ -513,9 +515,10 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     const hasEditableField = getGroupFields(context, group).some(
       (field): boolean => !field.disabled && !isFieldReadOnly(field),
     );
-    group
-      .querySelector(groupEditButtonSelector)
-      ?.classList.toggle("d-none", !hasEditableField);
+    const editButton = group.querySelector<HTMLElement>(groupEditButtonSelector);
+    if (editButton !== null) {
+      editButton.hidden = !hasEditableField;
+    }
   });
   fields
     .filter((field): boolean => field.closest(fieldGroupSelector) === null)
@@ -669,7 +672,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
    * Closes the single-field and group editors that are open and throws away
    * what was typed in them, so that at most one of them is ever open.
    *
-   * Which ones are open is read off the DOM - the `d-none` that
+   * Which ones are open is read off the DOM - the `hidden` state that
    * `toggleEditField()` and `toggleEditGroup()` write on the editor element -
    * rather than kept in a variable of its own. Openness already has one source
    * of truth, and it is written from more places than the two pencils:
@@ -701,7 +704,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
         if (
           editor === null ||
           editor === keepOpen ||
-          editor.classList.contains("d-none")
+          editor.hidden
         ) {
           return;
         }
@@ -716,7 +719,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
         if (
           editor === field ||
           editor === keepOpen ||
-          editor.classList.contains("d-none")
+          editor.hidden
         ) {
           return;
         }
@@ -1017,8 +1020,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
    * profile. A pencil pressed there therefore does nothing at all, and does it
    * silently: nothing is on its way, the visitor is not waiting for anything,
    * and the form's own bar is the way out. What keeps that pencil out of reach
-   * in the shipped markup is the `d-none` of the preview it sits in, which is
-   * a Bootstrap class in an overridable partial and not a rule of this module.
+   * in the shipped markup is the `hidden` state of the preview it sits in.
    */
   const openEditorAllowed = (): boolean =>
     !formEditingActive && singleFieldTransitionAllowed();
@@ -1057,7 +1059,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
         return true;
       }
       const editor = getFieldEditElement(field);
-      return editor !== field && !editor.classList.contains("d-none");
+      return editor !== field && !editor.hidden;
     });
 
   /**
@@ -1105,7 +1107,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     open: () => void,
   ): void => {
     const alreadyOpen =
-      editor !== null && !editor.classList.contains("d-none") && !formEditingActive;
+      editor !== null && !editor.hidden && !formEditingActive;
     withOtherEditorsClosed(context, alreadyOpen ? fieldsEditor : null, (): void => {
       if (!openEditorAllowed()) {
         return;

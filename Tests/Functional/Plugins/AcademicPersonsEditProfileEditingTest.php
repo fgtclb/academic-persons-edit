@@ -225,7 +225,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $editor = $xpath->query(
             '//section[@data-pe-image-view-container]'
                 . '[contains(concat(" ", normalize-space(@class), " "), '
-                . '" academic-persons-profile-editing__image-editor ")]',
+                . '" ace-image-editor ")]',
         );
         $this->assertNotFalse($editor);
         $this->assertSame(1, $editor->length, 'The image editor is not rendered exactly once.');
@@ -239,7 +239,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
 
         foreach (
             [
-                'academic-persons-profile-editing__image-editor-content',
+                'ace-content',
                 'data-pe-image-error',
                 'data-pe-upload-image',
                 'data-pe-delete-image',
@@ -373,7 +373,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $sticky = $xpath->query('//*[@data-pe-sticky-image]');
         $this->assertNotFalse($sticky);
         $this->assertSame(1, $sticky->length);
-        $this->assertContains('sticky-top', $this->renderedClassList($sticky->item(0)));
+        $this->assertContains('ace-sticky-image', $this->renderedClassList($sticky->item(0)));
     }
 
     /**
@@ -651,8 +651,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->setUpProfileEditingTestCase();
         $xpath = $this->xpathOf($this->renderProfileEditingPage());
         $selects = $xpath->query(
-            '//select[contains(concat(" ", normalize-space(@class), " "), '
-            . '" academic-persons-profile-editing__field ")]',
+            '//select[@data-pe-field-control]',
         );
         $this->assertNotFalse($selects);
         $rendered = [];
@@ -1017,9 +1016,12 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
      * text cells that may break a word rather than demand its width, and an
      * action group that shrinks for nothing.
      *
-     * Removing `flex-shrink-0` or `justify-content-md-end` from
-     * `Documents/Actions.html`, or `text-break` or the narrower `col-md-2` from
-     * `ProfileInformationRow.html` or `Documents/Header.html`, turns this red.
+     * What is pinned is the structure of the markup: the controls of a row are
+     * one `ace-controls` group inside the `ace-actions` of a `col-md-auto`
+     * column, and every value sits in an `ace-cell` of a `col-md-2` or `col-md`
+     * column. Removing one of those classes or the narrower `col-md-2` from
+     * `Documents/Actions.html`, `ProfileInformationRow.html` or
+     * `Documents/Header.html` turns this red.
      */
     #[Test]
     public function documentRowsDrawTheActionGroupInOneLineAndLetTheTextGiveWay(): void
@@ -1033,33 +1035,25 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertNotFalse($actionGroups);
         $this->assertGreaterThan(0, $actionGroups->length, 'No document row renders an action group.');
         foreach ($actionGroups as $actionGroup) {
-            // The cell of the row: it holds the "Hidden" tag and the group of
-            // controls, and it is what carries the column and the alignment.
-            $classes = $this->renderedClassList($actionGroup->parentNode);
-            foreach ([
-                'col-12',
-                'col-md-auto',
-                'flex-shrink-0',
-                'd-flex',
-                'flex-nowrap',
-                'justify-content-center',
-                'justify-content-md-end',
-                'ms-md-auto',
-            ] as $class) {
+            // The actions of the row: they hold the "Hidden" tag and the group
+            // of controls, and their column is what carries the width.
+            $this->assertSame(
+                ['ace-actions'],
+                $this->renderedClassList($actionGroup->parentNode),
+                'An action group is rendered outside the actions of its row.',
+            );
+            $classes = $this->renderedClassList($actionGroup->parentNode?->parentNode);
+            foreach (['col-12', 'col-md-auto'] as $class) {
                 $this->assertContains(
                     $class,
                     $classes,
                     sprintf('An action group is rendered without "%s".', $class),
                 );
             }
-            // The two the group stacked centred below the text on a phone and
-            // pushed right from "md" up replaced.
-            $this->assertNotContains('justify-content-end', $classes);
-            $this->assertNotContains('ms-auto', $classes);
             $this->assertSame(
-                ['d-flex', 'flex-nowrap', 'align-items-center', 'gap-1'],
+                ['ace-controls'],
                 $this->renderedClassList($actionGroup),
-                'The controls of a row are not drawn as one nowrap group.',
+                'The controls of a row are not drawn as one group.',
             );
         }
 
@@ -1073,8 +1067,8 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $title = $this->firstElement($xpath, './/*[@data-pe-document-title]', $lectureRow);
         $this->assertSame(self::LONG_LECTURE_TITLE, trim((string)$title->textContent));
         $titleCell = $title->parentNode;
-        $this->assertContains('col-md', $this->renderedClassList($titleCell));
-        $this->assertContains('text-break', $this->renderedClassList($titleCell));
+        $this->assertContains('ace-cell', $this->renderedClassList($titleCell));
+        $this->assertContains('col-md', $this->renderedClassList($titleCell?->parentNode));
         foreach (['year', 'yearStart', 'yearEnd'] as $field) {
             $value = $this->firstElement(
                 $xpath,
@@ -1082,10 +1076,10 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 $lectureRow,
                 sprintf('The lecture row has no "%s" cell.', $field),
             );
-            $classes = $this->renderedClassList($value->parentNode);
+            $this->assertContains('ace-cell', $this->renderedClassList($value->parentNode));
+            $classes = $this->renderedClassList($value->parentNode?->parentNode);
             $this->assertContains('col-md-2', $classes);
             $this->assertNotContains('col-md-3', $classes);
-            $this->assertContains('text-break', $classes);
         }
 
         // The header carries the same widths in the same order, or it stops
@@ -1094,7 +1088,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             $xpath,
             '//*[@data-section-key="lectures"]//*[@data-pe-document-list-header]',
         );
-        $headerCells = $xpath->query('./*', $header);
+        $headerCells = $xpath->query('./div[contains(concat(" ", normalize-space(@class), " "), " row ")]/*', $header);
         $this->assertNotFalse($headerCells);
         $this->assertCount(5, $headerCells);
         foreach ([0, 1, 2] as $position) {
@@ -1104,10 +1098,12 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         }
         $this->assertContains('col', $this->renderedClassList($headerCells->item(3)));
         $actionsHeading = $this->renderedClassList($headerCells->item(4));
-        $this->assertContains('col-md-auto', $actionsHeading);
-        $this->assertContains('flex-shrink-0', $actionsHeading);
-        $this->assertContains('ms-md-auto', $actionsHeading);
-        $this->assertNotContains('ms-auto', $actionsHeading);
+        $this->assertSame(['col-md-auto'], $actionsHeading);
+        $this->assertSame(
+            1,
+            $this->nodeCount($xpath, './div[@class="ace-actions"]', $headerCells->item(4)),
+            'The heading of the actions is not named like the actions below it.',
+        );
     }
 
     /**
@@ -2540,7 +2536,7 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
             '@<form\b(?=[^>]*enctype="multipart/form-data")[^>]*>@s',
             $content,
         );
-        $this->assertStringContainsString('academic-persons-profile-editing__image-form', $content);
+        $this->assertStringContainsString('data-pe-image-form="true"', $content);
         $this->assertStringContainsString('data-pe-upload-image', $content);
         $this->assertStringContainsString('[action]=update', $decodedContent);
         $this->assertStringContainsString('[action]=updateSkipSync', $decodedContent);

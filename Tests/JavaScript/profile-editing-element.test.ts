@@ -143,9 +143,7 @@ describe("the profile editing element", () => {
       true,
     );
     assert.equal(
-      select(root, "[data-pe-document-empty-state]", HTMLElement).classList.contains(
-        "d-none",
-      ),
+      select(root, "[data-pe-document-empty-state]", HTMLElement).hidden,
       true,
     );
   });
@@ -233,7 +231,7 @@ describe("the profile editing element", () => {
     element.showStatus("danger", "The record is locked.");
 
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "The record is locked.",
     );
@@ -241,7 +239,7 @@ describe("the profile editing element", () => {
     element.showStatus("success");
 
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-title', HTMLElement)
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-title]', HTMLElement)
         .textContent,
       messages.successTitle,
     );
@@ -265,10 +263,10 @@ describe("the profile editing element", () => {
 
     const status = select(root, '[data-pe-status-toast="status"]', HTMLElement);
     assert.equal(
-      select(status, ".status-title", HTMLElement).textContent,
+      select(status, "[data-pe-status-title]", HTMLElement).textContent,
       messages.warningTitle,
     );
-    assert.ok(status.classList.contains("bg-warning"));
+    assert.ok(status.classList.contains("ace-message-warning"));
   });
 
   /**
@@ -291,9 +289,9 @@ describe("the profile editing element", () => {
       new CustomEvent(profileEditingStatusEvent, { detail: "danger" }),
     );
 
-    assert.ok(status.classList.contains("bg-info"));
+    assert.ok(status.classList.contains("ace-message-info"));
     assert.equal(
-      select(status, ".status-title", HTMLElement).textContent,
+      select(status, "[data-pe-status-title]", HTMLElement).textContent,
       messages.infoTitle,
     );
   });
@@ -303,7 +301,7 @@ describe("the profile editing element", () => {
     const root = rootOf(element);
     const title = select(
       root,
-      '[data-pe-status-toast="status"] .status-title',
+      '[data-pe-status-toast="status"] [data-pe-status-title]',
       HTMLElement,
     );
 

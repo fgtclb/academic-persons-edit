@@ -6,17 +6,18 @@
         name="elementId"
         value="profile-editing-{profile.uid}-{field.identifier}" />
     <div class="col-12">
-        <div class="rounded-1 p-3 p-lg-4 {rowClass}" data-pe-field-wrapper>
+        <div class="ace-field-group {rowClass}" data-pe-field-wrapper>
             <f:render
                 partial="Profile/Field/Preview"
                 arguments="{profile: profile, field: field, elementId: elementId, checkbox: true}" />
             <div
                 id="{elementId}-editor"
-                class="d-none mt-3"
+                class="ace-editor"
+                hidden="hidden"
                 data-pe-field-editor
                 data-pe-for="{elementId}">
-                <div class="form-check form-switch">
-                    <div class="d-flex flex-row">
+                <div class="ace-switch" data-pe-field-control-group>
+                    <div class="ace-controls">
                         <f:render
                             partial="Profile/Field/Control"
                             arguments="{
@@ -26,7 +27,7 @@
                                 control: 'checkbox',
                                 autosave: true
                             }" />
-                        <label class="form-check-label ms-2" for="{elementId}">
+                        <label class="ace-label" for="{elementId}">
                             <f:translate
                                 key="profile.{field.identifier}.label"
                                 extensionName="AcademicPersonsEdit" />
@@ -47,7 +48,7 @@
                     </div>
                     <div
                         id="{elementId}-error"
-                        class="invalid-feedback"
+                        class="ace-message"
                         role="alert"></div>
                 </div>
             </div>

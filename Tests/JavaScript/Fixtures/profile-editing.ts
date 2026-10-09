@@ -155,7 +155,7 @@ export const profileEditingRoot = ({
   imageCropperRatio = "",
   profileUid = 1,
 }: RootOptions = {}): string => `
-<div class="academic-persons-profile-editing container-fluid px-0"
+<div class="academic-persons-profile-editing"
   data-academic-persons-profile-editing
   data-update-url="${endpoints.update}"
   data-skip-sync-url="${endpoints.skipSync}"
@@ -281,121 +281,133 @@ const controlAttributes = {
 /** `Partials/Profile/Field/PrototypeWrapper.html`, in its three shapes. */
 const fieldWrapper = (columnClass: string, checkbox: boolean): string =>
   checkbox
-    ? `<div class="${columnClass}" data-pe-attr="class:columnClass data-pe-compact:compact">
-  <div class="form-check form-switch">
-    <template data-pe-list="control"></template>
-    <label class="form-check-label ms-2" data-pe-attr="for:controlId" data-pe-slot="label"></label>
-    <template data-pe-list="helptext"></template>
-    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2" data-pe-when="managed">${labels.managed}</span>
-    <div class="invalid-feedback d-block" role="alert" data-pe-attr="id:errorId hidden:errorHidden" data-pe-slot="error"></div>
+    ? `<div class="${columnClass}" data-pe-attr="class:columnClass">
+  <div class="ace-field" data-pe-field-wrapper data-pe-attr="data-pe-compact:compact">
+    <div class="ace-switch" data-pe-field-control-group>
+      <template data-pe-list="control"></template>
+      <label class="ace-label" data-pe-attr="for:controlId" data-pe-slot="label"></label>
+      <template data-pe-list="helptext"></template>
+      <span class="ace-state" data-pe-when="managed">${labels.managed}</span>
+      <div class="ace-message" role="alert" data-pe-attr="id:errorId hidden:errorHidden" data-pe-slot="error"></div>
+    </div>
   </div>
 </div>`
-    : `<div class="${columnClass}" data-pe-attr="class:columnClass data-pe-compact:compact">
-  <div class="d-flex align-items-center">
-    <label class="form-label" data-pe-attr="for:controlId">
-      <span data-pe-slot="label"></span>
-      <span class="text-danger ms-1" aria-hidden="true" data-pe-when="required">*</span>
-    </label>
-    <template data-pe-list="helptext"></template>
-    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium ms-2" data-pe-when="managed">${labels.managed}</span>
+    : `<div class="${columnClass}" data-pe-attr="class:columnClass">
+  <div class="ace-field" data-pe-field-wrapper data-pe-attr="data-pe-compact:compact">
+    <div class="ace-header">
+      <label class="ace-label" data-pe-attr="for:controlId">
+        <span data-pe-slot="label"></span>
+        <span class="ace-required" aria-hidden="true" data-pe-when="required">*</span>
+      </label>
+      <template data-pe-list="helptext"></template>
+      <span class="ace-state" data-pe-when="managed">${labels.managed}</span>
+    </div>
+    <template data-pe-list="control"></template>
+    <div class="ace-counter" aria-live="polite" data-pe-character-counter data-pe-when="hasCharacterLimit" data-pe-attr="data-pe-for:controlId">0 / <span data-pe-slot="characterLimit"></span></div>
+    <div class="ace-message" role="alert" data-pe-attr="id:errorId hidden:errorHidden" data-pe-slot="error"></div>
   </div>
-  <template data-pe-list="control"></template>
-  <div class="form-text text-end" aria-live="polite" data-pe-character-counter data-pe-when="hasCharacterLimit" data-pe-attr="data-pe-for:controlId">0 / <span data-pe-slot="characterLimit"></span></div>
-  <div class="invalid-feedback d-block" role="alert" data-pe-attr="id:errorId hidden:errorHidden" data-pe-slot="error"></div>
 </div>`;
 
 export const prototypes = (): string => `
 <template data-pe-proto="control-input"><input type="text" name="" value="" aria-invalid="false"
-  class="flex-grow-1 w-100 form-control form-control-sm academic-persons-profile-editing__field"
+  class="ace-control ace-text" data-pe-field-control="true"
   data-pe-attr="${controlAttributes.input}" /></template>
 <template data-pe-proto="control-textarea"><textarea rows="6" name="" aria-invalid="false"
-  class="form-control form-control-sm academic-persons-profile-editing__field"
+  class="ace-control ace-textarea" data-pe-field-control="true"
   data-pe-attr="${controlAttributes.textarea}"></textarea></template>
 <template data-pe-proto="control-rich-text"><academic-persons-edit-rich-text><textarea rows="6" name="" aria-invalid="false"
-  class="form-control form-control-sm academic-persons-profile-editing__field"
+  class="ace-control ace-textarea ace-ckeditor" data-pe-field-control="true"
   data-pe-rich-text="true"
   data-pe-attr="${controlAttributes.richText}"></textarea></academic-persons-edit-rich-text></template>
 <template data-pe-proto="control-select"><select name="" aria-invalid="false"
-  class="flex-grow-1 w-100 form-select form-select-sm academic-persons-profile-editing__field"
+  class="ace-control ace-select" data-pe-field-control="true"
   data-pe-list="options"
   data-pe-attr="${controlAttributes.select}"><option value=""></option></select></template>
 <template data-pe-proto="control-checkbox"><input type="checkbox" name="" value="1" aria-invalid="false"
-  class="form-check-input academic-persons-profile-editing__field"
+  class="ace-control ace-checkbox" data-pe-field-control="true"
   data-pe-attr="${controlAttributes.checkbox}" /></template>
 <template data-pe-proto="option"><option data-pe-slot="label" data-pe-attr="value:value"></option></template>
 <template data-pe-proto="field-default">${fieldWrapper("col-12 col-md-6", false)}</template>
 <template data-pe-proto="field-wide">${fieldWrapper("col-12", false)}</template>
 <template data-pe-proto="field-checkbox">${fieldWrapper("col-12", true)}</template>
 <template data-pe-proto="helptext-button"><button type="button"
-  class="btn rounded-0 btn-link link-info p-0 ms-2 mb-1"
+  class="ace-control ace-help btn btn-link"
   data-pe-helptext data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right"
   data-bs-custom-class="custom-popover"
   data-pe-attr="data-bs-title:title data-bs-content:content aria-label:ariaLabel"><span data-test-icon="help"></span></button></template>
-<template data-pe-proto="display-row"><dt class="col-sm-4" data-pe-slot="label"></dt><dd class="col-sm-8"><div data-pe-when="richText" data-pe-list="richValue"></div><span data-pe-when="plain" data-pe-slot="value"></span></dd></template>
+<template data-pe-proto="display-row"><dt class="col-sm-4"><span class="ace-label" data-pe-slot="label"></span></dt><dd class="col-sm-8"><div class="ace-value"><div class="ce-bodytext" data-pe-when="richText" data-pe-list="richValue"></div><span data-pe-when="plain" data-pe-slot="value"></span></div></dd></template>
 <template data-pe-proto="document-panel"><section
-  class="academic-persons-profile-editing__document-collapse border bg-body p-3 p-lg-4 my-3"
+  class="ace-document-editor"
   data-pe-document-view-container
   data-pe-attr="aria-busy:busy data-pe-document-kind:kind">
-  <div class="academic-persons-profile-editing__document-collapse-content">
-    <form data-pe-document-form>
-      <h2 class="display-6 fw-normal mb-4" tabindex="-1" data-pe-document-heading data-pe-slot="heading"></h2>
-      <div class="alert alert-danger" role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
-      <p class="mb-4" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
-      <dl class="row mb-0" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>
-      <div class="mt-5" data-pe-when="showContacts"><template data-pe-list="contacts"></template></div>
-      <div class="row g-3" data-pe-document-fields data-pe-when="showFields"><template data-pe-list="fields"></template></div>
-      <div class="d-flex justify-content-end gap-2 mt-4" data-pe-when="showActions">
-        <button type="button" class="btn rounded-0 btn-outline-secondary" data-pe-document-cancel data-pe-attr="disabled:pending">${labels.close}</button>
-        <button type="submit" class="btn rounded-0 btn-primary" data-pe-document-save data-pe-when="isSave" data-pe-attr="disabled:pending"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.save}</span></button>
-        <button type="submit" class="btn rounded-0 btn-danger" data-pe-document-save data-pe-when="isDelete" data-pe-attr="disabled:pending"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.delete}</span></button>
+  <div class="ace-content">
+    <form class="ace-form" data-pe-document-form>
+      <h2 class="ace-title" tabindex="-1" data-pe-document-heading data-pe-slot="heading"></h2>
+      <div class="ace-message ace-error" data-pe-document-error role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
+      <p class="ace-copy" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
+      <dl class="row" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>
+      <div class="ace-contacts" data-pe-when="showContacts"><template data-pe-list="contacts"></template></div>
+      <div class="row" data-pe-document-fields data-pe-when="showFields"><template data-pe-list="fields"></template></div>
+      <div class="ace-actions" data-pe-when="showActions">
+        <button type="button" class="ace-control ace-cancel btn btn-outline-secondary" data-pe-document-cancel data-pe-attr="disabled:pending">${labels.close}</button>
+        <button type="submit" class="ace-control ace-save btn btn-primary" data-pe-document-save data-pe-when="isSave" data-pe-attr="disabled:pending"><span class="ace-spinner" data-pe-document-spinner aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.save}</span></button>
+        <button type="submit" class="ace-control ace-delete btn btn-danger" data-pe-document-save data-pe-when="isDelete" data-pe-attr="disabled:pending"><span class="ace-spinner" data-pe-document-spinner aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.delete}</span></button>
       </div>
     </form>
   </div>
 </section></template>
-<template data-pe-proto="contact-section"><section class="pt-4 mt-4" data-pe-attr="data-pe-contract-contact-section:identifier">
-  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-    <h3 class="h4 mb-0" data-pe-slot="label"></h3>
-    <button type="button" class="btn rounded-0 btn-sm btn-link p-2" data-pe-contract-contact-add
+<template data-pe-proto="contact-section"><section class="ace-section" data-pe-attr="data-pe-contract-contact-section:identifier">
+  <div class="ace-header">
+    <h3 class="ace-title" data-pe-slot="label"></h3>
+    <button type="button" class="ace-control ace-add btn btn-sm btn-link" data-pe-contract-contact-add
       data-pe-attr="aria-controls:editorId aria-expanded:addExpanded disabled:addDisabled"><span data-test-icon="add"></span><span class="visually-hidden">${labels.add}</span></button>
   </div>
-  <div class="mb-3" data-pe-list="addEditor" data-pe-attr="hidden:addEditorHidden"></div>
-  <div class="border-top" data-pe-list="rows" data-pe-attr="hidden:rowsHidden"></div>
-  <p class="bg-body-tertiary py-2 ps-3 small text-body-secondary" role="status" data-pe-attr="hidden:emptyHidden" data-pe-slot="emptyMessage"></p>
+  <div class="ace-editor" data-pe-list="addEditor" data-pe-attr="hidden:addEditorHidden"></div>
+  <div class="ace-itemlist" data-pe-list="rows" data-pe-attr="hidden:rowsHidden"></div>
+  <p class="ace-empty" role="status" data-pe-attr="hidden:emptyHidden" data-pe-slot="emptyMessage"></p>
 </section></template>
-<template data-pe-proto="contact-row"><article class="row g-0 align-items-center border-bottom py-2 ps-3"
+<template data-pe-proto="contact-row"><article class="ace-item"
   data-pe-attr="data-pe-contract-contact-item:uid data-pe-contract-contact-hidden:hidden">
+  <div class="row">
   <template data-pe-list="summary"></template>
-  <div class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto pe-2">
-    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-when="hidden">${labels.hidden}</span>
-    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-when="managed">${labels.managed}</span>
-    <div class="d-flex flex-nowrap align-items-center gap-1" role="group" aria-label="${labels.contactActions}" data-pe-contract-contact-actions>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-hide title="${labels.hide}" aria-label="${labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden" hidden="hidden"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-view title="${labels.view}" aria-label="${labels.view}" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-attr="aria-controls:editorId aria-expanded:viewExpanded"><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-sort="down" title="${labels.sortDown}" aria-label="${labels.sortDown}"><span data-test-icon="move-down"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-contract-contact-sort="up" title="${labels.sortUp}" aria-label="${labels.sortUp}"><span data-test-icon="move-up"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-when="deletable" data-pe-contract-contact-delete title="${labels.delete}" aria-label="${labels.delete}" data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded"><span data-test-icon="delete"></span></button>
-    <button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-when="editable" data-pe-contract-contact-edit title="${labels.edit}" aria-label="${labels.edit}" data-pe-attr="aria-controls:editorId aria-expanded:editExpanded"><span data-test-icon="edit"></span></button>
+  <div class="col-12 col-md-auto">
+  <div class="ace-actions">
+    <span class="ace-state" data-pe-when="hidden">${labels.hidden}</span>
+    <span class="ace-state" data-pe-when="managed">${labels.managed}</span>
+    <div class="ace-controls" role="group" aria-label="${labels.contactActions}" data-pe-contract-contact-actions>
+    <button type="button" class="ace-control ace-visibility btn btn-sm btn-link" data-pe-contract-contact-hide title="${labels.hide}" aria-label="${labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden" hidden="hidden"></span></button>
+    <button type="button" class="ace-control ace-view btn btn-sm btn-link" data-pe-contract-contact-view title="${labels.view}" aria-label="${labels.view}" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-attr="aria-controls:editorId aria-expanded:viewExpanded"><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>
+    <button type="button" class="ace-control ace-sort-down btn btn-sm btn-link" data-pe-contract-contact-sort="down" title="${labels.sortDown}" aria-label="${labels.sortDown}"><span data-test-icon="move-down"></span></button>
+    <button type="button" class="ace-control ace-sort-up btn btn-sm btn-link" data-pe-contract-contact-sort="up" title="${labels.sortUp}" aria-label="${labels.sortUp}"><span data-test-icon="move-up"></span></button>
+    <button type="button" class="ace-control ace-delete btn btn-sm btn-link" data-pe-when="deletable" data-pe-contract-contact-delete title="${labels.delete}" aria-label="${labels.delete}" data-pe-attr="aria-controls:editorId aria-expanded:deleteExpanded"><span data-test-icon="delete"></span></button>
+    <button type="button" class="ace-control ace-edit btn btn-sm btn-link" data-pe-when="editable" data-pe-contract-contact-edit title="${labels.edit}" aria-label="${labels.edit}" data-pe-attr="aria-controls:editorId aria-expanded:editExpanded"><span data-test-icon="edit"></span></button>
     </div>
   </div>
-  <div class="col-12 mt-3" data-pe-list="editor" data-pe-attr="hidden:editorHidden"></div>
+  </div>
+  <div class="col-12">
+    <div class="ace-editor" data-pe-list="editor" data-pe-attr="hidden:editorHidden"></div>
+  </div>
+  </div>
 </article></template>
-<template data-pe-proto="contact-summary-cell"><div class="col-12 col-md py-1 pe-md-3 text-break">
-  <div class="d-md-none fw-semibold mb-1" data-pe-slot="label"></div>
-  <span data-pe-when="hasValue" data-pe-slot="value"></span>
-  <span data-pe-when="isEmpty">—</span>
+<template data-pe-proto="contact-summary-cell"><div class="col-12 col-md">
+  <div class="ace-cell ace-value">
+    <div class="ace-label" data-pe-slot="label"></div>
+    <span data-pe-when="hasValue" data-pe-slot="value"></span>
+    <span data-pe-when="isEmpty">—</span>
+  </div>
 </div></template>
-<template data-pe-proto="contact-editor-panel"><section class="border bg-body-tertiary p-3 p-lg-4"
+<template data-pe-proto="contact-editor-panel"><section class="ace-item"
   data-pe-contract-contact-editor data-pe-contract-contact-form
   data-pe-attr="id:editorId aria-busy:busy">
-  <h4 class="h5 mb-4" tabindex="-1" data-pe-contract-contact-heading data-pe-slot="title"></h4>
-  <div class="alert alert-danger" role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
-  <p class="mb-4" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
-  <dl class="row mb-0" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>
-  <div class="row g-3" data-pe-contract-contact-fields data-pe-when="showFields"><template data-pe-list="fields"></template></div>
-  <div class="d-flex justify-content-end gap-2 mt-4" data-pe-when="showActions">
-    <button type="button" class="btn rounded-0 btn-outline-secondary" data-pe-contract-contact-cancel data-pe-attr="disabled:pending">${labels.close}</button>
-    <button type="button" class="btn rounded-0 btn-primary" data-pe-contract-contact-save data-pe-when="isSave" data-pe-attr="disabled:pending"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.save}</span></button>
-    <button type="button" class="btn rounded-0 btn-danger" data-pe-contract-contact-save data-pe-when="isDelete" data-pe-attr="disabled:pending"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.delete}</span></button>
+  <h4 class="ace-title" tabindex="-1" data-pe-contract-contact-heading data-pe-slot="title"></h4>
+  <div class="ace-message ace-error" data-pe-contract-contact-error role="alert" data-pe-attr="hidden:errorHidden" data-pe-slot="error"></div>
+  <p class="ace-copy" data-pe-when="isDelete" data-pe-slot="deleteConfirmation"></p>
+  <dl class="row" data-pe-when="showDisplay"><template data-pe-list="displayRows"></template></dl>
+  <div class="row" data-pe-contract-contact-fields data-pe-when="showFields"><template data-pe-list="fields"></template></div>
+  <div class="ace-actions" data-pe-when="showActions">
+    <button type="button" class="ace-control ace-cancel btn btn-outline-secondary" data-pe-contract-contact-cancel data-pe-attr="disabled:pending">${labels.close}</button>
+    <button type="button" class="ace-control ace-save btn btn-primary" data-pe-contract-contact-save data-pe-when="isSave" data-pe-attr="disabled:pending"><span class="ace-spinner" data-pe-contract-contact-spinner aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.save}</span></button>
+    <button type="button" class="ace-control ace-delete btn btn-danger" data-pe-contract-contact-save data-pe-when="isDelete" data-pe-attr="disabled:pending"><span class="ace-spinner" data-pe-contract-contact-spinner aria-hidden="true" data-pe-attr="hidden:spinnerHidden"></span><span>${labels.delete}</span></button>
   </div>
 </section></template>`;
 
@@ -410,27 +422,29 @@ export const prototypes = (): string => `
  */
 export const unsavedChangesDialog = (profileUid = 1): string => `
 <template data-pe-dialog="unsaved-changes">
-  <dialog class="academic-persons-profile-editing__dialog" data-pe-unsaved-changes
+  <dialog class="ace-dialog" data-pe-unsaved-changes
     aria-labelledby="profile-editing-${profileUid}-unsaved-changes-title">
-    <div>
-      <h2 id="profile-editing-${profileUid}-unsaved-changes-title">${messages.unsavedChangesTitle}</h2>
-      <p>${messages.unsavedChangesMessage}</p>
-      <button type="button" data-pe-unsaved-choice="cancel">Keep editing</button>
-      <button type="button" data-pe-unsaved-choice="discard">Discard changes</button>
-      <button type="button" data-pe-unsaved-choice="save">Save and continue</button>
+    <div class="ace-content">
+      <h2 id="profile-editing-${profileUid}-unsaved-changes-title" class="ace-title">${messages.unsavedChangesTitle}</h2>
+      <p class="ace-copy">${messages.unsavedChangesMessage}</p>
+      <div class="ace-actions">
+        <button type="button" class="ace-control ace-cancel btn btn-outline-secondary" data-pe-unsaved-choice="cancel">Keep editing</button>
+        <button type="button" class="ace-control ace-discard btn btn-outline-danger" data-pe-unsaved-choice="discard">Discard changes</button>
+        <button type="button" class="ace-control ace-save btn btn-primary" data-pe-unsaved-choice="save">Save and continue</button>
+      </div>
     </div>
   </dialog>
 </template>`;
 
 export const statusToast = (): string => `
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div data-pe-status-toast="status" class="toast" role="status" aria-live="polite" aria-atomic="true">
-    <div class="toast-header"><strong class="me-auto status-title"></strong></div>
-    <div class="toast-body status-message text-white"></div>
+<div class="ace-messages">
+  <div data-pe-status-toast="status" class="ace-message" role="status" aria-live="polite" aria-atomic="true">
+    <div class="ace-header"><strong class="ace-title" data-pe-status-title></strong><button type="button" class="ace-control ace-close btn-close" data-pe-status-close aria-label="Close notification"></button></div>
+    <div class="ace-content" data-pe-status-message></div>
   </div>
-  <div data-pe-status-toast="alert" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header"><strong class="me-auto status-title"></strong></div>
-    <div class="toast-body status-message text-white"></div>
+  <div data-pe-status-toast="alert" class="ace-message" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="ace-header"><strong class="ace-title" data-pe-status-title></strong><button type="button" class="ace-control ace-close btn-close" data-pe-status-close aria-label="Close notification"></button></div>
+    <div class="ace-content" data-pe-status-message></div>
   </div>
 </div>`;
 
@@ -452,28 +466,29 @@ export const profileHeader = ({
   skipSync?: boolean;
   visible?: boolean;
 } = {}): string => `
-<header data-pe-profile-header>
-  <h1 id="profile-editing-${profileUid}-name-heading" class="h2 fw-bolder mb-0"
+<header class="ace-header" data-pe-profile-header>
+  <h1 id="profile-editing-${profileUid}-name-heading" class="ace-title"
     data-pe-profile-name data-pe-profile-name-field-ids="${nameFieldIds}">${name}</h1>
-  <form class="academic-persons-profile-editing__sync-form flex-shrink-0" data-pe-sync-form>
-    <div class="form-check form-switch">
-      <input class="form-check-input academic-persons-profile-editing__sync-checkbox"
+  <div class="ace-actions">
+  <form class="ace-form" data-pe-sync-form>
+    <div class="ace-switch">
+      <input class="ace-control ace-checkbox" data-pe-sync-checkbox="true"
         type="checkbox" name="skipSync" id="profile-editing-${profileUid}-skipSync" value="1"
         aria-describedby="profile-editing-${profileUid}-skipSync-error" aria-invalid="false"${skipSync ? " checked" : ""} />
-      <label class="form-check-label" for="profile-editing-${profileUid}-skipSync">Do not synchronise</label>
-      <div id="profile-editing-${profileUid}-skipSync-error" class="invalid-feedback" role="alert"></div>
+      <label class="ace-label" for="profile-editing-${profileUid}-skipSync">Do not synchronise</label>
+      <div id="profile-editing-${profileUid}-skipSync-error" class="ace-message" role="alert"></div>
     </div>
   </form>
-  <form class="academic-persons-profile-editing__visibility-form flex-shrink-0" data-pe-visibility-form>
-    <div class="form-check form-switch">
-      <input class="form-check-input academic-persons-profile-editing__visibility-checkbox"
+  <form class="ace-form" data-pe-visibility-form>
+    <div class="ace-switch">
+      <input class="ace-control ace-checkbox" data-pe-visibility-checkbox="true"
         type="checkbox" name="visibility" id="profile-editing-${profileUid}-visibility" value="1"
         aria-describedby="profile-editing-${profileUid}-visibility-error" aria-invalid="false"${visible ? " checked" : ""} />
-      <label class="form-check-label" for="profile-editing-${profileUid}-visibility">Show my profile publicly</label>
-      <div id="profile-editing-${profileUid}-visibility-error" class="invalid-feedback" role="alert"></div>
+      <label class="ace-label" for="profile-editing-${profileUid}-visibility">Show my profile publicly</label>
+      <div id="profile-editing-${profileUid}-visibility-error" class="ace-message" role="alert"></div>
     </div>
   </form>
-  <button class="btn rounded-0 btn-outline-secondary btn-sm" type="button"
+  <button class="ace-control ace-edit btn btn-outline-secondary btn-sm" type="button"
     data-academic-persons-profile-editing-edit-all-btn
     data-pe-edit-all-label="Edit all"
     data-pe-close-all-label="Close all"
@@ -481,6 +496,7 @@ export const profileHeader = ({
     aria-pressed="false">
     <span data-pe-edit-all-button-label>Edit all</span>
   </button>
+  </div>
 </header>`;
 
 interface FieldOptions {
@@ -514,27 +530,27 @@ export const textField = ({
 
   return `
 <div class="col-12">
-  <div class="rounded-0 p-3 p-lg-4" data-pe-field-wrapper>
-    <div class="d-flex align-items-start gap-3" data-form-field-button-area data-pe-field-preview
+  <div class="ace-field-group" data-pe-field-wrapper>
+    <div class="ace-preview" data-form-field-button-area data-pe-field-preview
       data-pe-for="${elementId}" data-empty-label="${messages.empty}">
-      <div class="flex-grow-1 overflow-hidden">
-        <div class="fw-semibold">${identifier}</div>
-        <div class="text-break" data-pe-field-preview-content>${value}</div>
+      <div class="ace-content">
+        <div class="ace-label">${identifier}</div>
+        <div class="ace-value" data-pe-field-preview-content>${value}</div>
       </div>
       ${
         disabled || readOnly
           ? ""
-          : `<button class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0"
+          : `<button class="ace-control ace-edit btn btn-sm"
         data-academic-persons-profile-editing-activate-btn data-pe-for="${elementId}" type="button"
         aria-controls="${elementId}-editor" aria-expanded="false" title="Edit" aria-label="Edit"></button>`
       }
     </div>
-    <div id="${elementId}-editor" class="d-none mt-3" data-pe-field-editor data-pe-for="${elementId}">
-      <div class="d-flex align-items-center">
-        <label class="form-label fw-semibold" for="${elementId}">${identifier}</label>
+    <div id="${elementId}-editor" class="ace-editor" hidden="hidden" data-pe-field-editor data-pe-for="${elementId}">
+      <div class="ace-header">
+        <label class="ace-label" for="${elementId}">${identifier}</label>
       </div>
-      <div class="d-flex flex-column flex-xl-row gap-2 align-items-start">
-        <input class="flex-grow-1 w-100 form-control form-control-sm academic-persons-profile-editing__field"
+      <div class="ace-controls" data-pe-field-control-group>
+        <input class="ace-control ace-text" data-pe-field-control="true"
           type="text" name="${name}" id="${elementId}" value="${value}"
           aria-describedby="${elementId}-error" aria-invalid="false"${required ? " required" : ""}${disabled ? " disabled" : ""}${readOnly ? " readonly" : ""} />
         ${
@@ -543,7 +559,7 @@ export const textField = ({
             : fieldActions(elementId)
         }
       </div>
-      <div id="${elementId}-error" class="invalid-feedback" role="alert"></div>
+      <div id="${elementId}-error" class="ace-message" role="alert"></div>
     </div>
   </div>
 </div>`;
@@ -574,38 +590,38 @@ export const richTextField = ({
 
   return `
 <div class="col-12">
-  <div class="rounded-0 p-3 p-lg-4" data-pe-field-wrapper>
-    <div class="d-flex align-items-start gap-3" data-form-field-button-area data-pe-field-preview
+  <div class="ace-field-group" data-pe-field-wrapper>
+    <div class="ace-preview" data-form-field-button-area data-pe-field-preview
       data-pe-for="${elementId}" data-empty-label="${messages.empty}">
-      <div class="flex-grow-1 overflow-hidden">
-        <div class="fw-semibold">${identifier}</div>
-        <div class="text-break" data-pe-field-preview-content data-pe-rich-text-preview
+      <div class="ace-content">
+        <div class="ace-label">${identifier}</div>
+        <div class="ace-value" data-pe-field-preview-content data-pe-rich-text-preview
           data-pe-for="${elementId}" data-empty-label="${messages.empty}">
-          <div data-pe-rich-text-preview-content>${value}</div>
+          <div class="${value === "" ? "" : "ce-bodytext"}" data-pe-rich-text-preview-content>${value}</div>
         </div>
       </div>
-      <button class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0"
+      <button class="ace-control ace-edit btn btn-sm"
         data-academic-persons-profile-editing-activate-btn data-pe-for="${elementId}" type="button"
         aria-controls="${elementId}-editor" aria-expanded="false" title="Edit" aria-label="Edit"></button>
     </div>
-    <div id="${elementId}-editor" class="d-none mt-3" data-pe-field-editor data-pe-for="${elementId}">
-      <div class="d-flex align-items-center gap-2 mb-2" data-pe-rich-text-heading>
-        <label class="form-label fw-semibold mb-0" for="${elementId}">${identifier}</label>
+    <div id="${elementId}-editor" class="ace-editor" hidden="hidden" data-pe-field-editor data-pe-for="${elementId}">
+      <div class="ace-header" data-pe-rich-text-heading>
+        <label class="ace-label" for="${elementId}">${identifier}</label>
         ${fieldActions(elementId)}
       </div>
-      <div class="flex-grow-1 w-100" data-pe-editor-container>
+      <div class="ace-control-wrap" data-pe-editor-container>
         <textarea name="${propertyName ?? identifier}" id="${elementId}" rows="5"
-          class="form-control form-control-sm academic-persons-profile-editing__field"
+          class="ace-control ace-textarea ace-ckeditor" data-pe-field-control="true"
           aria-describedby="${elementId}-error" aria-invalid="false"
           data-pe-rich-text="true"${characterLimit === undefined ? "" : ` data-pe-character-limit="${characterLimit}"`}${editorValue === undefined ? "" : ` data-test-ckeditor-initial="${editorValue}"`}>${value}</textarea>
         ${
           characterLimit === undefined
             ? ""
-            : `<div id="${elementId}-character-counter" class="form-text text-end" aria-live="polite"
+            : `<div id="${elementId}-character-counter" class="ace-counter" aria-live="polite"
           data-pe-character-counter data-pe-for="${elementId}">0 / ${characterLimit}</div>`
         }
       </div>
-      <div id="${elementId}-error" class="invalid-feedback" role="alert"></div>
+      <div id="${elementId}-error" class="ace-message" role="alert"></div>
     </div>
   </div>
 </div>`;
@@ -613,11 +629,11 @@ export const richTextField = ({
 
 /** `Partials/Profile/Field/Actions.html:114-162` - clear, undo and save. */
 export const fieldActions = (elementId: string): string => `
-<div class="btn-group btn-group-sm d-none flex-shrink-0" data-pe-field-actions data-pe-for="${elementId}"
-  role="group" aria-label="Actions">
-  <button class="btn rounded-0 btn-outline-danger" data-pe-dismiss data-pe-for="${elementId}" type="button" title="Clear" aria-label="Clear"></button>
-  <button class="btn rounded-0 btn-outline-secondary" data-pe-cancel data-pe-for="${elementId}" type="button" title="Undo" aria-label="Undo"></button>
-  <button class="btn rounded-0 btn-success" data-pe-save data-pe-for="${elementId}" type="button" title="Save" aria-label="Save"></button>
+<div class="ace-actions btn-group btn-group-sm" data-pe-field-actions data-pe-for="${elementId}"
+  role="group" hidden="hidden" aria-label="Actions">
+  <button class="ace-control ace-clear btn btn-outline-danger" data-pe-dismiss data-pe-for="${elementId}" type="button" title="Clear" aria-label="Clear"></button>
+  <button class="ace-control ace-undo btn btn-outline-secondary" data-pe-cancel data-pe-for="${elementId}" type="button" title="Undo" aria-label="Undo"></button>
+  <button class="ace-control ace-save btn btn-success" data-pe-save data-pe-for="${elementId}" type="button" title="Save" aria-label="Save"></button>
 </div>`;
 
 /**
@@ -640,31 +656,31 @@ export const checkboxField = ({
 
   return `
 <div class="col-12">
-  <div class="rounded-1 p-3 p-lg-4" data-pe-field-wrapper>
-    <div class="d-flex align-items-start gap-3" data-form-field-button-area data-pe-field-preview
+  <div class="ace-field-group" data-pe-field-wrapper>
+    <div class="ace-preview" data-form-field-button-area data-pe-field-preview
       data-pe-for="${elementId}" data-empty-label="${messages.empty}">
-      <div class="flex-grow-1 overflow-hidden">
-        <div class="fw-semibold">${identifier}</div>
-        <div class="text-break" data-pe-field-preview-content></div>
+      <div class="ace-content">
+        <div class="ace-label">${identifier}</div>
+        <div class="ace-value" data-pe-field-preview-content></div>
       </div>
-      <button class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0"
+      <button class="ace-control ace-edit btn btn-sm"
         data-academic-persons-profile-editing-activate-btn data-pe-for="${elementId}" type="button"
         aria-controls="${elementId}-editor" aria-expanded="false" title="Edit" aria-label="Edit"></button>
     </div>
-    <div id="${elementId}-editor" class="d-none mt-3" data-pe-field-editor data-pe-for="${elementId}">
-      <div class="form-check form-switch">
-        <div class="d-flex flex-row">
-          <input class="form-check-input academic-persons-profile-editing__field" type="checkbox"
+    <div id="${elementId}-editor" class="ace-editor" hidden="hidden" data-pe-field-editor data-pe-for="${elementId}">
+      <div class="ace-switch" data-pe-field-control-group>
+        <div class="ace-controls">
+          <input class="ace-control ace-checkbox" data-pe-field-control="true" type="checkbox"
             name="${propertyName ?? identifier}" id="${elementId}" value="1"${checked ? " checked" : ""}
             aria-describedby="${elementId}-error" aria-invalid="false"
             data-pe-autosave-on-change="true"
             data-pe-checked-label="Public"
             data-pe-unchecked-label="Private" />
-          <label class="form-check-label ms-2" for="${elementId}">${identifier}</label>
-          <button class="btn btn-sm rounded-0 btn-outline-secondary ms-auto" data-pe-autosave-undo
+          <label class="ace-label" for="${elementId}">${identifier}</label>
+          <button class="ace-control ace-undo btn btn-sm btn-outline-secondary" data-pe-autosave-undo
             data-pe-cancel data-pe-for="${elementId}" type="button" title="Undo" aria-label="Undo"></button>
         </div>
-        <div id="${elementId}-error" class="invalid-feedback" role="alert"></div>
+        <div id="${elementId}-error" class="ace-message" role="alert"></div>
       </div>
     </div>
   </div>
@@ -697,35 +713,39 @@ export const fieldGroup = ({
       const elementId = `profile-editing-${profileUid}-${field.identifier}`;
 
       return `
-        <div class="col-12" data-pe-group-control>
-          <label class="form-label" for="${elementId}">${field.identifier}</label>
-          <input class="form-control form-control-sm academic-persons-profile-editing__field" type="text"
-            name="${field.propertyName ?? field.identifier}" id="${elementId}" value="${field.value ?? ""}"
-            aria-describedby="${elementId}-error" aria-invalid="false" />
-          <div id="${elementId}-error" class="invalid-feedback" role="alert"></div>
+        <div class="col-12">
+          <div class="ace-field" data-pe-group-control>
+            <div class="ace-header">
+              <label class="ace-label" for="${elementId}">${field.identifier}</label>
+            </div>
+            <input class="ace-control ace-text" data-pe-field-control="true" type="text"
+              name="${field.propertyName ?? field.identifier}" id="${elementId}" value="${field.value ?? ""}"
+              aria-describedby="${elementId}-error" aria-invalid="false" />
+            <div id="${elementId}-error" class="ace-message" role="alert"></div>
+          </div>
         </div>`;
     })
     .join("");
 
   return `
-<div class="col-12" data-pe-field-group data-pe-field-ids="${fieldIds}"
-  data-pe-display-field-ids="${displayFieldIds ?? fieldIds}" data-pe-display-mode="${displayMode}">
-  <div class="rounded-1 p-3 p-lg-4">
-    <div class="d-flex align-items-start gap-3" data-pe-group-preview>
-      <div class="flex-grow-1 overflow-hidden">
-        <div class="fw-semibold">${identifier}</div>
-        <div class="text-break" data-pe-group-preview-content data-empty-label="${messages.empty}"></div>
+<div class="col-12">
+  <div class="ace-field-group" data-pe-field-group data-pe-field-ids="${fieldIds}"
+    data-pe-display-field-ids="${displayFieldIds ?? fieldIds}" data-pe-display-mode="${displayMode}">
+    <div class="ace-preview" data-pe-group-preview>
+      <div class="ace-content">
+        <div class="ace-label">${identifier}</div>
+        <div class="ace-value" data-pe-group-preview-content data-empty-label="${messages.empty}"></div>
       </div>
-      <button class="btn rounded-0 btn-sm border-0 p-1 text-body flex-shrink-0" data-pe-group-edit type="button"
+      <button class="ace-control ace-edit btn btn-sm" data-pe-group-edit type="button"
         aria-controls="${groupId}-editor" aria-expanded="false" title="Edit" aria-label="Edit"></button>
     </div>
-    <div id="${groupId}-editor" class="d-none mt-3" data-pe-group-editor>
-      <div class="row g-3">${controls}</div>
-      <div class="d-flex justify-content-end mt-3" data-pe-group-actions>
-        <div class="btn-group btn-group-sm flex-shrink-0" role="group" aria-label="Actions">
-          <button class="btn rounded-0 btn-outline-danger" data-pe-group-dismiss type="button" title="Clear" aria-label="Clear"></button>
-          <button class="btn rounded-0 btn-outline-secondary" data-pe-group-cancel type="button" title="Undo" aria-label="Undo"></button>
-          <button class="btn rounded-0 btn-success" data-pe-group-save type="button" title="Save" aria-label="Save"></button>
+    <div id="${groupId}-editor" class="ace-editor" hidden="hidden" data-pe-group-editor>
+      <div class="row">${controls}</div>
+      <div class="ace-actions" data-pe-group-actions>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Actions">
+          <button class="ace-control ace-clear btn btn-outline-danger" data-pe-group-dismiss type="button" title="Clear" aria-label="Clear"></button>
+          <button class="ace-control ace-undo btn btn-outline-secondary" data-pe-group-cancel type="button" title="Undo" aria-label="Undo"></button>
+          <button class="ace-control ace-save btn btn-success" data-pe-group-save type="button" title="Save" aria-label="Save"></button>
         </div>
       </div>
     </div>
@@ -739,12 +759,14 @@ export const fieldGroup = ({
  * The three buttons stand in tab order: apply, undo, discard.
  */
 export const formActions = (sectionLabel = "Personal data"): string => `
-<div class="col-12 d-flex justify-content-end align-items-center gap-2 pt-3 border-top"
+<div class="col-12">
+<div class="ace-actions"
   data-pe-form-actions data-pe-form-reverted-message="${messages.formReverted}"
   role="group" aria-label="Form actions: ${sectionLabel}" hidden>
-  <button class="btn rounded-0 btn-success" data-pe-form-apply type="button" title="Save every changed field of this profile">Apply</button>
-  <button class="btn rounded-0 btn-outline-secondary" data-pe-form-undo type="button" title="Restore every field to the saved value and continue editing">Undo</button>
-  <button class="btn rounded-0 btn-outline-danger" data-pe-form-discard type="button" title="Restore every field to the saved value and close the form">Discard</button>
+  <button class="ace-control ace-apply btn btn-success" data-pe-form-apply type="button" title="Save every changed field of this profile">Apply</button>
+  <button class="ace-control ace-undo btn btn-outline-secondary" data-pe-form-undo type="button" title="Restore every field to the saved value and continue editing">Undo</button>
+  <button class="ace-control ace-discard btn btn-outline-danger" data-pe-form-discard type="button" title="Restore every field to the saved value and close the form">Discard</button>
+</div>
 </div>`;
 
 /**
@@ -757,9 +779,9 @@ export const fieldsForm = (
   formId = "personal",
   sectionLabel = "Personal data",
 ): string => `
-<form id="profile-editing-1-${formId}-form" class="academic-persons-profile-editing__form" data-pe-fields-form>
-  <fieldset class="border-0 p-0 m-0">
-    <div class="row g-3">${fields}${formActions(sectionLabel)}</div>
+<form id="profile-editing-1-${formId}-form" class="ace-form" data-pe-fields-form>
+  <fieldset class="ace-fieldset">
+    <div class="row">${fields}${formActions(sectionLabel)}</div>
   </fieldset>
 </form>`;
 
@@ -793,19 +815,21 @@ export const documentRow = ({
   sortable = true,
   hidden = false,
 }: DocumentRowOptions): string => `
-<article class="row g-0 align-items-center border-bottom py-2" data-pe-document-item
+<article class="ace-item" data-pe-document-item
   data-item-uid="${uid}" data-item-sorting="${sorting}" data-item-position="${position}"${hidden ? ' data-item-hidden="1"' : ""}>
-  <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
-    <div data-pe-document-value="yearStart">${yearStart}</div>
+  <div class="row">
+  <div class="col-12 col-md-2">
+    <div class="ace-cell"><div class="ace-value" data-pe-document-value="yearStart">${yearStart}</div></div>
   </div>
-  <div class="col-12 col-md py-1 pe-md-3 text-break">
-    <div data-pe-document-title>${link === "" ? `<span>${title}</span>` : `<a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a>`}</div>
+  <div class="col-12 col-md">
+    <div class="ace-cell"><div class="ace-value" data-pe-document-title>${link === "" ? `<span>${title}</span>` : `<a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a>`}</div></div>
   </div>
-  <div class="col-12 py-1 pe-md-3 text-break">
-    <div class="${bodytext === "" ? "d-none" : ""}" data-pe-document-value="bodytext">${bodytext}</div>
+  <div class="col-12">
+    <div class="ace-cell"><div class="ace-value"${bodytext === "" ? ' hidden="hidden"' : ""} data-pe-document-value="bodytext"><div class="${bodytext === "" ? "" : "ce-bodytext"}" data-pe-document-rich-text>${bodytext}</div></div></div>
   </div>
   ${documentActions(actions, sortable, hidden)}
-  <div class="col-12 pe-3" data-pe-document-item-collapse-target></div>
+  <div class="col-12"><div class="ace-collapse" data-pe-document-item-collapse-target></div></div>
+  </div>
 </article>`;
 
 /** `Partials/Profile/Documents/Actions.html:85-181`. */
@@ -815,21 +839,23 @@ export const documentActions = (
   hidden = false,
 ): string => {
   const buttons: Record<string, string> = {
-    hide: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" data-pe-document-hide title="${hidden ? labels.show : labels.hide}" aria-label="${hidden ? labels.show : labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"${hidden ? ' hidden="hidden"' : ""}></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden"${hidden ? "" : ' hidden="hidden"'}></span></button>`,
-    view: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="${labels.view}" aria-label="${labels.view}" aria-expanded="false" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-document-view><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>`,
-    down: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Move down" aria-label="Move down" data-pe-document-sort="down"></button>`,
-    up: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Move up" aria-label="Move up" data-pe-document-sort="up"></button>`,
-    delete: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Delete" aria-label="Delete" aria-expanded="false" data-pe-document-delete></button>`,
-    edit: `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2" title="Edit" aria-label="Edit" aria-expanded="false" data-pe-document-edit></button>`,
+    hide: `<button type="button" class="ace-control ace-visibility-toggle btn btn-sm btn-link" data-pe-document-hide title="${hidden ? labels.show : labels.hide}" aria-label="${hidden ? labels.show : labels.hide}" data-pe-label-visible="${labels.hide}" data-pe-label-hidden="${labels.show}"><span data-pe-visibility-icon="visible" data-test-icon="visible"${hidden ? ' hidden="hidden"' : ""}></span><span data-pe-visibility-icon="hidden" data-test-icon="hidden"${hidden ? "" : ' hidden="hidden"'}></span></button>`,
+    view: `<button type="button" class="ace-control ace-view-toggle btn btn-sm btn-link" title="${labels.view}" aria-label="${labels.view}" aria-expanded="false" data-pe-label-collapsed="${labels.view}" data-pe-label-expanded="${labels.viewClose}" data-pe-document-view><span data-pe-view-icon="collapsed" data-test-icon="view"></span><span data-pe-view-icon="expanded" data-test-icon="view-close" hidden="hidden"></span></button>`,
+    down: `<button type="button" class="ace-control ace-sort-down btn btn-sm btn-link" title="Move down" aria-label="Move down" data-pe-document-sort="down"></button>`,
+    up: `<button type="button" class="ace-control ace-sort-up btn btn-sm btn-link" title="Move up" aria-label="Move up" data-pe-document-sort="up"></button>`,
+    delete: `<button type="button" class="ace-control ace-delete btn btn-sm btn-link" title="Delete" aria-label="Delete" aria-expanded="false" data-pe-document-delete></button>`,
+    edit: `<button type="button" class="ace-control ace-edit btn btn-sm btn-link" title="Edit" aria-label="Edit" aria-expanded="false" data-pe-document-edit></button>`,
   };
 
   return `
-  <div class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto">
-    <span class="badge rounded-pill border text-body-secondary bg-body fw-medium" data-pe-document-hidden-badge${hidden ? "" : ' hidden="hidden"'}>${labels.hidden}</span>
-    <div class="d-flex flex-nowrap align-items-center gap-1" role="group" aria-label="Actions" data-pe-document-actions>
-    ${sortable ? `<button type="button" class="btn rounded-0 btn-sm btn-link text-body p-2 d-none d-md-inline-flex" title="Sort" aria-label="Sort" draggable="true" data-pe-document-drag></button>` : ""}
+  <div class="col-12 col-md-auto">
+  <div class="ace-actions">
+    <span class="ace-state" data-pe-document-hidden-badge${hidden ? "" : ' hidden="hidden"'}>${labels.hidden}</span>
+    <div class="ace-controls" role="group" aria-label="Actions" data-pe-document-actions>
+    ${sortable ? `<button type="button" class="ace-control ace-sort ace-sort-handle btn btn-sm btn-link" title="Sort" aria-label="Sort" draggable="true" data-pe-document-drag></button>` : ""}
     ${actions.map((action): string => buttons[action] ?? "").join("")}
     </div>
+  </div>
   </div>`;
 };
 
@@ -855,23 +881,23 @@ export const documentSection = ({
   canCreate?: boolean;
   actions?: string[];
 }): string => `
-<section class="mt-5" aria-labelledby="profile-editing-${profileUid}-document-section-${identifier}-heading"
+<section class="ace-section" aria-labelledby="profile-editing-${profileUid}-document-section-${identifier}-heading"
   data-pe-document-section
   data-section-key="${identifier}"
   data-section-readonly="0"
   data-section-sortable="${sortable ? "1" : "0"}"
   data-section-kind="${kind}">
-  <div class="d-flex align-items-center justify-content-between gap-3 mb-3" data-pe-document-section-header>
-    <h2 id="profile-editing-${profileUid}-document-section-${identifier}-heading" class="display-6 fw-normal mb-0">${identifier}</h2>
-    ${canCreate ? `<button type="button" class="btn rounded-0 btn-sm btn-link p-2" aria-expanded="false" data-pe-document-add></button>` : ""}
+  <div class="ace-header" data-pe-document-section-header>
+    <h2 id="profile-editing-${profileUid}-document-section-${identifier}-heading" class="ace-title">${identifier}</h2>
+    ${canCreate ? `<button type="button" class="ace-control ace-add btn btn-sm btn-link" aria-expanded="false" data-pe-document-add></button>` : ""}
   </div>
   <div data-pe-document-add-collapse-target></div>
-  <div class="row g-0 align-items-end border-bottom pb-2 fw-semibold text-start d-none" data-pe-document-list-header></div>
-  <div data-pe-document-items>${rows}</div>
-  <div class="d-none" aria-hidden="true" data-pe-document-item-template>
+  <div class="ace-header ace-label" data-pe-document-list-header${rows === "" ? ' hidden="hidden"' : ""}><div class="row"></div></div>
+  <div class="ace-itemlist" data-pe-document-items>${rows}</div>
+  <div hidden="hidden" aria-hidden="true" data-pe-document-item-template>
     ${documentRow({ uid: 0, actions, sortable })}
   </div>
-  <div class="bg-body-tertiary py-2 ps-3 small text-body-secondary" role="status" data-pe-document-empty-state>No entries yet.</div>
+  <div class="ace-empty" role="status"${rows === "" ? "" : ' hidden="hidden"'} data-pe-document-empty-state>No entries yet.</div>
 </section>`;
 
 /**
@@ -902,24 +928,24 @@ export const documentEditorView = ({
     .map((field, index): string => {
       const id = `profile-editing-document-field-${index}-${field.name}`;
       if (field.type === "textarea") {
-        return `<textarea class="form-control" rows="6" id="${id}" name="${field.name}"
+        return `<textarea class="ace-control ace-textarea" data-pe-field-control="true" rows="6" id="${id}" name="${field.name}"
           data-pe-document-field="${field.name}"${field.richText === true ? ' data-pe-rich-text=""' : ""}${field.disabled === true ? " disabled" : ""}>${field.value ?? ""}</textarea>`;
       }
       if (field.type === "checkbox") {
-        return `<input class="form-check-input" type="checkbox" id="${id}" name="${field.name}"
+        return `<input class="ace-control ace-checkbox" data-pe-field-control="true" type="checkbox" id="${id}" name="${field.name}"
           data-pe-document-field="${field.name}"${field.disabled === true ? " disabled" : ""} />`;
       }
 
-      return `<input class="form-control" type="text" id="${id}" name="${field.name}" value="${field.value ?? ""}"
+      return `<input class="ace-control ace-text" data-pe-field-control="true" type="text" id="${id}" name="${field.name}" value="${field.value ?? ""}"
         data-pe-document-field="${field.name}"${field.disabled === true ? " disabled" : ""} />`;
     })
     .join("\n");
 
   return `
-<section class="academic-persons-profile-editing__document-collapse border bg-body p-3 my-3" data-pe-document-view-container>
-  <form data-pe-document-form>
-    <h2 class="display-6 fw-normal mb-0" tabindex="-1" data-pe-document-heading>${heading}</h2>
-    <div class="row g-3" data-pe-document-fields>
+<section class="ace-document-editor" data-pe-document-view-container>
+  <form class="ace-form" data-pe-document-form>
+    <h2 class="ace-title" tabindex="-1" data-pe-document-heading>${heading}</h2>
+    <div class="row" data-pe-document-fields>
       ${controls}
     </div>
   </form>
@@ -941,21 +967,23 @@ export const imageCard = ({
   alt?: string;
   title?: string;
 } = {}): string => `
-<div class="col-12 col-lg-4 academic-persons-profile-editing__image-preview-column" data-pe-image-preview-column>
-  <div class="sticky-top" data-pe-sticky-image>
-    <section aria-labelledby="profile-editing-${profileUid}-image-heading">
+<div class="col-12 col-lg-4" data-pe-image-preview-column>
+  <div class="ace-image-column">
+  <div class="ace-sticky-image" data-pe-sticky-image>
+    <section class="ace-section" aria-labelledby="profile-editing-${profileUid}-image-heading">
       <div data-pe-image-preview>
-        <figure class="mb-0">
-          <picture class="d-block">
+        <figure class="ace-figure">
+          <picture class="ace-picture">
             <source srcset="${src}.webp" type="image/webp" media="(min-width: 992px)" />
-            <img src="${src}" alt="${alt}" class="img-fluid w-100 object-fit-cover" title="${title}" loading="lazy" />
+            <img src="${src}" alt="${alt}" class="ace-image" title="${title}" loading="lazy" />
           </picture>
         </figure>
       </div>
-      <button class="btn rounded-0 btn-outline-secondary btn-sm w-100" type="button" data-pe-open-image-view
+      <button class="ace-control ace-edit btn btn-outline-secondary btn-sm" type="button" data-pe-open-image-view
         aria-expanded="false" aria-controls="profile-editing-${profileUid}-image-view"
         title="Edit image" aria-label="Edit image"></button>
     </section>
+  </div>
   </div>
 </div>`;
 
@@ -964,7 +992,7 @@ export const imageCard = ({
  * which widens to the full row while the editor is open.
  */
 export const profileFieldsColumn = (content = ""): string => `
-<div class="col-12 col-lg-8 academic-persons-profile-editing__profile-fields-column">${content}</div>`;
+<div class="col-12 col-lg-8" data-pe-profile-fields-column><div class="ace-fields-column">${content}</div></div>`;
 
 /**
  * `Partials/Profile/Image/Editor.html` - the upload form, its preview, the
@@ -981,11 +1009,11 @@ export const imageEditorView = ({
   action = endpoints.uploadImage,
 }: { profileUid?: number; action?: string } = {}): string => `
 <section id="profile-editing-${profileUid}-image-view"
-  class="academic-persons-profile-editing__image-editor border p-3 p-lg-4 mb-5" aria-busy="false" hidden="hidden"
+  class="ace-image-editor" aria-busy="false" hidden="hidden"
   data-pe-image-view-container>
-  <div class="academic-persons-profile-editing__image-editor-content">
+  <div class="ace-content">
     <form action="${action}" method="post" enctype="multipart/form-data"
-      class="academic-persons-profile-editing__image-form">
+      class="ace-form" data-pe-image-form="true">
       <div>
         <input type="hidden" name="tx_academicpersonsedit_profile[__referrer][@extension]" value="AcademicPersonsEdit" />
         <input type="hidden" name="tx_academicpersonsedit_profile[__referrer][@controller]" value="Profile" />
@@ -994,37 +1022,37 @@ export const imageEditorView = ({
         <input type="hidden" name="tx_academicpersonsedit_profile[__trustedProperties]"
           value="a:1:{s:7:&quot;profile&quot;;a:1:{s:5:&quot;image&quot;;i:1;}}5f3c2a" />
       </div>
-      <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-        <h2 class="display-6 fw-normal mb-0" tabindex="-1" data-pe-image-editor-heading>Profile image</h2>
-        <div class="d-flex align-items-center gap-2" data-pe-image-delete-actions>
-          <button class="btn rounded-0 btn-danger" type="button" data-pe-delete-image title="Delete the image">Delete</button>
-          <span class="text-danger" hidden="hidden" data-pe-delete-image-confirm-question>Delete this image?</span>
-          <button class="btn rounded-0 btn-outline-secondary" type="button" hidden="hidden"
+      <div class="ace-header">
+        <h2 class="ace-title" tabindex="-1" data-pe-image-editor-heading>Profile image</h2>
+        <div class="ace-actions" data-pe-image-delete-actions>
+          <button class="ace-control ace-delete btn btn-danger" type="button" data-pe-delete-image title="Delete the image">Delete</button>
+          <span class="ace-message" hidden="hidden" data-pe-delete-image-confirm-question>Delete this image?</span>
+          <button class="ace-control ace-cancel btn btn-outline-secondary" type="button" hidden="hidden"
             data-pe-cancel-delete-image>Cancel</button>
-          <button class="btn rounded-0 btn-danger" type="button" hidden="hidden" data-pe-confirm-delete-image
+          <button class="ace-control ace-delete btn btn-danger" type="button" hidden="hidden" data-pe-confirm-delete-image
             title="Delete the image">Delete</button>
         </div>
       </div>
       <fieldset data-pe-image-fieldset>
-        <div class="mb-3" data-pe-image-view-preview>
-          <div class="academic-persons-profile-editing__image-cropper" hidden="hidden" data-pe-image-cropper-stage>
+        <div class="ace-preview" data-pe-image-view-preview>
+          <div class="ace-image-cropper" hidden="hidden" data-pe-image-cropper-stage>
             <img alt="" data-pe-image-cropper-source />
           </div>
-          <img class="img-fluid" alt="" hidden="hidden" data-pe-image-selected-preview />
+          <img class="ace-image" alt="" hidden="hidden" data-pe-image-selected-preview />
         </div>
-        <label class="form-label" for="profile-editing-${profileUid}-image">Image</label>
+        <label class="ace-label" for="profile-editing-${profileUid}-image">Image</label>
         <div>
-          <input class="form-control form-control-sm" type="file" name="tx_academicpersonsedit_profile[profile][image]"
+          <input class="ace-control ace-upload" data-pe-image-upload-control type="file" name="tx_academicpersonsedit_profile[profile][image]"
             id="profile-editing-${profileUid}-image" accept="image/jpeg,image/png"
             aria-describedby="profile-editing-${profileUid}-image-error" aria-invalid="false" required />
         </div>
       </fieldset>
-      <div id="profile-editing-${profileUid}-image-error" class="alert alert-danger mt-3 mb-0" role="alert"
+      <div id="profile-editing-${profileUid}-image-error" class="ace-message ace-error" role="alert"
         hidden="hidden" data-pe-image-error></div>
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button class="btn rounded-0 btn-outline-secondary" type="button" data-pe-close-image-view>Cancel</button>
-        <button class="btn rounded-0 btn-primary" type="submit" disabled data-pe-upload-image>
-          <span class="spinner-border spinner-border-sm me-1" aria-hidden="true" hidden="hidden"
+      <div class="ace-actions">
+        <button class="ace-control ace-cancel btn btn-outline-secondary" type="button" data-pe-close-image-view>Cancel</button>
+        <button class="ace-control ace-save btn btn-primary" type="submit" disabled data-pe-upload-image>
+          <span class="ace-spinner" aria-hidden="true" hidden="hidden"
             data-pe-image-upload-spinner></span>Save</button>
       </div>
     </form>

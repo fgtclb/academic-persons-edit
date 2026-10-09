@@ -3,50 +3,58 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <article
-        class="row g-0 align-items-center border-bottom py-2 py-lg-3 ps-3"
+        class="ace-item"
         data-pe-document-item
         data-item-uid="{item.uid}"
         data-item-sorting="{item.sorting}"
         data-item-position="{itemIteration.index}"
         {f:if(condition: item.hidden, then: 'data-item-hidden="1"')}>
+        <div class="row">
         <f:for each="{rowFields}" as="rowField">
             <f:switch expression="{rowField}">
                 <f:case value="from">
-                    <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
-                        <div class="d-md-none fw-semibold mb-1">
+                    <div class="col-12 col-md-2">
+                        <div class="ace-cell">
+                        <div class="ace-label">
                             <f:translate key="profileEditing.documents.from" extensionName="AcademicPersonsEdit" />
                         </div>
-                        <div data-pe-document-value="yearStart">
+                        <div class="ace-value" data-pe-document-value="yearStart">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.yearStart, fallback: item.year}" />
+                        </div>
                         </div>
                     </div>
                 </f:case>
                 <f:case value="to">
-                    <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
-                        <div class="d-md-none fw-semibold mb-1">
+                    <div class="col-12 col-md-2">
+                        <div class="ace-cell">
+                        <div class="ace-label">
                             <f:translate key="profileEditing.documents.to" extensionName="AcademicPersonsEdit" />
                         </div>
-                        <div data-pe-document-value="yearEnd">
+                        <div class="ace-value" data-pe-document-value="yearEnd">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.yearEnd}" />
+                        </div>
                         </div>
                     </div>
                 </f:case>
                 <f:case value="year">
-                    <div class="col-12 col-md-2 py-1 pe-md-3 text-break">
-                        <div class="d-md-none fw-semibold mb-1">
+                    <div class="col-12 col-md-2">
+                        <div class="ace-cell">
+                        <div class="ace-label">
                             <f:translate key="profileEditing.documents.year" extensionName="AcademicPersonsEdit" />
                         </div>
-                        <div data-pe-document-value="year">
+                        <div class="ace-value" data-pe-document-value="year">
                             <f:render partial="Profile/Documents/YearValue" arguments="{value: item.year, fallback: item.yearStart}" />
+                        </div>
                         </div>
                     </div>
                 </f:case>
                 <f:case value="title">
-                    <div class="col-12 col-md py-1 pe-md-3 text-break">
-                        <div class="d-md-none fw-semibold mb-1">
+                    <div class="col-12 col-md">
+                        <div class="ace-cell">
+                        <div class="ace-label">
                             <f:translate key="profileEditing.documents.title" extensionName="AcademicPersonsEdit" />
                         </div>
-                        <div data-pe-document-title>
+                        <div class="ace-value" data-pe-document-title>
                             <f:if condition="{item.link}">
                                 <f:then>
                                     <f:link.typolink parameter="{item.link}" target="_blank" absolute="true">{item.title}</f:link.typolink>
@@ -54,21 +62,29 @@
                                 <f:else><span>{item.title}</span></f:else>
                             </f:if>
                         </div>
+                        </div>
                     </div>
                 </f:case>
                 <f:case value="description">
-                    <div class="col-12 py-1 pe-md-3 text-break">
-                        <div class="d-md-none fw-semibold mb-1">
+                    <div class="col-12">
+                        <div class="ace-cell">
+                        <div class="ace-label">
                             <f:translate key="profileInformation.bodytext.label" extensionName="AcademicPersonsEdit" />
                         </div>
-                        <div class="{f:if(condition: item.bodytext, else: 'd-none')}" data-pe-document-value="bodytext">
-                            {item.bodytext -> f:format.html()}
+                        <div class="ace-value" {f:if(condition: item.bodytext, else: 'hidden="hidden"')} data-pe-document-value="bodytext">
+                            <div
+                                class="{f:if(condition: item.bodytext, then: 'ce-bodytext')}"
+                                data-pe-document-rich-text>
+                                {item.bodytext -> f:format.html()}
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </f:case>
             </f:switch>
         </f:for>
         <f:render partial="Profile/Documents/Actions" arguments="{actions: actions, sortable: sortable, hidden: item.hidden}" />
-        <div class="col-12 pe-3" data-pe-document-item-collapse-target></div>
+        <div class="col-12"><div class="ace-collapse" data-pe-document-item-collapse-target></div></div>
+        </div>
     </article>
 </html>

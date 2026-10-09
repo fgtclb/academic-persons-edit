@@ -458,7 +458,7 @@ export class ProfileDocumentEditorElement extends ProfileEditingElement<ProfileD
         button.disabled = this.pending;
       });
       this.querySelectorAll<HTMLElement>(
-        "[data-pe-document-save] .spinner-border",
+        "[data-pe-document-spinner]",
       ).forEach((spinner): void => {
         spinner.hidden = !this.pending;
       });
@@ -476,7 +476,7 @@ export class ProfileDocumentEditorElement extends ProfileEditingElement<ProfileD
       });
     }
     if (changed.has("error")) {
-      const alert = section.querySelector<HTMLElement>(".alert[role='alert']");
+      const alert = section.querySelector<HTMLElement>("[data-pe-document-error]");
       if (alert !== null) {
         alert.textContent = this.error;
         alert.hidden = this.error === "";

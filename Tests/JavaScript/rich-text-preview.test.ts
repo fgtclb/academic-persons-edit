@@ -167,7 +167,7 @@ describe("rendering the rich text preview", () => {
 
     const placeholder = select(content(), "span", HTMLElement);
     assert.equal(placeholder.textContent, messages.empty);
-    assert.ok(placeholder.classList.contains("text-body-secondary"));
+    assert.ok(placeholder.classList.contains("ace-empty"));
   });
 });
 
@@ -247,14 +247,14 @@ describe("the rich text character limit", () => {
 
     assert.equal(field.value, "<p>Still too long</p>");
     assert.equal(counter().textContent, "14 / 10");
-    assert.ok(counter().classList.contains("text-danger"));
+    assert.ok(counter().classList.contains("ace-limit-exceeded"));
   });
 
   it("marks the counter as exceeded and clears the mark again", async () => {
     setRichTextEditorValue(field, "<p>Far too many characters</p>");
-    assert.ok(counter().classList.contains("text-danger"));
+    assert.ok(counter().classList.contains("ace-limit-exceeded"));
 
     setRichTextEditorValue(field, "<p>Short</p>");
-    assert.equal(counter().classList.contains("text-danger"), false);
+    assert.equal(counter().classList.contains("ace-limit-exceeded"), false);
   });
 });

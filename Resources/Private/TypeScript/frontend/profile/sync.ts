@@ -19,7 +19,7 @@ interface SkipSyncController {
   updateSkipSync(event: Event): Promise<void>;
 }
 
-const syncCheckboxSelector = ".academic-persons-profile-editing__sync-checkbox";
+const syncCheckboxSelector = "[data-pe-sync-checkbox]";
 const syncFormSelector = "[data-pe-sync-form]";
 
 /**

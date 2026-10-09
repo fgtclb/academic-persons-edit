@@ -4,19 +4,20 @@
     xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <div
-        class="btn-group btn-group-sm d-none flex-shrink-0 {f:if(condition: besideHeading, then: 'ms-auto', else: 'align-self-end')}"
+        class="ace-actions btn-group btn-group-sm"
         data-pe-field-actions
         data-pe-for="{elementId}"
         role="group"
+        hidden="hidden"
         aria-label="{f:translate(key: 'profileEditing.actions.group', extensionName: 'AcademicPersonsEdit')}">
         <button
-            class="btn rounded-0 btn-outline-danger"
+            class="ace-control ace-clear btn btn-outline-danger"
             data-pe-dismiss
             data-pe-for="{elementId}"
             type="button"
             title="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'profileEditing.actions.clear', extensionName: 'AcademicPersonsEdit')}">
-            <span aria-hidden="true" class="fs-5 lh-1">
+            <span aria-hidden="true" class="ace-button-label">
                 <ab:icon
                     identifier="tx-academicbase-action-clear"
                     size="small"
@@ -24,13 +25,13 @@
             </span>
         </button>
         <button
-            class="btn rounded-0 btn-outline-secondary"
+            class="ace-control ace-undo btn btn-outline-secondary"
             data-pe-cancel
             data-pe-for="{elementId}"
             type="button"
             title="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'actions.undo', extensionName: 'AcademicPersonsEdit')}">
-            <span aria-hidden="true" class="fs-5 lh-1">
+            <span aria-hidden="true" class="ace-button-label">
                 <ab:icon
                     identifier="tx-academicbase-action-undo"
                     size="small"
@@ -38,13 +39,13 @@
             </span>
         </button>
         <button
-            class="btn rounded-0 btn-success"
+            class="ace-control ace-save btn btn-success"
             data-pe-save
             data-pe-for="{elementId}"
             type="button"
             title="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}"
             aria-label="{f:translate(key: 'actions.save', extensionName: 'AcademicPersonsEdit')}">
-            <span aria-hidden="true" class="fs-5 lh-1">
+            <span aria-hidden="true" class="ace-button-label">
                 <ab:icon
                     identifier="tx-academicbase-action-save"
                     size="small"

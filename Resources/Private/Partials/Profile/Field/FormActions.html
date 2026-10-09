@@ -26,15 +26,16 @@
             name="formActionsGroupLabel"
             value="{formActionsGroupLabel}: {sectionLabel}" />
     </f:if>
+    <div class="col-12">
     <div
-        class="col-12 d-flex justify-content-end align-items-center gap-2 pt-3 border-top"
+        class="ace-actions"
         data-pe-form-actions
         data-pe-form-reverted-message="{f:translate(key: 'profileEditing.status.formReverted', extensionName: 'AcademicPersonsEdit')}"
         role="group"
         aria-label="{formActionsGroupLabel}"
         hidden>
         <button
-            class="btn rounded-0 btn-success"
+            class="ace-control ace-apply btn btn-success"
             data-pe-form-apply
             type="button"
             title="{f:translate(key: 'profileEditing.form.apply.title', extensionName: 'AcademicPersonsEdit')}">
@@ -43,7 +44,7 @@
                 extensionName="AcademicPersonsEdit" />
         </button>
         <button
-            class="btn rounded-0 btn-outline-secondary"
+            class="ace-control ace-undo btn btn-outline-secondary"
             data-pe-form-undo
             type="button"
             title="{f:translate(key: 'profileEditing.form.undo.title', extensionName: 'AcademicPersonsEdit')}">
@@ -52,7 +53,7 @@
                 extensionName="AcademicPersonsEdit" />
         </button>
         <button
-            class="btn rounded-0 btn-outline-danger"
+            class="ace-control ace-discard btn btn-outline-danger"
             data-pe-form-discard
             type="button"
             title="{f:translate(key: 'profileEditing.form.discard.title', extensionName: 'AcademicPersonsEdit')}">
@@ -60,5 +61,6 @@
                 key="profileEditing.form.discard"
                 extensionName="AcademicPersonsEdit" />
         </button>
+    </div>
     </div>
 </html>

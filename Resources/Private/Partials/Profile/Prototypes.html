@@ -34,7 +34,7 @@
         No element and no filler writes markup: every tag, every class
         attribute and every label of the two editors is authored here. What
         JavaScript does spell are the *state* classes it toggles on markup that
-        already exists - "d-none", "is-invalid" and the rest - and a few
+        already exists - "is-invalid" and the rest - and a few
         selectors; both are part of the override contract and are listed in
         Documentation/ProfileEditing/Index.rst.
 
@@ -96,7 +96,7 @@
     <template data-pe-proto="helptext-button">
         <button
             type="button"
-            class="btn rounded-0 btn-link link-info p-0 ms-2 mb-1"
+            class="ace-control ace-help btn btn-link"
             data-pe-helptext
             data-bs-toggle="popover"
             data-bs-trigger="focus"
@@ -112,11 +112,11 @@
 
     <f:comment>One term and one description of a view mode.</f:comment>
     <template data-pe-proto="display-row">
-        <dt class="col-sm-4" data-pe-slot="label"></dt>
-        <dd class="col-sm-8">
-            <div data-pe-when="richText" data-pe-list="richValue"></div>
+        <dt class="col-sm-4"><span class="ace-label" data-pe-slot="label"></span></dt>
+        <dd class="col-sm-8"><div class="ace-value">
+            <div class="ce-bodytext" data-pe-when="richText" data-pe-list="richValue"></div>
             <span data-pe-when="plain" data-pe-slot="value"></span>
-        </dd>
+        </div></dd>
     </template>
 
 

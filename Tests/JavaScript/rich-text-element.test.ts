@@ -145,9 +145,9 @@ describe("the rich text field element", () => {
     assert.deepEqual(
       Array.from(select(element, "textarea", HTMLTextAreaElement).classList).sort(),
       [
-        "academic-persons-profile-editing__field",
-        "form-control",
-        "form-control-sm",
+        "ace-ckeditor",
+        "ace-control",
+        "ace-textarea",
       ],
     );
   });

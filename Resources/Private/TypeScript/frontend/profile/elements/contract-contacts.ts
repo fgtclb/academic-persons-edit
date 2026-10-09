@@ -616,7 +616,9 @@ export class ProfileContractContactsElement extends ProfileEditingElement<Profil
       return;
     }
     panel.setAttribute("aria-busy", editor.pending ? "true" : "false");
-    const alert = panel.querySelector<HTMLElement>(".alert[role='alert']");
+    const alert = panel.querySelector<HTMLElement>(
+      "[data-pe-contract-contact-error]",
+    );
     if (alert !== null) {
       alert.textContent = editor.error;
       alert.hidden = editor.error === "";
@@ -648,7 +650,7 @@ export class ProfileContractContactsElement extends ProfileEditingElement<Profil
       });
     panel
       .querySelectorAll<HTMLElement>(
-        "[data-pe-contract-contact-save] .spinner-border",
+        "[data-pe-contract-contact-spinner]",
       )
       .forEach((spinner): void => {
         spinner.hidden = !editor.pending;

@@ -5,7 +5,7 @@
     <f:for each="{items}" as="item" iteration="itemIteration">
         <f:variable
             name="rowClass"
-            value="{f:if(condition: itemIteration.isOdd, then: 'bg-body-tertiary')}" />
+            value="{f:if(condition: itemIteration.isOdd, then: 'ace-alternate')}" />
         <f:switch expression="{item.kind}">
             <f:case value="special">
                 <f:switch expression="{item.special.renderType}">

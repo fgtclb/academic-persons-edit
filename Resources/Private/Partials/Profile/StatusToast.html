@@ -8,38 +8,38 @@
         changed reliably once it is in the accessibility tree, so the assertive
         one exists from the start and the JavaScript picks the region by status.
     -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="ace-messages">
         <div
             data-pe-status-toast="status"
-            class="toast"
+            class="ace-message"
             role="status"
             aria-live="polite"
             aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto status-title"></strong>
+            <div class="ace-header">
+                <strong class="ace-title" data-pe-status-title></strong>
                 <button
                     type="button"
-                    class="btn-close rounded-0"
-                    data-bs-dismiss="toast"
+                    class="ace-control ace-close btn-close"
+                    data-pe-status-close
                     aria-label="{f:translate(key: 'profileEditing.status.close', extensionName: 'AcademicPersonsEdit')}"></button>
             </div>
-            <div class="toast-body status-message"></div>
+            <div class="ace-content" data-pe-status-message></div>
         </div>
         <div
             data-pe-status-toast="alert"
-            class="toast"
+            class="ace-message"
             role="alert"
             aria-live="assertive"
             aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto status-title"></strong>
+            <div class="ace-header">
+                <strong class="ace-title" data-pe-status-title></strong>
                 <button
                     type="button"
-                    class="btn-close rounded-0"
-                    data-bs-dismiss="toast"
+                    class="ace-control ace-close btn-close"
+                    data-pe-status-close
                     aria-label="{f:translate(key: 'profileEditing.status.close', extensionName: 'AcademicPersonsEdit')}"></button>
             </div>
-            <div class="toast-body status-message"></div>
+            <div class="ace-content" data-pe-status-message></div>
         </div>
     </div>
 </html>

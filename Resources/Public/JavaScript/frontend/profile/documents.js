@@ -229,11 +229,17 @@ const updateDocumentRow = (row, item) => {
       const value = getRowDisplayValue(item, name);
       if (name === "bodytext") {
         const normalizedValue = String(value ?? "");
-        element.classList.toggle("d-none", getPlainText(normalizedValue) === "");
-        if (normalizedValue === "") {
-          element.replaceChildren();
+        const empty = getPlainText(normalizedValue) === "";
+        const content = element.querySelector("[data-pe-document-rich-text]");
+        element.hidden = empty;
+        if (content === null) {
+          return;
+        }
+        content.classList.toggle("ce-bodytext", !empty);
+        if (empty) {
+          content.replaceChildren();
         } else {
-          appendRichText(element, normalizedValue);
+          appendRichText(content, normalizedValue);
         }
         return;
       }
@@ -273,9 +279,13 @@ const refreshDocumentRows = (section) => {
     }
   });
   const emptyState = section.querySelector(emptyStateSelector);
-  emptyState == null ? void 0 : emptyState.classList.toggle("d-none", rows.length > 0);
+  if (emptyState !== null) {
+    emptyState.hidden = rows.length > 0;
+  }
   const listHeader = section.querySelector(listHeaderSelector);
-  listHeader == null ? void 0 : listHeader.classList.toggle("d-md-flex", rows.length > 0);
+  if (listHeader !== null) {
+    listHeader.hidden = rows.length === 0;
+  }
 };
 const insertDocumentRow = (section, item) => {
   const template = section.querySelector(itemTemplateSelector);

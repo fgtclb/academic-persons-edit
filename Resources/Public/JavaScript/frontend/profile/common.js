@@ -67,22 +67,22 @@ const showStatus = (editingTarget, type, message = null, region = null) => {
     danger: {
       title: messages.errorTitle ?? "",
       message: messages.errorMessage ?? "",
-      className: "bg-danger"
+      className: "ace-message-danger"
     },
     success: {
       title: messages.successTitle ?? "",
       message: messages.successMessage ?? "",
-      className: "bg-success"
+      className: "ace-message-success"
     },
     info: {
       title: messages.infoTitle ?? "",
       message: messages.infoMessage ?? "",
-      className: "bg-info"
+      className: "ace-message-info"
     },
     warning: {
       title: messages.warningTitle ?? "",
       message: messages.validation ?? "",
-      className: "bg-warning"
+      className: "ace-message-warning"
     }
   };
   const status = statusValues[type];
@@ -94,22 +94,38 @@ const showStatus = (editingTarget, type, message = null, region = null) => {
     return;
   }
   statusToast.classList.remove(
-    "d-none",
-    "bg-info",
-    "bg-success",
-    "bg-danger",
-    "bg-warning"
+    "ace-message-info",
+    "ace-message-success",
+    "ace-message-danger",
+    "ace-message-warning"
   );
   statusToast.classList.add(status.className);
-  const titleElement = statusToast.querySelector(".status-title");
-  const messageElement = statusToast.querySelector(".status-message");
+  const titleElement = statusToast.querySelector("[data-pe-status-title]");
+  const messageElement = statusToast.querySelector("[data-pe-status-message]");
   if (titleElement !== null) {
     titleElement.textContent = status.title;
   }
   if (messageElement !== null) {
     messageElement.textContent = message ?? status.message;
   }
-  (_b = (_a = getBootstrap()) == null ? void 0 : _a.Toast) == null ? void 0 : _b.getOrCreateInstance(statusToast).show();
+  const toast = (_b = (_a = getBootstrap()) == null ? void 0 : _a.Toast) == null ? void 0 : _b.getOrCreateInstance(statusToast);
+  const closeButton = statusToast.querySelector(
+    "[data-pe-status-close]"
+  );
+  if (closeButton !== null) {
+    closeButton.onclick = () => {
+      if (toast === void 0) {
+        statusToast.classList.remove("show", "showing");
+      } else {
+        toast.hide();
+      }
+    };
+  }
+  if (toast === void 0) {
+    statusToast.classList.add("show");
+  } else {
+    toast.show();
+  }
 };
 const requestJson = async (url, options = {}) => {
   const { headers = {}, ...requestOptions } = options;

@@ -284,7 +284,7 @@ describe("opening a document editor", () => {
     assert.equal(controller.document.open, false);
     assert.equal(addButton().getAttribute("aria-expanded"), "false");
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement).textContent,
       "Not your profile.",
     );
   });
@@ -432,7 +432,7 @@ describe("saving a document", () => {
       "New paper",
     );
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentSaved,
     );
     assert.equal(controller.document.open, false);
@@ -474,7 +474,7 @@ describe("saving a document", () => {
     assert.deepEqual(controller.document.initialValues, { title: "Paper 7, revised" });
     assert.equal(controller.document.title, `${labels.edit}: Paper 7, revised`);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentSaved,
     );
   });
@@ -508,7 +508,7 @@ describe("saving a document", () => {
 
     assert.equal(rows().length, 0);
     assert.equal(
-      select(root, "[data-pe-document-empty-state]", HTMLElement).classList.contains("d-none"),
+      select(root, "[data-pe-document-empty-state]", HTMLElement).hidden,
       false,
     );
   });
@@ -692,8 +692,11 @@ describe("the values of a row the JavaScript wrote", () => {
       values: {},
     });
     const cell = select(withText, '[data-pe-document-value="bodytext"]', HTMLElement);
-    assert.equal(cell.innerHTML, "<p>A <strong>note</strong></p>");
-    assert.equal(cell.classList.contains("d-none"), false);
+    assert.equal(
+      select(cell, "[data-pe-document-rich-text]", HTMLElement).innerHTML,
+      "<p>A <strong>note</strong></p>",
+    );
+    assert.equal(cell.hidden, false);
 
     const withoutText = await insert({
       uid: 4,
@@ -703,7 +706,7 @@ describe("the values of a row the JavaScript wrote", () => {
     });
     assert.ok(
       select(withoutText, '[data-pe-document-value="bodytext"]', HTMLElement)
-        .classList.contains("d-none"),
+        .hidden,
     );
   });
 });

@@ -219,7 +219,7 @@ describe("the profile image", () => {
     assert.equal(root.dataset.hasImage, "1");
     assert.equal(controller.image.hasImage, true);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.imageUploaded,
     );
     assert.equal(previews().length, 2);
@@ -335,7 +335,7 @@ describe("deleting the profile image", () => {
       true,
     );
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.imageDeleted,
     );
   });

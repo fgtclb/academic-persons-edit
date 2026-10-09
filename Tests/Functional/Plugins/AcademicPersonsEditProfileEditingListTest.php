@@ -70,7 +70,7 @@ final class AcademicPersonsEditProfileEditingListTest extends AbstractFrontendPr
         $this->assertStringContainsString('Beispiel', $content);
         $this->assertStringNotContainsString('Nicht', $content);
         $this->assertStringNotContainsString('Zugewiesen', $content);
-        $this->assertStringContainsString('academic-persons-profile-editing-list__image', $content);
+        $this->assertStringContainsString('class="ace-image"', $content);
         $document = new \DOMDocument();
         $this->assertTrue($document->loadHTML($content, LIBXML_NOERROR | LIBXML_NOWARNING));
         $xpath = new \DOMXPath($document);

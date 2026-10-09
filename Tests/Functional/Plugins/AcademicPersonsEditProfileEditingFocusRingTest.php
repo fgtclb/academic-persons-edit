@@ -27,7 +27,7 @@ use PHPUnit\Framework\Attributes\Test;
  * - A focusable thing rendered as something other than those four tags is not
  *   reached by the rule at all. That is how the ring would silently go missing
  *   from an action - an `<a class="btn">` looks like a button and is not one.
- * - A control rendered without its Bootstrap class has no border and no
+ * - A control rendered without its `ace-control` class has no border and no
  *   padding for a ring drawn *inside* its border box to sit on, so an inset
  *   outline would be painted across its own text.
  *
@@ -82,7 +82,7 @@ final class AcademicPersonsEditProfileEditingFocusRingTest extends AbstractFront
     }
 
     #[Test]
-    public function everyControlAndButtonCarriesTheBootstrapClassTheInsetRingNeeds(): void
+    public function everyControlAndButtonCarriesTheClassTheInsetRingNeeds(): void
     {
         $this->setUpProfileEditingTestCase();
         $xpath = $this->parseProfileEditingPage();
@@ -97,10 +97,10 @@ final class AcademicPersonsEditProfileEditingFocusRingTest extends AbstractFront
         $this->assertGreaterThan(0, $controls->length, 'The editor rendered no control at all.');
         $this->assertSame(
             [],
-            $this->describe($this->withoutOneOf($controls, ['form-control', 'form-select', 'form-check-input'])),
-            'A control of the profile editor carries none of the Bootstrap control classes.'
+            $this->describe($this->withoutOneOf($controls, ['ace-control'])),
+            'A control of the profile editor does not carry "ace-control".'
             . ' The focus ring is drawn inside the border box and needs the border and the'
-            . ' padding those classes give the control.',
+            . ' padding that class gives the control.',
         );
 
         $buttons = $xpath->query('//button');

@@ -81,8 +81,8 @@ describe("editing a single field", () => {
   it("swaps the preview for the editor and puts the caret in the field", () => {
     activate("firstName").click();
 
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.ok(preview("firstName").classList.contains("d-none"));
+    assert.equal(editor("firstName").hidden, false);
+    assert.ok(preview("firstName").hidden);
     assert.equal(activate("firstName").getAttribute("aria-expanded"), "true");
     assert.equal(document.activeElement, field("firstName"));
   });
@@ -93,13 +93,13 @@ describe("editing a single field", () => {
       '[data-pe-field-actions][data-pe-for="profile-editing-1-firstName"]',
       HTMLElement,
     );
-    assert.ok(actions.classList.contains("d-none"));
+    assert.ok(actions.hidden);
 
     activate("firstName").click();
-    assert.equal(actions.classList.contains("d-none"), false);
+    assert.equal(actions.hidden, false);
 
     button("data-pe-cancel", "firstName").click();
-    assert.ok(actions.classList.contains("d-none"));
+    assert.ok(actions.hidden);
   });
 
   it("undoes the typed value, closes the field and returns the focus to the button", () => {
@@ -109,7 +109,7 @@ describe("editing a single field", () => {
     button("data-pe-cancel", "firstName").click();
 
     assert.equal(field("firstName").value, "Ada");
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
     assert.equal(activate("firstName").getAttribute("aria-expanded"), "false");
     assert.equal(document.activeElement, activate("firstName"));
   });
@@ -124,7 +124,7 @@ describe("editing a single field", () => {
     button("data-pe-dismiss", "firstName").click();
 
     assert.equal(field("firstName").value, "");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
   });
 
   it("posts only the fields that changed", async () => {
@@ -151,9 +151,9 @@ describe("editing a single field", () => {
     await settle(20);
 
     assert.equal(fetch.calls.length, 0);
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement)
         .textContent,
       messages.unchanged,
     );
@@ -178,7 +178,7 @@ describe("editing a single field", () => {
         .textContent,
       "Augusta",
     );
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
   });
 
   it("rewrites the profile name heading from the fields it is built of", async () => {
@@ -209,7 +209,7 @@ describe("editing a single field", () => {
       HTMLElement,
     );
     assert.equal(content.textContent, messages.empty);
-    assert.ok(content.classList.contains("text-body-secondary"));
+    assert.ok(content.classList.contains("ace-empty"));
   });
 
   /**
@@ -241,9 +241,9 @@ describe("editing a single field", () => {
       select(root, "#profile-editing-1-firstName-error", HTMLElement).textContent,
       "Must not be empty.",
     );
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement)
         .textContent,
       messages.validation,
     );
@@ -281,7 +281,7 @@ describe("editing a single field", () => {
     await settle(20);
 
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "Not your profile.",
     );
@@ -362,7 +362,7 @@ describe("a field that saves on change", () => {
 
     assert.equal(checkbox.checked, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "Refused.",
     );
@@ -430,7 +430,7 @@ describe("editing a group of fields", () => {
     root = render("join", ["", ""]);
 
     assert.equal(groupPreview().textContent, messages.empty);
-    assert.ok(groupPreview().classList.contains("text-body-secondary"));
+    assert.ok(groupPreview().classList.contains("ace-empty"));
   });
 
   it("opens every control of the group and focuses the first one", () => {
@@ -438,8 +438,8 @@ describe("editing a group of fields", () => {
 
     select(root, "[data-pe-group-edit]", HTMLButtonElement).click();
 
-    assert.equal(groupEditor().classList.contains("d-none"), false);
-    assert.ok(select(root, "[data-pe-group-preview]", HTMLElement).classList.contains("d-none"));
+    assert.equal(groupEditor().hidden, false);
+    assert.ok(select(root, "[data-pe-group-preview]", HTMLElement).hidden);
     assert.equal(
       select(root, "[data-pe-group-edit]", HTMLButtonElement).getAttribute("aria-expanded"),
       "true",
@@ -494,7 +494,7 @@ describe("editing a group of fields", () => {
       select(root, "#profile-editing-1-title", HTMLInputElement).value,
       "Dr.",
     );
-    assert.ok(groupEditor().classList.contains("d-none"));
+    assert.ok(groupEditor().hidden);
     assert.equal(groupPreview().textContent, "Dr. Augusta");
   });
 
@@ -506,7 +506,7 @@ describe("editing a group of fields", () => {
 
     assert.equal(select(root, "#profile-editing-1-title", HTMLInputElement).value, "");
     assert.equal(select(root, "#profile-editing-1-middleName", HTMLInputElement).value, "");
-    assert.equal(groupEditor().classList.contains("d-none"), false);
+    assert.equal(groupEditor().hidden, false);
   });
 });
 
@@ -585,7 +585,7 @@ describe("only one field editor at a time", () => {
   const statusMessage = (): string =>
     select(
       root,
-      '[data-pe-status-toast="status"] .status-message',
+      '[data-pe-status-toast="status"] [data-pe-status-message]',
       HTMLElement,
     ).textContent ?? "";
   const dialog = (): HTMLDialogElement | null =>
@@ -608,7 +608,7 @@ describe("only one field editor at a time", () => {
         getOrCreateInstance: (element: Element): { show: () => void } => ({
           show: (): void => {
             announcements.push(
-              select(element, ".status-message", HTMLElement).textContent ?? "",
+              select(element, "[data-pe-status-message]", HTMLElement).textContent ?? "",
             );
           },
         }),
@@ -627,9 +627,9 @@ describe("only one field editor at a time", () => {
     activate("lastName").click();
 
     assert.equal(dialog(), null);
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
     assert.equal(activate("firstName").getAttribute("aria-expanded"), "false");
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("lastName").hidden, false);
     assert.equal(document.activeElement, field("lastName"));
   });
 
@@ -649,8 +649,8 @@ describe("only one field editor at a time", () => {
     assert.ok(asked !== null);
     assert.ok(asked.hasAttribute("open"));
     assert.equal(field("firstName").value, "Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.ok(editor("lastName").classList.contains("d-none"));
+    assert.equal(editor("firstName").hidden, false);
+    assert.ok(editor("lastName").hidden);
     assert.equal(fetch.calls.length, 0);
   });
 
@@ -663,9 +663,9 @@ describe("only one field editor at a time", () => {
 
     assert.equal(dialog(), null);
     assert.equal(field("firstName").value, "Ada");
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
     assert.equal(activate("firstName").getAttribute("aria-expanded"), "false");
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("lastName").hidden, false);
     assert.equal(document.activeElement, field("lastName"));
   });
 
@@ -678,8 +678,8 @@ describe("only one field editor at a time", () => {
 
     assert.equal(dialog(), null);
     assert.equal(field("firstName").value, "Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.ok(editor("lastName").classList.contains("d-none"));
+    assert.equal(editor("firstName").hidden, false);
+    assert.ok(editor("lastName").hidden);
     assert.equal(fetch.calls.length, 0);
   });
 
@@ -701,8 +701,8 @@ describe("only one field editor at a time", () => {
       data: { firstName: "Augusta" },
     });
     assert.equal(field("firstName").value, "Augusta");
-    assert.ok(editor("firstName").classList.contains("d-none"));
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.ok(editor("firstName").hidden);
+    assert.equal(editor("lastName").hidden, false);
   });
 
   /**
@@ -722,9 +722,9 @@ describe("only one field editor at a time", () => {
     await choose("save");
 
     assert.equal(fetch.calls.length, 1);
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
     assert.ok(field("firstName").classList.contains("is-invalid"));
-    assert.ok(editor("lastName").classList.contains("d-none"));
+    assert.ok(editor("lastName").hidden);
   });
 
   /**
@@ -739,7 +739,7 @@ describe("only one field editor at a time", () => {
     activate("firstName").click();
 
     assert.equal(field("firstName").value, "Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
   });
 
   it("discards the changed group that was open when a pencil is pressed and it is told to", async () => {
@@ -750,9 +750,9 @@ describe("only one field editor at a time", () => {
     await choose("discard");
 
     assert.equal(field("title").value, "Dr.");
-    assert.ok(groupEditor().classList.contains("d-none"));
+    assert.ok(groupEditor().hidden);
     assert.equal(groupPreview().textContent, "Dr. Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
   });
 
   it("discards the changed field that was open when a group is opened and it is told to", async () => {
@@ -763,8 +763,8 @@ describe("only one field editor at a time", () => {
     await choose("discard");
 
     assert.equal(field("firstName").value, "Ada");
-    assert.ok(editor("firstName").classList.contains("d-none"));
-    assert.equal(groupEditor().classList.contains("d-none"), false);
+    assert.ok(editor("firstName").hidden);
+    assert.equal(groupEditor().hidden, false);
     assert.equal(document.activeElement, field("title"));
   });
 
@@ -775,7 +775,7 @@ describe("only one field editor at a time", () => {
     groupEdit().click();
 
     assert.equal(field("title").value, "Prof.");
-    assert.equal(groupEditor().classList.contains("d-none"), false);
+    assert.equal(groupEditor().hidden, false);
   });
 
   /**
@@ -829,15 +829,15 @@ describe("only one field editor at a time", () => {
     activate("lastName").click();
 
     assert.equal(field("firstName").value, "Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.ok(editor("lastName").classList.contains("d-none"));
+    assert.equal(editor("firstName").hidden, false);
+    assert.ok(editor("lastName").hidden);
 
     pending.settle({ success: true, data: { firstName: "Augusta" } });
     await settle(20);
 
     assert.equal(fetch.calls.length, 1);
     assert.equal(field("firstName").value, "Augusta");
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
   });
 
   /**
@@ -869,8 +869,8 @@ describe("only one field editor at a time", () => {
     activate("lastName").click();
 
     assert.deepEqual(announcements, []);
-    assert.ok(editor("firstName").classList.contains("d-none"));
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.ok(editor("firstName").hidden);
+    assert.equal(editor("lastName").hidden, false);
   });
 
   /**
@@ -916,7 +916,7 @@ describe("only one field editor at a time", () => {
     button("data-pe-cancel", "firstName").click();
 
     assert.equal(field("firstName").value, "Augusta");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
     assert.deepEqual(announcements, [
       messages.saveInProgress,
       messages.saveInProgress,
@@ -926,7 +926,7 @@ describe("only one field editor at a time", () => {
     await settle(20);
 
     assert.equal(field("firstName").value, "Augusta");
-    assert.ok(editor("firstName").classList.contains("d-none"));
+    assert.ok(editor("firstName").hidden);
   });
 
   it("refuses the clear and the undo of a group while its save is on its way", async () => {
@@ -942,7 +942,7 @@ describe("only one field editor at a time", () => {
 
     assert.equal(field("title").value, "Prof.");
     assert.equal(field("middleName").value, "Augusta");
-    assert.equal(groupEditor().classList.contains("d-none"), false);
+    assert.equal(groupEditor().hidden, false);
     assert.deepEqual(announcements, [
       messages.saveInProgress,
       messages.saveInProgress,
@@ -952,7 +952,7 @@ describe("only one field editor at a time", () => {
     await settle(20);
 
     assert.equal(field("title").value, "Prof.");
-    assert.ok(groupEditor().classList.contains("d-none"));
+    assert.ok(groupEditor().hidden);
   });
 });
 

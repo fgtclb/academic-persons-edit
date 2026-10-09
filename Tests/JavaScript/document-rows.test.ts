@@ -117,20 +117,21 @@ describe("a rendered document list", () => {
 
   it("shows the list header only while the list has rows", () => {
     root = render();
-    assert.ok(
-      select(root, "[data-pe-document-list-header]", HTMLElement).classList.contains("d-md-flex"),
+    assert.equal(
+      select(root, "[data-pe-document-list-header]", HTMLElement).hidden,
+      false,
     );
     assert.ok(
-      select(root, "[data-pe-document-empty-state]", HTMLElement).classList.contains("d-none"),
+      select(root, "[data-pe-document-empty-state]", HTMLElement).hidden,
     );
 
     root = render({ rows: [] });
     assert.equal(
-      select(root, "[data-pe-document-list-header]", HTMLElement).classList.contains("d-md-flex"),
-      false,
+      select(root, "[data-pe-document-list-header]", HTMLElement).hidden,
+      true,
     );
     assert.equal(
-      select(root, "[data-pe-document-empty-state]", HTMLElement).classList.contains("d-none"),
+      select(root, "[data-pe-document-empty-state]", HTMLElement).hidden,
       false,
     );
   });
@@ -235,7 +236,7 @@ describe("sorting a document list with the arrows", () => {
     assert.equal(arrow(2, "up").disabled, true);
     assert.equal(arrow(1, "up").disabled, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.documentSorted,
     );
   });
@@ -269,7 +270,7 @@ describe("sorting a document list with the arrows", () => {
 
     assert.deepEqual(uids(), ["1", "2", "3"]);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement).textContent,
       "Not sortable.",
     );
   });
@@ -415,7 +416,7 @@ describe("sorting a document list by dragging", () => {
     await settle(20);
     assert.deepEqual(uids(), ["1", "2", "3"]);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement).textContent,
       "Refused.",
     );
   });
@@ -485,7 +486,7 @@ describe("hiding a record of a document list", () => {
   const badge = (uid: number): HTMLElement =>
     select(root, `[data-item-uid="${uid}"] [data-pe-document-hidden-badge]`, HTMLElement);
   const statusText = (region: "status" | "alert"): string =>
-    select(root, `[data-pe-status-toast="${region}"] .status-message`, HTMLElement)
+    select(root, `[data-pe-status-toast="${region}"] [data-pe-status-message]`, HTMLElement)
       .textContent ?? "";
 
   beforeEach(() => {

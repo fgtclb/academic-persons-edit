@@ -205,7 +205,7 @@ describe("the document editor element", () => {
         ],
       });
 
-      const rendered = select(element, "dd div", HTMLElement);
+      const rendered = select(element, "dd .ce-bodytext", HTMLElement);
       assert.deepEqual(
         Array.from(rendered.children, (child): string => child.tagName),
         ["P"],
@@ -372,7 +372,7 @@ describe("the document editor element", () => {
       );
       assert.equal(control.id, "profile-editing-document-field-1-title");
       assert.equal(
-        selectAll(element, "label.form-label", HTMLLabelElement)[1]?.htmlFor,
+        selectAll(element, "label.ace-label", HTMLLabelElement)[1]?.htmlFor,
         control.id,
       );
     });
@@ -394,7 +394,7 @@ describe("the document editor element", () => {
         select(element, '[data-pe-document-field="kind"]', HTMLInputElement).disabled,
         true,
       );
-      assert.equal(selectAll(element, ".text-danger", HTMLElement).length, 1);
+      assert.equal(selectAll(element, ".ace-required", HTMLElement).length, 1);
     });
 
     /**
@@ -442,7 +442,7 @@ describe("the document editor element", () => {
         ),
         [true, true],
       );
-      assert.ok(element.querySelector(".spinner-border") !== null);
+      assert.ok(element.querySelector("[data-pe-document-spinner]") !== null);
     });
 
     /**
@@ -488,7 +488,7 @@ describe("the document editor element", () => {
       });
 
       assert.equal(
-        select(element, ".alert-danger", HTMLElement).textContent?.trim(),
+        select(element, "[data-pe-document-error]", HTMLElement).textContent?.trim(),
         "Please check.",
       );
       const control = select(
@@ -703,7 +703,7 @@ describe("the document editor element", () => {
 
       // The re-render happened...
       assert.equal(
-        select(element, ".invalid-feedback", HTMLElement).textContent?.trim(),
+        select(element, "[data-pe-document-fields] .ace-message", HTMLElement).textContent?.trim(),
         "Too long.",
       );
       // ... and it went around the editor rather than through it.
@@ -929,7 +929,7 @@ describe("opening a document editor in the page", () => {
     assert.equal(controller.document.pending, false);
     assert.equal(document.activeElement, button);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       messages.errorMessage,
     );

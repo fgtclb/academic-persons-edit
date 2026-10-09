@@ -250,9 +250,7 @@ class ProfileImageEditorElement extends ProfileEditingElement {
     const preview = context.root.querySelector("[data-pe-image-preview-column]");
     setClass(preview, "col-lg-4", !collapsed);
     setHidden(preview, collapsed);
-    const fields = context.root.querySelector(
-      ".academic-persons-profile-editing__profile-fields-column"
-    );
+    const fields = context.root.querySelector("[data-pe-profile-fields-column]");
     setClass(fields, "col-lg-12", collapsed);
     setClass(fields, "col-lg-8", !collapsed);
     (_a = context.root.querySelector("[data-pe-open-image-view]")) == null ? void 0 : _a.setAttribute("aria-expanded", state.editing ? "true" : "false");

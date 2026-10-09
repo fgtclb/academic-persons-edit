@@ -228,7 +228,7 @@ describe("the profile image editor element", () => {
     assert.equal(preview.classList.contains("col-lg-4"), false);
     const fields = select(
       root,
-      ".academic-persons-profile-editing__profile-fields-column",
+      "[data-pe-profile-fields-column]",
       HTMLElement,
     );
     assert.equal(fields.classList.contains("col-lg-12"), true);

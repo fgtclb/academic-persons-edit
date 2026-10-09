@@ -107,7 +107,7 @@ describe("one editor at a time across the modules", () => {
     assert.equal(dialog(), null);
     assert.equal(controller.document.open, false);
     assert.equal(rowButton(7, "view").getAttribute("aria-expanded"), "false");
-    assert.equal(fieldEditor().classList.contains("d-none"), false);
+    assert.equal(fieldEditor().hidden, false);
   });
 
   /**
@@ -123,7 +123,7 @@ describe("one editor at a time across the modules", () => {
 
     assert.ok(dialog() !== null);
     assert.equal(controller.document.open, true);
-    assert.ok(fieldEditor().classList.contains("d-none"));
+    assert.ok(fieldEditor().hidden);
     assert.equal(fetch.calls.length, 1);
   });
 
@@ -136,7 +136,7 @@ describe("one editor at a time across the modules", () => {
 
     assert.equal(dialog(), null);
     assert.equal(controller.document.open, false);
-    assert.equal(fieldEditor().classList.contains("d-none"), false);
+    assert.equal(fieldEditor().hidden, false);
     assert.equal(fetch.calls.length, 1);
   });
 
@@ -157,7 +157,7 @@ describe("one editor at a time across the modules", () => {
       data: { section: "publications", record: 7, fields: { title: "Paper 7, revised" } },
     });
     assert.equal(controller.document.open, false);
-    assert.equal(fieldEditor().classList.contains("d-none"), false);
+    assert.equal(fieldEditor().hidden, false);
   });
 
   it("keeps the document editor and opens nothing when the dialog is cancelled", async () => {
@@ -170,7 +170,7 @@ describe("one editor at a time across the modules", () => {
     assert.equal(dialog(), null);
     assert.equal(controller.document.open, true);
     assert.deepEqual(controller.document.values, { title: "Paper 7, revised" });
-    assert.ok(fieldEditor().classList.contains("d-none"));
+    assert.ok(fieldEditor().hidden);
     assert.equal(fetch.calls.length, 1);
   });
 
@@ -188,11 +188,11 @@ describe("one editor at a time across the modules", () => {
     await choose("discard");
 
     assert.equal(field().value, "Ada");
-    assert.ok(fieldEditor().classList.contains("d-none"));
+    assert.ok(fieldEditor().hidden);
     assert.equal(fetch.calls[0]?.url, endpoints.documentForm);
     assert.equal(controller.document.open, true);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-message', HTMLElement).textContent,
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-message]', HTMLElement).textContent,
       messages.discarded,
     );
   });
@@ -206,7 +206,7 @@ describe("one editor at a time across the modules", () => {
     await choose("cancel");
 
     assert.equal(field().value, "Augusta");
-    assert.equal(fieldEditor().classList.contains("d-none"), false);
+    assert.equal(fieldEditor().hidden, false);
     assert.equal(fetch.calls.length, 0);
     assert.equal(controller.document.open, false);
   });

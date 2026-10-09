@@ -120,7 +120,7 @@ describe("editing the whole profile as one form", () => {
   const statusMessage = (region: "status" | "alert"): string =>
     select(
       root,
-      `[data-pe-status-toast="${region}"] .status-message`,
+      `[data-pe-status-toast="${region}"] [data-pe-status-message]`,
       HTMLElement,
     ).textContent ?? "";
 
@@ -135,7 +135,7 @@ describe("editing the whole profile as one form", () => {
         getOrCreateInstance: (element: Element): { show: () => void } => ({
           show: (): void => {
             announcements.push(
-              select(element, ".status-message", HTMLElement).textContent ?? "",
+              select(element, "[data-pe-status-message]", HTMLElement).textContent ?? "",
             );
           },
         }),
@@ -173,13 +173,13 @@ describe("editing the whole profile as one form", () => {
   it("opens the editable fields and leaves a read-only one closed", () => {
     toggle().click();
 
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
+    assert.equal(editor("lastName").hidden, false);
     assert.equal(
-      select(root, "[data-pe-group-editor]", HTMLElement).classList.contains("d-none"),
+      select(root, "[data-pe-group-editor]", HTMLElement).hidden,
       false,
     );
-    assert.equal(editor("position").classList.contains("d-none"), true);
+    assert.equal(editor("position").hidden, true);
   });
 
   it("puts the caret in the first editable field rather than in the last", () => {
@@ -198,7 +198,7 @@ describe("editing the whole profile as one form", () => {
   it("asks about the changed single field that was open and discards it when told to", async () => {
     activate("lastName").click();
     field("lastName").value = "Byron";
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("lastName").hidden, false);
 
     toggle().click();
     assert.equal(bar().hidden, true);
@@ -207,7 +207,7 @@ describe("editing the whole profile as one form", () => {
     await settle(20);
 
     assert.equal(field("lastName").value, "Lovelace");
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("lastName").hidden, false);
     assert.equal(
       select(
         root,
@@ -263,16 +263,21 @@ describe("editing the whole profile as one form", () => {
     await settle(20);
 
     assert.equal(bar().hidden, true);
-    assert.equal(editor("firstName").classList.contains("d-none"), true);
+    assert.equal(editor("firstName").hidden, true);
     assert.equal(toggle().getAttribute("aria-pressed"), "false");
     assert.equal(
       select(root, "[data-pe-edit-all-button-label]", HTMLElement).textContent,
       "Edit all",
     );
     assert.equal(document.activeElement, toggle());
+    // Every field is closed again, and so are the actions beside it. The
+    // group actions and the undo of a checkbox are free of the form again.
+    for (const group of selectAll(root, "[data-pe-field-actions]", HTMLElement)) {
+      assert.equal(group.hidden, true);
+    }
     for (const group of selectAll(
       root,
-      "[data-pe-field-actions], [data-pe-group-actions], [data-pe-autosave-undo]",
+      "[data-pe-group-actions], [data-pe-autosave-undo]",
       HTMLElement,
     )) {
       assert.equal(group.hidden, false);
@@ -457,7 +462,7 @@ describe("editing the whole profile as one form", () => {
       "Homepage",
     );
     assert.equal(bar().hidden, false);
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
     assert.equal(statusMessage("status"), messages.formReverted);
   });
 
@@ -488,7 +493,7 @@ describe("editing the whole profile as one form", () => {
 
     assert.equal(field("firstName").value, "Ada");
     assert.equal(bar().hidden, true);
-    assert.equal(editor("firstName").classList.contains("d-none"), true);
+    assert.equal(editor("firstName").hidden, true);
     assert.equal(toggle().getAttribute("aria-pressed"), "false");
     assert.equal(document.activeElement, toggle());
   });
@@ -684,10 +689,10 @@ describe("editing the whole profile as one form", () => {
    * discard it runs first reads openness off the DOM, which in this state
    * means every editor of the profile: it would throw the whole typed form
    * away and leave the bar standing over fields that had been reverted. What
-   * keeps that pencil out of reach in the shipped markup is the `d-none` of
-   * the preview it sits in, and that is a Bootstrap class in an overridable
-   * partial, not a rule of the module. The way out of the form is the form's
-   * own bar.
+   * keeps that pencil out of reach in the shipped markup is the `hidden`
+   * attribute of the preview it sits in, and that is markup a stylesheet of
+   * an overridable partial can override, not a rule of the module. The way
+   * out of the form is the form's own bar.
    */
   it("does nothing when a pencil is pressed while the form is open", () => {
     toggle().click();
@@ -699,8 +704,8 @@ describe("editing the whole profile as one form", () => {
 
     assert.equal(field("firstName").value, "Augusta");
     assert.equal(field("lastName").value, "Byron");
-    assert.equal(editor("firstName").classList.contains("d-none"), false);
-    assert.equal(editor("lastName").classList.contains("d-none"), false);
+    assert.equal(editor("firstName").hidden, false);
+    assert.equal(editor("lastName").hidden, false);
     assert.equal(bar().hidden, false);
     assert.equal(toggle().getAttribute("aria-pressed"), "true");
     // Nothing was thrown away, so nothing is announced - and nothing waits for
@@ -741,7 +746,7 @@ describe("editing the whole profile as one form", () => {
 
     assert.equal(bar().hidden, true);
     assert.equal(toggle().getAttribute("aria-pressed"), "false");
-    assert.equal(editor("firstName").classList.contains("d-none"), true);
+    assert.equal(editor("firstName").hidden, true);
     assert.equal(field("lastName").value, "Byron");
 
     pending.settle({ success: true, data: { lastName: "Byron" } });

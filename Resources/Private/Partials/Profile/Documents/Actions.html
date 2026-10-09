@@ -3,10 +3,10 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
-    <div
-        class="col-12 col-md-auto flex-shrink-0 d-flex flex-nowrap align-items-center gap-2 justify-content-center justify-content-md-end align-self-center ms-md-auto">
+    <div class="col-12 col-md-auto">
+    <div class="ace-actions">
         <span
-            class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+            class="ace-state"
             data-pe-document-hidden-badge
             {f:if(condition: hidden, else: 'hidden="hidden"')}>
             <f:translate
@@ -15,7 +15,7 @@
         </span>
         <f:if condition="{managed}">
             <span
-                class="badge rounded-pill border text-body-secondary bg-body fw-medium"
+                class="ace-state"
                 data-pe-document-managed-badge>
                 <f:translate
                     key="profileEditing.field.managed"
@@ -23,14 +23,14 @@
             </span>
         </f:if>
         <div
-            class="d-flex flex-nowrap align-items-center gap-1"
+            class="ace-controls"
             role="group"
             aria-label="{f:translate(key: 'profileEditing.documents.actions', extensionName: 'AcademicPersonsEdit')}"
             data-pe-document-actions>
             <f:if condition="{sortable}">
                 <button
                     type="button"
-                    class="btn rounded-0 btn-sm btn-link text-body p-2 d-none d-md-inline-flex"
+                    class="ace-control ace-sort ace-sort-handle btn btn-sm btn-link"
                     title="{f:translate(key: 'actions.dragSort', extensionName: 'AcademicPersonsEdit')}"
                     aria-label="{f:translate(key: 'actions.dragSort', extensionName: 'AcademicPersonsEdit')}"
                     draggable="true"
@@ -46,7 +46,7 @@
                     <f:case value="hide">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-visibility-toggle btn btn-sm btn-link"
                             data-pe-document-hide
                             title="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'AcademicPersonsEdit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'AcademicPersonsEdit\')}')}"
                             aria-label="{f:if(condition: hidden, then: '{f:translate(key: \'actions.show\', extensionName: \'AcademicPersonsEdit\')}', else: '{f:translate(key: \'actions.hide\', extensionName: \'AcademicPersonsEdit\')}')}"
@@ -69,7 +69,7 @@
                     <f:case value="view">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-view-toggle btn btn-sm btn-link"
                             title="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                             aria-label="{f:translate(key: 'actions.view', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
@@ -93,7 +93,7 @@
                     <f:case value="down">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-sort-down btn btn-sm btn-link"
                             title="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
                             aria-label="{f:translate(key: 'actions.sortDown', extensionName: 'AcademicPersonsEdit')}"
                             data-pe-document-sort="down">
@@ -106,7 +106,7 @@
                     <f:case value="up">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-sort-up btn btn-sm btn-link"
                             title="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
                             aria-label="{f:translate(key: 'actions.sortUp', extensionName: 'AcademicPersonsEdit')}"
                             data-pe-document-sort="up">
@@ -119,7 +119,7 @@
                     <f:case value="delete">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-delete btn btn-sm btn-link"
                             title="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                             aria-label="{f:translate(key: 'actions.delete', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
@@ -133,7 +133,7 @@
                     <f:case value="edit">
                         <button
                             type="button"
-                            class="btn rounded-0 btn-sm btn-link text-body p-2"
+                            class="ace-control ace-edit btn btn-sm btn-link"
                             title="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                             aria-label="{f:translate(key: 'actions.edit', extensionName: 'AcademicPersonsEdit')}"
                             aria-expanded="false"
@@ -147,5 +147,6 @@
                 </f:switch>
             </f:for>
         </div>
+    </div>
     </div>
 </html>

@@ -39,7 +39,7 @@ describe("the synchronisation switch", () => {
     root = select(body, "[data-academic-persons-profile-editing]", HTMLElement);
     checkbox = select(
       root,
-      ".academic-persons-profile-editing__sync-checkbox",
+      "[data-pe-sync-checkbox]",
       HTMLInputElement,
     );
     form = select(root, "[data-pe-sync-form]", HTMLFormElement);
@@ -95,7 +95,7 @@ describe("the synchronisation switch", () => {
     assert.equal(checkbox.checked, false);
     assert.equal(checkbox.classList.contains("is-invalid"), false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-title', HTMLElement)
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-title]', HTMLElement)
         .textContent,
       "Saved",
     );
@@ -109,7 +109,7 @@ describe("the synchronisation switch", () => {
     assert.equal(checkbox.checked, false);
     assert.ok(checkbox.classList.contains("is-invalid"));
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "Locked by an editor.",
     );
@@ -171,7 +171,7 @@ describe("the synchronisation switch", () => {
     assert.equal(fetch.calls.length, 0);
     assert.equal(checkbox.checked, false);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       messages.errorMessage,
     );

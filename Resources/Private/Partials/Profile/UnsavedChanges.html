@@ -25,29 +25,29 @@
     </f:comment>
     <template data-pe-dialog="unsaved-changes">
         <dialog
-            class="academic-persons-profile-editing__dialog rounded-0 border-0 p-0 shadow"
+            class="ace-dialog"
             data-pe-unsaved-changes
             aria-labelledby="profile-editing-{profile.uid}-unsaved-changes-title"
             aria-describedby="profile-editing-{profile.uid}-unsaved-changes-message">
-            <div class="p-4">
+            <div class="ace-content">
                 <h2
                     id="profile-editing-{profile.uid}-unsaved-changes-title"
-                    class="h4 mb-3">
+                    class="ace-title">
                     <f:translate
                         key="profileEditing.unsavedChanges.title"
                         extensionName="AcademicPersonsEdit" />
                 </h2>
                 <p
                     id="profile-editing-{profile.uid}-unsaved-changes-message"
-                    class="mb-4">
+                    class="ace-copy">
                     <f:translate
                         key="profileEditing.unsavedChanges.message"
                         extensionName="AcademicPersonsEdit" />
                 </p>
-                <div class="d-flex flex-wrap justify-content-end gap-2">
+                <div class="ace-actions">
                     <button
                         type="button"
-                        class="btn rounded-0 btn-outline-secondary"
+                        class="ace-control ace-cancel btn btn-outline-secondary"
                         data-pe-unsaved-choice="cancel">
                         <f:translate
                             key="profileEditing.unsavedChanges.cancel"
@@ -55,7 +55,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-outline-danger"
+                        class="ace-control ace-discard btn btn-outline-danger"
                         data-pe-unsaved-choice="discard">
                         <f:translate
                             key="profileEditing.unsavedChanges.discard"
@@ -63,7 +63,7 @@
                     </button>
                     <button
                         type="button"
-                        class="btn rounded-0 btn-primary"
+                        class="ace-control ace-save btn btn-primary"
                         data-pe-unsaved-choice="save">
                         <f:translate
                             key="profileEditing.unsavedChanges.save"

@@ -33,7 +33,7 @@ describe("the visibility switch", () => {
     root = select(body, "[data-academic-persons-profile-editing]", HTMLElement);
     checkbox = select(
       root,
-      ".academic-persons-profile-editing__visibility-checkbox",
+      "[data-pe-visibility-checkbox]",
       HTMLInputElement,
     );
     form = select(root, "[data-pe-visibility-form]", HTMLFormElement);
@@ -95,7 +95,7 @@ describe("the visibility switch", () => {
     assert.equal(checkbox.checked, false);
     assert.equal(checkbox.classList.contains("is-invalid"), false);
     assert.equal(
-      select(root, '[data-pe-status-toast="status"] .status-title', HTMLElement)
+      select(root, '[data-pe-status-toast="status"] [data-pe-status-title]', HTMLElement)
         .textContent,
       "Saved",
     );
@@ -112,7 +112,7 @@ describe("the visibility switch", () => {
     assert.equal(checkbox.checked, true);
     assert.ok(checkbox.classList.contains("is-invalid"));
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       "The visibility of this profile cannot be changed here.",
     );
@@ -146,7 +146,7 @@ describe("the visibility switch", () => {
   it("leaves a change of the synchronisation switch alone", async () => {
     const syncCheckbox = select(
       root,
-      ".academic-persons-profile-editing__sync-checkbox",
+      "[data-pe-sync-checkbox]",
       HTMLInputElement,
     );
 
@@ -175,7 +175,7 @@ describe("the visibility switch", () => {
     assert.equal(fetch.calls.length, 0);
     assert.equal(checkbox.checked, true);
     assert.equal(
-      select(root, '[data-pe-status-toast="alert"] .status-message', HTMLElement)
+      select(root, '[data-pe-status-toast="alert"] [data-pe-status-message]', HTMLElement)
         .textContent,
       messages.errorMessage,
     );

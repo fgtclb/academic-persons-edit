@@ -209,11 +209,11 @@ final class AcademicPersonsEditLabelOverrideTest extends AbstractFrontendProfile
     public static function translationDataProvider(): \Generator
     {
         yield 'list, multi-line tag' => [
-            'list', '<h1 id="academic-persons-profile-editing-list-heading" class="h2 fw-normal mb-4"> %s </h1>',
+            'list', '<h1 id="academic-persons-profile-editing-list-heading" class="ace-title"> %s </h1>',
             'list.profile.assigned', 'Assigned profiles',
         ];
         yield 'list, language column translated by the controller' => [
-            'list', '<td class="text-nowrap">%s</td>',
+            'list', '<td class="ace-value ace-language">%s</td>',
             'list.language.all', 'All languages',
         ];
         yield 'editor, inline in an attribute' => [
@@ -229,7 +229,7 @@ final class AcademicPersonsEditLabelOverrideTest extends AbstractFrontendProfile
             'helptext.title', 'Here you can change a title.',
         ];
         yield 'editor, heading of a document section, a full reference' => [
-            'editor', 'document-section-contracts-heading" class="display-6 fw-normal text-start mb-0"> %s </h2>',
+            'editor', 'document-section-contracts-heading" class="ace-title"> %s </h2>',
             'tx_academicpersons_domain_model_profile.columns.contracts.label', 'Employee Contracts',
         ];
         yield 'editor, select option translated by the options service with a full reference' => [

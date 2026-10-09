@@ -3,12 +3,12 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     data-namespace-typo3-fluid="true">
     <header
-        class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4 mb-5 pt-5 mt-5"
+        class="ace-header"
         data-pe-profile-header>
         <f:if condition="{title}">
             <h1
                 id="profile-editing-{profile.uid}-name-heading"
-                class="h2 fw-bolder mb-0"
+                class="ace-title"
                 data-pe-profile-name
                 data-pe-profile-name-field-ids="{title.fieldIdentifiers}">
                 <f:for
@@ -21,24 +21,22 @@
                 </f:for>
             </h1>
         </f:if>
-        <div
-            class="d-flex flex-wrap justify-content-between justify-content-lg-end align-items-center gap-4 ms-lg-auto">
+        <div class="ace-actions">
             <f:if condition="{skipSync}">
                 <f:variable
                     name="syncElementId"
                     value="profile-editing-{profile.uid}-skipSync" />
                 <form
-                    class="academic-persons-profile-editing__sync-form flex-shrink-0"
+                    class="ace-form"
                     data-pe-sync-form>
-                    <div
-                        class="form-check form-switch form-check-lg mb-0 d-flex flex-row align-items-center">
+                    <div class="ace-switch">
                         <f:comment>
                             The one form control of the editor that is not
                             rendered through Profile/Field/Control.html. It is
                             not a profile field: it deliberately carries the
-                            "__sync-checkbox" class and not the "__field" one,
-                            because frontend/profile/fields.ts collects the
-                            latter and would then save and validate the switch
+                            sync hook and not the field-control hook, because
+                            frontend/profile/fields.ts collects the latter and
+                            would then save and validate the switch
                             as if it were a mapped property. It is spelled once,
                             with the same "disabled" expression Control.html
                             uses, so read-only and disabled cannot drift apart.
@@ -46,14 +44,15 @@
                         <f:form.checkbox
                             name="skipSync"
                             id="{syncElementId}"
-                            class="form-check-input academic-persons-profile-editing__sync-checkbox"
+                            class="ace-control ace-checkbox"
+                            data-pe-sync-checkbox="true"
                             value="1"
                             checked="{profile.skipSync}"
                             aria-describedby="{syncElementId}-error"
                             aria-invalid="false"
                             disabled="{f:if(condition: '{skipSync.validation.disabled} || {skipSync.validation.readOnly}', then: 'disabled')}" />
                         <label
-                            class="form-check-label ms-3 cursor-pointer"
+                            class="ace-label"
                             for="{syncElementId}"
                             title="{f:translate(key: 'profile.skipSync.description', extensionName: 'AcademicPersonsEdit')}">
                             <f:translate
@@ -69,7 +68,7 @@
                             }" />
                         <div
                             id="{syncElementId}-error"
-                            class="invalid-feedback"
+                            class="ace-message"
                             role="alert"></div>
                     </div>
                 </form>
@@ -79,28 +78,28 @@
                     name="visibilityElementId"
                     value="profile-editing-{profile.uid}-visibility" />
                 <form
-                    class="academic-persons-profile-editing__visibility-form flex-shrink-0"
+                    class="ace-form"
                     data-pe-visibility-form>
-                    <div
-                        class="form-check form-switch form-check-lg mb-0 d-flex flex-row align-items-center">
+                    <div class="ace-switch">
                         <f:comment>
                             The owner's "Show my profile publicly" switch. Like the
                             synchronisation switch above it is not a profile field,
-                            so it carries the "__visibility-checkbox" class and not
-                            the "__field" one. It shows the profile's "hidden"
+                            so it carries its own behaviour hook and not the
+                            field-control hook. It shows the profile's "hidden"
                             column inverted: it is on while the profile is public.
                         </f:comment>
                         <f:form.checkbox
                             name="visibility"
                             id="{visibilityElementId}"
-                            class="form-check-input academic-persons-profile-editing__visibility-checkbox"
+                            class="ace-control ace-checkbox"
+                            data-pe-visibility-checkbox="true"
                             value="1"
                             checked="!{profile.hidden}"
                             aria-describedby="{visibilityElementId}-error"
                             aria-invalid="false"
                             disabled="{f:if(condition: '{visibility.validation.disabled} || {visibility.validation.readOnly}', then: 'disabled')}" />
                         <label
-                            class="form-check-label ms-3 cursor-pointer"
+                            class="ace-label"
                             for="{visibilityElementId}"
                             title="{f:translate(key: 'profile.hidden.description', extensionName: 'AcademicPersonsEdit')}">
                             <f:translate
@@ -116,7 +115,7 @@
                             }" />
                         <div
                             id="{visibilityElementId}-error"
-                            class="invalid-feedback"
+                            class="ace-message"
                             role="alert"></div>
                     </div>
                 </form>
@@ -127,7 +126,7 @@
             -->
             <f:if condition="{fieldsFormIds}">
                 <button
-                    class="btn rounded-0 btn-outline-secondary btn-sm flex-shrink-0"
+                    class="ace-control ace-edit btn btn-outline-secondary btn-sm"
                     type="button"
                     data-academic-persons-profile-editing-edit-all-btn
                     data-pe-edit-all-label="{f:translate(key: 'profileEditing.btnEditAll', extensionName: 'AcademicPersonsEdit')}"
