@@ -141,6 +141,54 @@ Edit the page record of the site root, tab :guilabel:`Resources`, field
 
 The setting is inherited by every page below the one it is set on.
 
+..  _configuration-javascript:
+
+Load the script or bring your own
+=================================
+
+The :guilabel:`Profile editing` content element loads the module
+:js:`@fgtclb/academic-persons-edit/frontend/profile.js` on the page that shows
+the editor of a profile. The list of assigned profiles loads no script.
+
+It is switched off per site, for an installation that brings an editor of its
+own:
+
+..  list-table::
+    :header-rows: 1
+
+    *   -   Site setting and constant
+        -   Default
+        -   Off means
+    *   -   :yaml:`plugin.tx_academicpersonsedit.assets.js`
+        -   :yaml:`true`
+        -   The page does not load the module.
+
+With the site set, it is a site setting of the component set
+`fgtclb/academic-persons-edit-profile-editing`, so a site that names only that
+set can set it:
+
+..  code-block:: yaml
+    :caption: config/sites/my-site/settings.yaml
+
+    plugin.tx_academicpersonsedit.assets.js: false
+
+With the static template, it is the TypoScript constant of the same name:
+
+..  code-block:: typoscript
+    :caption: Constants of the root sys_template record
+
+    plugin.tx_academicpersonsedit.assets.js = 0
+
+**The editor does not work without its script.** Every field, button and
+dialog of it is driven by the script: it defines the custom element
+:html:`<academic-persons-edit-profile-editing>` and the elements below it, reads
+their configuration from the :html:`data-*` attributes and sends every change
+to the endpoints the template names. Switching the script off therefore means
+bringing a complete editor for the same markup and the same endpoints, see
+:ref:`Templates <templates>`. A site that only wants to change how the editor
+looks keeps the script, styles the editor in its site package and overrides
+partials where the markup has to change.
+
 ..  _one-mechanism-per-site:
 
 Do not combine both

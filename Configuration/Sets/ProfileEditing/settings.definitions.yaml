@@ -1,4 +1,4 @@
-# The one site setting this component reads.
+# The site settings this component reads.
 #
 # `Configuration/TypoScript/ProfileEditing/setup.typoscript` assigns
 # `settings.detailPid` from `{$plugin.tx_academicpersons.detailPid}`, so the
@@ -13,6 +13,12 @@
 # `EXT:academic_persons/Configuration/TypoScript/Default/constants.typoscript`
 # declare: a site including both sets reads whichever definition is merged last,
 # and a differing default would silently reset what the integrator configured.
+#
+# `plugin.tx_academicpersonsedit.assets.js` is this extension's own, also assigned in
+# `Configuration/TypoScript/ProfileEditing/constants.typoscript` with the same
+# default: a site that uses the site set and the static template reads the constants
+# after the site settings, so a differing default resets what the integrator
+# configured, silently.
 categories:
   academic:
     label: 'Academic'
@@ -26,3 +32,9 @@ settings:
     category: academic.persons
     type: int
     default: 0
+  plugin.tx_academicpersonsedit.assets.js:
+    label: 'Profile editing | Load the script'
+    description: 'Off for an installation that brings its own script. Without one the editor does nothing: every field, button and dialog of it is driven by the script.'
+    category: academic.persons
+    type: bool
+    default: true

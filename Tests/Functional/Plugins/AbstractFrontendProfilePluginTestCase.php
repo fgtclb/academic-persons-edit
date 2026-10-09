@@ -57,12 +57,14 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
     /**
      * @param array<non-empty-string, mixed> $additionalSiteConfiguration
      * @param list<string> $additionalTypoScriptSetupFiles appended last, so they override the shipped setup
+     * @param list<string> $additionalTypoScriptConstantFiles appended last, so they override the shipped constants
      */
     protected function setUpFrontendProfileTestCase(
         string $contentElementFixture,
         string $editingComponent = 'ProfileEditing',
         array $additionalSiteConfiguration = [],
         array $additionalTypoScriptSetupFiles = [],
+        array $additionalTypoScriptConstantFiles = [],
     ): void {
         $this->importCSVDataSet($contentElementFixture);
         $editingTypoScriptPath = sprintf(
@@ -78,6 +80,7 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
                     $editingTypoScriptPath . 'constants.typoscript',
                     'EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/'
                     . 'TypoScript/Constants/Configuration.typoscript',
+                    ...$additionalTypoScriptConstantFiles,
                 ],
                 'setup' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
@@ -94,6 +97,51 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
                 rootPageId: 1,
                 base: self::FRONTEND_PLUGIN_TEST_BASE,
                 additionalRootConfiguration: $additionalSiteConfiguration,
+            ),
+            languages: [
+                $this->buildDefaultLanguageConfiguration(
+                    identifier: 'EN',
+                    base: '/',
+                ),
+            ],
+        );
+        $this->logInFrontendUser();
+    }
+
+    /**
+     * The same page on a site that names the set of the editing component instead of a
+     * static template. Its `sys_template` record only brings the page object, with
+     * `clear = 0`, so what the set contributes is kept.
+     *
+     * @param array<string, bool|int|string> $settings Site settings in the flat notation
+     *        the sets declare them in.
+     */
+    protected function setUpFrontendProfileSiteSetTestCase(string $contentElementFixture, array $settings = []): void
+    {
+        $this->importCSVDataSet($contentElementFixture);
+        $this->getConnectionPool()->getConnectionForTable('sys_template')->insert(
+            'sys_template',
+            [
+                'pid' => 1,
+                'root' => 1,
+                'clear' => 0,
+                'title' => 'Site package',
+                'constants' => '',
+                'config' => '@import \'EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/Rendering.typoscript\'',
+            ],
+        );
+        $this->writeSiteConfiguration(
+            // The site identifier is part of several caches the test instance keeps for
+            // the whole class, so differently configured sites need different ones.
+            identifier: 'acme-' . substr(md5(json_encode($settings, JSON_THROW_ON_ERROR)), 0, 10),
+            site: $this->buildSiteConfiguration(
+                rootPageId: 1,
+                base: self::FRONTEND_PLUGIN_TEST_BASE,
+                additionalRootConfiguration: [
+                    'dependencies' => ['typo3/fluid-styled-content', 'fgtclb/academic-persons-edit-profile-editing'],
+                    // The detail page the constants fixture of the static path sets as well.
+                    'settings' => ['plugin.tx_academicpersons.detailPid' => 3, ...$settings],
+                ],
             ),
             languages: [
                 $this->buildDefaultLanguageConfiguration(

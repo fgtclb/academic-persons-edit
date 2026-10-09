@@ -3,4 +3,11 @@ plugin.tx_academicpersonsedit {
     templateRootPath = EXT:academic_persons_edit/Resources/Private/Templates/
     partialRootPath = EXT:academic_persons_edit/Resources/Private/Partials/
   }
+
+  # The script of the profile editor. Also a site setting of the set
+  # "fgtclb/academic-persons-edit-profile-editing", with the same default.
+  assets {
+    # cat=plugin.tx_academicpersonsedit/enable; type=boolean; label=Profile editing: load the script, off for an installation that brings its own
+    js = 1
+  }
 }

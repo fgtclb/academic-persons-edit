@@ -3,8 +3,10 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:ab="http://typo3.org/ns/FGTCLB/AcademicBase/ViewHelpers"
     data-namespace-typo3-fluid="true">
-    <f:asset.module
-        identifier="@fgtclb/academic-persons-edit/frontend/profile.js" />
+    <f:if condition="{settings.assets.js}">
+        <f:asset.module
+            identifier="@fgtclb/academic-persons-edit/frontend/profile.js" />
+    </f:if>
     <f:variable
         name="updateUrl"
         value="{f:uri.action(action: 'update', controller: 'Profile', pageType: 1733735, absolute: true)}" />

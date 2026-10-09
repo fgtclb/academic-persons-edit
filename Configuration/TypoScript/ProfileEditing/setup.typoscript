@@ -1,6 +1,11 @@
 plugin.tx_academicpersonsedit {
   settings {
     detailPid = {$plugin.tx_academicpersons.detailPid}
+    # Whether the profile editor loads its script, see "constants.typoscript". The
+    # template checks it where it registers the module, and nowhere else.
+    assets {
+      js = {$plugin.tx_academicpersonsedit.assets.js}
+    }
     editForm {
       profileImage {
         targetFolder = 1:/profile-images
