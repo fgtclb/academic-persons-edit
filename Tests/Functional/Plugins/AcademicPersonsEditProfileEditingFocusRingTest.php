@@ -14,13 +14,16 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * The markup side of the focus ring the editor draws for itself.
+ * The markup side of the focus ring a site draws for the editor.
  *
- * `Resources/Private/Scss/frontend/profile-editing.scss` replaces the theme's
- * focus appearance for every control and every button of the plugin with one
- * rule, `… :is(input, select, textarea, button):focus-visible`. The cascade it
- * wins is not observable here and not in jsdom either - no stylesheet is ever
- * loaded into the JavaScript suite - and it was verified in a browser instead.
+ * The extension ships no stylesheet. The one of the development instances,
+ * `Resources/Private/Scss/frontend/_academic-persons-edit.scss` of
+ * EXT:academics_dev_site, replaces the theme's focus appearance for every
+ * control and every button of the plugin with one rule,
+ * `… :is(input, select, textarea, button):focus-visible`, and a site package
+ * that copies it relies on the same markup. The cascade it wins is not
+ * observable here and not in jsdom either - no stylesheet is ever loaded into
+ * the JavaScript suite - and it was verified in a browser instead.
  * What *is* observable, and what actually breaks the rule in practice, is the
  * coupling between that selector and the markup:
  *
@@ -74,8 +77,8 @@ final class AcademicPersonsEditProfileEditingFocusRingTest extends AbstractFront
         $this->assertSame(
             [],
             $this->describe($foreign),
-            'The profile editor renders a focusable control the focus ring rule of'
-            . ' Resources/Private/Scss/frontend/profile-editing.scss cannot reach.'
+            'The profile editor renders a focusable control the focus ring rule of the'
+            . ' development site stylesheet (_academic-persons-edit.scss) cannot reach.'
             . ' Either render it as one of "' . implode('", "', self::COVERED_TAGS)
             . '", or widen the rule and this test together.',
         );

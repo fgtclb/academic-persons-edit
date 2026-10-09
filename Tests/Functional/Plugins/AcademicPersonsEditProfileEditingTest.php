@@ -208,6 +208,28 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
     }
 
     /**
+     * The list of the profiles and the editor bring no stylesheet: the extension ships
+     * none since 3.0, a site styles the editor through its classes. The test site links
+     * no stylesheet of its own, so any `<link rel="stylesheet">` would be one the plugin
+     * registered.
+     */
+    #[Test]
+    public function listAndEditorBringNoStylesheet(): void
+    {
+        $this->setUpProfileEditingTestCase();
+
+        $list = $this->getPageAsFrontendUser('https://www.acme.com/home');
+        $editor = $this->renderProfileEditingPage();
+
+        $this->assertStringContainsString('data-academic-persons-profile-editing-list', $list);
+        $this->assertStringContainsString('@fgtclb/academic-persons-edit/frontend/profile.js', $editor);
+        foreach ([$list, $editor] as $content) {
+            $this->assertStringNotContainsString('profile-editing.css', $content);
+            $this->assertDoesNotMatchRegularExpression('#<link[^>]+rel="stylesheet"#', $content);
+        }
+    }
+
+    /**
      * The AJAX hooks of the image editor, on the page the visitor is served.
      *
      * `frontend/profile/image.ts` addresses every one of these by attribute, so

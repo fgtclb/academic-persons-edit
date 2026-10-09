@@ -280,7 +280,7 @@ describe("the contract contacts element", () => {
 
     /**
      * Both used to be class names this module wrote. They are not any more:
-     * the striping is a `:nth-child` rule of `profile-editing.scss` and a
+     * the striping is a `:nth-child` rule of the site stylesheet and a
      * hidden contact is a `data-pe-contract-contact-hidden` attribute the
      * stylesheet dims. No class name of the editor is spelled in TypeScript,
      * which is what makes the whole list overridable in Fluid.

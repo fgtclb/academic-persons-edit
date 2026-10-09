@@ -162,19 +162,30 @@ The template is intentionally a composition root. The main partial groups are:
           existing template overrides; the shipped read view does not use its
           button-shaped value controls.
 
+..  _profile-editing-layout:
+
 Layout and responsive behavior
 ==============================
 
 The view uses Bootstrap 5 grid, spacing, typography, background, positioning
 and form utilities; the Fluid templates contain no inline style declarations.
-:file:`Resources/Public/Css/frontend/profile-editing.css` is generated from
-:file:`Resources/Private/Scss/frontend/profile-editing.scss` by the repository
-build and holds only what Bootstrap cannot express: the ``display: block`` the
-custom elements need, a ``[hidden]`` rule that outranks Bootstrap's display
-utilities, three corrections to a surrounding theme (a ``.section`` overflow,
-one frame spacing variable, the stacking of the sticky card), the focus ring of
-the controls and buttons, the drag states of a sortable list and the enter/leave
-classes of the two editor transitions. All Bootstrap button controls of the
+The extension ships no stylesheet, see
+:ref:`breaking-profile-editing-ships-no-stylesheet`. What Bootstrap cannot
+express is the site's: the ``display: block`` the custom elements need, a
+``[hidden]`` rule that outranks Bootstrap's display utilities, the widget
+CropperJS builds for the image editor, whose stylesheet TYPO3 delivers only
+inside the backend, corrections to a surrounding theme, the focus ring of the
+controls and buttons, the drag states of a sortable list and the enter/leave
+classes of the two editor transitions. Without the first three the editor does
+not work: regions it hides stay on screen and the cropper cannot be dragged.
+
+The mono repository the extension is developed in carries all of it as an
+example, the stylesheet of its development instances:
+`_academic-persons-edit.scss of EXT:academics_dev_site
+<https://github.com/fgtclb/academic-extensions/blob/main/packages-dev/dev-site/Resources/Private/Scss/frontend/_academic-persons-edit.scss>`__.
+What this chapter says about the focus ring, the transitions and the drag
+states describes that example, which the development versions of 3.0 shipped
+with the extension. All Bootstrap button controls of the
 shipped editor carry ``rounded-0`` so their corners remain square.
 
 The focus ring is the one appearance the view takes away from the surrounding
@@ -908,7 +919,7 @@ controls and drag handle persist the same record order.
 The presentation uses Bootstrap rows with one shared desktop column heading,
 compact flat records, separating borders and alternating tertiary backgrounds
 within each document section, which are a ``:nth-child(odd)`` rule of the
-extension's stylesheet rather than a class on the row. The year columns
+stylesheet rather than a class on the row. The year columns
 remain narrow while title and position columns consume the available width.
 On small viewports every record repeats its field labels instead of rendering
 the desktop heading. An empty section keeps its heading and add action,
@@ -1045,7 +1056,7 @@ derives from the editing state, including the two column widths of
 
 Opening and closing is animated with a short vertical move and fade, driven by
 the ``…-image-editor-enter-active`` / ``-enter-from`` / ``-leave-active`` /
-``-leave-to`` classes of the extension's stylesheet. An explicit CSS grid row
+``-leave-to`` classes the stylesheet styles. An explicit CSS grid row
 expands and collapses the editor height, padding, margin and border instead of
 removing the complete block in one layout step. The open scroll leaves ``2rem``
 above the editor. The return scroll starts together with the collapse and uses
@@ -1589,7 +1600,7 @@ override may move them, and should keep them:
     data-pe-document-fields        data-pe-profile-header
                                    data-pe-rich-text-heading
 
-Of these, ``data-pe-compact`` is the only one a stylesheet of this extension
+Of these, ``data-pe-compact`` is the only one the example stylesheet
 uses; the rest exist for overrides.
 
 One consequence of the prototype mechanism is worth stating: a clone keeps the
@@ -1672,16 +1683,15 @@ one of them breaks the editor silently, because nothing throws when a
     *   - ``…-enter-from``, ``…-enter-active``, ``…-leave-active``,
           ``…-leave-to``
         - The collapse transitions, derived from the prefix of the editor that
-          runs them. The declarations are in
-          :file:`Resources/Private/Scss/frontend/profile-editing.scss`.
+          runs them. The declarations are in the stylesheet of the site, see
+          :ref:`Layout and responsive behavior <profile-editing-layout>`.
 
 Frontend build
 ==============
 
 The package has no separate development toolchain below
-:file:`Resources/Public/`. TypeScript sources, SCSS sources and the committed
-JavaScript and CSS output use the repository-wide frontend suites from the
-repository root:
+:file:`Resources/Public/`. TypeScript sources and the committed JavaScript
+output use the repository-wide frontend suites from the repository root:
 
 ..  code-block:: bash
 

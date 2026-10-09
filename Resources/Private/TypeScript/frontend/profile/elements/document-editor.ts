@@ -90,7 +90,8 @@ export const documentFieldIdPrefix = "profile-editing-document-field";
 
 /**
  * The class name prefix of the collapse transition. The declarations it
- * selects are in `Resources/Private/Scss/frontend/profile-editing.scss`.
+ * selects are the site stylesheet's, in the development instances
+ * `_academic-persons-edit.scss` of EXT:academics_dev_site.
  */
 const runDocumentTransition = createElementTransition(
   "academic-persons-profile-editing-document-collapse",
