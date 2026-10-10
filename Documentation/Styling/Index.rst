@@ -324,10 +324,13 @@ Further classes of the editor
 What the editor script writes
 =============================
 
-The editor script works with the `data-pe-*` attributes and writes these
-classes, which a site stylesheet should show. The editor does not work without
-it: `plugin.tx_academicpersonsedit.assets.js` switches it off only for a site
-that brings an editor script of its own, see :ref:`configuration-javascript`.
+The editor script works with the `data-pe-*` attributes, apart from the
+`ace-message` of a field or a group, which it finds by its class and writes the
+message of a refused value into, so an override keeps that class. It writes
+these classes, which a site stylesheet should show. The editor does not work
+without it: `plugin.tx_academicpersonsedit.assets.js` switches it off only for
+a site that brings an editor script of its own, see
+:ref:`configuration-javascript`.
 
 ..  list-table::
     :header-rows: 1

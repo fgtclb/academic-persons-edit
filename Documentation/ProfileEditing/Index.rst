@@ -185,8 +185,8 @@ example, the stylesheet of its development instances:
 <https://github.com/fgtclb/academic-extensions/blob/main/packages-dev/dev-site/Resources/Private/Scss/frontend/_academic-persons-edit.scss>`__.
 What this chapter says about the focus ring, the transitions and the drag
 states describes that example, which the development versions of 3.0 shipped
-with the extension. All Bootstrap button controls of the
-shipped editor carry ``rounded-0`` so their corners remain square.
+with the extension. The buttons are Bootstrap buttons and keep the shape the
+theme gives them.
 
 The focus ring is the one appearance the view takes away from the surrounding
 theme rather than correcting. Bootstrap draws it with ``box-shadow``, several
@@ -212,18 +212,18 @@ group — because two focus appearances in one form would be worse than the one
 being replaced.
 
 ``:focus-visible`` is not a synonym for keyboard focus. Measured in Chrome, a
-pointer click on a checkbox or on the synchronisation switch does not match it
-and those two keep Bootstrap's soft glow, while a pointer click on a text
-input or a select does match it and those take the inset ring. Most of what
-the view renders is in the second group, so the change is visible to a visitor
-using a mouse and not only to one using the keyboard. The colour is
-``currentcolor``, which is the colour a control draws its own text in — but
-not the colour of a checkbox tick or a switch knob, which Bootstrap paints as
-a background image with a hardcoded ``#ffffff``. On those two the ring takes
-the inherited body colour, ``#212121`` on the ``#577760`` of a checked control
-with the shipped theme, and measures 3.23:1: enough for WCAG 2.1 SC 1.4.11 and
-no more, so a site with a darker ``$primary`` has to check that pair. Plain links are not covered, no theme rule takes their focus
-ring away. CKEditor 5 is covered by halves: its editable region is a ``div``,
+pointer click on a checkbox, the synchronisation switch among them, does not
+match it and keeps the focus appearance of the browser, while a pointer click
+on a text input or a select does match it and takes the inset ring. Most of
+what the view renders is in the second group, so the change is visible to a
+visitor using a mouse and not only to one using the keyboard. The colour is
+``currentcolor``, which is the colour a control draws its own text in. The
+checkbox is a native ``ace-control ace-checkbox``, which the example leaves to
+the browser with ``appearance: auto``: the browser draws its tick in its own
+accent colour, and the ring takes the text colour of the control. A site that
+draws the checkbox itself checks the contrast of the ring against the checked
+control, which WCAG 2.1 SC 1.4.11 wants at 3:1 at least. Plain links are not
+covered, no theme rule takes their focus ring away. CKEditor 5 is covered by halves: its editable region is a ``div``,
 so it is outside the rule and keeps the library's own focus styling, while the
 buttons of its toolbar are ``button`` elements below the plugin root and take
 this ring rather than the library's. That is the same answer as everywhere
@@ -233,8 +233,9 @@ Above the grid, the complete profile name and the synchronization/edit-all
 controls share one responsive header row. The controls wrap below the name on
 narrow viewports. On ``lg`` and larger viewports the first content row uses a
 ``4 / 8`` column split.
-The profile image block has ``sticky-top`` so the image and its edit action
-stay visible while the profile data scrolls. Below ``lg`` both columns stack in
+The profile image block, ``ace-sticky-image``, is sticky in the example
+stylesheet, so the image and its edit action stay visible while the profile
+data scrolls. Below ``lg`` both columns stack in
 document order. The about section follows the complete first row and therefore
 never overlaps the sticky column.
 
@@ -248,28 +249,28 @@ view uses for its own sticky navigation — one implementation, two callers. A
 synchronized whenever the navbar changes height, including height or padding
 changes caused by a scroll-dependent header state. Environments without it use
 the window ``resize`` event as a fallback. If the matching fixed page header
-is absent, Bootstrap's regular ``sticky-top`` value remains in control.
+is absent, the ``top`` of the site stylesheet remains in control, ``1rem`` in
+the example.
 
-The two columns live in their own ``align-items-stretch`` row. The image column
-inherits the stretched cross-axis size, giving the sticky image a containing
-block as tall as the adjacent profile data. The full-width about section keeps
-its own ``col-12`` in a separate sibling row below it.
+The two columns live in their own ``row``. Its columns stretch to the height of
+the row, giving the sticky ``ace-sticky-image`` a containing block as tall as
+the adjacent profile data. The full-width about section keeps its own
+``col-12`` in a separate sibling row below it.
 
 The complete profile name is the page's ``h1`` above both columns. Both Fluid and
 JavaScript use the ordered ``fields`` list from :yaml:`special.title`. Fluid
 renders the initial name; ``data-pe-profile-name-field-ids`` lets JavaScript
 recompose the same name after a successful update without reloading the page.
 
-Profile values are rendered as readable text rows with alternating
-``bg-body-tertiary`` surfaces. The only read-mode action is a borderless pencil
-button with an accessible label. Name components and the URL/title pair of
-each link share one preview row and open as one editing group. Only one field
-or group is ever open: a second pencil, and :guilabel:`Edit all`, discard the
-one that is open before they open theirs
-(:ref:`profile-editing-full-form`).
-The special name editor retains the established responsive grid (academic
-title / first name at ``4 / 8`` and middle / last name at ``6 / 6``) without
-putting layout metadata into YAML.
+Profile values are rendered as readable text rows, every other one marked
+``ace-alternate``, which the example stylesheet gives a tertiary surface. The
+only read-mode action is a borderless pencil button with an accessible label.
+Name components and the URL/title pair of each link share one preview row and
+open as one editing group. Only one field or group is ever open: a second
+pencil, and :guilabel:`Edit all`, discard the one that is open before they open
+theirs (:ref:`profile-editing-full-form`). The special name editor retains the
+established responsive grid (academic title / first name at ``4 / 8`` and
+middle / last name at ``6 / 6``) without putting layout metadata into YAML.
 
 Settings-driven controls
 ========================
@@ -1441,8 +1442,7 @@ which slot carries which value.
         - One ``<template>`` per shape a browser-rendered editor draws. The
           elements clone one and fill its ``data-pe-slot``, ``data-pe-attr``,
           ``data-pe-when`` and ``data-pe-list`` nodes.
-    *   - ``data-pe-fields-form`` and
-          ``academic-persons-profile-editing__field``
+    *   - ``data-pe-fields-form`` and ``data-pe-field-control``
         - Generic field forms and controls. Separate forms preserve valid markup
           across the personal-data and about-section grid areas.
     *   - ``data-pe-rich-text`` and ``data-pe-editor-container``
@@ -1559,11 +1559,11 @@ which slot carries which value.
           request.
     *   - ``data-pe-save``
         - Persists one field through the generic JSON endpoint.
-    *   - ``data-pe-sync-form`` and
-          ``academic-persons-profile-editing__sync-checkbox``
+    *   - ``data-pe-sync-form`` and ``data-pe-sync-checkbox``
         - Synchronization control.
-    *   - ``academic-persons-profile-editing__image-form`` and
-          ``data-pe-image-view-container``
+    *   - ``data-pe-visibility-form`` and ``data-pe-visibility-checkbox``
+        - Visibility control of :guilabel:`Show my profile publicly`.
+    *   - ``data-pe-image-form`` and ``data-pe-image-view-container``
         - AJAX-only multipart upload form and the editor panel around it. The
           form is server rendered and stays that way: it carries the
           ``__trustedProperties`` signature the property mapper validates the
@@ -1609,8 +1609,8 @@ attributes of the block it came from. They are inert in the live DOM - the
 filler has already written the values they name - and they are not state. Do not
 read them, and do not style on them.
 
-Every editable field needs one ``invalid-feedback`` element in its closest
-``data-pe-field-wrapper``, ``data-pe-group-control`` or ``.form-check`` wrapper.
+Every editable field needs one ``ace-message`` element in its closest
+``data-pe-field-wrapper`` or ``data-pe-group-control`` wrapper.
 Inline collapse targets, views, status regions, icon templates and
 compatibility-template elements must remain inside the component root. All DOM
 lookups are scoped to that root, so multiple components remain independent.
@@ -1622,60 +1622,48 @@ State classes and selectors JavaScript uses
 
 No element and no prototype filler writes markup: every tag, every ``class``
 attribute and every label of the editor is authored in Fluid. What the modules
-below them do is toggle *state* classes on markup that already exists, and
-select a few nodes by class. Both are part of the override contract - renaming
-one of them breaks the editor silently, because nothing throws when a
-``classList.toggle()`` writes a class no stylesheet defines.
+below them do is show and hide markup that already exists through its
+``hidden`` attribute, toggle *state* classes on it, and select a few nodes by
+class. Both are part of the override contract - renaming one of them breaks the
+editor silently, because nothing throws when a ``classList.toggle()`` writes a
+class no stylesheet defines.
 
 ..  list-table::
     :header-rows: 1
 
     *   - Class or selector
         - Written or read for
-    *   - ``d-none``
-        - Everything that is shown and hidden by the field editing: a preview,
-          an editor, a per-field action group, an empty section, the toast.
-    *   - ``d-md-flex``
-        - The header row of a structured document list, which is shown only
-          while the list has rows.
     *   - ``is-invalid``
-        - A control the server refused, on a profile field and on the
-          synchronisation switch.
-    *   - ``text-danger``
-        - A rich text character counter that is over its limit.
-    *   - ``text-body-secondary``
-        - A preview that shows the empty label instead of a value.
+        - A control the server refused, with the editor element of its field,
+          and the checkbox of the synchronisation or the visibility switch.
+    *   - ``ace-limit-exceeded``
+        - A rich text character counter, ``ace-counter``, that is over its
+          limit.
+    *   - ``ace-empty`` and ``ce-bodytext``
+        - A preview that shows the empty label, and a rich text preview that
+          shows a value.
     *   - ``active``
         - The :guilabel:`Edit all` toggle while it is pressed.
-    *   - ``bg-danger``, ``bg-success``, ``bg-info``, ``bg-warning``
-        - The severity of the status toast; the four are exchanged, never
-          combined.
-    *   - ``.status-title`` and ``.status-message``
-        - The two nodes of :file:`Partials/Profile/StatusToast.html` a status is
-          written into.
+    *   - ``ace-message-danger``, ``ace-message-success``,
+          ``ace-message-info``, ``ace-message-warning``, ``show`` and
+          ``showing``
+        - The severity of the status toast, the four are exchanged, never
+          combined, and its visibility where the Bootstrap toast script is not
+          on the page.
     *   - ``is-drag-active``, ``is-dragging``, ``is-drop-before``,
           ``is-drop-after``, ``is-drop-at-end``
         - The drag sorting of a structured document list and its insertion
-          indicator.
+          indicator. ``is-drop-before`` and ``is-drop-after`` are read back as
+          selectors to clear the indicator.
     *   - ``is-image-closing``
         - The plugin root while the image editor collapses.
-    *   - ``col-lg-4``, ``col-lg-8``, ``col-lg-12`` and
-          ``.academic-persons-profile-editing__profile-fields-column``
-        - The two column widths the image editor exchanges while it is open.
-    *   - ``.alert[role="alert"]`` and ``.spinner-border``
-        - The message and the busy indicator of an open document or contact
-          panel, written onto the panel that is already there rather than by
-          rebuilding it.
-    *   - ``.invalid-feedback``, ``.form-check`` and ``.mb-3``
-        - The message element of a refused field, and the two wrappers it is
-          looked up from when the field carries no ``data-pe-field-wrapper``
-          or ``data-pe-group-control``.
-    *   - ``.academic-persons-profile-editing__field``
-        - Every editable control of the profile fields. This is the class the
-          field editing enumerates by, so an override that drops it leaves the
-          field unreachable.
-    *   - ``.academic-persons-profile-editing__sync-checkbox``
-        - The synchronisation switch of :file:`Partials/Profile/Header.html`.
+    *   - ``col-lg-4``, ``col-lg-8``, ``col-lg-12``
+        - The two column widths the image editor exchanges while it is open,
+          on the columns marked ``data-pe-image-preview-column`` and
+          ``data-pe-profile-fields-column``.
+    *   - ``.ace-message``
+        - The message element of a refused field, looked up in its
+          ``data-pe-field-wrapper`` or ``data-pe-group-control``.
     *   - ``.ck``
         - CKEditor's own root, read to decide whether :kbd:`Escape` belongs to
           the editor or to the form. It is the library's class, not this
@@ -1683,8 +1671,19 @@ one of them breaks the editor silently, because nothing throws when a
     *   - ``…-enter-from``, ``…-enter-active``, ``…-leave-active``,
           ``…-leave-to``
         - The collapse transitions, derived from the prefix of the editor that
-          runs them. The declarations are in the stylesheet of the site, see
+          runs them, ``academic-persons-profile-editing-image-editor`` and
+          ``academic-persons-profile-editing-document-collapse``. The
+          declarations are in the stylesheet of the site, see
           :ref:`Layout and responsive behavior <profile-editing-layout>`.
+
+The status toast is written into its ``data-pe-status-title`` and
+``data-pe-status-message`` nodes, the message and the busy indicator of an
+open panel into its ``data-pe-document-error`` and
+``data-pe-document-spinner`` nodes, or the ``data-pe-contract-contact-*``
+counterparts of a contact panel, and the header row of a document list,
+``data-pe-document-list-header``, is shown only while the list has rows.
+The classes of the editor as a whole are described in the chapter
+:ref:`Styling <styling>`.
 
 Frontend build
 ==============

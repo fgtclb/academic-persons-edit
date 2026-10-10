@@ -19,14 +19,18 @@ written, so the black ring covers the full width and the white one only its
 inner half, and a translucent accent ring over an opaque black one is dark: the
 outer half of the ring reads as a hard black rectangle tight around the
 control. Rendered and read back pixel by pixel, that band is ``#161e18`` on the
-theme's light body background.
+theme's light body background. The controls of the view carry speaking classes
+since, see :ref:`breaking-persons-edit-speaking-frontend-classes`, and no form
+class of Bootstrap, so of those rules only the one for ``.btn`` still reaches
+the view. The ring of the view applies to every control and every button
+regardless.
 
 Two more things were wrong with drawing a focus ring as a shadow, and the view
 now avoids all three at once by drawing a real ``outline`` instead.
 
 A shadow is painted outside the border box, so an ancestor with
 ``overflow: hidden`` cuts it away. The document editor's collapse panel and the
-image editor are exactly that, the grid row inside them pulls itself out to the
+image editor are exactly that, a full width control inside them reaches the
 clipping edge, and every field and every button of those panels therefore sat
 with its left and its right border edge on that edge. Measured before this
 change, a focused field of a document panel and the file input of the image
@@ -67,16 +71,15 @@ which no fixed colour and no Bootstrap custom property does -
 ``--bs-primary-text-emphasis`` is dark by design and measures 1.6:1 against the
 green of a focused ``.btn-success``.
 
-``.form-check-input`` is the one control that reasoning does not cover, and it
-is worth stating rather than glossing over. Bootstrap draws the tick of a
-checkbox and the knob of a switch as a background image with a hardcoded
-``#ffffff`` fill, not in ``currentcolor``, so the ring on those two takes the
-inherited body colour instead of the colour of the mark. With the shipped
-theme that is ``#212121`` on the ``#577760`` of a checked control, which
-measures 3.23:1 - above the 3:1 WCAG 2.1 SC 1.4.11 asks of a focus indicator,
-but with nothing to spare. A site whose ``$primary`` is darker than the
-theme's falls below it, and should either lighten the control or override the
-``outline-color`` of ``.form-check-input`` in the view.
+The checkbox is the one control that reasoning does not cover, and it is worth
+stating rather than glossing over. The view renders it as a native checkbox,
+``ace-control ace-checkbox``, which the example stylesheet leaves to the
+browser with ``appearance: auto``. The browser draws its tick in its own accent
+colour, while the ring takes the text colour of the control. A site that draws
+the checkbox itself, with a background image as Bootstrap's
+``.form-check-input`` does, checks the contrast of the ring against the checked
+control, and overrides the ``outline-color`` of the checkbox in the view where
+it falls below the 3:1 WCAG 2.1 SC 1.4.11 asks of a focus indicator.
 
 The rule reaches every ``input``, ``select``, ``textarea`` and ``button`` of
 the view: the five controls of :file:`Partials/Profile/Field/Control.html`, the
@@ -97,8 +100,9 @@ gets it in the panels where the previous appearance was cut away.
 
 Check it with the mouse, not only with the keyboard. Most of the controls the
 view renders match ``:focus-visible`` on a plain pointer click, so the new ring
-replaces Bootstrap's glow for a visitor who never touches the tab key; only the
-checkbox and the synchronisation switch keep the appearance they had.
+replaces the theme's appearance for a visitor who never touches the tab key.
+Only the checkboxes, the switches of the header among them, keep the focus
+appearance of the browser on a pointer click.
 
 A site that styled the focus of the editor's controls itself has to check that
 its rule still wins. The shipped rule carries the plugin root three times
