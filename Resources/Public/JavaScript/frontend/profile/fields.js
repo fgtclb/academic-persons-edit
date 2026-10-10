@@ -43,6 +43,7 @@ const formActionsSelector = "[data-pe-form-actions]";
 const formApplySelector = "[data-pe-form-apply]";
 const formUndoSelector = "[data-pe-form-undo]";
 const formDiscardSelector = "[data-pe-form-discard]";
+const formEditingLockAttribute = "data-pe-form-editing";
 const richTextEditorScopeSelector = ".ck";
 const isFieldReadOnly = (field) => field instanceof HTMLSelectElement ? false : field.readOnly;
 const getFieldEditElement = (field) => {
@@ -190,7 +191,7 @@ const clearValidationErrors = (fields) => {
     field.classList.remove("is-invalid");
     getFieldEditElement(field).classList.remove("is-invalid");
     const feedback = (_a = field.closest(
-      "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]"
+      "[data-pe-field-wrapper], [data-pe-group-control]"
     )) == null ? void 0 : _a.querySelector(".ace-message");
     if (feedback !== null && feedback !== void 0) {
       feedback.textContent = "";
@@ -274,7 +275,9 @@ const toggleEditField = (context, fieldId, state = true, focus = true) => {
   context.root.querySelectorAll(
     `${fieldActionsSelector}[data-pe-for="${CSS.escape(field.id)}"]`
   ).forEach((actions) => {
-    actions.hidden = !state;
+    if (!actions.hasAttribute(formEditingLockAttribute)) {
+      actions.hidden = !state;
+    }
   });
   if (!state) {
     if (focus) {
@@ -329,7 +332,7 @@ const showValidationErrors = (context, fields, errors) => {
       toggleEditField(context, field.id, true, false);
     }
     const feedback = (_a = field.closest(
-      "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]"
+      "[data-pe-field-wrapper], [data-pe-group-control]"
     )) == null ? void 0 : _a.querySelector(".ace-message");
     if (feedback !== null && feedback !== void 0) {
       feedback.textContent = Array.isArray(messages) ? messages.map(String).join(" ") : String(messages);
@@ -557,6 +560,7 @@ const initializeFieldEditing = (editingTarget) => {
     formEditingActive = active;
     perFieldActionGroups().forEach((group) => {
       group.hidden = active;
+      group.toggleAttribute(formEditingLockAttribute, active);
     });
     formActionBars.forEach((bar) => {
       bar.hidden = !active;

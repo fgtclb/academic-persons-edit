@@ -59,6 +59,7 @@ const formActionsSelector = "[data-pe-form-actions]";
 const formApplySelector = "[data-pe-form-apply]";
 const formUndoSelector = "[data-pe-form-undo]";
 const formDiscardSelector = "[data-pe-form-discard]";
+const formEditingLockAttribute = "data-pe-form-editing";
 // The editing view of CKEditor 5. Escape belongs to it while the caret is
 // inside one: it closes the balloon of a link or a list first, and discarding
 // the whole form from under an open balloon is not what the key was pressed
@@ -295,7 +296,7 @@ const clearValidationErrors = (fields: EditableField[]): void => {
     getFieldEditElement(field).classList.remove("is-invalid");
     const feedback = field
       .closest<HTMLElement>(
-        "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]",
+        "[data-pe-field-wrapper], [data-pe-group-control]",
       )
       ?.querySelector<HTMLElement>(".ace-message");
     if (feedback !== null && feedback !== undefined) {
@@ -407,7 +408,11 @@ const toggleEditField = (
       `${fieldActionsSelector}[data-pe-for="${CSS.escape(field.id)}"]`,
     )
     .forEach((actions): void => {
-      actions.hidden = !state;
+      // While the whole form is open its per-field groups stay hidden, and
+      // opening or closing one field does not show them again.
+      if (!actions.hasAttribute(formEditingLockAttribute)) {
+        actions.hidden = !state;
+      }
     });
   if (!state) {
     if (focus) {
@@ -479,7 +484,7 @@ const showValidationErrors = (
     }
     const feedback = field
       .closest<HTMLElement>(
-        "[data-pe-field-wrapper], [data-pe-group-control], [data-pe-field-control-group]",
+        "[data-pe-field-wrapper], [data-pe-group-control]",
       )
       ?.querySelector<HTMLElement>(".ace-message");
     if (feedback !== null && feedback !== undefined) {
@@ -875,6 +880,7 @@ export const initializeFieldEditing = (editingTarget: EditingTarget): void => {
     formEditingActive = active;
     perFieldActionGroups().forEach((group): void => {
       group.hidden = active;
+      group.toggleAttribute(formEditingLockAttribute, active);
     });
     formActionBars.forEach((bar): void => {
       bar.hidden = !active;
