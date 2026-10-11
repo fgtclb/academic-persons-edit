@@ -51,4 +51,4 @@ and partials: switch the list iterations to the new ``{physicalAddresses}``,
 ``{emailAddresses}`` and ``{phoneNumbers}`` variables and integrate the new
 show/hide toggle column.
 
-.. index:: Fluid, Frontend, Template, NotScanned
+.. index:: Fluid, Frontend, Template, NotScanned, ext:academic_persons_edit

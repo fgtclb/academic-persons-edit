@@ -7,16 +7,17 @@ Important: Adapted profile image partial
 Description
 ===========
 
-`Resources/Private/Partials/Profile/Show/Image.html` read the image metadata from
-a view variable `image` that is never assigned. The profile detail view of the
-`academicpersonsedit_profileediting` plugin therefore never rendered the caption,
-and it emitted an empty `alt` and `title` attribute even when the file carried
-that metadata.
+:file:`Resources/Private/Partials/Profile/Show/Image.html` read the image
+metadata from a view variable `image` that is never assigned. The profile
+detail view of the `academicpersonsedit_profileediting` plugin therefore never
+rendered the caption, and it emitted an empty `alt` and `title` attribute even
+when the file carried that metadata.
 
-The profile carries a `\TYPO3\CMS\Extbase\Domain\Model\FileReference`, and that
-class exposes nothing but `getOriginalResource()`. Every other property path on it
-resolves to `null` — which is why `{profile.image.alternative}` was as empty as
-`{image.description}`. All values are now read through `originalResource`:
+The profile carries a :php:`\TYPO3\CMS\Extbase\Domain\Model\FileReference`,
+and that class exposes nothing but :php:`getOriginalResource()`. Every other
+property path on it resolves to `null`, which is why
+:html:`{profile.image.alternative}` was as empty as :html:`{image.description}`.
+All values are now read through `originalResource`:
 
 ..  code-block:: html
 
@@ -33,9 +34,8 @@ resolves to `null` — which is why `{profile.image.alternative}` was as empty a
         <figcaption class="visually-hidden">{profile.image.originalResource.description}</figcaption>
     </f:if>
 
-The same partial rendered a copyright, which never worked either and was
-removed instead of repaired. The partial itself is gone from version 3.0 on -
-see :ref:`breaking-replaced-profile-editing-plugin`.
+The same partial rendered a copyright, which never worked either and was removed
+instead of repaired, see :ref:`breaking-adapted-frontend-editing-fluid-files`.
 
 Impact
 ======
@@ -46,7 +46,7 @@ The profile detail view of the frontend editing plugin now renders
     instead of always empty,
 *   a `figcaption` when the image has a description.
 
-Note that nothing in this extension writes image metadata — an image uploaded
+Note that nothing in this extension writes image metadata. An image uploaded
 through the plugin has none until it is maintained in the backend. Installations
 that never maintained the metadata of their profile images therefore see no
 change in the rendered output.
@@ -55,14 +55,14 @@ Affected Installations
 ======================
 
 Installations using the `academicpersonsedit_profileediting` plugin, and any
-installation overriding `Partials/Profile/Show/Image.html`.
+installation overriding :file:`Partials/Profile/Show/Image.html`.
 
 Migration
 =========
 
 No configuration change is required.
 
-Installations that override the partial keep their own copy and stay unaffected —
-including its defect. Adopt the property paths above to render the metadata.
+Installations that override the partial keep their own copy, including its
+defect. Adopt the property paths above to render the metadata.
 
-.. index:: Fluid, Frontend, NotScanned
+.. index:: Fluid, Frontend, NotScanned, ext:academic_persons_edit

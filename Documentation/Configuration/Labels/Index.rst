@@ -293,3 +293,14 @@ or the code fills in, a category type or a field name for example.
         - The options of a select field of the editor; the key is the id of the label in its language file, which belongs to academic_persons
     *   - The types of an address, email address or phone number, read with the extension name of academic_persons: from :typoscript:`plugin.tx_academicpersons._LOCAL_LANG`, on TYPO3 v14 also from :typoscript:`plugin.tx_academicpersons_profileediting._LOCAL_LANG`
         - The type selects of the contact forms
+
+..  _configuration-labels-validation:
+
+Messages of a rejected form
+===========================
+
+The six forms of version 2.4 are gone with the plugin they belonged to, see
+:ref:`breaking-replaced-profile-editing-plugin`, and so are their message
+labels :xml:`<formObject>.<field>.error.<code>` and :xml:`form.error.<code>`.
+When the editor of this version rejects a value, it marks the field and shows
+the status message :xml:`profileEditing.status.validation`.

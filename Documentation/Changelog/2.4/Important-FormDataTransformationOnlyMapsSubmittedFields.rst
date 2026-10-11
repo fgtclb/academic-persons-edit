@@ -34,10 +34,10 @@ To make this possible the following additions were made (all of them on
   sent within the request nor registered as override. The existing
   ``readOnly`` / ``disabled`` validation configuration keeps precedence
   and continues to protect persisted data.
-* For the case where a property is not part of the request but still has
-  to be written - for example when a PSR-14 event fills up data from
-  another source before the transformation runs -
-  :php:`AbstractFormData` gained a per-property override store via
+* A property that is not part of the request can still have to be
+  written, for example when a PSR-14 event fills up data from another
+  source before the transformation runs. For that case
+  :php:`AbstractFormData` gained a per-property override store with
   :php:`setPropertyOverride(string $propertyName, mixed $value)`,
   :php:`hasPropertyOverride(string $propertyName)` and
   :php:`getPropertyOverride(string $propertyName)`. Registered overrides
@@ -69,9 +69,9 @@ fix without any action required.
 Migration
 =========
 
-No explicit migration is required. Custom code that populates a form data
-object outside of the request (e.g. within a PSR-14 event) and expects
-the value to be persisted must register it via
+Installations without custom code need no migration. Custom code that
+populates a form data object outside of the request (for example within a
+PSR-14 event) and expects the value to be persisted must register it with
 :php:`AbstractFormData::setPropertyOverride()` so the transformation
 applies it despite the property not being part of the request.
 

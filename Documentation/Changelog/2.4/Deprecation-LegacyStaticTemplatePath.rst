@@ -36,9 +36,7 @@ or imports its files, keeps its plugin configuration.
 A site that depends on the site set and still stores the path of version 2.3 in
 its :sql:`sys_template` record, or imports its files, reads the TypoScript
 twice, as it did in version 2.3. See :ref:`one-mechanism-per-site` for what
-that costs. From version 3.0 on, the command :bash:`academic:upgrade:check`
-reports a site that combines the site set with a static template of the same
-extension.
+that costs.
 
 Affected Installations
 ======================
@@ -54,11 +52,11 @@ Migration
 
 Select :guilabel:`Academic Persons Edit: All components
 (academic_persons_edit)` in the :sql:`sys_template` record instead of the path
-up to 2.3, or depend on the set :yaml:`fgtclb/academic-persons-edit` in the
-site configuration.
+up to 2.3, or, on TYPO3 v13, depend on the set
+:yaml:`fgtclb/academic-persons-edit` in the site configuration.
 
 Replace an import of the old files with the files in
 `EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/`, or remove
-it when the site depends on the site set.
+it when the site depends on the site set on TYPO3 v13.
 
 ..  index:: TypoScript, ext:academic_persons_edit

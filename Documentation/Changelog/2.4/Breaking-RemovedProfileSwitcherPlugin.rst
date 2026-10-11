@@ -25,7 +25,7 @@ the profile editing plugin now lists every profile of the logged in user
 and links each one directly, so there is nothing left to switch between.
 The restructure removed the plugin registration, both controller actions
 (`showProfileSwitch` and `executeProfileSwitch`), the templates and the
-whole "active profile" infrastructure around it — the request middleware,
+whole "active profile" infrastructure around it: the request middleware,
 the context aspect and the session handling.
 
 What it did not remove was the content type registration. So since 2.1 the
@@ -46,13 +46,11 @@ academic_persons_edit profile switcher plugin"**
 (`academicPersonsEdit_removeProfileSwitcherContent`) sets the affected
 content elements to deleted. It covers both shapes:
 
-* `CType` = `academicpersonsedit_profileswitcher` — records of an
+* `CType` = `academicpersonsedit_profileswitcher`: records of an
   installation that ran the `list_type` to `CType` migration while it still
   carried this type along.
-* `CType` = `list` with `list_type` = `academicpersonsedit_profileswitcher`
-  — records of an installation that never ran that migration. TYPO3 v14
-  removed the `list_type` column, so this shape is only looked for when the
-  column exists.
+* `CType` = `list` with `list_type` = `academicpersonsedit_profileswitcher`:
+  records of an installation that never ran that migration.
 
 The records are set to deleted, not removed from the table, so they stay
 visible in the recycler and can be restored if an installation wants to
@@ -80,7 +78,7 @@ Affected Installations
 ======================
 
 All installations using the `EXT:academic_persons_edit` extension that
-still have content elements of the profile switcher plugin — either as
+still have content elements of the profile switcher plugin, either as
 `CType` or as a legacy `list_type` record.
 
 Installations that never used the plugin are not affected. The upgrade
@@ -89,7 +87,8 @@ wizard reports nothing to do for them.
 Migration
 =========
 
-Run the upgrade wizard in the Install Tool, or on the command line:
+Run the upgrade wizard in :guilabel:`Admin Tools > Upgrade > Upgrade Wizard`,
+or on the command line:
 
 ..  code-block:: bash
 
@@ -102,7 +101,7 @@ To see which records are affected before running it:
     SELECT uid, pid, header, CType FROM tt_content
      WHERE deleted = 0 AND CType = 'academicpersonsedit_profileswitcher';
 
-    -- TYPO3 v13 and below, for records that were never migrated:
+    -- For records that were never migrated:
     SELECT uid, pid, header, CType, list_type FROM tt_content
      WHERE deleted = 0 AND CType = 'list'
        AND list_type = 'academicpersonsedit_profileswitcher';
@@ -111,4 +110,4 @@ There is no replacement to migrate to. The profile editing plugin lists all
 profiles of the logged in user by itself, which is what the switcher was
 there for.
 
-.. index:: Backend, TCA, NotScanned
+.. index:: Backend, TCA, NotScanned, ext:academic_persons_edit
