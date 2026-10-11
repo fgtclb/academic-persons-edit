@@ -7,14 +7,11 @@ Important: The editor is limited to own profiles
 Description
 ===========
 
-The actions of the profile editor checked only that a frontend user is logged
-in. Apart from the list of the own profiles, they accepted any profile,
-contract, email address, phone number, physical address or profile information
-a request named. A logged in frontend user could therefore show and change the
-records of profiles that belong to other frontend users, by changing the uid in
-a link or in a submitted form.
+The actions of the profile editor now check the owner of every profile,
+contract, email address, phone number, physical address and profile information
+they show or change.
 
-Every action now accepts a record only when it belongs to a profile of the
+Every action accepts a record only when it belongs to a profile of the
 logged in frontend user. A profile and each of its translations belong to the
 frontend users the profile in the default language is linked to. A
 contract and a profile information belong to the owner of their profile, a
