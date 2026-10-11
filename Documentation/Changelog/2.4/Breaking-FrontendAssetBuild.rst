@@ -26,11 +26,9 @@ An installation that uses the extension as shipped needs to do nothing: the
 files are loaded by the extension itself, from the new location.
 
 An installation that referenced the old path keeps pointing at a file that no
-longer exists.
+longer exists. The rich text fields then fall back to plain textareas.
 
-The rich text fields then fall back to plain textareas.
-
-Affected installations
+Affected Installations
 ======================
 
 Installations that override :file:`Templates/Profile/Edit.html` or reference
@@ -47,5 +45,8 @@ name:
     <f:asset.script
         identifier="ckeditor-config"
         src="EXT:academic_persons_edit/Resources/Public/JavaScript/frontend/ckeditor.js"
+        async="1"
         defer="1"
     />
+
+..  index:: Frontend, JavaScript, Fluid, ext:academic_persons_edit

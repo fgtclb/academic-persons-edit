@@ -7,19 +7,19 @@ Important: Label overrides are read from the documented path
 Description
 ===========
 
-The templates of this extension translate their labels with the extension name
-:html:`AcademicPersonsEdit` instead of the extension key
-:html:`academic_persons_edit`. TYPO3 v12 and v13 build the TypoScript path of
-:typoscript:`_LOCAL_LANG` from that name as it is given, so they read label
-overrides from :typoscript:`plugin.tx_academic_persons_edit`. They now read
-them from :typoscript:`plugin.tx_academicpersonsedit` and
+The templates of this extension translated their labels with the extension key
+:html:`academic_persons_edit` as the extension name. TYPO3 v12 and v13 build the
+TypoScript path of :typoscript:`_LOCAL_LANG` from that name as it is given, so
+they read label overrides from :typoscript:`plugin.tx_academic_persons_edit`.
+The templates now use the extension name :html:`AcademicPersonsEdit`, so the
+overrides are read from :typoscript:`plugin.tx_academicpersonsedit` and
 :typoscript:`plugin.tx_academicpersonsedit_<plugin>`, the paths the TYPO3
-documentation names and TYPO3 v14 reads anyway.
+documentation names.
 
 The flash messages and the options of the select fields, which the editor
-translates in PHP, follow the same rule. The options read their overrides from
-:typoscript:`plugin.tx_persons_edit` until now, a path of no extension at all;
-an override there moves as well.
+translates in PHP, follow the same rule. Up to version 2.3 the options read
+their overrides from :typoscript:`plugin.tx_persons_edit`, a path of no
+extension at all. An override there moves as well.
 
 Every label of the extension, and where it is shown, is listed in
 :ref:`configuration-labels`.
