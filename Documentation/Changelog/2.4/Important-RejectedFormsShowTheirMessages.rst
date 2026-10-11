@@ -7,8 +7,9 @@ Important: Rejected forms show their messages
 Description
 ===========
 
-A form of the profile editor that is rejected, a required field left empty or
-an invalid email address, is shown again with the values that were entered.
+A form of the profile editor that is rejected, for example for a required
+field left empty or an invalid e-mail address, is shown again with the values
+that were entered.
 Until now it showed no message at the rejected field. Above the form it showed
 only the path of the property, :html:`emailAddressFormData.email`, and above the
 page a debug output of the translation key.
@@ -34,5 +35,12 @@ only after updating its copy:
 A label override keyed :xml:`form.<field>.error.<code>` was never shown and
 has no effect. Use :xml:`<formObject>.<field>.error.<code>` instead, for
 example :xml:`emailAddressFormData.email.error.1221559976`.
+
+Affected Installations
+======================
+
+Installations that use the profile editing plugin, and in particular those
+that override its form templates or partials, or that override the
+validation messages.
 
 ..  index:: Frontend, Fluid, ext:academic_persons_edit
