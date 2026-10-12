@@ -8,7 +8,9 @@
 
 <div class="academic-persons-edit">
 
-    <f:render partial="Header/All" arguments="{_all}" />
+    <f:if condition="{settings.renderContentElementHeader}">
+        <f:render partial="Header/All" arguments="{_all}" />
+    </f:if>
 
     <f:if condition="{contract} && !{cancelUrl} && ({physicalAddress} || {emailAddress} || {phoneNumber})">
         <f:then>

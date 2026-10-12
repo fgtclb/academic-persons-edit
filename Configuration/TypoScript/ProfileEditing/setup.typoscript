@@ -1,5 +1,12 @@
 plugin.tx_academicpersonsedit {
   settings {
+    # The content element layout renders the header of every content element, so the
+    # layout of the plugin renders it only for a site whose layout leaves it out. The header
+    # partial falls back to the type of the header layout "Default" through the setting
+    # below, which plugin settings do not carry the way the settings of `lib.contentElement` do.
+    renderContentElementHeader = {$plugin.tx_academicpersonsedit.renderContentElementHeader}
+    defaultHeaderType = {$styles.content.defaultHeaderType}
+
     editForm {
       profileImage {
         targetFolder = 1:/profile-images

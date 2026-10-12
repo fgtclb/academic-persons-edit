@@ -68,7 +68,11 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
         parent::tearDown();
     }
 
-    protected function setUpTestCase(): void
+    /**
+     * @param string[] $additionalSetupFiles
+     * @param string[] $additionalConstantFiles
+     */
+    protected function setUpTestCase(array $additionalSetupFiles = [], array $additionalConstantFiles = []): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/AcademicPersonsEditProfilePlugin/profileEditingPage.csv');
         $this->setUpFrontendRootPage(
@@ -77,11 +81,13 @@ abstract class AbstractProfileEditingPluginTestCase extends AbstractAcademicPers
                 'constants' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
                     'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/constants.typoscript',
+                    ...$additionalConstantFiles,
                 ],
                 'setup' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
                     'EXT:academic_persons_edit/Configuration/TypoScript/ProfileEditing/setup.typoscript',
                     'EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/TypoScript/Setup/Rendering.typoscript',
+                    ...$additionalSetupFiles,
                 ],
             ],
         );

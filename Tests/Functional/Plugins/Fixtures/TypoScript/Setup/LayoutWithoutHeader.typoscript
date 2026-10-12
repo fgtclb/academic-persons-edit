@@ -1,0 +1,2 @@
+# A site package whose content element layout renders no header, given to the profile editing plugin.
+tt_content.academicpersonsedit_profileediting.layoutRootPaths.50 = EXT:academic_persons_edit/Tests/Functional/Plugins/Fixtures/Layouts/

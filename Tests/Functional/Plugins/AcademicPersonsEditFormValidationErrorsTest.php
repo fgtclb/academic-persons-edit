@@ -22,9 +22,13 @@ final class AcademicPersonsEditFormValidationErrorsTest extends AbstractProfileE
 {
     private const PLUGIN_NAMESPACE = 'tx_academicpersonsedit_profileediting';
 
-    protected function setUpTestCase(): void
+    /**
+     * @param string[] $additionalSetupFiles
+     * @param string[] $additionalConstantFiles
+     */
+    protected function setUpTestCase(array $additionalSetupFiles = [], array $additionalConstantFiles = []): void
     {
-        parent::setUpTestCase();
+        parent::setUpTestCase($additionalSetupFiles, $additionalConstantFiles);
         $this->importCSVDataSet(__DIR__ . '/Fixtures/AcademicPersonsEditFormValidationErrors/contract.csv');
     }
 

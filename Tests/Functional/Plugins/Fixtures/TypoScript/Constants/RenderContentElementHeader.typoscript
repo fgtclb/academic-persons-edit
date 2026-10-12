@@ -1,0 +1,2 @@
+# The site lets the profile editing plugin render the header of its content element itself.
+plugin.tx_academicpersonsedit.renderContentElementHeader = 1

@@ -1,4 +1,7 @@
 plugin.tx_academicpersonsedit {
+  # cat=plugin.tx_academicpersonsedit//a; type=boolean; label=Render the content element header in the plugin: only for a site whose content element layout renders no header
+  renderContentElementHeader = 0
+
   view {
     templateRootPath = EXT:academic_persons_edit/Resources/Private/Templates/
     partialRootPath = EXT:academic_persons_edit/Resources/Private/Partials/

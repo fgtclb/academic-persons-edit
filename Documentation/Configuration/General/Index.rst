@@ -68,6 +68,38 @@ See `Validation settings
 in the :guilabel:`academic_persons` manual for the available flags, the shipped
 defaults and how to override them.
 
+..  _configuration-general-content-element-header:
+
+The header of the content element
+=================================
+
+The header and the subheader an editor enters on a
+:guilabel:`Profiles: Profile Editing` content element are rendered by the
+content element layout of the site, as for any other content element. The
+layouts of EXT:fluid_styled_content and of the bootstrap package do that, and
+the plugin renders no header of its own.
+
+A site whose content element layout renders no header, because its element
+templates render it instead, lets the plugin render it on every one of its
+views:
+
+..  code-block:: typoscript
+    :caption: TypoScript constants
+
+    plugin.tx_academicpersonsedit.renderContentElementHeader = 1
+
+The layout of the plugin then renders the header partial of
+EXT:fluid_styled_content above the view, so the switch needs that extension
+installed. This extension does not require it. Do not switch it on where the
+content element layout renders the header: the header then appears twice.
+
+For the header layout :guilabel:`Default`, the partial takes the heading level
+from :typoscript:`plugin.tx_academicpersonsedit.settings.defaultHeaderType`,
+which is mapped from the constant :typoscript:`styles.content.defaultHeaderType`
+of EXT:fluid_styled_content. A site that does not include the TypoScript of
+EXT:fluid_styled_content sets the setting itself. Without it, such a header
+renders as an empty :html:`<header>` element.
+
 ..  _configuration-general-webp:
 
 Image processing: WebP where allowed

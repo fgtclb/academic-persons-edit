@@ -22,9 +22,13 @@ final class AcademicPersonsEditPhysicalAddressTextFieldsTest extends AbstractPro
 {
     private const ADDRESS_ID = 1;
 
-    protected function setUpTestCase(): void
+    /**
+     * @param string[] $additionalSetupFiles
+     * @param string[] $additionalConstantFiles
+     */
+    protected function setUpTestCase(array $additionalSetupFiles = [], array $additionalConstantFiles = []): void
     {
-        parent::setUpTestCase();
+        parent::setUpTestCase($additionalSetupFiles, $additionalConstantFiles);
         $this->importCSVDataSet(__DIR__ . '/Fixtures/AcademicPersonsEditPhysicalAddress/contractWithAddress.csv');
     }
 
