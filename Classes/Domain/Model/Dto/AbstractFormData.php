@@ -95,9 +95,10 @@ abstract class AbstractFormData
     /**
      * Register an override value for a property. Registered overrides are applied
      * during the DTO to domain model transformation even if the property has not
-     * been sent within the current request. This is the intended extension point
-     * for PSR-14 event listeners filling up data from other sources before the
-     * transformation runs.
+     * been sent within the current request. Nothing in the extension registers an
+     * override, and no event hands the form data object to a listener, so the store
+     * is internal to the transformation. {@see getPropertyOverride()} returns null
+     * both for a property without an override and for an override of null.
      */
     final public function setPropertyOverride(string $propertyName, mixed $value): void
     {

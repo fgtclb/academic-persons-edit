@@ -53,7 +53,7 @@ final class AbstractFormDataValidatorTest extends UnitTestCase
     }
 
     /**
-     * The error code is what a template or a listener can branch on; it is the code
+     * The error code is what a template can branch on. It is the code
      * of the failing validator, not one of this extension's own.
      */
     #[Test]

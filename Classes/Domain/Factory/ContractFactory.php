@@ -61,7 +61,7 @@ class ContractFactory
             return false;
         }
         // Only apply values sent within the current request or registered as override
-        // (e.g. filled up by a PSR-14 event from another source before transformation).
+        // (see AbstractFormData::setPropertyOverride(), which has no caller outside the tests).
         return $form->shouldApplyProperty($propertyName);
     }
 

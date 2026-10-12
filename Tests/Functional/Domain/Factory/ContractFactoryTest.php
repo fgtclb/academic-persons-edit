@@ -119,8 +119,8 @@ final class ContractFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * An override carrying a domain object is applied for a relation that was not submitted -
-     * the PSR-14 case for a unit resolved from another source than the form.
+     * An override carrying a domain object is applied for a relation that was not submitted,
+     * for example a unit resolved from a source other than the form.
      */
     #[Test]
     public function updateAppliesObjectOverrideForRelationThatWasNotSubmitted(): void

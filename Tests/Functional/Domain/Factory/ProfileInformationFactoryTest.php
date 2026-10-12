@@ -108,8 +108,8 @@ final class ProfileInformationFactoryTest extends AbstractFactoryTestCase
     /**
      * Documents current behaviour, and it is the shape of a defect: `setYear()` applies the
      * override only when it `is_int()`, so an override of `null` - the only way to say "clear
-     * the year" - falls through to the submitted value instead. A listener meaning to clear the
-     * year silently keeps whatever the editor sent.
+     * the year" - falls through to the submitted value instead. With an override meant to clear
+     * the year, the record silently keeps whatever the editor sent.
      *
      * @see ProfileInformationFactory::setYear()
      */

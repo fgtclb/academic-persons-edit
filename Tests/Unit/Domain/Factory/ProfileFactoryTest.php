@@ -78,7 +78,7 @@ final class ProfileFactoryTest extends UnitTestCase
         $validationSet = new ValidationSet('profile', []);
         $form = new ProfileFormData(firstName: 'NewFirst');
         $this->bindRequest($form, ['firstName' => 'NewFirst']);
-        // Website was not sent, but an event registered an override value.
+        // Website was not sent, but an override value was registered.
         $form->setPropertyOverride('website', 'OverrideWebsite');
 
         $profile = (new ProfileFactory())->updateFromFormData($validationSet, $this->createExistingProfile(), $form);

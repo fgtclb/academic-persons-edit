@@ -56,10 +56,9 @@ final class EmailFormDataTest extends UnitTestCase
     }
 
     /**
-     * `setEmail()` exists so a PSR-14 listener can correct the submitted address before
-     * the transformation runs. It changes the form data only - the value the factory
-     * writes is still governed by the request/override machinery, and this object is
-     * bound to neither.
+     * `setEmail()` changes the address held by the form data object and nothing
+     * else. The value the factory writes is still governed by the request/override
+     * machinery, and this object is bound to neither.
      */
     #[Test]
     public function changingTheEmailOnTheFormDataDoesNotMakeItApplicable(): void

@@ -157,12 +157,12 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
 
     /**
      * An override is registered on the form data object, not in the request, so it survives both
-     * failures above - which is what would make it usable as a repair from a listener.
+     * failures above.
      *
-     * Note that no such listener can exist yet: the extension dispatches no event carrying an
-     * `AbstractFormData`, so `setPropertyOverride()` has no production caller at all. The event
-     * is ACE-445, and the typed read the factories need before it can ship is part of that
-     * issue's scope.
+     * Note that nothing registers an override in production: the extension dispatches no event
+     * carrying an `AbstractFormData`, so `setPropertyOverride()` has no caller outside the tests.
+     * Any future caller needs the typed read of overrides in the factories first, as described
+     * in ACE-423.
      */
     #[Test]
     public function registeredOverrideIsAppliedEvenWithoutAnArgumentName(): void

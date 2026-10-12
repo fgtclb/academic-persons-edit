@@ -136,8 +136,8 @@ final class EmailFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * The documented extension point: a PSR-14 listener fills a value from another source
-     * before the transformation runs. It has to win over "was not submitted".
+     * A property that was not submitted is still written when a value is registered as
+     * override for it.
      */
     #[Test]
     public function updateAppliesRegisteredOverrideForPropertyThatWasNotSubmitted(): void
@@ -217,7 +217,7 @@ final class EmailFactoryTest extends AbstractFactoryTestCase
                 ],
             ],
         );
-        // A listener that means "clear the type" - or simply passes the wrong type.
+        // An override meant to clear the type, or one that simply carries the wrong type.
         $formData->setPropertyOverride('type', null);
         $email = $this->persistenceManager()->getObjectByIdentifier(1, Email::class);
         $this->assertInstanceOf(Email::class, $email);
@@ -290,7 +290,7 @@ final class EmailFactoryTest extends AbstractFactoryTestCase
 
     /**
      * A `readOnly` marking beats an override as well: the check runs before
-     * `shouldApplyProperty()`, so a listener cannot write a field the integrator locked.
+     * `shouldApplyProperty()`, so an override cannot write a field the integrator locked.
      */
     #[Test]
     public function readOnlyPropertyIsNotWrittenByAnOverrideEither(): void
