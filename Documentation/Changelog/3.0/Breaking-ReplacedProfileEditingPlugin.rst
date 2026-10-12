@@ -104,6 +104,13 @@ The plugin renders without a Fluid layout since, so the TypoScript constant
 :typoscript:`view.layoutRootPaths` block it filled are removed as well. A site
 package that still sets the constant sets something nothing reads.
 
+The layout was also the one place that rendered the header of the content
+element, behind the 2.4 constant
+:typoscript:`plugin.tx_academicpersonsedit.renderContentElementHeader`. The
+editor renders none, and a site that switched the constant on loses the
+header, see
+:ref:`breaking-profile-editing-renders-no-content-element-header`.
+
 :file:`Resources/Private/Templates/Profile/List.html` is kept and rewritten,
 and :file:`Resources/Private/Templates/Profile/Index.html` with the
 thirty-one partials below :file:`Partials/Profile/` is the new tree: four of

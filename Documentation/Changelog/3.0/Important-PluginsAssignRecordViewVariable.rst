@@ -14,8 +14,8 @@ requires a record object.
 
 Content elements based on `lib.contentElement` receive that record from the
 `record-transformation` data processor, but an Extbase plugin view assigns only
-the `data` array. Templates of this extension render the shared header partial,
-so on TYPO3 v14 they aborted with
+the `data` array. The templates of this extension rendered the shared header
+partial before the editor was replaced, so on TYPO3 v14 they aborted with
 
 ..  code-block:: text
 
@@ -25,6 +25,11 @@ The plugin controllers now assign an additional `record` view variable, built
 from the `tt_content` row of the current content element. TYPO3 v13 ignores it,
 its header partial keeps reading `data`, so one implementation serves both core
 versions.
+
+The editor that replaced those templates renders no header partial of its own,
+see :ref:`breaking-profile-editing-renders-no-content-element-header`. The
+controllers still assign both variables, so a template override that renders
+the partial works on both core versions.
 
 Impact
 ======
