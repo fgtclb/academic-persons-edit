@@ -14,44 +14,22 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicBase\Controller\GetCurrentContentRecordMethodTrait;
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContextInterface;
-use FGTCLB\AcademicPersons\Domain\Model\Address;
-use FGTCLB\AcademicPersons\Domain\Model\Contract;
-use FGTCLB\AcademicPersons\Domain\Model\Email;
-use FGTCLB\AcademicPersons\Domain\Model\PhoneNumber;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
-use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
-use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
-use FGTCLB\AcademicPersons\Event\ProfileUpdateOrigin;
 use FGTCLB\AcademicPersons\Service\DataHandlerExecutionContext;
 use FGTCLB\AcademicPersons\Service\ProfileImageMetadataService;
 use FGTCLB\AcademicPersons\Service\ProfileImageRelationWriter;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
-use FGTCLB\AcademicPersons\Settings\ContractContactSection;
-use FGTCLB\AcademicPersons\Settings\DocumentSection;
-use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
-use FGTCLB\AcademicPersonsEdit\Domain\Factory\ContractFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
-use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileInformationFactory;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileUpdatePayload;
-use FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent;
 use FGTCLB\AcademicPersonsEdit\Event\ProfileEditingAction;
-use FGTCLB\AcademicPersonsEdit\Service\ContractContactFields;
-use FGTCLB\AcademicPersonsEdit\Service\ContractContactRecords;
-use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
-use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldDefinitions;
-use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldNormalizer;
-use FGTCLB\AcademicPersonsEdit\Service\DocumentRecords;
+use FGTCLB\AcademicPersonsEdit\Service\EditorEndpoint;
 use FGTCLB\AcademicPersonsEdit\Service\EditorLabels;
+use FGTCLB\AcademicPersonsEdit\Service\EditorWrites;
 use FGTCLB\AcademicPersonsEdit\Service\Exception\EditorRequestException;
 use FGTCLB\AcademicPersonsEdit\Service\Exception\InvalidProjectProfileFieldException;
-use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
 use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
@@ -73,10 +51,8 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScript;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Controller\FileUploadConfiguration;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Validation\Validator\FileSizeValidator;
 use TYPO3\CMS\Extbase\Validation\Validator\MimeTypeValidator;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -89,8 +65,6 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
  * updates and data retrieval without relying on the shared HTML authentication
  * flow used by regular Extbase pages.
  *
- * @phpstan-import-type ContractContactRecord from ContractContactRecords
- *
  * @internal This controller is intentionally internal to `EXT:academic_persons_edit`
  *           and is not part of the public API.
  */
@@ -99,9 +73,11 @@ final class ProfileController extends ActionController
     use GetCurrentContentRecordMethodTrait;
 
     /**
-     * The actions answering as JSON. They validate and answer their own request,
-     * so {@see self::initializeAction()} does not send them through the HTML
-     * access denied flow of the plugin.
+     * The actions of this controller answering as JSON. They validate and answer
+     * their own request, so {@see self::initializeAction()} does not send them
+     * through the HTML access denied flow of the plugin. The document and contact
+     * endpoints are served by {@see DocumentController} and
+     * {@see ContractContactController}.
      *
      * @var list<string>
      */
@@ -110,18 +86,6 @@ final class ProfileController extends ActionController
         'updateSkipSync',
         'updateVisibility',
         'deleteImage',
-        'documentForm',
-        'createDocument',
-        'updateDocument',
-        'deleteDocument',
-        'sortDocument',
-        'toggleDocumentVisibility',
-        'contractContactForm',
-        'createContractContact',
-        'updateContractContact',
-        'deleteContractContact',
-        'sortContractContact',
-        'toggleContractContactVisibility',
     ];
 
     /**
@@ -149,9 +113,7 @@ final class ProfileController extends ActionController
 
     public function __construct(
         private readonly Context $context,
-        private readonly PersistenceManager $persistenceManager,
         private readonly AcademicPersonsSettings $academicPersonsSettings,
-        private readonly ListSortingService $listSortingService,
         private readonly ProfileFactory $profileFactory,
         private readonly ProfileRepository $profileRepository,
         private readonly ErrorController $errorController,
@@ -167,18 +129,11 @@ final class ProfileController extends ActionController
         private readonly ProfileFieldOptionsService $profileFieldOptionsService,
         private readonly ProfileSectionProvider $profileSectionProvider,
         private readonly ProfileDocumentSectionProvider $profileDocumentSectionProvider,
-        private readonly ContractFactory $contractFactory,
-        private readonly ContractRepository $contractRepository,
-        private readonly ProfileInformationFactory $profileInformationFactory,
-        private readonly ProfileInformationRepository $profileInformationRepository,
         private readonly ManagedRecordLocks $managedRecordLocks,
         private readonly ProjectProfileFields $projectProfileFields,
         private readonly EditorLabels $editorLabels,
-        private readonly DocumentFieldDefinitions $documentFieldDefinitions,
-        private readonly DocumentFieldNormalizer $documentFieldNormalizer,
-        private readonly DocumentRecords $documentRecords,
-        private readonly ContractContactFields $contractContactFields,
-        private readonly ContractContactRecords $contractContactRecords,
+        private readonly EditorEndpoint $editorEndpoint,
+        private readonly EditorWrites $editorWrites,
     ) {}
 
     /**
@@ -192,7 +147,7 @@ final class ProfileController extends ActionController
     {
         $actionName = $this->request->getControllerActionName();
         if (in_array($actionName, self::JSON_ACTIONS, true) || $actionName === 'uploadImage') {
-            $this->assertRequestWasSentByTheEditor();
+            $this->editorEndpoint->assertRequestWasSentByTheEditor($this->request);
         }
         if (in_array($actionName, self::JSON_ACTIONS, true)) {
             return;
@@ -209,34 +164,6 @@ final class ProfileController extends ActionController
     }
 
     /**
-     * Every writing endpoint requires the `X-Requested-With: XMLHttpRequest` header
-     * the editor sends on each of its requests.
-     *
-     * The JSON endpoints are already protected by their content type - a foreign
-     * page cannot send `application/json` without a CORS preflight - but the image
-     * upload is `multipart/form-data`, which is a simple request any page can submit
-     * with a plain form. A custom header cannot be set cross-origin without that
-     * preflight either, so requiring one closes the upload without relying on the
-     * `SameSite` attribute of the session cookie, which an installation may change.
-     * It is demanded on all of them so that one rule covers the whole surface.
-     *
-     * @throws PropagateResponseException When the header is absent.
-     */
-    private function assertRequestWasSentByTheEditor(): void
-    {
-        if ($this->request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
-            throw new PropagateResponseException(
-                $this->jsonError(
-                    'invalid_request',
-                    400,
-                    'The request must carry the "X-Requested-With: XMLHttpRequest" header.',
-                ),
-                1777046203,
-            );
-        }
-    }
-
-    /**
      * Converts validation failures from the image upload flow into a JSON error response.
      *
      * This keeps upload-related form validation machine-readable instead of falling
@@ -248,7 +175,7 @@ final class ProfileController extends ActionController
     {
         if ($this->request->getControllerActionName() === 'uploadImage') {
             throw new PropagateResponseException(
-                $this->jsonError(
+                $this->editorEndpoint->jsonError(
                     'validation_failed',
                     422,
                     $this->getFlattenedValidationErrorMessage(),
@@ -511,7 +438,7 @@ final class ProfileController extends ActionController
             $this->request
         );
         if (!$requestResult->isValid()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 $requestResult->getError() ?? 'invalid_request',
                 $requestResult->getStatusCode(),
             );
@@ -519,7 +446,7 @@ final class ProfileController extends ActionController
         $payload = $requestResult->getPayload();
         $profile = $requestResult->getProfile();
         if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
+            $this->editorEndpoint->throwJsonError('internal_server_error', 500);
         }
         try {
             $managedProperties = $this->managedRecordLocks->getManagedProperties($profile);
@@ -532,7 +459,7 @@ final class ProfileController extends ActionController
                 $managedProperties,
                 'The submitted profile data is invalid.',
             );
-            $replacedFields = $this->dispatchBeforeWrite(
+            $replacedFields = $this->editorWrites->dispatchBeforeWrite(
                 $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateProfile,
@@ -561,7 +488,8 @@ final class ProfileController extends ActionController
                 $managedProperties,
             );
             $this->profileRepository->update($updatedProfile);
-            $this->persistAndDispatchProfileUpdate(
+            $this->editorWrites->persistAndDispatchProfileUpdate(
+                $this->request,
                 $updatedProfile,
                 $projectRecordUid === null
                     ? null
@@ -588,14 +516,14 @@ final class ProfileController extends ActionController
         } catch (PropagateResponseException $exception) {
             throw $exception;
         } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
+            $this->editorEndpoint->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
                 ->error('Updating the profile failed.', [
                     'exception' => $exception,
                 ]);
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'internal_server_error',
                 500,
                 'The profile could not be updated.',
@@ -619,7 +547,7 @@ final class ProfileController extends ActionController
             $this->request,
         );
         if (!$requestResult->isValid()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 $requestResult->getError() ?? 'invalid_request',
                 $requestResult->getStatusCode(),
             );
@@ -627,13 +555,13 @@ final class ProfileController extends ActionController
         $payload = $requestResult->getPayload();
         $profile = $requestResult->getProfile();
         if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
+            $this->editorEndpoint->throwJsonError('internal_server_error', 500);
         }
         $this->assertSkipSyncPayload($payload->getData());
         if (!$this->isSpecialFieldWritable('skipSync')) {
             // The switch is the whole request, so a locked switch is refused
             // rather than ignored as a locked field of the profile form is.
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'invalid_profile_data',
                 422,
                 'Unknown profile property "skipSync".',
@@ -648,7 +576,7 @@ final class ProfileController extends ActionController
                 [],
                 'The submitted synchronization setting is invalid.',
             );
-            $replacedFields = $this->dispatchBeforeWrite(
+            $replacedFields = $this->editorWrites->dispatchBeforeWrite(
                 $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateSkipSync,
@@ -670,7 +598,7 @@ final class ProfileController extends ActionController
                 $profileFormData,
             );
             $this->profileRepository->update($updatedProfile);
-            $this->persistAndDispatchProfileUpdate($updatedProfile);
+            $this->editorWrites->persistAndDispatchProfileUpdate($this->request, $updatedProfile);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $updatedProfile->getUid(),
@@ -679,14 +607,14 @@ final class ProfileController extends ActionController
         } catch (PropagateResponseException $exception) {
             throw $exception;
         } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
+            $this->editorEndpoint->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
                 ->error('Updating the profile synchronization flag failed.', [
                     'exception' => $exception,
                 ]);
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'internal_server_error',
                 500,
                 'The synchronization setting could not be updated.',
@@ -714,7 +642,7 @@ final class ProfileController extends ActionController
             $this->request,
         );
         if (!$requestResult->isValid()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 $requestResult->getError() ?? 'invalid_request',
                 $requestResult->getStatusCode(),
             );
@@ -722,10 +650,10 @@ final class ProfileController extends ActionController
         $payload = $requestResult->getPayload();
         $profile = $requestResult->getProfile();
         if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
+            $this->editorEndpoint->throwJsonError('internal_server_error', 500);
         }
         if (!$this->isSpecialFieldWritable('hidden')) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'visibility_not_editable',
                 403,
                 'The visibility of this profile cannot be changed here.',
@@ -736,7 +664,7 @@ final class ProfileController extends ActionController
             array_keys($data) !== ['hidden']
             || !is_bool($data['hidden'])
         ) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'invalid_payload',
                 400,
                 'The payload must contain exactly one boolean hidden value.',
@@ -746,7 +674,7 @@ final class ProfileController extends ActionController
         // in a non-live workspace would produce a version of the record nobody asked
         // for, see requirePersistedProfileUid().
         if ($this->dataHandlerExecutionContext->isFrontendRequestInWorkspace()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'workspace_not_supported',
                 409,
                 'The visibility of the profile cannot be changed from a workspace preview.',
@@ -754,7 +682,7 @@ final class ProfileController extends ActionController
         }
         try {
             $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
+            $this->editorWrites->dispatchBeforeWrite(
                 $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UpdateVisibility,
@@ -772,7 +700,7 @@ final class ProfileController extends ActionController
             $profile->setHidden($hidden);
             $profile->_memorizeCleanState('hidden');
             if (!$profile->getIsTranslation()) {
-                $this->dispatchProfileUpdate($profile);
+                $this->editorWrites->dispatchProfileUpdate($this->request, $profile);
             }
             return new JsonResponse([
                 'success' => true,
@@ -782,1216 +710,19 @@ final class ProfileController extends ActionController
         } catch (PropagateResponseException $exception) {
             throw $exception;
         } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
+            $this->editorEndpoint->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
                 ->error('Updating the profile visibility failed.', [
                     'exception' => $exception,
                 ]);
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'internal_server_error',
                 500,
                 'The visibility of the profile could not be updated.',
             );
         }
-    }
-
-    // =================================================================================================================
-    // Handle structured document sections through the profile editing JSON API
-    // =================================================================================================================
-
-    /**
-     * Returns the field schema and current values for a structured document section.
-     *
-     * The request must contain a valid section identifier and a matching mode
-     * ("add", "view", "edit" or "delete"). In add mode, no record UID is allowed;
-     * in all other modes, a positive record UID must reference an existing
-     * contract/profile information entry for the current profile.
-     *
-     * The JSON response contains the profile ID, section identifier, kind and the
-     * full field definitions used by the frontend modal for creating or editing the
-     * selected document record.
-     *
-     * @return ResponseInterface JSON response with the current form definition and record data.
-     */
-    public function documentFormAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $this->assertDocumentPayload($data, ['section', 'record', 'mode'], ['section', 'mode']);
-            $mode = $this->getRequiredDocumentMode($data);
-            $recordUid = $this->getOptionalPositiveInteger($data, 'record');
-            if (($mode === 'add') !== ($recordUid === null)) {
-                $this->throwJsonError('invalid_payload', 400, 'The document record does not match the requested mode.');
-            }
-            $this->assertDocumentActionAllowed($section, $mode);
-            $record = $recordUid === null
-                ? null
-                : $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
-            if ($recordUid !== null && $record === null) {
-                $this->throwJsonError('document_not_found', 404);
-            }
-            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
-            $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, $mode);
-            $response = [
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'kind' => $section->isContractSection() ? 'contract' : 'profileInformation',
-                'record' => $record?->getUid(),
-                'fields' => $this->documentFieldDefinitions->getDocumentFieldDefinitions($this->request, $section, $record, $managedProperties),
-            ];
-            if ($record instanceof Contract) {
-                $response['contactSections'] = $this->contractContactFields->getContractContactSections($this->request, $record);
-            }
-            return new JsonResponse($response);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Loading a structured document form failed.', $exception);
-        }
-    }
-
-    /**
-     * Creates a new structured document record for the given profile section.
-     *
-     * Validates the submitted payload, normalizes and validates the document fields,
-     * creates the matching record type (contract or profile information), assigns
-     * sorting and PID values, persists it, and returns the serialized result as JSON.
-     *
-     * @return ResponseInterface JSON response containing the created document item.
-     * @throws PropagateResponseException If the response should be propagated without wrapping.
-     * @throws \Throwable If the creation fails, the error is handled as a document failure.
-     */
-    public function createDocumentAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $this->assertDocumentPayload($data, ['section', 'fields'], ['section', 'fields']);
-            $this->assertDocumentActionAllowed($section, 'add');
-            $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
-                $this->request,
-                $section,
-                $fields,
-                true,
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $replacedFields = $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::CreateDocument,
-                $section->identifier,
-                fields: array_intersect_key($fields, $normalizedFields),
-            );
-            if ($replacedFields !== null) {
-                $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
-                    $this->request,
-                    $section,
-                    $replacedFields,
-                    true,
-                );
-            }
-            if ($section->isContractSection()) {
-                $record = $this->contractFactory->createFromFormData(
-                    $section->validationSet,
-                    $profile,
-                    $this->createContractFormData($normalizedFields),
-                );
-                $record->setSorting($this->documentRecords->getNextSortingValue($this->documentRecords->getDocumentRecords($profile, $section)));
-                $record->setPid((int)$profile->getPid());
-                $this->contractRepository->add($record);
-            } else {
-                $record = $this->profileInformationFactory->createFromFormData(
-                    $section->validationSet,
-                    $profile,
-                    $this->createProfileInformationFormData($section, $normalizedFields),
-                );
-                $record->setSorting($this->documentRecords->getNextSortingValue($this->documentRecords->getDocumentRecords($profile, $section)));
-                $record->setPid((int)$profile->getPid());
-                $this->profileInformationRepository->add($record);
-            }
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Creating a structured document failed.', $exception);
-        }
-    }
-
-    /**
-     * Updates an existing structured document item for a profile section.
-     *
-     * Validates the submitted payload, resolves the target record, normalizes and
-     * validates the changed fields, and persists the updated values for either a
-     * contract or a profile information record.
-     *
-     * @return ResponseInterface JSON response containing the updated document item.
-     * @throws PropagateResponseException If a response is intentionally propagated.
-     * @throws \Throwable If validation or persistence fails while updating the record.
-     */
-    public function updateDocumentAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['section', 'record', 'fields'],
-                ['section', 'record', 'fields'],
-            );
-            $this->assertDocumentActionAllowed($section, 'edit');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('document_not_found', 404);
-            }
-            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
-            $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, 'edit');
-            $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
-                $this->request,
-                $section,
-                $fields,
-                false,
-                $managedProperties,
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $replacedFields = $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::UpdateDocument,
-                $section->identifier,
-                $record,
-                array_intersect_key($fields, $normalizedFields),
-            );
-            if ($replacedFields !== null) {
-                $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
-                    $this->request,
-                    $section,
-                    $replacedFields,
-                    false,
-                    $managedProperties,
-                );
-            }
-            if ($record instanceof Contract) {
-                $this->contractRepository->update(
-                    $this->contractFactory->updateFromFormData(
-                        $section->validationSet,
-                        $record,
-                        $this->createContractFormData($normalizedFields),
-                        $managedProperties,
-                    ),
-                );
-            } else {
-                $this->profileInformationRepository->update(
-                    $this->profileInformationFactory->updateFromFormData(
-                        $section->validationSet,
-                        $record,
-                        $this->createProfileInformationFormData($section, $normalizedFields),
-                    ),
-                );
-            }
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Updating a structured document failed.', $exception);
-        }
-    }
-
-    /**
-     * Shows or hides one contract or profile information record in the frontend.
-     *
-     * `hidden` is the TCA `enablecolumns.disabled` column of the two tables. The
-     * flag is sent explicitly rather than toggled, so a request that arrives
-     * twice stores the state the visitor saw. The `hide` action of the section
-     * governs it, configurable like every other action of the list.
-     */
-    public function toggleDocumentVisibilityAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $this->assertDocumentPayload($data, ['section', 'record', 'hidden'], ['section', 'record', 'hidden']);
-            $this->assertDocumentActionAllowed($section, 'hide');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('document_not_found', 404);
-            }
-            $hidden = $data['hidden'];
-            if (!is_bool($hidden)) {
-                $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
-            }
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::ToggleDocumentVisibility,
-                $section->identifier,
-                $record,
-                ['hidden' => $hidden],
-            );
-            $record->setHidden($hidden);
-            if ($record instanceof Contract) {
-                $this->contractRepository->update($record);
-            } else {
-                $this->profileInformationRepository->update($record);
-            }
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Changing the visibility of a structured document failed.', $exception);
-        }
-    }
-
-    /**
-     * Deletes a single record from a structured document section.
-     *
-     * Validates the provided payload, ensures the section allows the delete
-     * action, loads the requested record, and removes it from the matching
-     * repository.
-     *
-     * @return ResponseInterface JSON response with the delete result.
-     *
-     * @throws PropagateResponseException If an error response should be
-     *      propagated without being wrapped.
-     * @throws \Throwable If the delete operation fails unexpectedly.
-     */
-    public function deleteDocumentAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $this->assertDocumentPayload($data, ['section', 'record'], ['section', 'record']);
-            $this->assertDocumentActionAllowed($section, 'delete');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('document_not_found', 404);
-            }
-            $this->assertManagedDocumentActionAllowed(
-                $section,
-                $record,
-                $this->managedRecordLocks->getManagedProperties($record),
-                'delete',
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::DeleteDocument,
-                $section->identifier,
-                $record,
-            );
-            if ($record instanceof Contract) {
-                $this->contractRepository->remove($record);
-            } else {
-                $this->profileInformationRepository->remove($record);
-            }
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'deleted' => $recordUid,
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Deleting a structured document failed.', $exception);
-        }
-    }
-
-    /**
-     * Sorts the records of a structured document section.
-     *
-     * Supports reordering by a submitted complete order list as well as
-     * moving a single record one step up or down within the section.
-     *
-     * @return ResponseInterface JSON response with the updated order and change state.
-     * @throws PropagateResponseException When the request should be handled by the caller.
-     * @throws \Throwable When the sorting operation fails unexpectedly.
-     */
-    public function sortDocumentAction(): ResponseInterface
-    {
-        try {
-            [$profile, $section, $data] = $this->getDocumentRequest();
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            if (array_key_exists('order', $data)) {
-                $this->assertDocumentPayload($data, ['section', 'order'], ['section', 'order']);
-                $this->assertDocumentActionAllowed($section, 'reorder');
-                $records = $this->documentRecords->getDocumentRecords($profile, $section);
-                $order = $this->getSubmittedDocumentOrder($data);
-                $this->documentRecords->assertCompleteDocumentOrder($records, $order);
-                $this->dispatchBeforeWrite(
-                    $pluginControllerActionContext,
-                    $profile,
-                    ProfileEditingAction::SortDocument,
-                    $section->identifier,
-                    fields: ['order' => $order],
-                );
-                $process = $this->documentRecords->reorderDocumentRecords($records, $order);
-                if ($process['changed']) {
-                    $this->persistAndDispatchProfileUpdate($profile);
-                }
-                return new JsonResponse([
-                    'success' => true,
-                    'profile' => $profile->getUid(),
-                    'section' => $section->identifier,
-                    'changed' => $process['changed'],
-                    'order' => array_values(array_map(
-                        static fn(Contract|ProfileInformation $record): int => (int)$record->getUid(),
-                        $process['records'],
-                    )),
-                ]);
-            }
-            $this->assertDocumentPayload($data, ['section', 'record', 'direction'], ['section', 'record', 'direction']);
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('document_not_found', 404);
-            }
-            $direction = $data['direction'];
-            if (!is_string($direction) || !in_array($direction, ['up', 'down'], true)) {
-                $this->throwJsonError('invalid_payload', 400, 'The direction must be up or down.');
-            }
-            $this->assertDocumentActionAllowed($section, $direction);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::SortDocument,
-                $section->identifier,
-                $record,
-                ['direction' => $direction],
-            );
-            $records = $this->documentRecords->getDocumentRecords($profile, $section);
-            $process = $this->sortItems(
-                $records,
-                $recordUid,
-                $direction === 'up' ? ListSortingMode::UP : ListSortingMode::DOWN,
-            );
-            if ($process->changed) {
-                $this->persistAndDispatchProfileUpdate($profile);
-            }
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'section' => $section->identifier,
-                'changed' => $process->changed,
-                'order' => array_values(array_map(
-                    static fn(AbstractEntity $record): int => (int)$record->getUid(),
-                    $process->items,
-                )),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Sorting a structured document failed.', $exception);
-        }
-    }
-
-    // =============================================================================================================
-    // Handle Contract contact records through the profile editing JSON API
-    // =============================================================================================================
-
-    /**
-     * Returns the field schema and current values for one Contract contact record.
-     *
-     * The Contract is resolved through the editable Profile before a contact is
-     * loaded. This prevents record UIDs from another Profile or Contract from
-     * being viewed or changed through the endpoint.
-     */
-    public function contractContactFormAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'record', 'mode'],
-                ['contract', 'section', 'mode'],
-            );
-            $mode = $this->getRequiredDocumentMode($data);
-            $recordUid = $this->getOptionalPositiveInteger($data, 'record');
-            if (($mode === 'add') !== ($recordUid === null)) {
-                $this->throwJsonError(
-                    'invalid_payload',
-                    400,
-                    'The contact record does not match the requested mode.',
-                );
-            }
-            $this->assertContractContactActionAllowed($mode);
-            $record = $recordUid === null
-                ? null
-                : $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
-            if ($recordUid !== null && $record === null) {
-                $this->throwJsonError('contract_contact_not_found', 404);
-            }
-            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
-            $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, $mode);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'record' => $record?->getUid(),
-                'title' => $this->contractContactFields->getContractContactSingularLabel($this->request, $section),
-                'fields' => $this->contractContactFields->getContractContactFieldDefinitions($this->request, $section, $record, $managedProperties),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Loading a Contract contact form failed.', $exception);
-        }
-    }
-
-    /**
-     * Creates an address, email address or phone number below an editable Contract.
-     */
-    public function createContractContactAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'fields'],
-                ['contract', 'section', 'fields'],
-            );
-            $this->assertContractContactActionAllowed('add');
-            $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
-                $this->request,
-                $section,
-                $fields,
-                true,
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $replacedFields = $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::CreateContractContact,
-                $section->identifier,
-                fields: array_intersect_key($fields, $normalizedFields),
-                contract: $contract,
-            );
-            if ($replacedFields !== null) {
-                $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
-                    $this->request,
-                    $section,
-                    $replacedFields,
-                    true,
-                );
-            }
-            $record = $this->contractContactRecords->createContractContactRecord($contract, $section, $normalizedFields);
-            $record->setSorting($this->contractContactRecords->getNextContractContactSortingValue($contract, $section));
-            $record->setPid((int)$contract->getPid());
-            $this->contractContactRecords->addContractContactRecord($record);
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Creating a Contract contact failed.', $exception);
-        }
-    }
-
-    /**
-     * Updates an existing address, email address or phone number below a Contract.
-     */
-    public function updateContractContactAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'record', 'fields'],
-                ['contract', 'section', 'record', 'fields'],
-            );
-            $this->assertContractContactActionAllowed('edit');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('contract_contact_not_found', 404);
-            }
-            $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
-            $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, 'edit');
-            $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
-                $this->request,
-                $section,
-                $fields,
-                false,
-                $managedProperties,
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $replacedFields = $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::UpdateContractContact,
-                $section->identifier,
-                $record,
-                array_intersect_key($fields, $normalizedFields),
-                $contract,
-            );
-            if ($replacedFields !== null) {
-                $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
-                    $this->request,
-                    $section,
-                    $replacedFields,
-                    false,
-                    $managedProperties,
-                );
-            }
-            $this->contractContactRecords->updateContractContactRecord($section, $record, $normalizedFields, $managedProperties);
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Updating a Contract contact failed.', $exception);
-        }
-    }
-
-    /**
-     * Deletes one address, email address or phone number below a Contract.
-     */
-    public function deleteContractContactAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'record'],
-                ['contract', 'section', 'record'],
-            );
-            $this->assertContractContactActionAllowed('delete');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('contract_contact_not_found', 404);
-            }
-            $this->assertManagedContractContactActionAllowed(
-                $section,
-                $record,
-                $this->managedRecordLocks->getManagedProperties($record),
-                'delete',
-            );
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::DeleteContractContact,
-                $section->identifier,
-                $record,
-                contract: $contract,
-            );
-            $this->contractContactRecords->removeContractContactRecord($record);
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'deleted' => $recordUid,
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Deleting a Contract contact failed.', $exception);
-        }
-    }
-
-    /**
-     * Shows or hides one address, email address or phone number in the frontend.
-     *
-     * `hidden` is the TCA `enablecolumns.disabled` column of the three contact
-     * tables - the same flag the previous editor toggled for exactly these three
-     * record kinds. It is an edit of the record as far as the allow-list of the
-     * `contracts` section is concerned, so `edit` governs it; a contract or
-     * profile-information row has an action of its own for it, `hide`, in
-     * `toggleDocumentVisibilityAction()`.
-     */
-    public function toggleContractContactVisibilityAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'record', 'hidden'],
-                ['contract', 'section', 'record', 'hidden'],
-            );
-            $this->assertContractContactActionAllowed('edit');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('contract_contact_not_found', 404);
-            }
-            $hidden = $data['hidden'];
-            if (!is_bool($hidden)) {
-                $this->throwJsonError('invalid_payload', 400, 'The hidden flag must be true or false.');
-            }
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::ToggleContractContactVisibility,
-                $section->identifier,
-                $record,
-                ['hidden' => $hidden],
-                $contract,
-            );
-            $record->setHidden($hidden);
-            $this->contractContactRecords->updateContractContactVisibility($record);
-            $this->persistAndDispatchProfileUpdate($profile);
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Changing the visibility of a Contract contact failed.', $exception);
-        }
-    }
-
-    /**
-     * Moves one Contract contact up or down within its configured section.
-     */
-    public function sortContractContactAction(): ResponseInterface
-    {
-        try {
-            [$profile, $contract, $section, $data] = $this->getContractContactRequest();
-            $this->assertDocumentPayload(
-                $data,
-                ['contract', 'section', 'record', 'direction'],
-                ['contract', 'section', 'record', 'direction'],
-            );
-            $this->assertContractContactActionAllowed('sort');
-            $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
-            if ($record === null) {
-                $this->throwJsonError('contract_contact_not_found', 404);
-            }
-            $direction = $data['direction'];
-            if (!is_string($direction) || !in_array($direction, ['up', 'down'], true)) {
-                $this->throwJsonError('invalid_payload', 400, 'The direction must be up or down.');
-            }
-            $pluginControllerActionContext = new PluginControllerActionContext($this->request, $this->settings);
-            $this->dispatchBeforeWrite(
-                $pluginControllerActionContext,
-                $profile,
-                ProfileEditingAction::SortContractContact,
-                $section->identifier,
-                $record,
-                ['direction' => $direction],
-                $contract,
-            );
-            $process = $this->sortItems(
-                $this->contractContactRecords->getContractContactRecords($contract, $section),
-                $recordUid,
-                $direction === 'up' ? ListSortingMode::UP : ListSortingMode::DOWN,
-            );
-            if ($process->changed) {
-                $this->persistAndDispatchProfileUpdate($profile);
-            }
-            return new JsonResponse([
-                'success' => true,
-                'profile' => $profile->getUid(),
-                'contract' => $contract->getUid(),
-                'section' => $section->identifier,
-                'changed' => $process->changed,
-                'order' => array_values(array_map(
-                    static fn(AbstractEntity $record): int => (int)$record->getUid(),
-                    $process->items,
-                )),
-            ]);
-        } catch (PropagateResponseException $exception) {
-            throw $exception;
-        } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
-        } catch (\Throwable $exception) {
-            $this->handleDocumentFailure('Sorting Contract contacts failed.', $exception);
-        }
-    }
-
-    /**
-     * Validates the current request and resolves the Profile, Contract and
-     * configured contact section.
-     *
-     * @return array{0: Profile, 1: Contract, 2: ContractContactSection, 3: array<string, mixed>}
-     */
-    private function getContractContactRequest(): array
-    {
-        $requestResult = $this->profileUpdateRequestService->validate($this->request);
-        if (!$requestResult->isValid()) {
-            $this->throwJsonError(
-                $requestResult->getError() ?? 'invalid_request',
-                $requestResult->getStatusCode(),
-            );
-        }
-        $payload = $requestResult->getPayload();
-        $profile = $requestResult->getProfile();
-        if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
-        }
-        $data = $payload->getData();
-        $contractUid = $this->getRequiredPositiveInteger($data, 'contract');
-        $contractSection = $this->academicPersonsSettings->getDocumentSection('contracts');
-        if ($contractSection === null || !$contractSection->isContractSection()) {
-            $this->throwJsonError('unknown_document_section', 404);
-        }
-        $contract = $this->documentRecords->findDocumentRecord($profile, $contractSection, $contractUid);
-        if (!$contract instanceof Contract) {
-            $this->throwJsonError('document_not_found', 404);
-        }
-        $sectionIdentifier = $data['section'] ?? null;
-        if (!is_string($sectionIdentifier) || $sectionIdentifier === '') {
-            $this->throwJsonError('invalid_payload', 400, 'A Contract contact section is required.');
-        }
-        $section = $this->academicPersonsSettings->getContractContactSection($sectionIdentifier);
-        if ($section === null || !in_array(
-            $section->identifier,
-            ['physicalAddresses', 'emailAddresses', 'phoneNumbers'],
-            true,
-        )) {
-            $this->throwJsonError('unknown_contract_contact_section', 404);
-        }
-        return [$profile, $contract, $section, $data];
-    }
-
-    /**
-     * Verifies that the requested action is allowed for the contacts of a Contract.
-     *
-     * The contacts are edited inside the Contract editor and have no section of
-     * their own, so they follow the `actions` allow-list and the `readOnly` flag
-     * of the `contracts` document section - the same allow-list the rendered
-     * buttons come from, mapped exactly as {@see assertDocumentActionAllowed()}
-     * maps it: `add` is creation, `sort` is drag sorting, everything else is the
-     * action of that name.
-     *
-     * @param string $action The action name to check: "view", "add", "edit",
-     *                       "delete" or "sort".
-     * @throws \RuntimeException Thrown when the action is not permitted, which
-     *                           results in a JSON error response.
-     */
-    private function assertContractContactActionAllowed(string $action): void
-    {
-        $contractSection = $this->academicPersonsSettings->getDocumentSection('contracts');
-        $allowed = $contractSection !== null && match ($action) {
-            'add' => $contractSection->allowsCreate(),
-            'sort' => $contractSection->allowsDragSorting(),
-            default => $contractSection->allowsAction($action),
-        };
-        if (!$allowed) {
-            $this->throwJsonError(
-                'contract_contact_action_not_allowed',
-                403,
-                'This action is not allowed for Contract contacts.',
-            );
-        }
-    }
-
-    /**
-     * Refuses the delete of a contact the synchronisation manages, and its edit
-     * once every editable field of it is managed. Hiding and sorting are not
-     * checked here: the synchronisation writes neither.
-     *
-     * @param ContractContactRecord|null $record
-     * @param list<string> $managedProperties
-     */
-    private function assertManagedContractContactActionAllowed(
-        ContractContactSection $section,
-        Address|Email|PhoneNumber|null $record,
-        array $managedProperties,
-        string $action,
-    ): void {
-        if (in_array($action, $this->managedRecordLocks->getLockedContactActions($section, $record, $managedProperties), true)) {
-            $this->throwJsonError(
-                'contract_contact_action_not_allowed',
-                403,
-                'This action is not allowed for a synchronised Contract contact.',
-            );
-        }
-    }
-
-    /**
-     * Validates the current request payload and resolves the profile and document section.
-     *
-     * @return array{0: Profile, 1: DocumentSection, 2: array<string, mixed>}
-     *   The validated profile, the resolved document section, and the request payload data.
-     *
-     * @throws \TYPO3\CMS\Core\Http\PropagateResponseException If the request validation pipeline propagates an exception.
-     */
-    private function getDocumentRequest(): array
-    {
-        $requestResult = $this->profileUpdateRequestService->validate($this->request);
-        if (!$requestResult->isValid()) {
-            $this->throwJsonError(
-                $requestResult->getError() ?? 'invalid_request',
-                $requestResult->getStatusCode(),
-            );
-        }
-        $payload = $requestResult->getPayload();
-        $profile = $requestResult->getProfile();
-        if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
-        }
-        $data = $payload->getData();
-        $sectionIdentifier = $data['section'] ?? null;
-        if (!is_string($sectionIdentifier) || $sectionIdentifier === '') {
-            $this->throwJsonError('invalid_payload', 400, 'A document section is required.');
-        }
-        $section = $this->academicPersonsSettings->getDocumentSection($sectionIdentifier);
-        if ($section === null) {
-            $this->throwJsonError('unknown_document_section', 404);
-        }
-        return [$profile, $section, $data];
-    }
-
-    /**
-     * Validates the document payload and ensures that only allowed keys are present
-     * and all required keys are available.
-     *
-     * @param array<string, mixed> $data The payload to validate.
-     * @param list<string> $allowedKeys A list of allowed property names.
-     * @param list<string> $requiredKeys A list of property names that must be present.
-     */
-    private function assertDocumentPayload(array $data, array $allowedKeys, array $requiredKeys): void
-    {
-        foreach (array_keys($data) as $key) {
-            if (!is_string($key) || !in_array($key, $allowedKeys, true)) {
-                $this->throwJsonError('invalid_payload', 400, 'The document payload contains an unknown property.');
-            }
-        }
-        foreach ($requiredKeys as $requiredKey) {
-            if (!array_key_exists($requiredKey, $data)) {
-                $this->throwJsonError('invalid_payload', 400, 'The document payload is incomplete.');
-            }
-        }
-    }
-
-    /**
-     * Validates that a required property exists and is a positive integer.
-     *
-     * @param array<string, mixed> $data The payload to validate.
-     * @param string $property The property name to read.
-     * @return int<1, max> The validated positive integer value.
-     */
-    private function getRequiredPositiveInteger(array $data, string $property): int
-    {
-        $value = $data[$property] ?? null;
-        if (!is_int($value) || $value <= 0) {
-            $this->throwJsonError('invalid_payload', 400, sprintf('%s must be a positive integer.', $property));
-        }
-        return $value;
-    }
-
-    /**
-     * Gets an optional positive integer property from the payload.
-     *
-     * Returns null when the property is missing, null, or zero.
-     *
-     * @param array<string, mixed> $data The payload to validate.
-     * @param string $property The property name to read.
-     * @return int|null The validated positive integer value or null when not set.
-     */
-    private function getOptionalPositiveInteger(array $data, string $property): ?int
-    {
-        if (!array_key_exists($property, $data) || $data[$property] === null || $data[$property] === 0) {
-            return null;
-        }
-        return $this->getRequiredPositiveInteger($data, $property);
-    }
-
-    /**
-     * Gets the required document mode from the payload.
-     *
-     * Valid modes are: "add", "view", "edit", and "delete".
-     *
-     * @param array<string, mixed> $data The payload to validate.
-     * @return 'add'|'view'|'edit'|'delete' The validated document mode.
-     */
-    private function getRequiredDocumentMode(array $data): string
-    {
-        $mode = $data['mode'] ?? null;
-        if (!is_string($mode) || !in_array($mode, ['add', 'view', 'edit', 'delete'], true)) {
-            $this->throwJsonError('invalid_payload', 400, 'The document mode is invalid.');
-        }
-        return $mode;
-    }
-
-    /**
-     * Verifies that the requested action is allowed for the given document section.
-     *
-     * Some actions are mapped to specific section capabilities, such as creating
-     * a new item or drag-and-drop reordering.
-     *
-     * @param DocumentSection $section The document section to validate.
-     * @param string $action The action name to check, for example "add", "reorder",
-     *                       or any action supported by the section.
-     * @throws \RuntimeException Thrown when the action is not permitted for the section,
-     *                           which results in a JSON error response.
-     */
-    private function assertDocumentActionAllowed(DocumentSection $section, string $action): void
-    {
-        $allowed = match ($action) {
-            'add' => $section->allowsCreate(),
-            'reorder' => $section->allowsDragSorting(),
-            default => $section->allowsAction($action),
-        };
-        if (!$allowed) {
-            $this->throwJsonError('document_action_not_allowed', 403, 'This action is not allowed for the document section.');
-        }
-    }
-
-    /**
-     * Refuses the delete of a contract the synchronisation manages, and its edit
-     * once every editable field of it is managed. Profile information has no
-     * import identifier and therefore nothing managed.
-     *
-     * @param list<string> $managedProperties
-     */
-    private function assertManagedDocumentActionAllowed(
-        DocumentSection $section,
-        Contract|ProfileInformation|null $record,
-        array $managedProperties,
-        string $action,
-    ): void {
-        if (in_array($action, $this->managedRecordLocks->getLockedDocumentActions($section, $record, $managedProperties), true)) {
-            $this->throwJsonError(
-                'document_action_not_allowed',
-                403,
-                'This action is not allowed for a synchronised record.',
-            );
-        }
-    }
-
-    /**
-     * Validates and returns the submitted document field payload.
-     *
-     * @param array<string, mixed> $data The raw request payload.
-     * @return array<string, mixed> The validated document fields as an associative array.
-     * @throws \RuntimeException Thrown when the payload is invalid or field names are not strings,
-     *                           which results in a JSON error response.
-     */
-    private function getSubmittedDocumentFields(array $data): array
-    {
-        $fields = $data['fields'] ?? null;
-        if (!is_array($fields)) {
-            $this->throwJsonError('invalid_payload', 400, 'Document fields must be a JSON object.');
-        }
-        foreach (array_keys($fields) as $fieldName) {
-            if (!is_string($fieldName)) {
-                $this->throwJsonError('invalid_payload', 400, 'Document field names must be strings.');
-            }
-        }
-        return $fields;
-    }
-
-    /**
-     * Validates and returns the submitted document order payload.
-     *
-     * @param array<string, mixed> $data The raw request payload.
-     * @return list<int> The validated order as a list of positive integer record UIDs.
-     * @throws \RuntimeException Thrown when the payload is invalid, which results in a JSON error response.
-     */
-    private function getSubmittedDocumentOrder(array $data): array
-    {
-        $order = $data['order'] ?? null;
-        if (!is_array($order) || !array_is_list($order)) {
-            $this->throwJsonError('invalid_payload', 400, 'The document order must be a JSON list.');
-        }
-        foreach ($order as $recordUid) {
-            if (!is_int($recordUid) || $recordUid <= 0) {
-                $this->throwJsonError('invalid_payload', 400, 'Every document order value must be a positive integer.');
-            }
-        }
-        return $order;
-    }
-
-    /**
-     * Creates a contract form data object and applies the provided field overrides.
-     *
-     * @param array<string, mixed> $fields The raw form fields to override on the contract form.
-     * @return ContractFormData The initialized contract form data instance.
-     */
-    private function createContractFormData(array $fields): ContractFormData
-    {
-        $formData = new ContractFormData();
-        $this->applyDocumentFormOverrides($formData, $fields);
-        return $formData;
-    }
-
-    /**
-     * Creates a profile information form data object and applies the provided field overrides.
-     *
-     * @param DocumentSection $section The document section used to determine the profile information type.
-     * @param array<string, mixed> $fields The raw form fields to override on the profile information form.
-     * @return ProfileInformationFormData The initialized profile information form data instance.
-     */
-    private function createProfileInformationFormData(
-        DocumentSection $section,
-        array $fields,
-    ): ProfileInformationFormData {
-        $formData = ProfileInformationFormData::createEmptyForType($section->type);
-        $formData->setPropertyOverride('type', $section->type);
-        $this->applyDocumentFormOverrides($formData, $fields);
-        return $formData;
-    }
-
-    /**
-     * Applies the provided field overrides to the form data instance.
-     *
-     * @param AbstractFormData $formData The target form data object receiving the overrides.
-     * @param array<string, mixed> $fields The raw form fields keyed by property name with their override values.
-     */
-    private function applyDocumentFormOverrides(AbstractFormData $formData, array $fields): void
-    {
-        foreach ($fields as $name => $value) {
-            $formData->setPropertyOverride($name, $value);
-        }
-    }
-
-    /**
-     * Logs a failed document operation and terminates the request with a JSON error response.
-     *
-     * @param string $logMessage Message to log for diagnosing the failure
-     * @param \Throwable $exception The exception that caused the document operation to fail
-     */
-    private function handleDocumentFailure(string $logMessage, \Throwable $exception): never
-    {
-        $this->logManager
-            ->getLogger(self::class)
-            ->error($logMessage, ['exception' => $exception]);
-        $this->throwJsonError(
-            'internal_server_error',
-            500,
-            'The document operation could not be completed.',
-        );
-    }
-
-    /**
-     * Creates a JSON error response payload for failed requests.
-     *
-     * @param string $error Machine-readable error identifier.
-     * @param int $statusCode HTTP status code to return in the response.
-     * @param string|null $message Optional human-readable message describing the error.
-     * @param array<string, list<string>> $errors Optional field-specific validation errors keyed by field name.
-     * @return JsonResponse The generated JSON error response.
-     */
-    private function jsonError(
-        string $error,
-        int $statusCode,
-        ?string $message = null,
-        array $errors = [],
-    ): JsonResponse {
-        $body = [
-            'success' => false,
-            'error' => $error,
-        ];
-        if ($message !== null) {
-            $body['message'] = $message;
-        }
-        if ($errors !== []) {
-            $body['errors'] = $errors;
-        }
-        return new JsonResponse($body, $statusCode);
-    }
-
-    /**
-     * Throws a JSON error response as a propagated exception.
-     *
-     * This method creates a JSON error payload and wraps it in a
-     * PropagateResponseException so the framework can handle the response
-     * without continuing the normal controller flow.
-     *
-     * @param string $error The machine-readable error code.
-     * @param int $statusCode The HTTP status code to send with the response.
-     * @param string|null $message An optional human-readable error message.
-     * @param array<string, list<string>> $errors Optional field-specific validation errors keyed by field name.
-     * @return never This method does not return normally because it always throws.
-     * @throws PropagateResponseException Thrown when the JSON error response should be propagated.
-     */
-    private function throwJsonError(
-        string $error,
-        int $statusCode,
-        ?string $message = null,
-        array $errors = [],
-    ): never {
-        throw new PropagateResponseException(
-            $this->jsonError($error, $statusCode, $message, $errors),
-            1776760205,
-        );
-    }
-
-    /**
-     * Answers a request a service of the editor refused with the JSON error the
-     * refusal describes, exactly as {@see self::throwJsonError()} answers one the
-     * controller refused itself.
-     */
-    private function answerRefusal(EditorRequestException $exception): never
-    {
-        $this->throwJsonError(
-            $exception->error,
-            $exception->statusCode,
-            $exception->responseMessage,
-            $exception->fieldErrors,
-        );
     }
 
     // =================================================================================================================
@@ -2019,13 +750,13 @@ final class ProfileController extends ActionController
         // this action must not depend on that to stay closed.
         if ($this->context->getPropertyFromAspect('frontend.user', 'isLoggedIn', false) !== true) {
             throw new PropagateResponseException(
-                $this->jsonError('authentication_required', 401),
+                $this->editorEndpoint->jsonError('authentication_required', 401),
                 1777046204,
             );
         }
         if (!$this->isSpecialFieldWritable('image')) {
             throw new PropagateResponseException(
-                $this->jsonError('image_not_editable', 403),
+                $this->editorEndpoint->jsonError('image_not_editable', 403),
                 1776760206,
             );
         }
@@ -2039,7 +770,7 @@ final class ProfileController extends ActionController
         // request therefore cannot create an unreferenced file in FAL.
         if ($this->profileUpdateRequestService->findEditableProfile($profileUid) === null) {
             throw new PropagateResponseException(
-                $this->jsonError('profile_not_editable', 403),
+                $this->editorEndpoint->jsonError('profile_not_editable', 403),
                 1776760201,
             );
         }
@@ -2065,7 +796,7 @@ final class ProfileController extends ActionController
             $replacedImageFile = $this->getPersistedProfileImageFile($profile);
             if (!$this->hasNewProfileImage($profile, $replacedImageFile)) {
                 throw new PropagateResponseException(
-                    $this->jsonError(
+                    $this->editorEndpoint->jsonError(
                         'image_upload_missing',
                         422,
                         'No new profile image was received.',
@@ -2085,7 +816,7 @@ final class ProfileController extends ActionController
         } catch (PropagateResponseException $exception) {
             throw $exception;
         } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
+            $this->editorEndpoint->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -2093,7 +824,7 @@ final class ProfileController extends ActionController
                     'exception' => $exception,
                 ]);
             throw new PropagateResponseException(
-                $this->jsonError(
+                $this->editorEndpoint->jsonError(
                     'internal_server_error',
                     500,
                     'The profile image could not be uploaded.',
@@ -2119,7 +850,7 @@ final class ProfileController extends ActionController
             $this->request,
         );
         if (!$requestResult->isValid()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 $requestResult->getError() ?? 'invalid_request',
                 $requestResult->getStatusCode(),
             );
@@ -2127,13 +858,13 @@ final class ProfileController extends ActionController
         $payload = $requestResult->getPayload();
         $profile = $requestResult->getProfile();
         if ($payload === null || $profile === null) {
-            $this->throwJsonError('internal_server_error', 500);
+            $this->editorEndpoint->throwJsonError('internal_server_error', 500);
         }
         if (!$this->isSpecialFieldWritable('image')) {
-            $this->throwJsonError('image_not_editable', 403);
+            $this->editorEndpoint->throwJsonError('image_not_editable', 403);
         }
         if ($payload->getData() !== []) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'invalid_payload',
                 400,
                 'The image deletion payload must not contain profile fields.',
@@ -2151,14 +882,14 @@ final class ProfileController extends ActionController
         } catch (PropagateResponseException $exception) {
             throw $exception;
         } catch (EditorRequestException $exception) {
-            $this->answerRefusal($exception);
+            $this->editorEndpoint->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
                 ->error('Deleting the profile image failed.', [
                     'exception' => $exception,
                 ]);
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'internal_server_error',
                 500,
                 'The profile image could not be deleted.',
@@ -2213,7 +944,7 @@ final class ProfileController extends ActionController
             // storage by the time the action runs, so every refusal from here on
             // has to take the file with it - the catch below is what does that.
             $persistedProfileUid = $this->requirePersistedProfileUid($profile);
-            $this->dispatchBeforeWrite(
+            $this->editorWrites->dispatchBeforeWrite(
                 $pluginControllerActionContext,
                 $profile,
                 ProfileEditingAction::UploadImage,
@@ -2234,7 +965,7 @@ final class ProfileController extends ActionController
                 $this->request,
             );
             if (!$profile->getIsTranslation()) {
-                $this->dispatchProfileUpdate($profile);
+                $this->editorWrites->dispatchProfileUpdate($this->request, $profile);
             }
             $imageMetadata = $this->profileImageMetadataService->updateForProfileUid(
                 $persistedProfileUid,
@@ -2285,7 +1016,7 @@ final class ProfileController extends ActionController
     private function deleteProfileImage(Profile $profile, PluginControllerActionContextInterface $pluginControllerActionContext): bool
     {
         $persistedProfileUid = $this->requirePersistedProfileUid($profile);
-        $this->dispatchBeforeWrite(
+        $this->editorWrites->dispatchBeforeWrite(
             $pluginControllerActionContext,
             $profile,
             ProfileEditingAction::DeleteImage,
@@ -2297,7 +1028,7 @@ final class ProfileController extends ActionController
         }
         $this->profileImageRelationWriter->deleteUnreferencedFiles($removedFileUids);
         if (!$profile->getIsTranslation()) {
-            $this->dispatchProfileUpdate($profile);
+            $this->editorWrites->dispatchProfileUpdate($this->request, $profile);
         }
         return true;
     }
@@ -2402,7 +1133,7 @@ final class ProfileController extends ActionController
         // refuses that case (ACE-492); the editor refuses it too rather than
         // writing something nobody asked for.
         if ($this->dataHandlerExecutionContext->isFrontendRequestInWorkspace()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'workspace_not_supported',
                 409,
                 'The profile image cannot be edited from a workspace preview.',
@@ -2410,7 +1141,7 @@ final class ProfileController extends ActionController
         }
         $profileUid = $this->resolvePersistedProfileUid($profile);
         if ($profileUid === null) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'profile_not_found',
                 404,
                 'The profile does not exist in the requested language.',
@@ -2422,44 +1153,6 @@ final class ProfileController extends ActionController
     private function getCurrentContentObjectRenderer(): ?ContentObjectRenderer
     {
         return $this->request->getAttribute('currentContentObject');
-    }
-
-    /**
-     * Offers a write the editor accepted to the listeners of
-     * {@see BeforeProfileEditingWriteEvent}, right before anything of it is stored.
-     *
-     * A refused write is answered with 422 `write_refused` and the listener's reason.
-     * Fields a listener replaced are returned for the caller to validate again, exactly
-     * as submitted ones, so that replaced fields can neither carry an invalid or
-     * unsanitised value nor write a field the configuration or the synchronisation
-     * locks.
-     *
-     * @param array<string, mixed> $fields The values of the write in the shape the editor submits them.
-     * @return array<string, mixed>|null The replaced fields, or null when no listener replaced them.
-     */
-    private function dispatchBeforeWrite(
-        PluginControllerActionContextInterface $pluginControllerActionContext,
-        Profile $profile,
-        ProfileEditingAction $action,
-        ?string $sectionIdentifier = null,
-        ?AbstractEntity $record = null,
-        array $fields = [],
-        ?Contract $contract = null,
-    ): ?array {
-        $event = new BeforeProfileEditingWriteEvent(
-            $profile,
-            $action,
-            $sectionIdentifier,
-            $record,
-            $fields,
-            $pluginControllerActionContext,
-            $contract,
-        );
-        $this->eventDispatcher->dispatch($event);
-        if ($event->isRefused()) {
-            $this->throwJsonError('write_refused', 422, $event->getReason());
-        }
-        return $event->getFields() !== $fields ? $event->getFields() : null;
     }
 
     /**
@@ -2486,7 +1179,7 @@ final class ProfileController extends ActionController
             // Only this call describes the submitted payload in its message, so
             // only this call may relay one. Anything the persisting code of the
             // action raises is logged and answered as an internal error instead.
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'invalid_profile_data',
                 422,
                 $exception->getMessage(),
@@ -2503,7 +1196,7 @@ final class ProfileController extends ActionController
                     $errors[$propertyPath][] = $propertyError->getMessage();
                 }
             }
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'validation_failed',
                 422,
                 $validationMessage,
@@ -2527,7 +1220,7 @@ final class ProfileController extends ActionController
             );
         } catch (InvalidProjectProfileFieldException $exception) {
             $this->logManager->getLogger(self::class)->error($exception->getMessage(), ['exception' => $exception]);
-            $this->throwJsonError('invalid_project_field', 500, $exception->getMessage());
+            $this->editorEndpoint->throwJsonError('invalid_project_field', 500, $exception->getMessage());
         }
     }
 
@@ -2546,7 +1239,7 @@ final class ProfileController extends ActionController
         // Written through the DataHandler, like the visibility: a frontend request acting
         // in a non-live workspace would produce a version of the record nobody asked for.
         if ($this->dataHandlerExecutionContext->isFrontendRequestInWorkspace()) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'workspace_not_supported',
                 409,
                 'The project fields of the profile cannot be edited from a workspace preview.',
@@ -2554,7 +1247,7 @@ final class ProfileController extends ActionController
         }
         $recordUid = $this->resolvePersistedProfileUid($profile);
         if ($recordUid === null) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'profile_not_found',
                 404,
                 'The profile does not exist in the requested language.',
@@ -2572,7 +1265,7 @@ final class ProfileController extends ActionController
             array_keys($data) !== ['skipSync']
             || !is_bool($data['skipSync'])
         ) {
-            $this->throwJsonError(
+            $this->editorEndpoint->throwJsonError(
                 'invalid_payload',
                 400,
                 'The payload must contain exactly one boolean skipSync value.',
@@ -2580,49 +1273,4 @@ final class ProfileController extends ActionController
         }
     }
 
-    /**
-     * Announces a change of the editor, with the site of the request the change was
-     * made in.
-     */
-    private function dispatchProfileUpdate(Profile $profile): void
-    {
-        $site = $this->request->getAttribute('site');
-        $this->eventDispatcher->dispatch(new AfterProfileUpdateEvent(
-            $profile,
-            $site instanceof Site ? $site : null,
-            ProfileUpdateOrigin::FrontendEditing,
-        ));
-    }
-
-    /**
-     * Persists all pending changes before announcing the updated profile aggregate.
-     *
-     * @param (\Closure(): void)|null $beforeAnnouncement a write of its own, run after the
-     *                                                     Extbase write and before the
-     *                                                     announcement, whose result the
-     *                                                     listeners have to see
-     */
-    private function persistAndDispatchProfileUpdate(?Profile $profile, ?\Closure $beforeAnnouncement = null): void
-    {
-        $this->persistenceManager->persistAll();
-        if ($beforeAnnouncement !== null) {
-            $beforeAnnouncement();
-        }
-        if ($profile === null || $profile->getUid() === null || $profile->getIsTranslation()) {
-            return;
-        }
-        $this->dispatchProfileUpdate($profile);
-    }
-
-    /**
-     * @param AbstractEntity[] $items
-     * @param int<1,max> $targetUid
-     */
-    private function sortItems(
-        array $items,
-        int $targetUid,
-        ListSortingMode $mode,
-    ): ListSortingProcess {
-        return $this->listSortingService->sort($items, $targetUid, $mode);
-    }
 }

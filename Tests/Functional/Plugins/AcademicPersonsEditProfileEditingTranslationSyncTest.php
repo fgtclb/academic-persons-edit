@@ -16,7 +16,7 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
  *
  * Profile editing persists without a form round trip: every action answers JSON, and
  * raises the `AfterProfileUpdateEvent` once the change is written - through
- * `ProfileController::persistAndDispatchProfileUpdate()` for everything that goes
+ * `EditorWrites::persistAndDispatchProfileUpdate()` for everything that goes
  * through the Extbase persistence, and directly for the two image endpoints, which
  * write through the DataHandler. This test pins it where it is
  * observable, by the translated row a real request produces;

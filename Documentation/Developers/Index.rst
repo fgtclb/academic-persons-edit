@@ -10,9 +10,9 @@ event that offers every write of the editor to a project before it is stored.
 Which classes of this extension are public API, and what that promises, is
 stated for all academic extensions on the `extension points page of
 academic_base <https://docs.typo3.org/p/fgtclb/academic-base/main/en-us/Developers/ExtensionPoints/Index.html>`__.
-The controller of the editor is :php:`final` and :php:`@internal`, so the event
-is the way to take part in a write. What happened after a write is announced by
-:php:`AfterProfileUpdateEvent` of :guilabel:`academic_persons`.
+The three controllers of the editor are :php:`final` and :php:`@internal`, so
+the event is the way to take part in a write. What happened after a write is
+announced by :php:`AfterProfileUpdateEvent` of :guilabel:`academic_persons`.
 
 ..  contents::
     :local:
@@ -65,8 +65,12 @@ listener, so a listener sees only writes that would otherwise be stored.
     *   -   :php:`getFields()`
         -   The values of the write, keyed by the field name.
     *   -   :php:`getPluginControllerActionContext()`
-        -   The request of the write, its site and language, and the settings
-            of the content element the editor is rendered by.
+        -   The request of the write, its site and language, the settings
+            of the content element the editor is rendered by, and the
+            controller and action name of the endpoint. The controller name is
+            ``Profile`` for a write of the profile, its switches and its
+            image, ``Document`` for a contract or profile information entry
+            and ``ContractContact`` for a contact of a contract.
 
 The profile, the record and the contract are handed over for reading. The
 editor stores them after the event, so a change a listener makes on them

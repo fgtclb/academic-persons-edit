@@ -15,9 +15,12 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
  * A service of the profile editor refuses what a request asked for: field values
- * that do not validate, or an order that does not name every record. It carries
- * what the JSON answer of the endpoint consists of, and the controller turns it
- * into that answer, so that no service builds an HTTP response.
+ * that do not validate, an order that does not name every record, or a write a
+ * listener refused. It carries what the JSON answer of the endpoint consists of.
+ * Every action of the editor catches it ahead of its catch-all and has
+ * `EditorEndpoint::answerRefusal()` answer it, so that the services that refuse
+ * build no HTTP response, and a refusal is never logged and answered as an
+ * internal error.
  *
  * @internal
  */

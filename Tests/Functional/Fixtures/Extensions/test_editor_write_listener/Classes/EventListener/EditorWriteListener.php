@@ -21,6 +21,14 @@ final class EditorWriteListener
     public static array $calls = [];
 
     /**
+     * The controller and the action name of the plugin action context of each write,
+     * kept apart from the calls so that the shape the other tests compare stays as it is.
+     *
+     * @var list<array{0: string|null, 1: string|null}>
+     */
+    public static array $contexts = [];
+
+    /**
      * @var (\Closure(BeforeProfileEditingWriteEvent): void)|null
      */
     public static ?\Closure $behaviour = null;
@@ -35,6 +43,10 @@ final class EditorWriteListener
             'contract' => $event->getContract()?->getUid(),
             'fields' => $event->getFields(),
         ];
+        self::$contexts[] = [
+            $event->getPluginControllerActionContext()->getControllerName(),
+            $event->getPluginControllerActionContext()->getActionName(),
+        ];
         if (self::$behaviour !== null) {
             (self::$behaviour)($event);
         }
@@ -43,6 +55,7 @@ final class EditorWriteListener
     public static function reset(): void
     {
         self::$calls = [];
+        self::$contexts = [];
         self::$behaviour = null;
     }
 }

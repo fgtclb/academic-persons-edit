@@ -6,6 +6,8 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Unit\Event;
 
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
+use FGTCLB\AcademicPersonsEdit\Controller\ContractContactController;
+use FGTCLB\AcademicPersonsEdit\Controller\DocumentController;
 use FGTCLB\AcademicPersonsEdit\Controller\ProfileController;
 use FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent;
 use FGTCLB\AcademicPersonsEdit\Event\ProfileEditingAction;
@@ -113,15 +115,21 @@ final class BeforeProfileEditingWriteEventTest extends UnitTestCase
     }
 
     /**
-     * The value of a case is the name of the action of the endpoint it stands for.
+     * The value of a case is the name of the action of the endpoint it stands for,
+     * an action of one of the three controllers of the editor.
      */
     #[Test]
     public function everyActionNamesAnActionOfTheEditor(): void
     {
+        $controllers = [ProfileController::class, DocumentController::class, ContractContactController::class];
         foreach (ProfileEditingAction::cases() as $action) {
-            $this->assertTrue(
-                method_exists(ProfileController::class, $action->value . 'Action'),
-                sprintf('ProfileController has no action "%s".', $action->value),
+            $this->assertNotSame(
+                [],
+                array_filter(
+                    $controllers,
+                    static fn(string $controller): bool => method_exists($controller, $action->value . 'Action'),
+                ),
+                sprintf('No controller of the editor has an action "%s".', $action->value),
             );
         }
     }

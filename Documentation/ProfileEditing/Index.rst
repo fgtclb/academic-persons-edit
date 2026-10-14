@@ -905,9 +905,13 @@ other inline fields. Physical-address countries are selected from localized
 TYPO3 ``CountryProvider`` options and persisted as ISO alpha-2 codes; submitted
 values outside that list are rejected by the endpoint.
 
-The ProfileEditing plugin registers only ``ProfileController``. All profile,
-contract, profile-information and contact mutations are handled by its normal
-or non-cacheable action map.
+The ProfileEditing plugin registers three controllers, each with the same
+action list as cacheable and as non-cacheable: ``ProfileController`` with the
+list, the editor page and the profile, switch and image endpoints, and the
+default action ``list``, ``DocumentController`` with the contract and
+profile-information endpoints, and ``ContractContactController`` with the
+contact endpoints. Every endpoint demands the ``X-Requested-With`` header the
+editor sends, whichever controller serves it.
 
 Section order is centralized and every section emits ``data-section-key`` and
 ``data-section-position`` together with the configured
@@ -936,9 +940,10 @@ Profile-editing development boundary
 ``academicpersonsedit_profileediting`` is the only profile-editing content
 element offered in the backend CType selector and new-content-element wizard.
 All profile-editing behavior is implemented through the ``Profile`` template
-and partial tree, ``ProfileController`` AJAX actions and the inline JavaScript
-component. The former dedicated controllers and their Fluid trees are removed;
-they are not compatibility entry points.
+and partial tree, the AJAX actions of ``ProfileController``,
+``DocumentController`` and ``ContractContactController`` and the inline
+JavaScript component. The former dedicated controllers and their Fluid trees
+are removed. They are not compatibility entry points.
 
 The ProfileEditing TypoScript, AJAX page type, site set and page TSconfig live in
 their own ``Configuration/*/ProfileEditing`` components. ProfileEditing is the
@@ -1263,7 +1268,17 @@ Customizing the view
 Override :file:`Resources/Private/Templates/Profile/Index.html` and the partials below
 :file:`Resources/Private/Partials/Profile/` through the regular template
 and partial root paths. The index keeps URL/data setup, the responsive main
-grid, the prototypes and the composition. The ``Profile``, ``Documents``,
+grid, the prototypes and the composition.
+
+An override of the index builds the endpoint addresses as the shipped one
+does: with the plugin, the page type ``1733735`` and the controller of the
+endpoint's family. That is ``Profile`` for ``update``, ``updateSkipSync``,
+``updateVisibility`` and ``deleteImage``, ``Document`` for the six document
+endpoints from ``documentForm`` to ``toggleDocumentVisibility``, and
+``ContractContact`` for the six contact endpoints from ``contractContactForm``
+to ``toggleContractContactVisibility``. An address that names an action under
+another controller is refused before any controller runs, and nothing is
+stored. The ``Profile``, ``Documents``,
 ``Image`` and ``Field`` directories group the corresponding UI
 responsibilities; the status regions and client-side button templates remain
 shared at the root.
@@ -1742,9 +1757,9 @@ email-address and phone-number creation, display, update, independent sorting,
 deletion and cross-Contract rejection. They also guard the ProfileEditing
 plugin against accidentally exposing removed mutation controllers.
 Registration tests ensure that ProfileEditing is the only editing content
-element offered to editors. The architecture unit test scans the
-``ProfileController``, Fluid tree and JavaScript for forbidden legacy
-controller and template references.
+element offered to editors. The plugin registration test pins the three
+controllers and their actions, and that none of the removed controllers exists
+any more.
 
 The AJAX tests persist malicious rich-text input through the real update
 endpoint and assert that only the sanitized response is stored. The inline

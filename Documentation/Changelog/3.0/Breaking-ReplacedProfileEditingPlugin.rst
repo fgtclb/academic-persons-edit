@@ -29,8 +29,11 @@ the default action stays ``list``. Everything below the plugin is new.
 Removed controllers and actions
 -------------------------------
 
-Five of the six controllers are removed. ``ProfileController`` is the only one
-the plugin registers, and its action list is new:
+The six controllers are replaced by three of the same plugin, each serving one
+family of endpoints: ``ProfileController`` the profile, its switches and its
+image, ``DocumentController`` the contracts and profile information entries,
+and ``ContractContactController`` the contacts of a contract. Their action
+lists are new:
 
 ..  list-table::
     :header-rows: 1
@@ -43,11 +46,12 @@ the plugin registers, and its action list is new:
           ``create``, ``edit``, ``update``, ``confirmDelete``, ``delete``,
           ``sort`` and partly ``toggleVisibility``
         - The ``documentForm``/``createDocument``/``updateDocument``/
-          ``deleteDocument``/``sortDocument``/``toggleDocumentVisibility`` and
+          ``deleteDocument``/``sortDocument``/``toggleDocumentVisibility``
+          JSON actions of :php:`DocumentController` and the
           ``contractContactForm``/``createContractContact``/
           ``updateContractContact``/``deleteContractContact``/
           ``sortContractContact``/``toggleContractContactVisibility``
-          JSON actions of :php:`ProfileController`
+          JSON actions of :php:`ContractContactController`
     *   - :php:`ProfileController::showAction()`,
           :php:`editAction()`, :php:`editImageAction()`,
           :php:`addImageAction()`, :php:`removeImageAction()`,

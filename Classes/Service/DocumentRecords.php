@@ -17,7 +17,6 @@ use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
 use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Settings\DocumentSection;
-use FGTCLB\AcademicPersonsEdit\Controller\ProfileController;
 use FGTCLB\AcademicPersonsEdit\Service\Exception\EditorRequestException;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
@@ -133,7 +132,7 @@ final readonly class DocumentRecords
      * The submitted order has been checked by {@see self::assertCompleteDocumentOrder()}.
      * Records are assigned their new sorting position in increments of 10 and marked as
      * changed. Flushing them is left to the caller, which announces the change through
-     * {@see ProfileController::persistAndDispatchProfileUpdate()}.
+     * {@see EditorWrites::persistAndDispatchProfileUpdate()}.
      *
      * @param list<Contract|ProfileInformation> $records The records that should be reordered.
      * @param list<int> $order The desired order as a list of record UIDs.

@@ -335,7 +335,7 @@ abstract class AbstractFrontendProfilePluginTestCase extends AbstractAcademicPer
             ->withMethod('POST')
             ->withAddedHeader('Content-Type', 'application/x-www-form-urlencoded')
             // The upload endpoint requires the header the editor sends on every
-            // request; see ProfileController::assertRequestWasSentByTheEditor().
+            // request; see EditorEndpoint::assertRequestWasSentByTheEditor().
             ->withAddedHeader('X-Requested-With', 'XMLHttpRequest')
             ->withBody($stream)
             ->withParsedBody($body);

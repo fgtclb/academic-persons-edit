@@ -23,9 +23,9 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
  * not exist at all would pass a check that only looks for a row.
  *
  * The gate itself is `ProfileUpdateRequestService::validate()` for the JSON
- * actions and `ProfileController::initializeAction()` for the header; the
- * ownership of a document or contact record is re-derived from the profile's own
- * relations in the action.
+ * actions and the `initializeAction()` of each of the three controllers for the
+ * header. The ownership of a document or contact record is re-derived from the
+ * profile's own relations in the action.
  */
 final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractFrontendProfilePluginTestCase
 {

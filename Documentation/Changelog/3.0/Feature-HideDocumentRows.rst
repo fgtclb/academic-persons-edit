@@ -20,7 +20,7 @@ frontend`) and its glyph shows the state.
 The switch is what the contact rows below a contract already have, extended to
 the records they belong to. It flips the record's own ``hidden`` column, the
 TCA ``enablecolumns.disabled`` field, through the new
-``toggleDocumentVisibility`` JSON action of :php:`ProfileController`, which is
+``toggleDocumentVisibility`` JSON action of :php:`DocumentController`, which is
 sent the target state rather than a "flip" so that a double press stores what
 the visitor saw, answers the serialised record, and follows the ``hide`` entry
 of the section's allow-list like every other action follows its own.

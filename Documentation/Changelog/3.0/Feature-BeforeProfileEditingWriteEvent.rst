@@ -29,7 +29,7 @@ synchronisation owns or an invalid value, never reaches a listener. The profile
 and the records the event hands over are for reading. Values are changed
 through the event, so that the checks of the editor apply to them.
 
-The controller of the editor is :php:`final` and internal, and 2.x installations
+The controllers of the editor are :php:`final` and internal, and 2.x installations
 reached these writes through an XCLASS or a copy of a controller. On 3.0 the
 event is the supported way. It is also the event the 2.4 entry
 :ref:`important-ace-33-academic-persons-edit` refers to for filling form data

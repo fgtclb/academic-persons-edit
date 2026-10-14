@@ -6,6 +6,8 @@ namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\Plugins;
 
 use FGTCLB\AcademicBase\Imaging\FrontendIconRegistry;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettingsFactory;
+use FGTCLB\AcademicPersonsEdit\Controller\ContractContactController;
+use FGTCLB\AcademicPersonsEdit\Controller\DocumentController;
 use FGTCLB\AcademicPersonsEdit\Controller\ProfileController;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
@@ -2452,8 +2454,10 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
      * `ext_localconf.php` is what writes it, but the registry is what Extbase
      * dispatches from - an action missing there is a 404 for the endpoint, and
      * an action left there is a controller method that is still reachable. The
-     * five controllers of the editor this one replaced are gone with their
-     * classes, so nothing may register them any more.
+     * three controllers each serve one family of endpoints, the profile
+     * controller first, so that its `list` stays the default action. The five
+     * controllers of the editor these replaced are gone with their classes, so
+     * nothing may register them any more.
      */
     #[Test]
     public function profileEditingPluginRegistersOnlyTheNewControllerActions(): void
@@ -2463,10 +2467,8 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
         $this->assertIsArray($plugin);
         $controllers = $plugin['controllers'] ?? null;
         $this->assertIsArray($controllers);
-        $this->assertSame([ProfileController::class], array_keys($controllers));
-
-        $this->assertSame(
-            [
+        $expected = [
+            ProfileController::class => [
                 'list',
                 'index',
                 'update',
@@ -2474,12 +2476,16 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 'updateVisibility',
                 'uploadImage',
                 'deleteImage',
+            ],
+            DocumentController::class => [
                 'documentForm',
                 'createDocument',
                 'updateDocument',
                 'deleteDocument',
                 'sortDocument',
                 'toggleDocumentVisibility',
+            ],
+            ContractContactController::class => [
                 'contractContactForm',
                 'createContractContact',
                 'updateContractContact',
@@ -2487,21 +2493,24 @@ final class AcademicPersonsEditProfileEditingTest extends AbstractFrontendProfil
                 'sortContractContact',
                 'toggleContractContactVisibility',
             ],
-            $controllers[ProfileController::class]['actions'] ?? null,
-        );
-        // Every registered action is uncacheable: all of them but the two that
-        // render the page answer a request the visitor made, and the two that
-        // render carry the editing state of the logged in user.
-        $this->assertSame(
-            $controllers[ProfileController::class]['actions'] ?? null,
-            $controllers[ProfileController::class]['nonCacheableActions'] ?? null,
-        );
+        ];
+        $this->assertSame(array_keys($expected), array_keys($controllers));
 
-        foreach ($controllers[ProfileController::class]['actions'] as $action) {
-            $this->assertTrue(
-                method_exists(ProfileController::class, $action . 'Action'),
-                sprintf('The registered action "%s" has no controller method.', $action),
+        foreach ($expected as $controllerClassName => $actions) {
+            $this->assertSame($actions, $controllers[$controllerClassName]['actions'] ?? null);
+            // Every registered action is uncacheable: all of them but the two that
+            // render the page answer a request the visitor made, and the two that
+            // render carry the editing state of the logged in user.
+            $this->assertSame(
+                $controllers[$controllerClassName]['actions'] ?? null,
+                $controllers[$controllerClassName]['nonCacheableActions'] ?? null,
             );
+            foreach ($actions as $action) {
+                $this->assertTrue(
+                    method_exists($controllerClassName, $action . 'Action'),
+                    sprintf('The registered action "%s" has no method in %s.', $action, $controllerClassName),
+                );
+            }
         }
         foreach (['editImage', 'addImage', 'removeImage', 'toggleSkipSync'] as $legacyAction) {
             $this->assertNotContains($legacyAction, $controllers[ProfileController::class]['actions']);
