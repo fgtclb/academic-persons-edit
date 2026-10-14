@@ -33,32 +33,6 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
     }
 
     /**
-     * `ProfileController` has no create action - a profile is created by
-     * `ProfileCreateCommandService` - but `createFromFormData()` is public API of the factory and
-     * has to produce a complete record from a complete submission.
-     */
-    #[Test]
-    public function createFromFormDataPersistsEverySubmittedProperty(): void
-    {
-        $formData = $this->mapFormData(
-            ProfileFormData::class,
-            'profileFormData',
-            ['profileFormData' => $this->fullSubmission()],
-        );
-
-        $profile = (new ProfileFactory())->createFromFormData(
-            $this->createValidationSet('profile'),
-            $formData,
-        );
-
-        $profile->setPid(2);
-        $this->persistenceManager()->add($profile);
-        $this->persistenceManager()->persistAll();
-
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/ProfileFactoryTest/createdProfile.csv');
-    }
-
-    /**
      * Thirteen properties were not part of the request, and every one of them would be written as
      * the empty string - or, for `skipSync`, as `false` - if the factory did not ask the request
      * first. This is the single assertion that shows what the mechanism is worth.
@@ -182,30 +156,6 @@ final class ProfileFactoryTest extends AbstractFactoryTestCase
         $this->applyAndPersist($formData);
 
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/ProfileFactoryTest/updatedNamesOnly.csv');
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function fullSubmission(): array
-    {
-        return [
-            'gender' => 'mrs',
-            'title' => 'Dr.',
-            'firstName' => 'Beverly',
-            'middleName' => 'Cheryl',
-            'lastName' => 'Crusher',
-            'website' => 'https://new.example.com',
-            'websiteTitle' => 'New Website',
-            'publicationsLink' => 'https://new.example.com/publications',
-            'publicationsLinkTitle' => 'New Publications',
-            'teachingArea' => 'New teaching area',
-            'coreCompetences' => 'New core competences',
-            'supervisedThesis' => 'New supervised thesis',
-            'supervisedDoctoralThesis' => 'New supervised doctoral thesis',
-            'miscellaneous' => 'New miscellaneous',
-            'skipSync' => '1',
-        ];
     }
 
     /**

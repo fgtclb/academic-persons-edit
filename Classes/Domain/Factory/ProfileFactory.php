@@ -14,27 +14,6 @@ use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
  */
 class ProfileFactory
 {
-    public function createFromFormData(ValidationSet $validationSet, ProfileFormData $form): ProfileModel
-    {
-        $profile = new ProfileModel();
-        $profile = $this->setGender($validationSet, $profile, $form);
-        $profile = $this->setTitle($validationSet, $profile, $form);
-        $profile = $this->setFirstName($validationSet, $profile, $form);
-        $profile = $this->setMiddleName($validationSet, $profile, $form);
-        $profile = $this->setLastName($validationSet, $profile, $form);
-        $profile = $this->setWebsite($validationSet, $profile, $form);
-        $profile = $this->setWebsiteTitle($validationSet, $profile, $form);
-        $profile = $this->setPublicationsLink($validationSet, $profile, $form);
-        $profile = $this->setPublicationsLinkTitle($validationSet, $profile, $form);
-        $profile = $this->setTeachingArea($validationSet, $profile, $form);
-        $profile = $this->setCoreCompetences($validationSet, $profile, $form);
-        $profile = $this->setSupervisedThesis($validationSet, $profile, $form);
-        $profile = $this->setSupervisedDoctoralThesis($validationSet, $profile, $form);
-        $profile = $this->setMiscellaneous($validationSet, $profile, $form);
-        $profile = $this->setSkipSync($validationSet, $profile, $form);
-        return $profile;
-    }
-
     public function updateFromFormData(ValidationSet $validationSet, ProfileModel $profile, ProfileFormData $form): ProfileModel
     {
         $profile = $this->setGender($validationSet, $profile, $form);
