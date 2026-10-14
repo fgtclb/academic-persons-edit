@@ -14,23 +14,13 @@ namespace FGTCLB\AcademicPersonsEdit\Controller;
 use FGTCLB\AcademicBase\Controller\GetCurrentContentRecordMethodTrait;
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContext;
 use FGTCLB\AcademicBase\Domain\Model\Dto\PluginControllerActionContextInterface;
-use FGTCLB\AcademicBase\Settings\Validation;
 use FGTCLB\AcademicPersons\Domain\Model\Address;
 use FGTCLB\AcademicPersons\Domain\Model\Contract;
 use FGTCLB\AcademicPersons\Domain\Model\Email;
-use FGTCLB\AcademicPersons\Domain\Model\FunctionType;
-use FGTCLB\AcademicPersons\Domain\Model\Location;
-use FGTCLB\AcademicPersons\Domain\Model\OrganisationalUnit;
 use FGTCLB\AcademicPersons\Domain\Model\PhoneNumber;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Model\ProfileInformation;
-use FGTCLB\AcademicPersons\Domain\Repository\AddressRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ContractRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\EmailRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\FunctionTypeRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\LocationRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\OrganisationalUnitRepository;
-use FGTCLB\AcademicPersons\Domain\Repository\PhoneNumberRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileInformationRepository;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
@@ -39,52 +29,42 @@ use FGTCLB\AcademicPersons\Service\DataHandlerExecutionContext;
 use FGTCLB\AcademicPersons\Service\ProfileImageMetadataService;
 use FGTCLB\AcademicPersons\Service\ProfileImageRelationWriter;
 use FGTCLB\AcademicPersons\Settings\AcademicPersonsSettings;
-use FGTCLB\AcademicPersons\Settings\ContractContactField;
 use FGTCLB\AcademicPersons\Settings\ContractContactSection;
-use FGTCLB\AcademicPersons\Settings\ContractField;
 use FGTCLB\AcademicPersons\Settings\DocumentSection;
-use FGTCLB\AcademicPersons\Types\EmailAddressTypes;
-use FGTCLB\AcademicPersons\Types\PhoneNumberTypes;
-use FGTCLB\AcademicPersons\Types\PhysicalAddressTypes;
 use FGTCLB\AcademicPersonsEdit\Attributes\ListSortingMode;
-use FGTCLB\AcademicPersonsEdit\Domain\Factory\AddressFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ContractFactory;
-use FGTCLB\AcademicPersonsEdit\Domain\Factory\EmailFactory;
-use FGTCLB\AcademicPersonsEdit\Domain\Factory\PhoneNumberFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileInformationFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AbstractFormData;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\AddressFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ContractFormData;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\EmailFormData;
-use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\PhoneNumberFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileInformationFormData;
 use FGTCLB\AcademicPersonsEdit\Domain\Model\Dto\ProfileUpdatePayload;
 use FGTCLB\AcademicPersonsEdit\Event\BeforeProfileEditingWriteEvent;
 use FGTCLB\AcademicPersonsEdit\Event\ProfileEditingAction;
+use FGTCLB\AcademicPersonsEdit\Service\ContractContactFields;
+use FGTCLB\AcademicPersonsEdit\Service\ContractContactRecords;
 use FGTCLB\AcademicPersonsEdit\Service\DataTransferObject\ListSortingProcess;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldDefinitions;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldNormalizer;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentRecords;
+use FGTCLB\AcademicPersonsEdit\Service\EditorLabels;
+use FGTCLB\AcademicPersonsEdit\Service\Exception\EditorRequestException;
 use FGTCLB\AcademicPersonsEdit\Service\Exception\InvalidProjectProfileFieldException;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
 use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileDocumentSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileFieldOptionsService;
-use FGTCLB\AcademicPersonsEdit\Service\ProfileRichTextSanitizerInterface;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileSectionProvider;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateRequestService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileUpdateValidationService;
 use FGTCLB\AcademicPersonsEdit\Service\ProfileVisibilityWriter;
 use FGTCLB\AcademicPersonsEdit\Service\ProjectProfileFields;
-use FGTCLB\AcademicPersonsEdit\Service\RichTextCharacterCounter;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Localization\DateFormatter;
-use TYPO3\CMS\Core\Localization\Locale;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -97,10 +77,8 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Controller\FileUploadConfiguration;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\Validation\Validator\FileSizeValidator;
 use TYPO3\CMS\Extbase\Validation\Validator\MimeTypeValidator;
-use TYPO3\CMS\Extbase\Validation\Validator\ValidatorInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 
@@ -111,46 +89,7 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
  * updates and data retrieval without relying on the shared HTML authentication
  * flow used by regular Extbase pages.
  *
- * @phpstan-type DocumentFieldDefinition array{
- *      name: string,
- *      label: string,
- *      type: string,
- *      required: bool,
- *      readOnly: bool,
- *      managed: bool,
- *      disabled: bool,
- *      richText: bool,
- *      characterLimit: int,
- *      autocomplete: string,
- *      placeholder: string,
- *      helptext: string,
- *      columnClass: string,
- *      compactCheckbox: bool,
- *      min: int|null,
- *      max: int|null,
- *      step: int|null,
- *      value: mixed,
- *      displayValue: string,
- *      options: list<array{value: int|string, label: string}>
- *  }
- * @phpstan-type ContractContactRecord Address|Email|PhoneNumber
- * @phpstan-type ContractContactItem array{
- *      uid: int,
- *      sorting: int,
- *      hidden: bool,
- *      managed: bool,
- *      editable: bool,
- *      deletable: bool,
- *      values: array<string, mixed>,
- *      display: array<string, string>,
- *      summary: list<array{label: string, value: string}>
- *  }
- * @phpstan-type ContractContactSectionDefinition array{
- *      identifier: string,
- *      label: string,
- *      singularLabel: string,
- *      items: list<ContractContactItem>
- *  }
+ * @phpstan-import-type ContractContactRecord from ContractContactRecords
  *
  * @internal This controller is intentionally internal to `EXT:academic_persons_edit`
  *           and is not part of the public API.
@@ -208,40 +147,6 @@ final class ProfileController extends ActionController
      */
     private const AJAX_PAGE_TYPE = 1733735;
 
-    /**
-     * The extension name the labels of the editor are translated with. UpperCamelCase, so
-     * that TYPO3 reads a site's `_LOCAL_LANG` from `plugin.tx_academicpersonsedit` on every
-     * core version.
-     */
-    private const EXTENSION_NAME = 'AcademicPersonsEdit';
-
-    /**
-     * The bounds of the three timeline year fields. They are the `range` of
-     * the TCA columns of `tx_academicpersons_domain_model_profile_information`
-     * and reach the browser as the `min` and `max` of the number control.
-     */
-    private const YEAR_MIN = 0;
-    private const YEAR_MAX = 9999;
-
-    /**
-     * The two contract dates are plain text controls, not `<input type="date">`.
-     *
-     * The native control was tried and reverted: it forces the locale of the
-     * browser rather than the one of the site, it cannot be styled with the
-     * rest of the editor, and its calendar is not the date picker this editor
-     * is meant to get. A picker is a feature of its own and is deliberately
-     * not shipped yet - until it is, the control is the one the previous
-     * editor had: a text input showing `d.m.Y` behind the hint below.
-     *
-     * `DOCUMENT_DATE_FORMAT` is what the control shows and what an editor
-     * types. `DOCUMENT_DATE_ISO_FORMAT` is what the endpoint answered and
-     * accepted while the control was a native one; it stays accepted, so a
-     * client written against that shape keeps working.
-     */
-    private const DOCUMENT_DATE_FORMAT = 'd.m.Y';
-    private const DOCUMENT_DATE_ISO_FORMAT = 'Y-m-d';
-    private const DOCUMENT_DATE_PLACEHOLDER = 'dd.mm.yyyy';
-
     public function __construct(
         private readonly Context $context,
         private readonly PersistenceManager $persistenceManager,
@@ -249,7 +154,6 @@ final class ProfileController extends ActionController
         private readonly ListSortingService $listSortingService,
         private readonly ProfileFactory $profileFactory,
         private readonly ProfileRepository $profileRepository,
-        private readonly CountryProvider $countryProvider,
         private readonly ErrorController $errorController,
         private readonly LogManager $logManager,
         private readonly ResourceFactory $resourceFactory,
@@ -265,23 +169,16 @@ final class ProfileController extends ActionController
         private readonly ProfileDocumentSectionProvider $profileDocumentSectionProvider,
         private readonly ContractFactory $contractFactory,
         private readonly ContractRepository $contractRepository,
-        private readonly AddressFactory $addressFactory,
-        private readonly AddressRepository $addressRepository,
-        private readonly EmailFactory $emailFactory,
-        private readonly EmailRepository $emailRepository,
-        private readonly PhoneNumberFactory $phoneNumberFactory,
-        private readonly PhoneNumberRepository $phoneNumberRepository,
-        private readonly PhysicalAddressTypes $physicalAddressTypes,
-        private readonly EmailAddressTypes $emailAddressTypes,
-        private readonly PhoneNumberTypes $phoneNumberTypes,
         private readonly ProfileInformationFactory $profileInformationFactory,
         private readonly ProfileInformationRepository $profileInformationRepository,
-        private readonly FunctionTypeRepository $functionTypeRepository,
-        private readonly OrganisationalUnitRepository $organisationalUnitRepository,
-        private readonly LocationRepository $locationRepository,
-        private readonly ProfileRichTextSanitizerInterface $profileRichTextSanitizer,
         private readonly ManagedRecordLocks $managedRecordLocks,
         private readonly ProjectProfileFields $projectProfileFields,
+        private readonly EditorLabels $editorLabels,
+        private readonly DocumentFieldDefinitions $documentFieldDefinitions,
+        private readonly DocumentFieldNormalizer $documentFieldNormalizer,
+        private readonly DocumentRecords $documentRecords,
+        private readonly ContractContactFields $contractContactFields,
+        private readonly ContractContactRecords $contractContactRecords,
     ) {}
 
     /**
@@ -512,16 +409,6 @@ final class ProfileController extends ActionController
     }
 
     /**
-     * The locale a rendered date is formatted in: the site language's own, so the
-     * editor and the public detail view of the same profile agree.
-     */
-    private function resolveSiteLocale(): Locale
-    {
-        $siteLanguage = $this->request->getAttribute('language');
-        return $siteLanguage instanceof SiteLanguage ? $siteLanguage->getLocale() : new Locale();
-    }
-
-    /**
      * The maximum upload size, falling back to the default when the setting is
      * missing or blank - the validator rejects an empty option rather than
      * treating it as "no limit".
@@ -577,12 +464,14 @@ final class ProfileController extends ActionController
             }
             $languageUid = $profile->getLanguageUid();
             if ($languageUid === -1) {
-                $language = $this->translate(
+                $language = $this->editorLabels->translate(
+                    $this->request,
                     'list.language.all',
                 ) ?? 'All languages';
             } else {
                 $language = $languageLabels[$languageUid]
-                    ?? $this->translate(
+                    ?? $this->editorLabels->translate(
+                        $this->request,
                         'list.language.unknown',
                         [$languageUid],
                     )
@@ -698,6 +587,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -787,6 +678,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -888,6 +781,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -933,7 +828,7 @@ final class ProfileController extends ActionController
             $this->assertDocumentActionAllowed($section, $mode);
             $record = $recordUid === null
                 ? null
-                : $this->findDocumentRecord($profile, $section, $recordUid);
+                : $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
             if ($recordUid !== null && $record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
@@ -945,14 +840,16 @@ final class ProfileController extends ActionController
                 'section' => $section->identifier,
                 'kind' => $section->isContractSection() ? 'contract' : 'profileInformation',
                 'record' => $record?->getUid(),
-                'fields' => $this->getDocumentFieldDefinitions($section, $record, $managedProperties),
+                'fields' => $this->documentFieldDefinitions->getDocumentFieldDefinitions($this->request, $section, $record, $managedProperties),
             ];
             if ($record instanceof Contract) {
-                $response['contactSections'] = $this->getContractContactSections($record);
+                $response['contactSections'] = $this->contractContactFields->getContractContactSections($this->request, $record);
             }
             return new JsonResponse($response);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Loading a structured document form failed.', $exception);
         }
@@ -976,7 +873,8 @@ final class ProfileController extends ActionController
             $this->assertDocumentPayload($data, ['section', 'fields'], ['section', 'fields']);
             $this->assertDocumentActionAllowed($section, 'add');
             $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->normalizeAndValidateDocumentFields(
+            $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
+                $this->request,
                 $section,
                 $fields,
                 true,
@@ -990,7 +888,8 @@ final class ProfileController extends ActionController
                 fields: array_intersect_key($fields, $normalizedFields),
             );
             if ($replacedFields !== null) {
-                $normalizedFields = $this->normalizeAndValidateDocumentFields(
+                $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
+                    $this->request,
                     $section,
                     $replacedFields,
                     true,
@@ -1002,7 +901,7 @@ final class ProfileController extends ActionController
                     $profile,
                     $this->createContractFormData($normalizedFields),
                 );
-                $record->setSorting($this->getNextSortingValue($this->getDocumentRecords($profile, $section)));
+                $record->setSorting($this->documentRecords->getNextSortingValue($this->documentRecords->getDocumentRecords($profile, $section)));
                 $record->setPid((int)$profile->getPid());
                 $this->contractRepository->add($record);
             } else {
@@ -1011,7 +910,7 @@ final class ProfileController extends ActionController
                     $profile,
                     $this->createProfileInformationFormData($section, $normalizedFields),
                 );
-                $record->setSorting($this->getNextSortingValue($this->getDocumentRecords($profile, $section)));
+                $record->setSorting($this->documentRecords->getNextSortingValue($this->documentRecords->getDocumentRecords($profile, $section)));
                 $record->setPid((int)$profile->getPid());
                 $this->profileInformationRepository->add($record);
             }
@@ -1020,10 +919,12 @@ final class ProfileController extends ActionController
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeDocumentItem($section, $record),
+                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Creating a structured document failed.', $exception);
         }
@@ -1051,14 +952,15 @@ final class ProfileController extends ActionController
             );
             $this->assertDocumentActionAllowed($section, 'edit');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
             $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
             $this->assertManagedDocumentActionAllowed($section, $record, $managedProperties, 'edit');
             $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->normalizeAndValidateDocumentFields(
+            $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
+                $this->request,
                 $section,
                 $fields,
                 false,
@@ -1074,7 +976,8 @@ final class ProfileController extends ActionController
                 array_intersect_key($fields, $normalizedFields),
             );
             if ($replacedFields !== null) {
-                $normalizedFields = $this->normalizeAndValidateDocumentFields(
+                $normalizedFields = $this->documentFieldNormalizer->normalizeAndValidateDocumentFields(
+                    $this->request,
                     $section,
                     $replacedFields,
                     false,
@@ -1104,10 +1007,12 @@ final class ProfileController extends ActionController
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeDocumentItem($section, $record),
+                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Updating a structured document failed.', $exception);
         }
@@ -1128,7 +1033,7 @@ final class ProfileController extends ActionController
             $this->assertDocumentPayload($data, ['section', 'record', 'hidden'], ['section', 'record', 'hidden']);
             $this->assertDocumentActionAllowed($section, 'hide');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
@@ -1156,10 +1061,12 @@ final class ProfileController extends ActionController
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeDocumentItem($section, $record),
+                'item' => $this->documentFieldDefinitions->serializeDocumentItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Changing the visibility of a structured document failed.', $exception);
         }
@@ -1185,7 +1092,7 @@ final class ProfileController extends ActionController
             $this->assertDocumentPayload($data, ['section', 'record'], ['section', 'record']);
             $this->assertDocumentActionAllowed($section, 'delete');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
@@ -1217,6 +1124,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Deleting a structured document failed.', $exception);
         }
@@ -1240,9 +1149,9 @@ final class ProfileController extends ActionController
             if (array_key_exists('order', $data)) {
                 $this->assertDocumentPayload($data, ['section', 'order'], ['section', 'order']);
                 $this->assertDocumentActionAllowed($section, 'reorder');
-                $records = $this->getDocumentRecords($profile, $section);
+                $records = $this->documentRecords->getDocumentRecords($profile, $section);
                 $order = $this->getSubmittedDocumentOrder($data);
-                $this->assertCompleteDocumentOrder($records, $order);
+                $this->documentRecords->assertCompleteDocumentOrder($records, $order);
                 $this->dispatchBeforeWrite(
                     $pluginControllerActionContext,
                     $profile,
@@ -1250,7 +1159,7 @@ final class ProfileController extends ActionController
                     $section->identifier,
                     fields: ['order' => $order],
                 );
-                $process = $this->reorderDocumentRecords($records, $order);
+                $process = $this->documentRecords->reorderDocumentRecords($records, $order);
                 if ($process['changed']) {
                     $this->persistAndDispatchProfileUpdate($profile);
                 }
@@ -1267,7 +1176,7 @@ final class ProfileController extends ActionController
             }
             $this->assertDocumentPayload($data, ['section', 'record', 'direction'], ['section', 'record', 'direction']);
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findDocumentRecord($profile, $section, $recordUid);
+            $record = $this->documentRecords->findDocumentRecord($profile, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('document_not_found', 404);
             }
@@ -1284,7 +1193,7 @@ final class ProfileController extends ActionController
                 $record,
                 ['direction' => $direction],
             );
-            $records = $this->getDocumentRecords($profile, $section);
+            $records = $this->documentRecords->getDocumentRecords($profile, $section);
             $process = $this->sortItems(
                 $records,
                 $recordUid,
@@ -1305,6 +1214,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Sorting a structured document failed.', $exception);
         }
@@ -1342,7 +1253,7 @@ final class ProfileController extends ActionController
             $this->assertContractContactActionAllowed($mode);
             $record = $recordUid === null
                 ? null
-                : $this->findContractContactRecord($contract, $section, $recordUid);
+                : $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
             if ($recordUid !== null && $record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
@@ -1354,11 +1265,13 @@ final class ProfileController extends ActionController
                 'contract' => $contract->getUid(),
                 'section' => $section->identifier,
                 'record' => $record?->getUid(),
-                'title' => $this->getContractContactSingularLabel($section),
-                'fields' => $this->getContractContactFieldDefinitions($section, $record, $managedProperties),
+                'title' => $this->contractContactFields->getContractContactSingularLabel($this->request, $section),
+                'fields' => $this->contractContactFields->getContractContactFieldDefinitions($this->request, $section, $record, $managedProperties),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Loading a Contract contact form failed.', $exception);
         }
@@ -1378,7 +1291,8 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('add');
             $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->normalizeAndValidateContractContactFields(
+            $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
+                $this->request,
                 $section,
                 $fields,
                 true,
@@ -1393,26 +1307,29 @@ final class ProfileController extends ActionController
                 contract: $contract,
             );
             if ($replacedFields !== null) {
-                $normalizedFields = $this->normalizeAndValidateContractContactFields(
+                $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
+                    $this->request,
                     $section,
                     $replacedFields,
                     true,
                 );
             }
-            $record = $this->createContractContactRecord($contract, $section, $normalizedFields);
-            $record->setSorting($this->getNextContractContactSortingValue($contract, $section));
+            $record = $this->contractContactRecords->createContractContactRecord($contract, $section, $normalizedFields);
+            $record->setSorting($this->contractContactRecords->getNextContractContactSortingValue($contract, $section));
             $record->setPid((int)$contract->getPid());
-            $this->addContractContactRecord($record);
+            $this->contractContactRecords->addContractContactRecord($record);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'contract' => $contract->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeContractContactItem($section, $record),
+                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Creating a Contract contact failed.', $exception);
         }
@@ -1432,14 +1349,15 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('edit');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findContractContactRecord($contract, $section, $recordUid);
+            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
             $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
             $this->assertManagedContractContactActionAllowed($section, $record, $managedProperties, 'edit');
             $fields = $this->getSubmittedDocumentFields($data);
-            $normalizedFields = $this->normalizeAndValidateContractContactFields(
+            $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
+                $this->request,
                 $section,
                 $fields,
                 false,
@@ -1456,24 +1374,27 @@ final class ProfileController extends ActionController
                 $contract,
             );
             if ($replacedFields !== null) {
-                $normalizedFields = $this->normalizeAndValidateContractContactFields(
+                $normalizedFields = $this->contractContactFields->normalizeAndValidateContractContactFields(
+                    $this->request,
                     $section,
                     $replacedFields,
                     false,
                     $managedProperties,
                 );
             }
-            $this->updateContractContactRecord($section, $record, $normalizedFields, $managedProperties);
+            $this->contractContactRecords->updateContractContactRecord($section, $record, $normalizedFields, $managedProperties);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'contract' => $contract->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeContractContactItem($section, $record),
+                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Updating a Contract contact failed.', $exception);
         }
@@ -1493,7 +1414,7 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('delete');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findContractContactRecord($contract, $section, $recordUid);
+            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
@@ -1512,7 +1433,7 @@ final class ProfileController extends ActionController
                 $record,
                 contract: $contract,
             );
-            $this->removeContractContactRecord($record);
+            $this->contractContactRecords->removeContractContactRecord($record);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
                 'success' => true,
@@ -1523,6 +1444,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Deleting a Contract contact failed.', $exception);
         }
@@ -1549,7 +1472,7 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('edit');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findContractContactRecord($contract, $section, $recordUid);
+            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
@@ -1568,17 +1491,19 @@ final class ProfileController extends ActionController
                 $contract,
             );
             $record->setHidden($hidden);
-            $this->updateContractContactVisibility($record);
+            $this->contractContactRecords->updateContractContactVisibility($record);
             $this->persistAndDispatchProfileUpdate($profile);
             return new JsonResponse([
                 'success' => true,
                 'profile' => $profile->getUid(),
                 'contract' => $contract->getUid(),
                 'section' => $section->identifier,
-                'item' => $this->serializeContractContactItem($section, $record),
+                'item' => $this->contractContactFields->serializeContractContactItem($this->request, $section, $record),
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Changing the visibility of a Contract contact failed.', $exception);
         }
@@ -1598,7 +1523,7 @@ final class ProfileController extends ActionController
             );
             $this->assertContractContactActionAllowed('sort');
             $recordUid = $this->getRequiredPositiveInteger($data, 'record');
-            $record = $this->findContractContactRecord($contract, $section, $recordUid);
+            $record = $this->contractContactRecords->findContractContactRecord($contract, $section, $recordUid);
             if ($record === null) {
                 $this->throwJsonError('contract_contact_not_found', 404);
             }
@@ -1617,7 +1542,7 @@ final class ProfileController extends ActionController
                 $contract,
             );
             $process = $this->sortItems(
-                $this->getContractContactRecords($contract, $section),
+                $this->contractContactRecords->getContractContactRecords($contract, $section),
                 $recordUid,
                 $direction === 'up' ? ListSortingMode::UP : ListSortingMode::DOWN,
             );
@@ -1637,6 +1562,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->handleDocumentFailure('Sorting Contract contacts failed.', $exception);
         }
@@ -1668,7 +1595,7 @@ final class ProfileController extends ActionController
         if ($contractSection === null || !$contractSection->isContractSection()) {
             $this->throwJsonError('unknown_document_section', 404);
         }
-        $contract = $this->findDocumentRecord($profile, $contractSection, $contractUid);
+        $contract = $this->documentRecords->findDocumentRecord($profile, $contractSection, $contractUid);
         if (!$contract instanceof Contract) {
             $this->throwJsonError('document_not_found', 404);
         }
@@ -1938,1234 +1865,6 @@ final class ProfileController extends ActionController
     }
 
     /**
-     * Finds a document record for the given profile and section by its UID.
-     *
-     * @param Profile $profile The profile whose document records should be searched.
-     * @param DocumentSection $section The document section to inspect.
-     * @param int $recordUid The UID of the record to find.
-     * @return Contract|ProfileInformation|null The matching record, or null if no record with the given UID exists.
-     */
-    private function findDocumentRecord(
-        Profile $profile,
-        DocumentSection $section,
-        int $recordUid,
-    ): Contract|ProfileInformation|null {
-        foreach ($this->getDocumentRecords($profile, $section) as $record) {
-            if ((int)$record->getUid() === $recordUid) {
-                return $record;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns all document records belonging to the provided profile and section.
-     *
-     * For contract sections, the method returns the profile's contract records.
-     * For all other sections, it returns the corresponding profile information records.
-     *
-     * @param Profile $profile The profile whose records should be retrieved.
-     * @param DocumentSection $section The section whose records should be inspected.
-     * @return list<Contract|ProfileInformation> The matching records, filtered to valid record instances.
-     */
-    private function getDocumentRecords(Profile $profile, DocumentSection $section): array
-    {
-        // Including the hidden ones: the editor is where a hidden record is shown
-        // again, so it must list what the public views leave out.
-        if ($section->isContractSection()) {
-            return array_values(array_filter(
-                $this->contractRepository->findByProfileIncludingHidden($profile)->toArray(),
-                static fn(mixed $record): bool => $record instanceof Contract,
-            ));
-        }
-        return array_values(array_filter(
-            $this->profileInformationRepository
-                ->findByProfileAndTypeIncludingHidden($profile, $section->type)
-                ->toArray(),
-            static fn(mixed $record): bool => $record instanceof ProfileInformation,
-        ));
-    }
-
-    /**
-     * Determines the next sorting value for a document record by taking the highest
-     * existing sort value and adding a new increment.
-     *
-     * @param list<Contract|ProfileInformation> $records The records for which the next sorting position should be calculated.
-     * @return int The next available sorting value, offset by 10 from the current maximum.
-     */
-    private function getNextSortingValue(array $records): int
-    {
-        $maximum = 0;
-        foreach ($records as $record) {
-            $maximum = max($maximum, $record->getSorting());
-        }
-        return $maximum + 10;
-    }
-
-    /**
-     * @return list<ContractContactSectionDefinition>
-     */
-    private function getContractContactSections(Contract $contract): array
-    {
-        $sections = [];
-        foreach ($this->academicPersonsSettings->contractContactSections as $section) {
-            if (!in_array($section->identifier, ['physicalAddresses', 'emailAddresses', 'phoneNumbers'], true)) {
-                continue;
-            }
-            $sections[] = [
-                'identifier' => $section->identifier,
-                'label' => $this->translateContractContactLabel('contract.' . $section->identifier),
-                'singularLabel' => $this->getContractContactSingularLabel($section),
-                'items' => array_map(
-                    fn(Address|Email|PhoneNumber $record): array => $this->serializeContractContactItem(
-                        $section,
-                        $record,
-                    ),
-                    $this->getContractContactRecords($contract, $section),
-                ),
-            ];
-        }
-        return $sections;
-    }
-
-    private function getContractContactSingularLabel(ContractContactSection $section): string
-    {
-        $key = match ($section->identifier) {
-            'physicalAddresses' => 'contract.physicalAddress',
-            'emailAddresses' => 'contract.emailAddress',
-            'phoneNumbers' => 'contract.phoneNumber',
-            default => $section->identifier,
-        };
-        return $this->translateContractContactLabel($key);
-    }
-
-    private function translateContractContactLabel(string $key): string
-    {
-        return $this->translate($key) ?? $key;
-    }
-
-    /**
-     * Translates a label for this plugin, so that a site's `_LOCAL_LANG` override of the
-     * extension and of the plugin both reach it.
-     *
-     * TYPO3 v14 reads the override of the plugin only from the Extbase request it is handed;
-     * without one, only the override of the extension applies. TYPO3 v13 takes both from the
-     * configuration manager and has no parameter for the request. The argument list is
-     * spread so that one call fits both signatures.
-     *
-     * @todo Pass the request directly once TYPO3 v13 support is dropped.
-     * @param list<mixed>|null $arguments
-     */
-    private function translate(string $key, ?array $arguments = null, string $extensionName = self::EXTENSION_NAME): ?string
-    {
-        $parameters = [$key, $extensionName, $arguments, null];
-        if ((new Typo3Version())->getMajorVersion() >= 14) {
-            $parameters[] = $this->request;
-        }
-        return LocalizationUtility::translate(...$parameters);
-    }
-
-    /**
-     * @return list<ContractContactRecord>
-     */
-    private function getContractContactRecords(
-        Contract $contract,
-        ContractContactSection $section,
-    ): array {
-        $records = match ($section->identifier) {
-            'physicalAddresses' => $this->addressRepository->findByContractIncludingHidden((int)$contract->getUid()),
-            'emailAddresses' => $this->emailRepository->findByContractIncludingHidden((int)$contract->getUid()),
-            'phoneNumbers' => $this->phoneNumberRepository->findByContractIncludingHidden((int)$contract->getUid()),
-            default => [],
-        };
-        return array_values(array_filter(
-            is_array($records) ? $records : $records->toArray(),
-            static fn(mixed $record): bool => $record instanceof Address
-                || $record instanceof Email
-                || $record instanceof PhoneNumber,
-        ));
-    }
-
-    private function findContractContactRecord(
-        Contract $contract,
-        ContractContactSection $section,
-        int $recordUid,
-    ): Address|Email|PhoneNumber|null {
-        foreach ($this->getContractContactRecords($contract, $section) as $record) {
-            if ((int)$record->getUid() === $recordUid) {
-                return $record;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param ContractContactRecord|null $record
-     * @param list<string> $managedProperties the properties the synchronisation manages on the record
-     * @return list<DocumentFieldDefinition>
-     */
-    private function getContractContactFieldDefinitions(
-        ContractContactSection $section,
-        Address|Email|PhoneNumber|null $record,
-        array $managedProperties = [],
-    ): array {
-        $definitions = [];
-        foreach ($section->fields as $field) {
-            $options = $this->getContractContactOptions($section, $field);
-            $definition = $this->createDocumentField(
-                $this->getContractContactTranslationPrefix($section),
-                $field->propertyName,
-                $this->getContractContactInputType($field),
-                $record === null ? '' : $this->getContractContactPropertyValue($record, $field->propertyName),
-                $options,
-            );
-            $definition['required'] = $field->validation->required;
-            $definition['readOnly'] = $field->validation->readOnly;
-            $definition['disabled'] = $field->validation->disabled;
-            $definition['characterLimit'] = $field->validation->characterLimit;
-            $definition['autocomplete'] = $field->autocomplete;
-            $definition['helptext'] = $this->getContractContactHelptext($field);
-            $definitions[] = $this->applyManagedField($definition, $managedProperties);
-        }
-        return $definitions;
-    }
-
-    /**
-     * Locks a field the synchronisation manages on the record. It is not
-     * required any more, as for `frontendreadonly`: the owner cannot supply a
-     * value they cannot edit.
-     *
-     * @param DocumentFieldDefinition $definition
-     * @param list<string> $managedProperties
-     * @return DocumentFieldDefinition
-     */
-    private function applyManagedField(array $definition, array $managedProperties): array
-    {
-        if (!in_array($definition['name'], $managedProperties, true)) {
-            return $definition;
-        }
-        $definition['readOnly'] = true;
-        $definition['required'] = false;
-        $definition['managed'] = true;
-        return $definition;
-    }
-
-    private function getContractContactTranslationPrefix(ContractContactSection $section): string
-    {
-        return match ($section->identifier) {
-            'physicalAddresses' => 'physicalAddress',
-            'emailAddresses' => 'emailAddress',
-            'phoneNumbers' => 'phoneNumber',
-            default => 'contract',
-        };
-    }
-
-    private function getContractContactInputType(ContractContactField $field): string
-    {
-        return match ($field->renderType) {
-            'select' => 'select',
-            'email' => 'email',
-            'phone' => 'tel',
-            default => 'text',
-        };
-    }
-
-    private function getContractContactPropertyValue(
-        Address|Email|PhoneNumber $record,
-        string $propertyName,
-    ): string {
-        $getter = 'get' . ucfirst($propertyName);
-        if (!is_callable([$record, $getter])) {
-            return '';
-        }
-        $value = $record->{$getter}();
-        return is_string($value) ? $value : '';
-    }
-
-    /**
-     * @return list<array{value: string, label: string}>
-     */
-    private function getContractContactOptions(
-        ContractContactSection $section,
-        ContractContactField $field,
-    ): array {
-        if ($field->propertyName === 'country') {
-            return $this->getCountryOptions();
-        }
-        return $field->renderType === 'select'
-            ? $this->getContractContactTypeOptions($section)
-            : [];
-    }
-
-    private function getContractContactHelptext(ContractContactField $field): string
-    {
-        if ($field->helptext === '') {
-            return '';
-        }
-        return $this->translate($field->helptext) ?? $field->helptext;
-    }
-
-    /**
-     * @return list<array{value: string, label: string}>
-     */
-    private function getCountryOptions(): array
-    {
-        $options = [];
-        foreach ($this->countryProvider->getAll() as $country) {
-            $options[] = [
-                'value' => $country->getAlpha2IsoCode(),
-                'label' => $this->translate($country->getLocalizedNameLabel())
-                    ?? $country->getName(),
-            ];
-        }
-        usort(
-            $options,
-            static fn(array $left, array $right): int => strnatcasecmp($left['label'], $right['label'])
-                ?: strcmp($left['value'], $right['value']),
-        );
-        return $options;
-    }
-
-    /**
-     * @return list<array{value: string, label: string}>
-     */
-    private function getContractContactTypeOptions(ContractContactSection $section): array
-    {
-        $configuredTypes = match ($section->identifier) {
-            'physicalAddresses' => $this->physicalAddressTypes->getAll(),
-            'emailAddresses' => $this->emailAddressTypes->getAll(),
-            'phoneNumbers' => $this->phoneNumberTypes->getAll(),
-            default => [],
-        };
-        $options = [];
-        foreach ($configuredTypes as $value => $label) {
-            if ($value === '') {
-                continue;
-            }
-            $options[] = [
-                'value' => $value,
-                'label' => $this->translate($label, null, 'AcademicPersons') ?? $label,
-            ];
-        }
-        return $options;
-    }
-
-    /**
-     * @param ContractContactRecord $record
-     * @return ContractContactItem
-     */
-    private function serializeContractContactItem(
-        ContractContactSection $section,
-        Address|Email|PhoneNumber $record,
-    ): array {
-        $managedProperties = $this->managedRecordLocks->getManagedProperties($record);
-        $lockedActions = $this->managedRecordLocks->getLockedContactActions($section, $record, $managedProperties);
-        $values = [];
-        $display = [];
-        foreach ($this->getContractContactFieldDefinitions($section, $record, $managedProperties) as $field) {
-            $values[$field['name']] = $field['value'];
-            $display[$field['name']] = $field['displayValue'];
-        }
-        return [
-            'uid' => (int)$record->getUid(),
-            'sorting' => $record->getSorting(),
-            'hidden' => $record->getHidden(),
-            'managed' => in_array('delete', $lockedActions, true),
-            'editable' => !in_array('edit', $lockedActions, true),
-            'deletable' => !in_array('delete', $lockedActions, true),
-            'values' => $values,
-            'display' => $display,
-            'summary' => $this->getContractContactSummary($section, $display),
-        ];
-    }
-
-    /**
-     * @param array<string, string> $display
-     * @return list<array{label: string, value: string}>
-     */
-    private function getContractContactSummary(ContractContactSection $section, array $display): array
-    {
-        $prefix = $this->getContractContactTranslationPrefix($section);
-        $fields = match ($section->identifier) {
-            'physicalAddresses' => [
-                'street' => trim(($display['street'] ?? '') . ' ' . ($display['streetNumber'] ?? '')),
-                'city' => trim(($display['zip'] ?? '') . ' ' . ($display['city'] ?? '')),
-                'country' => $display['country'] ?? '',
-            ],
-            'emailAddresses' => [
-                'type' => $display['type'] ?? '',
-                'email' => $display['email'] ?? '',
-            ],
-            'phoneNumbers' => [
-                'type' => $display['type'] ?? '',
-                'phoneNumber' => $display['phoneNumber'] ?? '',
-            ],
-            default => [],
-        };
-        $summary = [];
-        foreach ($fields as $name => $value) {
-            $summary[] = [
-                'label' => $this->translate(
-                    $prefix . '.' . $name . '.label',
-                ) ?? $name,
-                'value' => $value,
-            ];
-        }
-        return $summary;
-    }
-
-    /**
-     * A field the section does not have is refused. A locked one, managed on
-     * the record or locked with `readonly`, `frontendreadonly` or `disabled`,
-     * is dropped and keeps its stored value, because the editor sends every
-     * field of the open record, the locked ones included.
-     *
-     * @param array<string, mixed> $fields
-     * @param list<string> $managedProperties
-     * @return array<string, string>
-     */
-    private function normalizeAndValidateContractContactFields(
-        ContractContactSection $section,
-        array $fields,
-        bool $creating,
-        array $managedProperties = [],
-    ): array {
-        $definitionsByName = [];
-        foreach ($this->getContractContactFieldDefinitions($section, null, $managedProperties) as $definition) {
-            $definitionsByName[$definition['name']] = $definition;
-        }
-        $errors = [];
-        $normalized = [];
-        foreach ($fields as $name => $value) {
-            $definition = $definitionsByName[$name] ?? null;
-            if ($definition === null) {
-                $errors[$name][] = 'This field cannot be changed.';
-                continue;
-            }
-            if ($definition['readOnly'] || $definition['disabled']) {
-                continue;
-            }
-            try {
-                $normalized[$name] = $this->normalizeContractContactFieldValue($definition, $value);
-            } catch (\UnexpectedValueException $exception) {
-                $errors[$name][] = $exception->getMessage();
-            }
-        }
-        foreach ($definitionsByName as $name => $definition) {
-            if ($creating && $definition['required'] && !array_key_exists($name, $fields)) {
-                $errors[$name][] = 'This field is required.';
-            }
-            if (!array_key_exists($name, $normalized)) {
-                continue;
-            }
-            $validation = $section->validationSet->get($name);
-            if ($validation !== null) {
-                $this->validateDocumentField($name, $normalized[$name], $validation, $errors);
-            }
-        }
-        if ($errors !== []) {
-            $this->throwJsonError(
-                'validation_failed',
-                422,
-                'The submitted Contract contact data is invalid.',
-                $errors,
-            );
-        }
-        return $normalized;
-    }
-
-    /**
-     * @param DocumentFieldDefinition $definition
-     */
-    private function normalizeContractContactFieldValue(array $definition, mixed $value): string
-    {
-        if (!is_string($value)) {
-            throw new \UnexpectedValueException('The value must be a string.');
-        }
-        $value = trim($value);
-        if ($definition['type'] !== 'select' || $value === '') {
-            return $value;
-        }
-        foreach ($definition['options'] as $option) {
-            if ($option['value'] === $value) {
-                return $value;
-            }
-        }
-        throw new \UnexpectedValueException('The selected value is not available.');
-    }
-
-    /**
-     * @param array<string, string> $fields
-     * @return ContractContactRecord
-     */
-    private function createContractContactRecord(
-        Contract $contract,
-        ContractContactSection $section,
-        array $fields,
-    ): Address|Email|PhoneNumber {
-        $formData = $this->createContractContactFormData($section, $fields);
-        return match (true) {
-            $formData instanceof AddressFormData => $this->addressFactory->createFromFormData(
-                $section->validationSet,
-                $contract,
-                $formData,
-            ),
-            $formData instanceof EmailFormData => $this->emailFactory->createFromFormData(
-                $section->validationSet,
-                $contract,
-                $formData,
-            ),
-            $formData instanceof PhoneNumberFormData => $this->phoneNumberFactory->createFromFormData(
-                $section->validationSet,
-                $contract,
-                $formData,
-            ),
-        };
-    }
-
-    /**
-     * @param ContractContactRecord $record
-     * @param array<string, string> $fields
-     * @param list<string> $managedProperties
-     */
-    private function updateContractContactRecord(
-        ContractContactSection $section,
-        Address|Email|PhoneNumber $record,
-        array $fields,
-        array $managedProperties,
-    ): void {
-        $formData = $this->createContractContactFormData($section, $fields);
-        if ($record instanceof Address && $formData instanceof AddressFormData) {
-            $this->addressRepository->update(
-                $this->addressFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
-            );
-            return;
-        }
-        if ($record instanceof Email && $formData instanceof EmailFormData) {
-            $this->emailRepository->update(
-                $this->emailFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
-            );
-            return;
-        }
-        if ($record instanceof PhoneNumber && $formData instanceof PhoneNumberFormData) {
-            $this->phoneNumberRepository->update(
-                $this->phoneNumberFactory->updateFromFormData($section->validationSet, $record, $formData, $managedProperties),
-            );
-            return;
-        }
-        throw new \UnexpectedValueException('The Contract contact record does not match its section.');
-    }
-
-    /**
-     * @param array<string, string> $fields
-     */
-    private function createContractContactFormData(
-        ContractContactSection $section,
-        array $fields,
-    ): AddressFormData|EmailFormData|PhoneNumberFormData {
-        $formData = match ($section->identifier) {
-            'physicalAddresses' => new AddressFormData(),
-            'emailAddresses' => new EmailFormData(),
-            'phoneNumbers' => new PhoneNumberFormData(),
-            default => throw new \UnexpectedValueException('The Contract contact section is not supported.'),
-        };
-        $this->applyDocumentFormOverrides($formData, $fields);
-        return $formData;
-    }
-
-    /**
-     * @param ContractContactRecord $record
-     */
-    private function addContractContactRecord(Address|Email|PhoneNumber $record): void
-    {
-        if ($record instanceof Address) {
-            $this->addressRepository->add($record);
-        } elseif ($record instanceof Email) {
-            $this->emailRepository->add($record);
-        } else {
-            $this->phoneNumberRepository->add($record);
-        }
-    }
-
-    /**
-     * @param ContractContactRecord $record
-     */
-    private function updateContractContactVisibility(Address|Email|PhoneNumber $record): void
-    {
-        if ($record instanceof Address) {
-            $this->addressRepository->update($record);
-        } elseif ($record instanceof Email) {
-            $this->emailRepository->update($record);
-        } else {
-            $this->phoneNumberRepository->update($record);
-        }
-    }
-
-    private function removeContractContactRecord(Address|Email|PhoneNumber $record): void
-    {
-        if ($record instanceof Address) {
-            $this->addressRepository->remove($record);
-        } elseif ($record instanceof Email) {
-            $this->emailRepository->remove($record);
-        } else {
-            $this->phoneNumberRepository->remove($record);
-        }
-    }
-
-    private function getNextContractContactSortingValue(
-        Contract $contract,
-        ContractContactSection $section,
-    ): int {
-        $maximum = 0;
-        foreach ($this->getContractContactRecords($contract, $section) as $record) {
-            $maximum = max($maximum, $record->getSorting());
-        }
-        return $maximum + 10;
-    }
-
-    /**
-     * Refuses a submitted order that does not name every record of the section exactly once.
-     *
-     * @param list<Contract|ProfileInformation> $records The records of the section.
-     * @param list<int> $order The submitted order as a list of record UIDs.
-     */
-    private function assertCompleteDocumentOrder(array $records, array $order): void
-    {
-        $currentOrder = array_map(
-            static fn(Contract|ProfileInformation $record): int => (int)$record->getUid(),
-            $records,
-        );
-        $submittedOrder = $order;
-        sort($currentOrder);
-        sort($submittedOrder);
-        if ($submittedOrder !== $currentOrder || count(array_unique($order)) !== count($order)) {
-            $this->throwJsonError('invalid_payload', 400, 'The document order must contain every section record exactly once.');
-        }
-    }
-
-    /**
-     * Reorders document records to the submitted sequence and updates their sorting values.
-     *
-     * The submitted order has been checked by {@see self::assertCompleteDocumentOrder()}.
-     * Records are assigned their new sorting position in increments of 10 and marked as
-     * changed. Flushing them is left to the caller, which announces the change through
-     * {@see self::persistAndDispatchProfileUpdate()}.
-     *
-     * @param list<Contract|ProfileInformation> $records The records that should be reordered.
-     * @param list<int> $order The desired order as a list of record UIDs.
-     * @return array{changed: bool, records: list<Contract|ProfileInformation>} The reorder result including whether
-     *     the sorting changed and the ordered records in their new sequence.
-     */
-    private function reorderDocumentRecords(array $records, array $order): array
-    {
-        $recordsByUid = [];
-        foreach ($records as $record) {
-            $recordsByUid[(int)$record->getUid()] = $record;
-        }
-        $orderedRecords = [];
-        $changed = false;
-        foreach ($order as $position => $recordUid) {
-            $record = $recordsByUid[$recordUid];
-            $expectedSorting = ($position + 1) * 10;
-            if ($record->getSorting() !== $expectedSorting) {
-                $record->setSorting($expectedSorting);
-                $this->persistenceManager->update($record);
-                $changed = true;
-            }
-            $orderedRecords[] = $record;
-        }
-        return ['changed' => $changed, 'records' => $orderedRecords];
-    }
-
-    /**
-     * Builds the field definitions for a document section and applies validation,
-     * help text and type overrides for the current record.
-     *
-     * @param DocumentSection $section The document section whose fields should be resolved.
-     * @param Contract|ProfileInformation|null $record The current record used to populate field values.
-     * @param list<string> $managedProperties The properties the synchronisation manages on the record.
-     * @return list<DocumentFieldDefinition>
-     */
-    private function getDocumentFieldDefinitions(
-        DocumentSection $section,
-        Contract|ProfileInformation|null $record,
-        array $managedProperties = [],
-    ): array {
-        $definitions = $section->isContractSection()
-            ? $this->getContractFieldDefinitions($record instanceof Contract ? $record : null)
-            : $this->getProfileInformationFieldDefinitions(
-                $record instanceof ProfileInformation ? $record : null,
-            );
-        foreach ($definitions as &$definition) {
-            $validation = $section->validationSet->get($definition['name']);
-            $definition['required'] = $validation?->required ?? false;
-            $definition['readOnly'] = $validation?->readOnly ?? false;
-            $definition['disabled'] = $validation?->disabled ?? false;
-            $definition['richText'] = $definition['richText']
-                || ($validation?->isRichText() ?? false);
-            $definition['characterLimit'] = $validation?->characterLimit ?? 0;
-            if ($validation?->inputType === 'date') {
-                $definition['type'] = 'date';
-                $definition['placeholder'] = $this->getDocumentFieldPlaceholder('date');
-            }
-            $helptext = $this->profileDocumentSectionProvider->getFieldHelptext(
-                $section,
-                $definition['name'],
-            );
-            $definition['helptext'] = $helptext === ''
-                ? ''
-                : ($this->translate($helptext) ?? $helptext);
-            $definition = $this->applyManagedField($definition, $managedProperties);
-        }
-        unset($definition);
-        return $definitions;
-    }
-
-    /**
-     * Returns the field definitions for a contract record.
-     *
-     * @param Contract|null $record The contract record for which the field definitions should be created.
-     * @return list<DocumentFieldDefinition>
-     */
-    private function getContractFieldDefinitions(?Contract $record): array
-    {
-        $definitions = [];
-        foreach ($this->academicPersonsSettings->contractFields as $field) {
-            $definition = $this->createDocumentField(
-                'contract',
-                $field->propertyName,
-                $this->getContractFieldInputType($field),
-                $this->getContractFieldValue($field, $record),
-                $this->getContractFieldOptions($field),
-                richText: $field->validation->isRichText(),
-            );
-            $definition['autocomplete'] = $field->autocomplete;
-            $definitions[] = $definition;
-        }
-        return $definitions;
-    }
-
-    private function getContractFieldInputType(ContractField $field): string
-    {
-        return match ($field->validation->inputType) {
-            'select', 'checkbox', 'email', 'tel', 'date', 'number', 'textarea' => $field->validation->inputType,
-            default => 'text',
-        };
-    }
-
-    /**
-     * @return list<array{value: int|string, label: string}>
-     */
-    private function getContractFieldOptions(ContractField $field): array
-    {
-        return match ($field->optionSource) {
-            'organisationalUnits' => $this->getEntityOptions(
-                $this->organisationalUnitRepository->findAll(),
-                static fn(OrganisationalUnit $item): string => $item->getUnitName(),
-            ),
-            'functionTypes' => $this->getEntityOptions(
-                $this->functionTypeRepository->findAll(),
-                static fn(FunctionType $item): string => $item->getFunctionName(),
-            ),
-            'locations' => $this->getEntityOptions(
-                $this->locationRepository->findAll(),
-                static fn(Location $item): string => $item->getTitle(),
-            ),
-            default => [],
-        };
-    }
-
-    private function getContractFieldValue(ContractField $field, ?Contract $record): mixed
-    {
-        if ($record === null) {
-            return match ($this->getContractFieldInputType($field)) {
-                'checkbox' => false,
-                'select', 'date' => null,
-                default => '',
-            };
-        }
-        $getter = 'get' . ucfirst($field->propertyName);
-        if (!is_callable([$record, $getter])) {
-            return null;
-        }
-        $value = $record->{$getter}();
-        return match (true) {
-            $value instanceof \DateTimeInterface => $value->format(self::DOCUMENT_DATE_FORMAT),
-            $value instanceof AbstractEntity => $value->getUid(),
-            default => $value,
-        };
-    }
-
-    /**
-     * Returns the form field definitions for a profile information record.
-     *
-     * The three years are `<input type="number">` controls carrying the bounds
-     * of the TCA `range` as `min`, `max` and `step`, so the browser, the
-     * controller and `DataHandler` agree on what a year is. Nothing here is
-     * locale dependent.
-     *
-     * @param ProfileInformation|null $record The profile information record or null for a new entry.
-     * @return list<DocumentFieldDefinition>
-     */
-    private function getProfileInformationFieldDefinitions(?ProfileInformation $record): array
-    {
-        return [
-            $this->createDocumentField('profileInformation', 'title', 'text', $record?->getTitle() ?? ''),
-            $this->createDocumentField('profileInformation', 'link', 'url', $record?->getLink() ?? ''),
-            $this->createDocumentField(
-                'profileInformation',
-                'year',
-                'number',
-                $record?->getYear(),
-                columnClass: 'col-12 col-md-3',
-                min: self::YEAR_MIN,
-                max: self::YEAR_MAX,
-                step: 1,
-            ),
-            $this->createDocumentField(
-                'profileInformation',
-                'yearStart',
-                'number',
-                $record?->getYearStart(),
-                columnClass: 'col-12 col-md-3',
-                min: self::YEAR_MIN,
-                max: self::YEAR_MAX,
-                step: 1,
-            ),
-            $this->createDocumentField(
-                'profileInformation',
-                'yearEnd',
-                'number',
-                $record?->getYearEnd(),
-                columnClass: 'col-12 col-md-3',
-                min: self::YEAR_MIN,
-                max: self::YEAR_MAX,
-                step: 1,
-            ),
-            $this->createDocumentField(
-                'profileInformation',
-                'bodytext',
-                'textarea',
-                $record?->getBodytext() ?? '',
-            ),
-        ];
-    }
-
-    /**
-     * Creates a configuration array for a document form field.
-     *
-     * @param string $translationPrefix Translation key prefix used to resolve the field label.
-     * @param string $name Field name identifier.
-     * @param string $type Field type such as text, date, checkbox or textarea.
-     * @param mixed $value Current field value.
-     * @param list<array{value: int|string, label: string}> $options Optional select-like options for the field.
-     * @param bool $richText Whether the field uses rich text editing.
-     * @param string $columnClass CSS column class for layout handling.
-     * @param bool $compactCheckbox Whether the checkbox should be rendered in compact mode.
-     * @param int|null $min Lower bound of a number control, null for none.
-     * @param int|null $max Upper bound of a number control, null for none.
-     * @param int|null $step Step of a number control, null for none.
-     * @return DocumentFieldDefinition
-     */
-    private function createDocumentField(
-        string $translationPrefix,
-        string $name,
-        string $type,
-        mixed $value,
-        array $options = [],
-        bool $richText = false,
-        string $columnClass = '',
-        bool $compactCheckbox = false,
-        ?int $min = null,
-        ?int $max = null,
-        ?int $step = null,
-    ): array {
-        return [
-            'name' => $name,
-            'label' => $this->translate(
-                $translationPrefix . '.' . $name . '.label',
-            ) ?? $name,
-            'type' => $type,
-            'required' => false,
-            'readOnly' => false,
-            'managed' => false,
-            'disabled' => false,
-            'richText' => $richText,
-            'characterLimit' => 0,
-            'autocomplete' => '',
-            'placeholder' => $this->getDocumentFieldPlaceholder($type),
-            'helptext' => '',
-            'columnClass' => $columnClass,
-            'compactCheckbox' => $compactCheckbox,
-            'min' => $min,
-            'max' => $max,
-            'step' => $step,
-            'value' => $value,
-            'displayValue' => $this->getDocumentDisplayValue(
-                $name,
-                $type,
-                $value,
-                $options,
-            ),
-            'options' => $options,
-        ];
-    }
-
-    /**
-     * Builds a list of selectable entity options from the provided items.
-     *
-     * Each item is converted into an option entry containing its UID as the value
-     * and a label generated by the provided callback. Items without a valid UID are
-     * ignored.
-     * @template T of object
-     * @param iterable<T> $items
-     * @param callable(T): string $labelCallback
-     * @return list<array{value: int, label: string}>
-     */
-    private function getEntityOptions(iterable $items, callable $labelCallback): array
-    {
-        $options = [];
-        foreach ($items as $item) {
-            $uid = method_exists($item, 'getUid') ? (int)$item->getUid() : 0;
-            if ($uid > 0) {
-                $options[] = ['value' => $uid, 'label' => $labelCallback($item)];
-            }
-        }
-        return $options;
-    }
-
-    /**
-     * The hint a control shows while it is empty, or an empty string.
-     *
-     * Only the two contract dates have one, and it spells
-     * {@see self::DOCUMENT_DATE_FORMAT} so the two cannot drift apart. It is
-     * deliberately not translated: it is the shape of the value, not prose,
-     * and the previous editor spelled the same literal in Fluid.
-     *
-     * @param string $type The field type of the descriptor.
-     * @return string The placeholder, or an empty string for a field that has none.
-     */
-    private function getDocumentFieldPlaceholder(string $type): string
-    {
-        return $type === 'date' ? self::DOCUMENT_DATE_PLACEHOLDER : '';
-    }
-
-    /**
-     * Reads a date field value, in either of the two formats that are accepted.
-     *
-     * `d.m.Y` is what the control shows and what it submits.
-     * `Y-m-d` is what the endpoint answered and accepted while the control was
-     * an `<input type="date">`, and it keeps being accepted so that a client
-     * written against that shape is not broken by the control changing.
-     *
-     * A format is only accepted when it round trips: `createFromFormat()` is
-     * lenient enough to read `32.01.2026` as the first of February, so the
-     * parsed date is formatted back and compared with what came in.
-     *
-     * @param string $value The submitted or serialized value.
-     * @return \DateTime|null The date at midnight, or null when the value is neither format.
-     */
-    private function parseDocumentDate(string $value): ?\DateTime
-    {
-        foreach ([self::DOCUMENT_DATE_FORMAT, self::DOCUMENT_DATE_ISO_FORMAT] as $format) {
-            $date = \DateTime::createFromFormat('!' . $format, $value);
-            $errors = \DateTime::getLastErrors();
-            if (
-                $date instanceof \DateTime
-                && ($errors === false || ($errors['warning_count'] === 0 && $errors['error_count'] === 0))
-                && $date->format($format) === $value
-            ) {
-                return $date;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Converts a raw field value into the display value shown in the UI.
-     *
-     * Handles date, select, checkbox and fallback string values. For select fields,
-     * the matching label is resolved from the provided option list. Checkbox fields
-     * use translated labels depending on the field name and boolean value.
-     *
-     * @param string $name
-     *   The field name used to determine checkbox-specific display behavior.
-     * @param string $type
-     *   The field type (for example: date, select, checkbox or fallback).
-     * @param mixed $value
-     *   The raw field value to be rendered.
-     * @param list<array{value: int|string, label: string}> $options
-     *   Available select options used to resolve option labels.
-     *
-     * @return string
-     *   The formatted display value for the frontend or an empty string for null/empty values.
-     */
-    private function getDocumentDisplayValue(
-        string $name,
-        string $type,
-        mixed $value,
-        array $options,
-    ): string {
-        if ($value === null || $value === '') {
-            return '';
-        }
-        if ($type === 'date' && is_string($value)) {
-            $date = $this->parseDocumentDate($value);
-            if (!$date instanceof \DateTime) {
-                return $value;
-            }
-            // The contract dates are the only date controls left. They are
-            // formatted for the locale of the requested site language, the way
-            // the public views render them.
-            return (new DateFormatter())->format(
-                $date,
-                'MEDIUMDATE',
-                $this->resolveSiteLocale(),
-            );
-        }
-        if ($type === 'select') {
-            foreach ($options as $option) {
-                if ((string)$option['value'] === (string)$value) {
-                    return $option['label'];
-                }
-            }
-            return '';
-        }
-        if ($type === 'checkbox') {
-            return $this->translate(
-                $value ? 'profileEditing.visibility.public' : 'profileEditing.visibility.private',
-            ) ?? ($value ? 'Yes' : 'No');
-        }
-        return (string)$value;
-    }
-
-    /**
-     * Normalize and validate submitted document field values for a section.
-     *
-     * The method checks whether each field exists in the section definition,
-     * whether it is editable, normalizes the incoming values to the expected PHP
-     * types, and applies the section's validation rules. Required fields are also
-     * enforced when creating a new document.
-     *
-     * A field the section does not have is refused. A locked one, managed on
-     * the record or locked with `readonly`, `frontendreadonly` or `disabled`,
-     * is dropped and keeps its stored value, because the editor sends every
-     * field of the open record, the locked ones included.
-     *
-     * @param DocumentSection $section The document section whose field definitions and validation rules apply.
-     * @param array<string, mixed> $fields Raw field data submitted by the client, keyed by field name.
-     * @param bool $creating Whether the document is currently being created.
-     * @param list<string> $managedProperties The properties the synchronisation manages on the record.
-     * @return array<string, mixed> Normalized and validated field values keyed by field name.
-     */
-    private function normalizeAndValidateDocumentFields(
-        DocumentSection $section,
-        array $fields,
-        bool $creating,
-        array $managedProperties = [],
-    ): array {
-        $definitions = $this->getDocumentFieldDefinitions($section, null, $managedProperties);
-        $definitionsByName = [];
-        foreach ($definitions as $definition) {
-            $definitionsByName[$definition['name']] = $definition;
-        }
-        $errors = [];
-        $normalized = [];
-        foreach ($fields as $name => $value) {
-            $definition = $definitionsByName[$name] ?? null;
-            if ($definition === null) {
-                $errors[$name][] = 'This field cannot be changed.';
-                continue;
-            }
-            if ($definition['readOnly'] || $definition['disabled']) {
-                continue;
-            }
-            try {
-                $normalized[$name] = $this->normalizeDocumentFieldValue(
-                    $name,
-                    $definition['type'],
-                    $value,
-                    $definition['richText'],
-                    $definition['min'],
-                    $definition['max'],
-                );
-            } catch (\UnexpectedValueException $exception) {
-                $errors[$name][] = $exception->getMessage();
-            }
-        }
-        foreach ($definitionsByName as $name => $definition) {
-            if ($creating && $definition['required'] && !array_key_exists($name, $normalized)) {
-                $errors[$name][] = 'This field is required.';
-            }
-            if (!array_key_exists($name, $normalized)) {
-                continue;
-            }
-            $validation = $section->validationSet->get($name);
-            if ($validation !== null) {
-                $this->validateDocumentField($name, $normalized[$name], $validation, $errors);
-            }
-        }
-        if ($errors !== []) {
-            $this->throwJsonError(
-                'validation_failed',
-                422,
-                'The submitted document data is invalid.',
-                $errors,
-            );
-        }
-        return $normalized;
-    }
-
-    /**
-     * Normalizes a submitted document field value according to its declared field type.
-     *
-     * @param string $name The field name used to resolve select-based entity lookups.
-     * @param string $type The document field type (for example: checkbox, number, date, select, or text).
-     * @param mixed $value The submitted raw value to normalize.
-     * @param bool $richText Whether the value should be sanitized as rich text.
-     * @param int|null $min Lower bound of a number field, null for none.
-     * @param int|null $max Upper bound of a number field, null for none.
-     * @return mixed The normalized value for storage or validation.
-     * @throws \UnexpectedValueException If the value does not match the expected format for the given type.
-     */
-    private function normalizeDocumentFieldValue(
-        string $name,
-        string $type,
-        mixed $value,
-        bool $richText,
-        ?int $min = null,
-        ?int $max = null,
-    ): mixed {
-        if ($type === 'checkbox') {
-            if (!is_bool($value)) {
-                throw new \UnexpectedValueException('The value must be boolean.');
-            }
-            return $value;
-        }
-        if ($type === 'number') {
-            if ($value === null || $value === '') {
-                return null;
-            }
-            $number = null;
-            if (is_int($value)) {
-                $number = $value;
-            } elseif (is_string($value) && preg_match('/^-?\d+$/', $value) === 1) {
-                $number = (int)$value;
-            }
-            if ($number === null) {
-                throw new \UnexpectedValueException('The value must be an integer.');
-            }
-            // The bounds of the control are enforced again here: a browser that
-            // ignores them, and every client that is not one, reach the same
-            // refusal instead of a clamped value.
-            if (($min !== null && $number < $min) || ($max !== null && $number > $max)) {
-                throw new \UnexpectedValueException(sprintf(
-                    'The value must be between %d and %d.',
-                    $min ?? PHP_INT_MIN,
-                    $max ?? PHP_INT_MAX,
-                ));
-            }
-            return $number;
-        }
-        if ($type === 'date') {
-            if ($value === null || $value === '') {
-                return null;
-            }
-            if (!is_string($value)) {
-                throw new \UnexpectedValueException('The value must be a date.');
-            }
-            $date = $this->parseDocumentDate($value);
-            if (!$date instanceof \DateTime) {
-                throw new \UnexpectedValueException('The value must be a valid date.');
-            }
-            return $date;
-        }
-        if ($type === 'select') {
-            if ($value === null || $value === '' || $value === 0) {
-                return null;
-            }
-            $uid = is_int($value)
-                ? $value
-                : (is_string($value) && preg_match('/^\d+$/', $value) === 1 ? (int)$value : 0);
-            if ($uid <= 0) {
-                throw new \UnexpectedValueException('The selected value is invalid.');
-            }
-            $entity = $this->findDocumentSelectEntity($name, $uid);
-            if ($entity === null) {
-                throw new \UnexpectedValueException('The selected value is not available.');
-            }
-            return $entity;
-        }
-        if (!is_string($value)) {
-            throw new \UnexpectedValueException('The value must be a string.');
-        }
-        return ($richText || in_array($name, ['bodytext', 'officeHours'], true))
-            ? $this->profileRichTextSanitizer->sanitize($value)
-            : trim($value);
-    }
-
-    /**
-     * Finds the matching document select entity for the given field name and UID.
-     *
-     * @param string $name The field name identifying the repository to search in.
-     * @param int $uid The UID of the entity to look up.
-     * @return FunctionType|OrganisationalUnit|Location|null The matching entity or null if no entity with the given UID exists.
-     */
-    private function findDocumentSelectEntity(
-        string $name,
-        int $uid,
-    ): FunctionType|OrganisationalUnit|Location|null {
-        $items = match ($name) {
-            'functionType' => $this->functionTypeRepository->findAll(),
-            'organisationalUnit' => $this->organisationalUnitRepository->findAll(),
-            'location' => $this->locationRepository->findAll(),
-            default => [],
-        };
-        foreach ($items as $item) {
-            if ((int)$item->getUid() === $uid) {
-                return $item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Validates a single document field against the configured character limit and custom validators.
-     *
-     * @param string $name The field name used as the validation error key.
-     * @param mixed $value The submitted value to validate.
-     * @param Validation $validation The validation configuration for the field.
-     * @param array<string, list<string>> $errors Reference to the collected validation errors by field name.
-     */
-    private function validateDocumentField(
-        string $name,
-        mixed $value,
-        Validation $validation,
-        array &$errors,
-    ): void {
-        if (
-            $validation->characterLimit > 0
-            && is_string($value)
-            && RichTextCharacterCounter::count($value) > $validation->characterLimit
-        ) {
-            $errors[$name][] = sprintf(
-                'The text must not exceed %d characters.',
-                $validation->characterLimit,
-            );
-        }
-        foreach ($validation->validatorClassNames as $validatorClassName) {
-            $validator = $this->validatorResolver->createValidator($validatorClassName);
-            if (!$validator instanceof ValidatorInterface) {
-                continue;
-            }
-            $validationResult = $validator->validate($value);
-            foreach ($validationResult->getErrors() as $error) {
-                $errors[$name][] = $error->getMessage();
-            }
-        }
-    }
-
-    /**
      * Creates a contract form data object and applies the provided field overrides.
      *
      * @param array<string, mixed> $fields The raw form fields to override on the contract form.
@@ -3206,41 +1905,6 @@ final class ProfileController extends ActionController
         foreach ($fields as $name => $value) {
             $formData->setPropertyOverride($name, $value);
         }
-    }
-
-    /**
-     * Serializes a document item into a frontend-safe payload.
-     *
-     * This compiles the field definitions for the given document section and record
-     * into a normalized array that contains the stored values as well as the
-     * corresponding display labels for the editor UI.
-     *
-     * @param DocumentSection $section The document section that defines the fields to serialize.
-     * @param Contract|ProfileInformation $record The record associated with the document item.
-     * @return array{
-     *     uid: int,
-     *     sorting: int,
-     *     values: array<string, mixed>,
-     *     display: array<string, string>
-     * }
-     */
-    private function serializeDocumentItem(
-        DocumentSection $section,
-        Contract|ProfileInformation $record,
-    ): array {
-        $values = [];
-        $display = [];
-        foreach ($this->getDocumentFieldDefinitions($section, $record) as $field) {
-            $values[$field['name']] = $field['value'];
-            $display[$field['name']] = $field['displayValue'];
-        }
-        return [
-            'uid' => (int)$record->getUid(),
-            'sorting' => $record->getSorting(),
-            'hidden' => $record->getHidden(),
-            'values' => $values,
-            'display' => $display,
-        ];
     }
 
     /**
@@ -3312,6 +1976,21 @@ final class ProfileController extends ActionController
         throw new PropagateResponseException(
             $this->jsonError($error, $statusCode, $message, $errors),
             1776760205,
+        );
+    }
+
+    /**
+     * Answers a request a service of the editor refused with the JSON error the
+     * refusal describes, exactly as {@see self::throwJsonError()} answers one the
+     * controller refused itself.
+     */
+    private function answerRefusal(EditorRequestException $exception): never
+    {
+        $this->throwJsonError(
+            $exception->error,
+            $exception->statusCode,
+            $exception->responseMessage,
+            $exception->fieldErrors,
         );
     }
 
@@ -3405,6 +2084,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)
@@ -3469,6 +2150,8 @@ final class ProfileController extends ActionController
             ]);
         } catch (PropagateResponseException $exception) {
             throw $exception;
+        } catch (EditorRequestException $exception) {
+            $this->answerRefusal($exception);
         } catch (\Throwable $exception) {
             $this->logManager
                 ->getLogger(self::class)

@@ -137,7 +137,10 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
     }
 
     /**
-     * One endpoint per family, and the payload each needs to get past parsing.
+     * Every endpoint answering as JSON, and the payload each needs to get past
+     * parsing. All of them, not one per family: an endpoint that skips the
+     * header check or the authentication of the others is found here, whichever
+     * controller serves it.
      *
      * @return \Generator<string, array{0: string, 1: array<string, mixed>}>
      */
@@ -149,6 +152,11 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
         yield 'image' => ['deleteImage', []];
         yield 'document form' => ['documentForm', ['section' => 'cooperation', 'mode' => 'add']];
         yield 'document create' => ['createDocument', ['section' => 'cooperation', 'fields' => ['title' => 'x']]];
+        yield 'document update' => [
+            'updateDocument',
+            ['section' => 'cooperation', 'record' => 1, 'fields' => ['title' => 'x']],
+        ];
+        yield 'document delete' => ['deleteDocument', ['section' => 'cooperation', 'record' => 1]];
         yield 'document sort' => ['sortDocument', ['section' => 'cooperation', 'record' => 1, 'direction' => 'up']];
         yield 'document visibility' => [
             'toggleDocumentVisibility',
@@ -161,6 +169,18 @@ final class AcademicPersonsEditProfileEditingAuthorizationTest extends AbstractF
         yield 'contact create' => [
             'createContractContact',
             ['contract' => 1, 'section' => 'physicalAddresses', 'fields' => ['street' => 'x']],
+        ];
+        yield 'contact update' => [
+            'updateContractContact',
+            ['contract' => 1, 'section' => 'physicalAddresses', 'record' => 1, 'fields' => ['street' => 'x']],
+        ];
+        yield 'contact delete' => [
+            'deleteContractContact',
+            ['contract' => 1, 'section' => 'physicalAddresses', 'record' => 1],
+        ];
+        yield 'contact sort' => [
+            'sortContractContact',
+            ['contract' => 1, 'section' => 'physicalAddresses', 'record' => 1, 'direction' => 'up'],
         ];
         yield 'contact visibility' => [
             'toggleContractContactVisibility',

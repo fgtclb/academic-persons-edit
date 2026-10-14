@@ -32,6 +32,13 @@ use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileFormDataFactoryInterface;
 use FGTCLB\AcademicPersonsEdit\Domain\Factory\ProfileInformationFactory;
 use FGTCLB\AcademicPersonsEdit\Domain\Parser\ProfileUpdatePayloadParser;
 use FGTCLB\AcademicPersonsEdit\Domain\Validator\ProfileFormDataValidator;
+use FGTCLB\AcademicPersonsEdit\Service\ContractContactFields;
+use FGTCLB\AcademicPersonsEdit\Service\ContractContactRecords;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldDefinitions;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentFieldNormalizer;
+use FGTCLB\AcademicPersonsEdit\Service\DocumentRecords;
+use FGTCLB\AcademicPersonsEdit\Service\EditorFieldValidation;
+use FGTCLB\AcademicPersonsEdit\Service\EditorLabels;
 use FGTCLB\AcademicPersonsEdit\Service\ListSortingService;
 use FGTCLB\AcademicPersonsEdit\Service\LocalizedProfileUidResolver;
 use FGTCLB\AcademicPersonsEdit\Service\ManagedRecordLocks;
@@ -62,6 +69,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -398,6 +406,29 @@ final class ProfileControllerTest extends UnitTestCase
             new ManagedFieldResolver($academicPersonsSettings, $connectionPool, $tcaSchemaFactory),
             $academicPersonsSettings,
         );
+        $editorLabels = new EditorLabels();
+        $editorFieldValidation = new EditorFieldValidation($this->createStub(ValidatorResolver::class));
+        $documentFieldDefinitions = new DocumentFieldDefinitions(
+            new ProfileDocumentSectionProvider(
+                $academicPersonsSettings,
+                $this->createStub(ContractRepository::class),
+                $this->createStub(ProfileInformationRepository::class),
+                $managedRecordLocks,
+            ),
+            $editorLabels,
+            $academicPersonsSettings,
+            $this->createStub(OrganisationalUnitRepository::class),
+            $this->createStub(FunctionTypeRepository::class),
+            $this->createStub(LocationRepository::class),
+        );
+        $contractContactRecords = new ContractContactRecords(
+            $this->createStub(AddressRepository::class),
+            $this->createStub(EmailRepository::class),
+            $this->createStub(PhoneNumberRepository::class),
+            $this->createStub(AddressFactory::class),
+            $this->createStub(EmailFactory::class),
+            $this->createStub(PhoneNumberFactory::class),
+        );
         $subject = new ProfileController(
             new Context(),
             $this->createStub(PersistenceManager::class),
@@ -405,7 +436,6 @@ final class ProfileControllerTest extends UnitTestCase
             new ListSortingService(),
             $this->createStub(ProfileFactory::class),
             $profileRepository,
-            $this->createStub(CountryProvider::class),
             $this->createStub(ErrorController::class),
             $this->createStub(LogManager::class),
             $resourceFactory,
@@ -444,21 +474,8 @@ final class ProfileControllerTest extends UnitTestCase
             ),
             $this->createStub(ContractFactory::class),
             $this->createStub(ContractRepository::class),
-            $this->createStub(AddressFactory::class),
-            $this->createStub(AddressRepository::class),
-            $this->createStub(EmailFactory::class),
-            $this->createStub(EmailRepository::class),
-            $this->createStub(PhoneNumberFactory::class),
-            $this->createStub(PhoneNumberRepository::class),
-            $this->createStub(PhysicalAddressTypes::class),
-            $this->createStub(EmailAddressTypes::class),
-            $this->createStub(PhoneNumberTypes::class),
             $this->createStub(ProfileInformationFactory::class),
             $this->createStub(ProfileInformationRepository::class),
-            $this->createStub(FunctionTypeRepository::class),
-            $this->createStub(OrganisationalUnitRepository::class),
-            $this->createStub(LocationRepository::class),
-            $this->createStub(ProfileRichTextSanitizerInterface::class),
             $managedRecordLocks,
             new ProjectProfileFields(
                 $academicPersonsSettings,
@@ -467,6 +484,34 @@ final class ProfileControllerTest extends UnitTestCase
                 $connectionPool,
                 $dataHandlerExecutionContext,
             ),
+            $editorLabels,
+            $documentFieldDefinitions,
+            new DocumentFieldNormalizer(
+                $documentFieldDefinitions,
+                $editorFieldValidation,
+                $this->createStub(ProfileRichTextSanitizerInterface::class),
+                $this->createStub(FunctionTypeRepository::class),
+                $this->createStub(OrganisationalUnitRepository::class),
+                $this->createStub(LocationRepository::class),
+            ),
+            new DocumentRecords(
+                $this->createStub(ContractRepository::class),
+                $this->createStub(ProfileInformationRepository::class),
+                $this->createStub(PersistenceManager::class),
+            ),
+            new ContractContactFields(
+                $academicPersonsSettings,
+                $contractContactRecords,
+                $editorLabels,
+                $documentFieldDefinitions,
+                $this->createStub(CountryProvider::class),
+                $this->createStub(PhysicalAddressTypes::class),
+                $this->createStub(EmailAddressTypes::class),
+                $this->createStub(PhoneNumberTypes::class),
+                $managedRecordLocks,
+                $editorFieldValidation,
+            ),
+            $contractContactRecords,
         );
 
         $requestProperty = new \ReflectionProperty(
