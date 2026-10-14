@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\EventListener;
 
-use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SynchronizerContext;
+use FGTCLB\AcademicPersons\Domain\Model\Dto\Synchronizer\SynchronizerContext;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
@@ -82,7 +82,7 @@ final class SyncChangesToTranslationsSkipGuardsTest extends AbstractAcademicPers
         return new SyncChangesToTranslations(
             profileTranslator: $this->get(ProfileTranslator::class),
             siteFinder: $this->get(SiteFinder::class),
-            recordSyncronizer: $this->recordingSynchronizer,
+            recordSynchronizer: $this->recordingSynchronizer,
         );
     }
 

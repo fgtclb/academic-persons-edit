@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\Tests\Functional\EventListener;
 
-use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SynchronizerContext;
+use FGTCLB\AcademicPersons\Domain\Model\Dto\Synchronizer\SynchronizerContext;
 use FGTCLB\AcademicPersons\Domain\Model\Profile;
 use FGTCLB\AcademicPersons\Domain\Repository\ProfileRepository;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
@@ -57,7 +57,7 @@ final class SyncChangesToTranslationsSiteTest extends AbstractAcademicPersonsEdi
         $listener = new SyncChangesToTranslations(
             profileTranslator: $this->get(ProfileTranslator::class),
             siteFinder: $this->get(SiteFinder::class),
-            recordSyncronizer: $recordingSynchronizer,
+            recordSynchronizer: $recordingSynchronizer,
         );
 
         unset($GLOBALS['TYPO3_REQUEST']);
@@ -91,7 +91,7 @@ final class SyncChangesToTranslationsSiteTest extends AbstractAcademicPersonsEdi
         $listener = new SyncChangesToTranslations(
             profileTranslator: $this->get(ProfileTranslator::class),
             siteFinder: $this->get(SiteFinder::class),
-            recordSyncronizer: $recordingSynchronizer,
+            recordSynchronizer: $recordingSynchronizer,
         );
         unset($GLOBALS['TYPO3_REQUEST']);
         $profile = $this->get(ProfileRepository::class)->findByUid(1);
@@ -128,7 +128,7 @@ final class SyncChangesToTranslationsSiteTest extends AbstractAcademicPersonsEdi
         $listener = new SyncChangesToTranslations(
             profileTranslator: $this->get(ProfileTranslator::class),
             siteFinder: $this->get(SiteFinder::class),
-            recordSyncronizer: $recordingSynchronizer,
+            recordSynchronizer: $recordingSynchronizer,
         );
         unset($GLOBALS['TYPO3_REQUEST']);
         $profile = $this->get(ProfileRepository::class)->findByUid(1);

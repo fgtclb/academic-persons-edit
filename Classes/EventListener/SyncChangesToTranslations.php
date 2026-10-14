@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FGTCLB\AcademicPersonsEdit\EventListener;
 
-use FGTCLB\AcademicPersons\Domain\Model\Dto\Syncronizer\SynchronizerContext;
+use FGTCLB\AcademicPersons\Domain\Model\Dto\Synchronizer\SynchronizerContext;
 use FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent;
 use FGTCLB\AcademicPersons\Event\ProfileUpdateOrigin;
 use FGTCLB\AcademicPersons\Service\RecordSynchronizerInterface;
@@ -30,7 +30,7 @@ final class SyncChangesToTranslations
     public function __construct(
         private readonly ProfileTranslator $profileTranslator,
         private readonly SiteFinder $siteFinder,
-        private readonly RecordSynchronizerInterface $recordSyncronizer,
+        private readonly RecordSynchronizerInterface $recordSynchronizer,
     ) {}
 
     public function __invoke(AfterProfileUpdateEvent $event): void
@@ -58,13 +58,13 @@ final class SyncChangesToTranslations
         }
 
         $context = SynchronizerContext::create(
-            recordSyncronizer: $this->recordSyncronizer,
+            recordSynchronizer: $this->recordSynchronizer,
             site: $site,
             allowedLanguageIds: $this->profileTranslator->getAllowedLanguageIds(),
             tableName: 'tx_academicpersons_domain_model_profile',
             uid: $profile->getUid(),
         );
-        $this->recordSyncronizer->synchronize($context);
+        $this->recordSynchronizer->synchronize($context);
     }
 
     /**
