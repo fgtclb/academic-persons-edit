@@ -5,9 +5,8 @@ Breaking: Contract fields and contacts are configured as a unit
 ===============================================================
 
 ..  seealso::
-    The `upgrade chapter of academic_persons
-    <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Upgrade/Index.html>`__
-    is the order in which the 3.0 changes have to be applied.
+    :ref:`upgrade-from-2-4-to-3-0` is the order in which the 3.0 changes have
+    to be applied.
 
 Description
 ===========

@@ -14,10 +14,8 @@ Version 3 requires TYPO3 13.4.35 or TYPO3 14.3.7 at least, and PHP 8.2 or newer.
 
 Updating an existing installation from 2.4 is a sequence of schema update,
 upgrade wizards, settings migration and template work, and the order of it
-matters - two steps destroy data when they are taken too early. It is described
-once, for both extensions, in `Upgrading from 2.4 to 3.0.0
-<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Upgrade/Index.html>`__
-of :guilabel:`academic_persons`.
+matters. It is described in :ref:`upgrade-from-2-4-to-3-0`, and the steps of
+:guilabel:`academic_persons` in the upgrade chapter of its manual.
 
 Two dependencies are new in this version:
 

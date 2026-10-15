@@ -148,9 +148,9 @@ None of the following shows an error:
     matches them.
 
 Apart from the identifier in ``data-identifier`` and in the class, the
-rendered markup of the editor icons keeps its classes and attributes, so the
-shipped stylesheet and the controls the editor builds in the browser need no
-change.
+rendered markup of the editor icons keeps its classes and attributes, so a
+site stylesheet that selects them by those classes needs no change. Neither do
+the controls the editor builds in the browser.
 
 Affected Installations
 ======================

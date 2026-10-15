@@ -56,6 +56,11 @@ for all academic extensions on the `extension points page of academic_base
         Install :guilabel:`academic_persons_edit` via Composer, the
         Extension Manager or a TER upload.
 
+    ..  card:: :ref:`Upgrade <upgrade>`
+
+        The steps to upgrade :guilabel:`academic_persons_edit` to a newer
+        version, in the order to take them.
+
     ..  card:: :ref:`For integrators <integrator>`
 
         The profile editing content element: what it shows, what it needs
@@ -101,6 +106,7 @@ for all academic extensions on the `extension points page of academic_base
 
     Introduction/Index
     Installation/Index
+    Upgrade/Index
     Integrator/Index
     Configuration/Index
     ProfileEditing/Index

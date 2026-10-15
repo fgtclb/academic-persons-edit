@@ -5,9 +5,8 @@ Breaking: Replaced the profile editing view
 ===========================================
 
 ..  seealso::
-    The `upgrade chapter of academic_persons
-    <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Upgrade/Index.html>`__
-    is the order in which the 3.0 changes have to be applied.
+    :ref:`upgrade-from-2-4-to-3-0` is the order in which the 3.0 changes have
+    to be applied.
 
 Description
 ===========
@@ -123,13 +122,13 @@ them - :file:`Header.html`, :file:`StatusToast.html`,
 directory and the rest in :file:`{Documents,Field,Image,Profile}/`.
 :ref:`templates-override` describes what may be overridden.
 
-The JavaScript module of the removed form flow goes with it:
-:file:`Resources/Public/JavaScript/frontend/rich-text.js`, addressed by the bare
-specifier :code:`@fgtclb/academic-persons-edit/frontend/rich-text.js`, configured
-CKEditor 4 for :file:`Templates/Profile/Edit.html` and is deleted. A site package
-that still loads that specifier loads nothing. Rich text is CKEditor 5 from
-:file:`EXT:rte_ckeditor` now, created by the editing view itself - see
-:ref:`profile-editing`.
+The script of the removed form flow goes with it:
+:file:`Resources/Public/JavaScript/frontend/ckeditor.js` configured the
+CKEditor 4 that :file:`Profile/Edit.html`, :file:`Contract/Edit.html` and
+:file:`Contract/New.html` loaded from a CDN, and is deleted. A project template
+that still includes it through :html:`<f:asset.script>` points at a file that
+no longer exists. Rich text is CKEditor 5 from :file:`EXT:rte_ckeditor` now,
+created by the editing view itself, see :ref:`profile-editing`.
 
 Removed icons
 -------------
@@ -165,8 +164,8 @@ of the control they sit in - see
 Removed labels
 --------------
 
-:file:`Resources/Private/Language/locallang.xlf` goes from 208 to 145
-trans-units: **144 are removed and 81 are new**. 64 survive, all of them
+:file:`Resources/Private/Language/locallang.xlf` goes from 213 to 159
+trans-units: **149 are removed and 95 are new**. 64 survive, all of them
 byte-identical. The
 German :file:`de.locallang.xlf` follows one to one. That is not a list worth
 printing - the authoritative one is the diff of the file for this release -
@@ -185,8 +184,8 @@ but the shape of it is:
     ``contract.publish.label`` and is removed. ``contract.publish.label`` went
     later with the switch it labelled, see
     :ref:`breaking-contract-publish-switch-removed`.
-    ``emailAddress.emailAddress.label`` is replaced by the shorter
-    ``emailAddress.email.label``, which is new in this release.
+    ``emailAddress.email.label``, which 2.4 already declared in place of
+    ``emailAddress.emailAddress.label``, is kept.
 *   The year fields of a timeline entry keep their labels
     ``profileInformation.year.label``, ``profileInformation.yearStart.label``
     and ``profileInformation.yearEnd.label``; their ``*.placeholder``

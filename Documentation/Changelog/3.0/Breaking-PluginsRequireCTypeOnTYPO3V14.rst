@@ -5,9 +5,8 @@ Breaking: Extbase plugins require `CType` on TYPO3 v14
 ======================================================
 
 ..  seealso::
-    The `upgrade chapter of academic_persons
-    <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Upgrade/Index.html>`__
-    is the order in which the 3.0 changes have to be applied.
+    :ref:`upgrade-from-2-4-to-3-0` is the order in which the 3.0 changes have
+    to be applied.
 
 Description
 ===========
@@ -27,10 +26,10 @@ records still stored as `CType=list` with a `list_type` of one of the plugins
 below will no longer resolve, and custom TypoScript, TSconfig, page TSconfig or
 SQL that references `list_type` for these plugins stops working.
 
-The change relates to the following plugins:
-
-* `academicpersonsedit_profileediting`
-* `academicpersonsedit_profileswitcher`
+The change relates to the plugin `academicpersonsedit_profileediting`. The
+profile switcher `academicpersonsedit_profileswitcher` was already removed in
+2.4, and its content elements are removed by the wizard that release added,
+see :ref:`breaking-1785675428`.
 
 Affected Installations
 ======================
