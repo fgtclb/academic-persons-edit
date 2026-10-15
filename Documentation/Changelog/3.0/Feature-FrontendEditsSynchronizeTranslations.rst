@@ -10,19 +10,24 @@ Description
 The frontend editing flow of `EXT:academic_persons_edit` dispatches
 :php:`\FGTCLB\AcademicPersons\Event\AfterProfileUpdateEvent` again. The
 dispatch had been lost in the 2.x profile editing restructuring: since then the
-event fired only when a profile was auto-created on frontend user login, so a
-profile edited through the frontend plugins was never synchronised into its
-translations, and the profile slug was not regenerated either.
+event fired only when a profile was auto-created by
+``academic:createprofiles``, so a profile edited through the frontend plugins
+was never synchronised into its translations, and the profile slug was not
+regenerated either.
 
 These actions dispatch the event once after the change is persisted: the
-generic field update of the profile form, the ``skip_sync`` toggle, the profile
-image upload — which is also a replacement — the removal of the profile image,
-and the create, update, delete and sort actions of a document section and of
-the contacts of a contract. The event always carries the persisted default
-language profile; child records resolve their owning profile through the
-contract, and an edit of a profile fetched as translation overlay does not
-dispatch (synchronisation runs from the default language record only). A
-removal that found no image to remove changed nothing and announces nothing.
+generic field update of the profile form, the ``skip_sync`` toggle, the
+visibility switch of the profile, the profile image upload, which is also a
+replacement, the removal of the profile image, and the create, update, hide,
+delete and sort actions of a document section and of the contacts of a
+contract. The event always carries the persisted default language profile.
+Child records resolve their owning profile through the contract, and an edit of
+a profile fetched as translation overlay does not dispatch (synchronisation
+runs from the default language record only). A removal that found no image
+to remove changed nothing and announces nothing, and neither does a sort that
+left every row in its place.
+:ref:`developers-event-after-profile-update-event` lists what the profile
+editing passes in.
 
 Impact
 ======
@@ -35,14 +40,15 @@ existing ones updated through the record synchronisation of
 well, since the slug listener reacts to the same event.
 
 Installations that left ``profile.allowedLanguages`` empty only regain the slug
-regeneration — the synchronisation itself stays a no-op for them.
+regeneration, the synchronisation itself stays a no-op for them.
 
 Affected Installations
 ======================
 
 Every installation using the frontend editing plugins of
-`EXT:academic_persons_edit`. Profile auto-creation dispatched the event before
-and still does. Backend saves announce themselves since a later 3.0 change, see
+`EXT:academic_persons_edit`. Profile auto-creation by
+``academic:createprofiles`` dispatched the event before and still does.
+Backend saves announce themselves since a later 3.0 change, see
 :ref:`important-translations-follow-backend-saves`: a project DataHandler hook
 that dispatches the event as well announces every backend save a second time
 and has to be removed.

@@ -22,3 +22,9 @@ notice :file:`Resources/Public/Icons/LICENSE-font-awesome.txt` lists every file
 with its Font Awesome name and the changes made to it. The controls of the
 profile editor draw the shared icons of :guilabel:`academic_base`, which lists
 them in its own notice.
+
+This manual shows the icon of the content element from
+:file:`Documentation/Images/Icons/profile-editing.svg`, a copy of
+:file:`Resources/Public/Icons/plugin/profile-editing.svg`, the Font Awesome icon
+`user-pen`, drawn in a fixed grey instead of the colour of the surrounding
+text, so that it reads on a light and a dark page alike.

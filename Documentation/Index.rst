@@ -56,9 +56,15 @@ for all academic extensions on the `extension points page of academic_base
         Install :guilabel:`academic_persons_edit` via Composer, the
         Extension Manager or a TER upload.
 
+    ..  card:: :ref:`For integrators <integrator>`
+
+        The profile editing content element: what it shows, what it needs
+        and where it is configured.
+
     ..  card:: :ref:`Configuration <configuration>`
 
-        Configure the extension and its plugins for your installation.
+        Configure the extension and its content element for your
+        installation.
 
     ..  card:: :ref:`Profile editing <profile-editing>`
 
@@ -76,8 +82,8 @@ for all academic extensions on the `extension points page of academic_base
 
     ..  card:: :ref:`For developers <developers>`
 
-        Refuse or complete a write of the profile editing with a PSR-14
-        event.
+        Refuse or complete a write of the profile editing, and react to the
+        stored change, with PSR-14 events.
 
     ..  card:: :ref:`Known problems <known-problems>`
 
@@ -95,6 +101,7 @@ for all academic extensions on the `extension points page of academic_base
 
     Introduction/Index
     Installation/Index
+    Integrator/Index
     Configuration/Index
     ProfileEditing/Index
     Templates/Index

@@ -1108,6 +1108,8 @@ again. While an upload or deletion is pending, all image controls are disabled
 and the active action displays a Bootstrap spinner. This prevents duplicate
 requests and leaving the image editor during a running operation.
 
+..  _profile-editing-image-upload:
+
 Upload
 ------
 
