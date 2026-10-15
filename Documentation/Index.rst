@@ -52,6 +52,11 @@ assigned profiles from the TYPO3 frontend.
         Install :guilabel:`academic_persons_edit` via Composer, the
         Extension Manager or a TER upload.
 
+    ..  card:: :ref:`Upgrade <upgrade>`
+
+        The steps to upgrade :guilabel:`academic_persons_edit` to a newer
+        version, in the order to take them.
+
     ..  card:: :ref:`Configuration <configuration>`
 
         Configure the extension and its plugins for your installation.
@@ -76,6 +81,7 @@ assigned profiles from the TYPO3 frontend.
 
     Introduction/Index
     Installation/Index
+    Upgrade/Index
     Configuration/Index
     Templates/Index
     KnownProblems/Index
