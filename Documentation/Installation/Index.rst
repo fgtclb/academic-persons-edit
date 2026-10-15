@@ -31,7 +31,7 @@ download and install it using one of the following methods.
 
             ..  code-block:: bash
 
-                composer require 'fgtclb/academic-persons-edit':'~2.3.1@dev'
+                composer require 'fgtclb/academic-persons-edit':'~2.4.0@dev'
 
     ..  group-tab:: Extension Manager
 
