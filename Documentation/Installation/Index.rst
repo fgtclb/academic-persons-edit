@@ -22,11 +22,12 @@ Two dependencies are new in this version:
 *   ``typo3/cms-rte-ckeditor``, a system extension. The profile editing frontend
     loads CKEditor 5 from it for its rich text fields: the rich text module
     imports six bundles, and :file:`Configuration/JavaScriptModules.php` maps
-    nineteen - those six plus the thirteen they import from each other. It has
-    to be installed and active for them to resolve. The extension does not use
-    the backend rich text configuration in any way - only the shipped
-    JavaScript. Composer resolves it; in a classic installation activate it in
-    the Extension Manager.
+    those six and every bundle they import from each other, twenty-one in all.
+    The map serves every supported patch level, so on TYPO3 13.4.35 and 14.3.7
+    two of them are never loaded. The system extension has to be installed and
+    active for the bundles to resolve. This extension uses none of its backend
+    rich text configuration, only the shipped JavaScript. Composer resolves it,
+    in a classic installation activate it in the Extension Manager.
 *   ``typo3/html-sanitizer``, a Composer library the TYPO3 core already ships
     with - not an extension, so there is nothing to activate. Every rich text
     value is sanitized against an allow list on the server before it is stored,

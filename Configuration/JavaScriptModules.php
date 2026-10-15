@@ -28,9 +28,17 @@ declare(strict_types=1);
  * `ImportMap::loadDependency()` is recursive: it would expand the whole backend
  * package - several hundred entries - into the inline import map of every page
  * carrying the profile editor, for six specifiers. Listed here are the six the
- * rich text module imports plus the thirteen the bundles import from each other,
- * a closure verified identical on TYPO3 13.4 and 14.3. The composer requirement
- * on typo3/cms-rte-ckeditor stays: it is what guarantees the files exist.
+ * rich text module imports and every bundle those import from each other, the
+ * union over the supported patch levels. That closure is not stable across
+ * patch releases: up to TYPO3 13.4.35 and 14.3.7 it is nineteen bundles, from
+ * 13.4.36 and 14.3.8 on "ckeditor5-link" imports "ckeditor5-image", which
+ * imports "ckeditor5-upload", and an unmapped one stops the browser from
+ * loading the whole module graph. Both files exist on every supported patch
+ * level, and an entry nothing imports costs one line of the map, so a single
+ * list serves all of them. "JavaScriptModulesTest" follows the imports of the
+ * installed bundles and fails when one of them is not mapped here. The composer
+ * requirement on typo3/cms-rte-ckeditor stays: it is what guarantees the files
+ * exist.
  *
  * The translations prefix is mapped so the editor's own user interface can be
  * localised - the module for the site language is imported on demand by
@@ -60,6 +68,10 @@ $ckeditorBundles = [
     'ckeditor5-utils',
     'ckeditor5-watchdog',
     'ckeditor5-widget',
+    // Imported by "ckeditor5-link" from TYPO3 13.4.36 and 14.3.8 on, and by
+    // "ckeditor5-image".
+    'ckeditor5-image',
+    'ckeditor5-upload',
 ];
 
 $imports = [
