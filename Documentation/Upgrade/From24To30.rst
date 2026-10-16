@@ -353,7 +353,10 @@ without rules of the site: the image cropper, the elements hidden with
 :html:`[hidden]` where a display utility of Bootstrap outranks the attribute,
 and the :css:`display` of the custom elements. Copy those rules from the
 stylesheet of the development instances, see :ref:`styling-example` and
-:ref:`breaking-profile-editing-ships-no-stylesheet`.
+:ref:`breaking-profile-editing-ships-no-stylesheet`. On TYPO3 13.4.36, 14.3.8
+and later the rich text fields need the interface stylesheet of CKEditor 5 as
+well, which the site links from :guilabel:`EXT:rte_ckeditor`, see
+:ref:`styling-rich-text-editor`.
 
 ..  _upgrade-from-2-4-to-3-0-icons:
 
@@ -419,4 +422,5 @@ Check the result
     hidden.
 *   A profile image uploads, and a translated profile shows an image in every
     language. An upload in one language does not change the image of another.
-*   The rich text fields start the editor.
+*   The rich text fields start the editor, and its toolbar shows small icons
+    in one row.

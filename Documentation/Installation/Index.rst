@@ -27,7 +27,9 @@ Two dependencies are new in this version:
     two of them are never loaded. The system extension has to be installed and
     active for the bundles to resolve. This extension uses none of its backend
     rich text configuration, only the shipped JavaScript. Composer resolves it,
-    in a classic installation activate it in the Extension Manager.
+    in a classic installation activate it in the Extension Manager. On TYPO3
+    13.4.36, 14.3.8 and later the site also links the interface stylesheet of
+    CKEditor 5 from it, see :ref:`styling-rich-text-editor`.
 *   ``typo3/html-sanitizer``, a Composer library the TYPO3 core already ships
     with - not an extension, so there is nothing to activate. Every rich text
     value is sanitized against an allow list on the server before it is stored,

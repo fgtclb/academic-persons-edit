@@ -19,7 +19,9 @@ site with a Bootstrap theme shows them right away. Where the Bootstrap script
 is on the page, the editor shows its messages as a Bootstrap toast and the help
 text of a field, the button `ace-control ace-help`, as a Bootstrap popover with
 the class `custom-popover`. The layout of the editor, its previews, its dialogs
-and its states are the work of the site stylesheet.
+and its states are the work of the site stylesheet. The one stylesheet the site
+links rather than writes is the one of the rich text fields, see
+:ref:`styling-rich-text-editor`.
 
 ..  contents::
     :local:
@@ -374,6 +376,69 @@ a site that brings an editor script of its own, see
         -   The `ace-image-editor` and an `ace-document-editor` while they
             open and close. The script waits for the transition the stylesheet
             declares on them, and goes on at once when there is none.
+
+..  _styling-rich-text-editor:
+
+The rich text editor
+====================
+
+The rich text fields of the editor are CKEditor 5, imported from the import map
+of :guilabel:`EXT:rte_ckeditor`. The extension uses its scripts only, and ships
+no stylesheet for the toolbar, the buttons, the link balloon and the dialogs of
+the editor. Where those styles come from depends on the patch level of TYPO3:
+
+..  list-table::
+    :header-rows: 1
+    :widths: 25 15 60
+
+    *   -   TYPO3
+        -   CKEditor 5
+        -   Interface styles
+    *   -   13.4.35, 14.3.7
+        -   47.6.0
+        -   Injected by the CKEditor scripts into the page they run on. Nothing
+            to do for the site.
+    *   -   13.4.36, 14.3.8 and later
+        -   48.5.2 or later
+        -   In :file:`EXT:rte_ckeditor/Resources/Public/Css/editor.css`, which
+            only the backend form links. **The site has to link it**, or the
+            toolbar shows its icons at the size of their SVG files and the
+            editor has no layout.
+
+Link the file of the core rather than a copy of it. It belongs to the CKEditor
+build the core ships, so it stays in step with the editor when a core update
+brings a new CKEditor release. Linking it does no harm on the patch levels of
+the first row, where the file only holds a few rules TYPO3 adds. The file is
+served from the site's own origin, below :file:`_assets/` in a Composer
+installation, so a Content Security Policy that allows `style-src 'self'`
+covers it. It is some 220 KB, so link it on the page of the editor only. The
+development site of the extensions does it like this, in TypoScript the site
+package can copy:
+
+..  code-block:: typoscript
+    :caption: EXT:my_sitepackage/Configuration/Sets/MySite/setup.typoscript
+
+    page.includeCSS.richTextEditor = EXT:rte_ckeditor/Resources/Public/Css/editor.css
+    page.includeCSS.richTextEditor.if.isTrue.numRows {
+        table = tt_content
+        select.where = {#CType} = 'academicpersonsedit_profileediting'
+    }
+
+The condition counts the profile editing elements on the current page. An
+element shown on another page, through an :guilabel:`Insert records` element
+for example, is not on that page. Name the page that holds the element then,
+with its uid in place of the default `this`, or link the file on every page:
+
+..  code-block:: typoscript
+
+    page.includeCSS.richTextEditor.if.isTrue.numRows.select.pidInList = 42
+
+The stylesheet uses the light colours of CKEditor. A site changes them through
+the custom properties of CKEditor, such as `--ck-color-toolbar-background` or
+`--ck-color-base-border`, in a rule of its own stylesheet that comes after the
+link. The buttons of the toolbar are :html:`<button>` elements below the plugin
+root, so a focus rule of the site for the controls of the editor reaches them
+as well.
 
 ..  _styling-example:
 
