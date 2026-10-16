@@ -24,7 +24,7 @@ extension configuration. The page of the content element names each of them.
         -   Content element
         -   CType
         -   Shows
-    *   -   ..  image:: /Images/Icons/profile-editing.svg
+    *   -   ..  figure:: /Images/Icons/profile-editing.svg
                 :width: 32px
                 :alt: Icon of the profile editing content element
         -   :ref:`Edit Person’s Profiles <integrator-profile-editing>`
