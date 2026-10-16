@@ -25,7 +25,7 @@
         "typo3/html-sanitizer": "^2.3"
     },
     "require-dev": {
-        "fgtclb/environment-state-manager": "^2.0.1@dev"
+        "fgtclb/environment-state-manager": "^2.0.1"
     },
     "autoload": {
         "psr-4": {
