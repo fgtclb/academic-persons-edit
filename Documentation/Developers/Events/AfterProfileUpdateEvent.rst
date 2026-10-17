@@ -121,8 +121,8 @@ Rules and pitfalls
     them and a listener of a project is promised.
 *   **Writing a profile again.** A listener that writes the profile through
     the DataHandler marks that run as internal, or the backend announcement of
-    :guilabel:`academic_persons` announces it once more. The `extension points
-    page <https://docs.typo3.org/p/fgtclb/academic-base/main/en-us/Developers/ExtensionPoints/Index.html#developers-extension-points-services>`__
+    :guilabel:`academic_persons` announces it once more. The :ref:`extension points
+    page <fgtclb/academic-base:developers-extension-points-services>`
     names the class for it.
 *   **The answer waits for the listeners.** The event is dispatched inside
     the request of the editor, so the person waits for every listener before

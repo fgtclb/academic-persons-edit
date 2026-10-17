@@ -8,8 +8,8 @@ This chapter documents the programmatic surface of the profile editing: the
 events it dispatches around every write of the editor.
 
 Which classes of this extension are public API, and what that promises, is
-stated for all academic extensions on the `extension points page of
-academic_base <https://docs.typo3.org/p/fgtclb/academic-base/main/en-us/Developers/ExtensionPoints/Index.html>`__.
+stated for all academic extensions on the :ref:`extension points page of
+academic_base <fgtclb/academic-base:developers-extension-points>`.
 The three controllers of the editor are :php:`final` and :php:`@internal`, so
 the events are the way to take part in a write.
 
