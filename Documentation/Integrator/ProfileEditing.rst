@@ -80,7 +80,7 @@ Profiles assigned to the frontend user
     backend, or the commands of :guilabel:`academic_persons` create and assign
     them for the frontend users, see the `frontend user synchronisation of
     academic_persons
-    <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/FrontendUserSync/Index.html>`__.
+    <https://docs.typo3.org/p/fgtclb/academic-persons/3.0/en-us/Configuration/FrontendUserSync/Index.html>`__.
     A frontend user without a profile sees :guilabel:`No profiles found.`
 
 The detail page

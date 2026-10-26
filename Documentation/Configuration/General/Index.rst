@@ -77,7 +77,7 @@ Fields the synchronisation owns
 
 The :yaml:`managedFields` map of :file:`EXT:academic_persons` names the fields a
 synchronisation or an import owns, per record type (see the
-`Managed fields <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/ManagedFields/Index.html>`__
+`Managed fields <https://docs.typo3.org/p/fgtclb/academic-persons/3.0/en-us/Configuration/ManagedFields/Index.html>`__
 page of that extension). The editor applies it to the records the
 synchronisation wrote: a profile, contract or contact with an import
 identifier, of the default language, whose profile is not excluded with

@@ -8,7 +8,7 @@ AfterProfileUpdateEvent
 profile that was changed and stored. It is owned by
 :guilabel:`academic_persons`, which dispatches it for a backend save, an
 import and its commands as well. The `developer chapter of academic_persons
-<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Developers/Events/AfterProfileUpdateEvent.html>`__
+<https://docs.typo3.org/p/fgtclb/academic-persons/3.0/en-us/Developers/Events/AfterProfileUpdateEvent.html>`__
 describes the event in general. This page describes what the profile editing
 of this extension passes in.
 

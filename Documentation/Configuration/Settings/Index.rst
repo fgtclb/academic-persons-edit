@@ -40,7 +40,7 @@ configuration by providing
 changes and nothing else. A list - a :yaml:`validators` list, a
 :yaml:`structure` column - is replaced as a whole, and :yaml:`~` removes a key;
 an entry left out is kept as shipped. The `overriding the file
-<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Sections/Index.html#configuration-sections-override>`__
+<https://docs.typo3.org/p/fgtclb/academic-persons/3.0/en-us/Configuration/Sections/Index.html#configuration-sections-override>`__
 section of :guilabel:`academic_persons` has the complete rules.
 
 Flush TYPO3 caches after a change so the unified typed settings graph and its
