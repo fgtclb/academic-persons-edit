@@ -64,7 +64,7 @@ Consequences worth knowing before reporting a problem:
     record editor.
 
 See `Validation settings
-<https://docs.typo3.org/p/fgtclb/academic-persons/2.4/en-us/Configuration/Validations/Index.html>`__
+<https://docs.typo3.org/p/fgtclb/academic-persons/2.5/en-us/Configuration/Validations/Index.html>`__
 in the :guilabel:`academic_persons` manual for the available flags, the shipped
 defaults and how to override them.
 
