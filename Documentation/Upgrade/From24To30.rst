@@ -319,10 +319,11 @@ rewritten. The new view is :file:`Templates/Profile/Index.html` with its
 partials below :file:`Partials/Profile/`. See
 :ref:`breaking-replaced-profile-editing-plugin`.
 
-*   An override of a removed file is no longer rendered. Delete it, and
-    re-apply what the project still wants on top of the new files.
-    :ref:`templates-override` names the files that carry the hooks the script
-    of the editor binds to.
+*   An override of a removed file is no longer rendered. Delete it. Most of
+    what it changed is a setting now, see
+    :ref:`upgrade-from-2-4-to-3-0-override-to-setting`. Re-apply the rest on top
+    of the new files. :ref:`templates-override` names the files that carry the
+    hooks the script of the editor binds to.
 *   A link to a removed controller or action answers with an error page. Link
     to the action ``index`` with the argument ``profileUid``, or to the list
     of profiles.
@@ -333,6 +334,79 @@ partials below :file:`Partials/Profile/`. See
 
 The upgrade check with the extension key and a site reports every override of
 a removed file, see :ref:`upgrade-from-2-4-to-3-0-upgrade-check`.
+
+..  _upgrade-from-2-4-to-3-0-override-to-setting:
+
+From an override to a setting
+-----------------------------
+
+Most overrides of the old form flow removed a button, a field or the
+synchronisation switch, or changed a label or an icon. Version 3.0 does each of
+these through a setting, so such an override is not needed any more. The fields
+and the document sections of the editor come from
+:file:`Configuration/AcademicPersons/Settings.yaml`. A site package adds a file
+of that name, depends on :guilabel:`academic_persons` so it is loaded after it,
+names only the keys it changes and removes a key with :yaml:`~`, see `overriding
+the file
+<https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Sections/Index.html#configuration-sections-override>`__
+in the manual of :guilabel:`academic_persons`.
+
+..  list-table::
+    :header-rows: 1
+
+    *   -   What the override did
+        -   What 3.0 does instead
+    *   -   Removed the buttons to hide, sort, delete or edit the entries of a
+            section
+        -   The section offers only the actions listed under
+            :yaml:`documentSections.<section>.actions`, see the `document
+            sections
+            <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Sections/Index.html#configuration-sections-documents>`__.
+    *   -   Showed a section without letting the owner add or change an entry
+        -   :yaml:`readonly: true` on the section. It offers no button to add
+            an entry and no action but :guilabel:`View`.
+    *   -   Showed a field without letting the owner change it
+        -   The flag :yaml:`readonly` in the :yaml:`validators` of the field,
+            or :yaml:`frontendreadonly` where the backend keeps the field
+            editable. :yaml:`disabled` locks it as well. See
+            :ref:`configuration-editor-settings`.
+    *   -   Removed a field or a section
+        -   :yaml:`~` for the key of the field or of the section. The editor
+            no longer offers it, and the stored values stay.
+    *   -   Removed or locked the switch that keeps a profile out of the
+            synchronisation
+        -   :yaml:`special.skipSync: ~` removes the switch, :yaml:`readonly`
+            or :yaml:`disabled` in its :yaml:`validators` shows it locked.
+            Either way the editor refuses a change of it with HTTP 422. See
+            the `special map
+            <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/Sections/Index.html#configuration-sections-special>`__.
+    *   -   Kept the owner from changing values an import or the
+            synchronisation fills
+        -   :yaml:`managedFields`, which locks those fields only on the records
+            the import or the synchronisation wrote, see `managed fields in the
+            profile editor
+            <https://docs.typo3.org/p/fgtclb/academic-persons/main/en-us/Configuration/ManagedFields/Index.html#configuration-managed-fields-editor>`__.
+    *   -   Changed a label or a help text
+        -   An override in
+            :typoscript:`plugin.tx_academicpersonsedit._LOCAL_LANG`, see
+            :ref:`configuration-labels`.
+    *   -   Replaced an icon
+        -   The :file:`Configuration/FrontendIcons.php` of the site package,
+            see :ref:`profile-editing-icons`.
+    *   -   Linked :guilabel:`View` to another page
+        -   The site setting :yaml:`plugin.tx_academicpersons.detailPid`, see
+            :ref:`integrator-profile-editing-requirements`.
+    *   -   Added a field of the project
+        -   A project field with :yaml:`custom: true`, see
+            :ref:`configuration-editor-project-fields`.
+    *   -   Checked or changed the submitted data
+        -   A listener to :php:`BeforeProfileEditingWriteEvent`, see
+            :ref:`developers-event-before-profile-editing-write-event`.
+
+The layout and the markup of the editor have no setting: where the image, the
+switches and the document sections stand, and the markup around a field. That
+stays an override of the new files, see :ref:`templates-override`. Flush the
+caches after a change of the settings file.
 
 ..  _upgrade-from-2-4-to-3-0-classes:
 
