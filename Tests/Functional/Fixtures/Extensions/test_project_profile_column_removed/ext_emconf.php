@@ -3,7 +3,7 @@
 $EM_CONF[$_EXTKEY] = [
     'title' => 'TESTS: Academic Persons Edit project column removed',
     'description' => 'Removes a project column from the TCA after the persons settings are applied',
-    'version' => '3.0.1',
+    'version' => '3.1.0',
     'category' => 'plugin',
     'state' => 'beta',
     'author' => 'FGTCLB GmbH',
@@ -14,7 +14,7 @@ $EM_CONF[$_EXTKEY] = [
             'typo3' => '13.4.35-14.3.99',
             'core' => '13.4.35-14.3.99',
             'test_project_profile_fields' => '3.0.0',
-            'academic_persons' => '3.0.1',
+            'academic_persons' => '3.1.0',
         ],
     ],
 ];
